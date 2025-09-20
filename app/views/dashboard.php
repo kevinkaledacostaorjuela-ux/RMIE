@@ -21,15 +21,13 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="../../index.php?action=listar_alertas">Alertas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../../index.php?action=listar_proveedores">Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../../index.php?action=listar_categorias">Categorías</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../../index.php?action=listar_subcategorias">Subcategorías</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../../index.php?action=listar_productos">Productos</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/AlertaController.php?action=list">Alertas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/ProveedorController.php?action=list">Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/CategoriaController.php?action=list">Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/SubcategoriaController.php?action=list">Subcategorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/ProductoController.php?action=list">Productos</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Ventas</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Reportes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Alertas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Proveedores</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Usuarios</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Clientes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Locales</a></li>
@@ -46,7 +44,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Gestión de Alertas</h5>
-                        <a href="../../index.php?action=listar_alertas" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/AlertaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -54,7 +52,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Gestión de Proveedores</h5>
-                        <a href="../../index.php?action=listar_proveedores" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/ProveedorController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -62,7 +60,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Gestión de Productos</h5>
-                        <a href="../../index.php?action=listar_productos" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/ProductoController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -70,7 +68,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Gestión de Subcategorías</h5>
-                        <a href="../../index.php?action=listar_subcategorias" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/SubcategoriaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -78,7 +76,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Gestión de Categorías</h5>
-                        <a href="../../index.php?action=listar_categorias" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/CategoriaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['user'])) {
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 <!-- Vista para listar productos -->
 <div class="container mt-4">
     <h2>Productos</h2>
@@ -22,7 +28,7 @@
             </select>
         </div>
         <div class="col-md-4 d-flex align-items-end">
-            <a href="?action=crear_producto" class="btn btn-primary w-100">Nuevo Producto</a>
+            <a href="/RMIE/app/controllers/ProductoController.php?action=crear_producto" class="btn btn-primary w-100">Nuevo Producto</a>
         </div>
     </form>
     <table class="table table-bordered">
@@ -52,8 +58,8 @@
                         <td><?= $prod['subcategoria_nombre'] ?></td>
                         <td><?= $prod['categoria_nombre'] ?></td>
                         <td>
-                            <a href="?action=editar_producto&id=<?= $prod['id_productos'] ?>" class="btn btn-warning btn-sm">Editar</a>
-                            <a href="?action=eliminar_producto&id=<?= $prod['id_productos'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
+                            <a href="/RMIE/app/controllers/ProductoController.php?action=editar_producto&id=<?= $prod['id_productos'] ?>" class="btn btn-warning btn-sm">Editar</a>
+                            <a href="/RMIE/app/controllers/ProductoController.php?action=eliminar_producto&id=<?= $prod['id_productos'] ?>" class="btn btn-danger btn-sm" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
@@ -63,3 +69,4 @@
         </tbody>
     </table>
 </div>
+<a href="/RMIE/app/views/dashboard.php" class="btn btn-secondary mt-3">Volver al dashboard</a>

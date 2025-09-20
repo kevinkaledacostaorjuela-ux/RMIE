@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['user'])) {
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 <!-- Vista para editar subcategoría -->
 <div class="container mt-4">
     <h2>Editar Subcategoría</h2>
@@ -21,4 +27,5 @@
         <button type="submit" class="btn btn-success">Actualizar</button>
         <a href="?action=listar_subcategorias" class="btn btn-secondary">Cancelar</a>
     </form>
+    <a href="/RMIE/app/views/dashboard.php" class="btn btn-secondary mt-3">Volver al dashboard</a>
 </div>

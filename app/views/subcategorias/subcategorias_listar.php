@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['user'])) {
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 <!-- Vista para listar subcategorías -->
 <div class="container mt-4">
     <h2>Subcategorías</h2>
@@ -46,3 +52,4 @@
         </tbody>
     </table>
 </div>
+<a href="/RMIE/app/views/dashboard.php" class="btn btn-secondary mt-3">Volver al dashboard</a>

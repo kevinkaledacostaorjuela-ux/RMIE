@@ -1,3 +1,9 @@
+<?php
+if (!isset($_SESSION['user'])) {
+    header('Location: ../../../index.php');
+    exit();
+}
+?>
 <!-- Vista para editar producto -->
 <div class="container mt-4">
     <h2>Editar Producto</h2>
@@ -33,6 +39,7 @@
             </select>
         </div>
         <button type="submit" class="btn btn-success">Actualizar</button>
-        <a href="?action=listar_productos" class="btn btn-secondary">Cancelar</a>
+    <a href="/RMIE/app/controllers/ProductoController.php?action=listar_productos" class="btn btn-secondary">Cancelar</a>
     </form>
+    <a href="/RMIE/app/views/dashboard.php" class="btn btn-secondary mt-3">Volver al dashboard</a>
 </div>
