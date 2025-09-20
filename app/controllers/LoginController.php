@@ -5,9 +5,11 @@ session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'] ?? '';
     $password = $_POST['password'] ?? '';
-    $stmt = $pdo->prepare('SELECT * FROM usuarios WHERE correo = :user');
-    $stmt->execute(['user' => $user]);
-    $usuario = $stmt->fetch();
+    $stmt = $conn->prepare('SELECT * FROM usuarios WHERE correo = ?');
+    $stmt->bind_param('s', $user);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $usuario = $result->fetch_assoc();
     if ($usuario && password_verify($password, $usuario['contrasena'])) {
         $_SESSION['user'] = $usuario['correo'];
         $_SESSION['rol'] = $usuario['rol'];
@@ -18,7 +20,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 } else {
-    header('Location: ../../index.php');
+    // Si se accede por GET, mostrar advertencia y redirigir
+    echo '<script>alert("Acceso no permitido. Por favor, ingresa tus credenciales desde el formulario de inicio de sesión.");window.location="../../index.php";</script>';
     exit();
 }
 ?>

@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Agregar Producto</h1>
-    <form method="POST" action="create.php">
+    <form method="POST" action="../../controllers/ProductController.php?accion=create">
         <label>Nombre:</label>
         <input type="text" name="nombre" required><br>
         <label>Descripción:</label>

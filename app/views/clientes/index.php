@@ -10,6 +10,7 @@
 <body>
     <h1>Listado de Clientes</h1>
     <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
+    <a href="../../controllers/ClientController.php?accion=create" class="btn-categorias">Agregar Cliente</a>
     <form method="GET" action="">
         <label>Filtrar por Local:</label>
         <select name="local">

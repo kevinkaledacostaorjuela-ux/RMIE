@@ -10,8 +10,8 @@
 <body>
     <div class="categorias-container">
         <h1>Listado de Categorías</h1>
-    <a href="../../dashboard.php" class="btn-categorias">Volver al menú principal</a>
-    <a href="../../categorias.php?accion=create" class="btn-categorias">Agregar Categoría</a>
+    <a href="/RMIE/app/views/dashboard.php" class="btn-categorias">Volver al menú principal</a>
+    <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn-categorias">Agregar Categoría</a>
         <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
@@ -28,8 +28,8 @@
                 <td><?= $cat->descripcion ?></td>
                 <td><?= $cat->fecha_creacion ?></td>
                 <td>
-                    <a href="../../categorias.php?accion=edit&id=<?= $cat->id_categoria ?>">Editar</a> |
-                    <a href="../../categorias.php?accion=delete&id=<?= $cat->id_categoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
+                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= $cat->id_categoria ?>">Editar</a> |
+                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= $cat->id_categoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
                 </td>
             </tr>
             <?php endforeach; ?>

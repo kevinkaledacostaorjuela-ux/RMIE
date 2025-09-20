@@ -10,7 +10,7 @@
 <body>
     <h1>Listado de Productos</h1>
     <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
-    <a href="create.php">Agregar Producto</a>
+    <a href="../../controllers/ProductController.php?accion=create" class="btn-categorias">Agregar Producto</a>
     <form method="GET" action="">
         <label>Filtrar por Categoría:</label>
         <select name="categoria">

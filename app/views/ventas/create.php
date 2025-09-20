@@ -7,7 +7,7 @@
 <body>
     <div class="categorias-container">
         <h1>Crear Venta</h1>
-    <form method="POST" action="create.php">
+    <form method="POST" action="../../controllers/SaleController.php?accion=create">
             <label>Nombre:</label>
             <input type="text" name="nombre" required><br>
             <label>Dirección:</label>
@@ -26,7 +26,7 @@
             <input type="text" name="id_productos" required><br>
             <button type="submit" class="btn-categorias">Guardar</button>
         </form>
-        <a href="index.php" class="btn-categorias">Volver al listado</a>
+        <a href="../../controllers/SaleController.php?accion=index" class="btn-categorias">Volver al listado</a>
     </div>
 </body>
 </html>

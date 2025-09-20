@@ -11,7 +11,7 @@
     <div class="categorias-container">
         <h1>Listado de Proveedores</h1>
         <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
-        <a href="create.php" class="btn-categorias">Agregar Proveedor</a>
+        <a href="../../controllers/ProviderController.php?accion=create" class="btn-categorias">Agregar Proveedor</a>
         <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>

@@ -7,7 +7,7 @@
 <body>
     <div class="categorias-container">
         <h1>Crear Cliente</h1>
-    <form method="POST" action="create.php">
+    <form method="POST" action="../../controllers/ClientController.php?accion=create">
             <label>Nombre:</label>
             <input type="text" name="nombre" required><br>
             <label>Descripción:</label>
@@ -22,7 +22,7 @@
             <input type="text" name="id_locales" required><br>
             <button type="submit" class="btn-categorias">Guardar</button>
         </form>
-        <a href="index.php" class="btn-categorias">Volver al listado</a>
+    <a href="../../controllers/ClientController.php?accion=index" class="btn-categorias">Volver al listado</a>
     </div>
 </body>
 </html>

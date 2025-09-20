@@ -21,17 +21,17 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="../../categorias.php?accion=index">Gestión de Categorías</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/subcategorias/index.php">Subcategorías</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/productos/index.php">Productos</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/ventas/index.php">Ventas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/reportes/index.php">Reportes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/alertas/index.php">Alertas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/proveedores/index.php">Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/usuarios/index.php">Usuarios</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/clientes/index.php">Clientes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/locales/index.php">Locales</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../views/rutas/index.php">Rutas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/CategoryController.php?accion=index">Gestión de Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/SubcategoryController.php?accion=index">Subcategorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/ProductController.php?accion=index">Productos</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/SaleController.php?accion=index">Ventas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/ReportController.php?accion=index">Reportes</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/AlertController.php?accion=index">Alertas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/ProviderController.php?accion=index">Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/UserController.php?accion=index">Usuarios</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/ClientController.php?accion=index">Clientes</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/LocalController.php?accion=index">Locales</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/RouteController.php?accion=index">Rutas</a></li>
         </ul>
         <hr>
         <a href="../../logout.php" class="btn btn-danger btn-sm">Cerrar sesión</a>

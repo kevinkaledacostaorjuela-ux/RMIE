@@ -9,13 +9,13 @@
 </head>
 <body>
     <h1>Agregar Categoría</h1>
-    <form method="POST" action="../../categorias.php?accion=create">
+    <form method="POST" action="/RMIE/app/controllers/CategoryController.php?accion=create">
         <label>Nombre:</label>
         <input type="text" name="nombre" required><br>
         <label>Descripción:</label>
         <input type="text" name="descripcion" required><br>
         <button type="submit">Guardar</button>
     </form>
-    <a href="../../categorias.php?accion=index">Volver al menú principal</a>
+    <a href="/RMIE/app/controllers/CategoryController.php?accion=index">Volver al menú principal</a>
 </body>
 </html>
