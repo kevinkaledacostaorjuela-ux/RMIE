@@ -1,3 +1,11 @@
+-- Tabla de relación muchos a muchos entre proveedores y productos
+CREATE TABLE IF NOT EXISTS proveedor_producto (
+    id_proveedores INT NOT NULL,
+    id_productos INT NOT NULL,
+    PRIMARY KEY (id_proveedores, id_productos),
+    FOREIGN KEY (id_proveedores) REFERENCES proveedores(id_proveedores) ON DELETE CASCADE,
+    FOREIGN KEY (id_productos) REFERENCES productos(id_productos) ON DELETE CASCADE
+);
 -- Base de datos RMIE
 CREATE DATABASE IF NOT EXISTS rmie;
 USE rmie;
@@ -114,10 +122,11 @@ CREATE TABLE reportes (
     FOREIGN KEY (id_ventas) REFERENCES ventas(id_ventas)
 );
 
--- Tabla de alertas
 CREATE TABLE alertas (
     id_alertas INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     cliente_no_disponible VARCHAR(45),
     id_clientes INT NOT NULL,
-    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes)
+    id_productos INT NOT NULL,
+    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
+    FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );

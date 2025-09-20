@@ -1,6 +1,166 @@
+    if (strpos($action, 'alerta') !== false) {
+        require_once __DIR__ . '/app/controllers/AlertsController.php';
+        $controller = new AlertsController($pdo);
+        switch ($action) {
+            case 'listar_alertas':
+                $controller->listar();
+                break;
+            case 'crear_alerta':
+                $controller->crear();
+                break;
+            case 'guardar_alerta':
+                $controller->guardar();
+                break;
+            case 'editar_alerta':
+                $controller->editar();
+                break;
+            case 'actualizar_alerta':
+                $controller->actualizar();
+                break;
+            case 'eliminar_alerta':
+                $controller->eliminar();
+                break;
+            case 'eliminar_alerta_confirmar':
+                $controller->eliminarConfirmar();
+                break;
+            default:
+                header('Location: app/views/dashboard.php');
+                exit();
+        }
+        exit();
+    }
+    if (strpos($action, 'proveedor') !== false) {
+        require_once __DIR__ . '/app/controllers/ProvidersController.php';
+        $controller = new ProvidersController($pdo);
+        switch ($action) {
+            case 'listar_proveedores':
+                $controller->listar();
+                break;
+            case 'crear_proveedor':
+                $controller->crear();
+                break;
+            case 'guardar_proveedor':
+                $controller->guardar();
+                break;
+            case 'editar_proveedor':
+                $controller->editar();
+                break;
+            case 'actualizar_proveedor':
+                $controller->actualizar();
+                break;
+            case 'eliminar_proveedor':
+                $controller->eliminar();
+                break;
+            case 'eliminar_proveedor_confirmar':
+                $controller->eliminarConfirmar();
+                break;
+            default:
+                header('Location: app/views/dashboard.php');
+                exit();
+        }
+        exit();
+    }
 <?php
-// index.php - Login principal
 session_start();
+
+// Enrutamiento para categorías
+if (isset($_SESSION['user'])) {
+    require_once __DIR__ . '/config/db.php';
+    $action = $_GET['action'] ?? null;
+    if (strpos($action, 'producto') !== false) {
+        require_once __DIR__ . '/app/controllers/ProductsController.php';
+        $controller = new ProductsController($pdo);
+        switch ($action) {
+            case 'listar_productos':
+                $controller->listar();
+                break;
+            case 'crear_producto':
+                $controller->crear();
+                break;
+            case 'guardar_producto':
+                $controller->guardar();
+                break;
+            case 'editar_producto':
+                $controller->editar();
+                break;
+            case 'actualizar_producto':
+                $controller->actualizar();
+                break;
+            case 'eliminar_producto':
+                $controller->eliminar();
+                break;
+            case 'eliminar_producto_confirmar':
+                $controller->eliminarConfirmar();
+                break;
+            default:
+                header('Location: app/views/dashboard.php');
+                exit();
+        }
+        exit();
+    } else if (strpos($action, 'subcategoria') !== false) {
+        require_once __DIR__ . '/app/controllers/SubcategoriesController.php';
+        $controller = new SubcategoriesController($pdo);
+        switch ($action) {
+            case 'listar_subcategorias':
+                $controller->listar();
+                break;
+            case 'crear_subcategoria':
+                $controller->crear();
+                break;
+            case 'guardar_subcategoria':
+                $controller->guardar();
+                break;
+            case 'editar_subcategoria':
+                $controller->editar();
+                break;
+            case 'actualizar_subcategoria':
+                $controller->actualizar();
+                break;
+            case 'eliminar_subcategoria':
+                $controller->eliminar();
+                break;
+            case 'eliminar_subcategoria_confirmar':
+                $controller->eliminarConfirmar();
+                break;
+            default:
+                header('Location: app/views/dashboard.php');
+                exit();
+        }
+        exit();
+    } else {
+        require_once __DIR__ . '/app/controllers/CategoriesController.php';
+        $controller = new CategoriesController($pdo);
+        switch ($action) {
+            case 'listar_categorias':
+                $controller->listar();
+                break;
+            case 'crear_categoria':
+                $controller->crear();
+                break;
+            case 'guardar_categoria':
+                $controller->guardar();
+                break;
+            case 'editar_categoria':
+                $controller->editar();
+                break;
+            case 'actualizar_categoria':
+                $controller->actualizar();
+                break;
+            case 'eliminar_categoria':
+                $controller->eliminar();
+                break;
+            case 'eliminar_categoria_confirmar':
+                $controller->eliminarConfirmar();
+                break;
+            default:
+                header('Location: app/views/dashboard.php');
+                exit();
+        }
+        exit();
+    }
+}
+
+// Login principal
 if (isset($_SESSION['user'])) {
     header('Location: app/views/dashboard.php');
     exit();
