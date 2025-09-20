@@ -20,7 +20,10 @@
         <button type="submit">Filtrar</button>
     </form>
     <br>
-    <table border="1">
+        <div class="categorias-container">
+            <h1>Listado de Alertas</h1>
+            <a href="create.php" class="btn-categorias">Agregar Alerta</a>
+            <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Producto</th>
@@ -36,5 +39,6 @@
         </tr>
         <?php endforeach; ?>
     </table>
+        </div>
 </body>
 </html>

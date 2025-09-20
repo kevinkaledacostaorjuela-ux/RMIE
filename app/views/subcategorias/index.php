@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <h1>Listado de Subcategorías</h1>
-    <a href="create.php">Agregar Subcategoría</a>
-    <table border="1">
+    <div class="categorias-container">
+        <h1>Listado de Subcategorías</h1>
+        <a href="create.php" class="btn-categorias">Agregar Subcategoría</a>
+        <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Nombre</th>

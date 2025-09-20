@@ -27,7 +27,10 @@
         <button type="submit">Filtrar</button>
     </form>
     <br>
-    <table border="1">
+        <div class="categorias-container">
+            <h1>Listado de Rutas</h1>
+            <a href="create.php" class="btn-categorias">Agregar Ruta</a>
+            <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Dirección</th>
@@ -47,5 +50,6 @@
         </tr>
         <?php endforeach; ?>
     </table>
+        </div>
 </body>
 </html>

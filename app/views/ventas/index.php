@@ -8,8 +8,9 @@
     <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <h1>Listado de Ventas</h1>
-    <form method="GET" action="">
+    <div class="categorias-container">
+        <h1>Listado de Ventas</h1>
+        <form method="GET" action="">
         <label>Filtrar por Producto:</label>
         <select name="producto">
             <option value="">Todos</option>
@@ -27,7 +28,7 @@
         <button type="submit">Filtrar</button>
     </form>
     <br>
-    <table border="1">
+    <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Producto</th>

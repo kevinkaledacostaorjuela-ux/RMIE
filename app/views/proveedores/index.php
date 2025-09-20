@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <h1>Listado de Proveedores</h1>
-    <a href="create.php">Agregar Proveedor</a>
-    <table border="1">
+    <div class="categorias-container">
+        <h1>Listado de Proveedores</h1>
+        <a href="create.php" class="btn-categorias">Agregar Proveedor</a>
+        <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Nombre Distribuidor</th>

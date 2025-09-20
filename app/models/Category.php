@@ -1,9 +1,9 @@
 <?php
 class Category {
-    private $id_categoria;
-    private $nombre;
-    private $descripcion;
-    private $fecha_creacion;
+    public $id_categoria;
+    public $nombre;
+    public $descripcion;
+    public $fecha_creacion;
 
     public function __construct($id_categoria, $nombre, $descripcion, $fecha_creacion) {
         $this->id_categoria = $id_categoria;

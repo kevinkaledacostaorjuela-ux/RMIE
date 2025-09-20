@@ -8,9 +8,10 @@
     <link rel="stylesheet" href="../../public/css/styles.css">
 </head>
 <body>
-    <h1>Listado de Categorías</h1>
-    <a href="create.php">Agregar Categoría</a>
-    <table border="1">
+    <div class="categorias-container">
+        <h1>Listado de Categorías</h1>
+        <a href="create.php" class="btn-categorias">Agregar Categoría</a>
+        <table class="table table-striped table-bordered table-categorias">
         <tr>
             <th>ID</th>
             <th>Nombre</th>
@@ -18,18 +19,20 @@
             <th>Fecha de Creación</th>
             <th>Acciones</th>
         </tr>
-        <?php foreach ($categorias as $cat): ?>
-        <tr>
-            <td><?= $cat->id_categoria ?></td>
-            <td><?= $cat->nombre ?></td>
-            <td><?= $cat->descripcion ?></td>
-            <td><?= $cat->fecha_creacion ?></td>
-            <td>
-                <a href="edit.php?id=<?= $cat->id_categoria ?>">Editar</a> |
-                <a href="delete.php?id=<?= $cat->id_categoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($categorias) && is_array($categorias)): ?>
+            <?php foreach ($categorias as $cat): ?>
+            <tr>
+                <td><?= $cat->id_categoria ?></td>
+                <td><?= $cat->nombre ?></td>
+                <td><?= $cat->descripcion ?></td>
+                <td><?= $cat->fecha_creacion ?></td>
+                <td>
+                    <a href="edit.php?id=<?= $cat->id_categoria ?>">Editar</a> |
+                    <a href="delete.php?id=<?= $cat->id_categoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
 </body>
 </html>
