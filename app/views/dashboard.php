@@ -21,12 +21,13 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="#">Productos</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Subcategorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/categorias/index.php">Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/subcategorias/index.php">Subcategorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/productos/index.php">Productos</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Ventas</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Reportes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Alertas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Proveedores</a></li>
+                <li class="nav-item"><a class="nav-link text-white" href="../views/proveedores/index.php">Proveedores</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Usuarios</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Clientes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Locales</a></li>

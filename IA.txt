@@ -1,0 +1,36 @@
+PRIMER AVANCE CON IA
+
+Hola! Muy bien, vamos a crear la estructura inicial del proyecto siguiendo tus indicaciones. El primer paso será:
+1.Crear la estructura de carpetas y archivos base para un proyecto PHP con MVC.
+2.Crear el archivo db.sql con las tablas y relaciones según tu descripción.
+3.Preparar el index.php como login inicial.
+4.Incluir Bootstrap y CSS base.
+5.Dejar todo listo para comenzar con la primera gestión (usuarios, login y dashboard).
+¿Listo para comenzar? Primero crearé la estructura de carpetas y el archivo db.sql. Luego avanzamos paso a paso con la gestión de usuarios y login.
+Se ha creado controllers
+Se ha creado models
+Se ha creado views
+Se ha creado css
+Se ha creado js
+Se ha creado assets
+Se ha creado config
+Se ha creado db.sql
+Se ha creado index.php
+Se ha creado styles.css
+Se ha creado db.php
+Se ha creado LoginController.php
+Se ha creado dashboard.php
+Se ha creado logout.php
+Se ha creado insert_users.php
+Estructura inicial del proyecto creada:
+Carpetas MVC y recursos listas.
+Archivo db.sql con todas las tablas y relaciones.
+Login en index.php con Bootstrap y CSS.
+Controlador de login y dashboard básico con menú lateral y accesos rápidos.
+Script para insertar usuarios admin y coordinador con contraseña encriptada.
+Logout funcional.
+Sigue estos pasos:
+1.Importa db.sql en tu MySQL.
+2.Ejecuta insert_users.php una vez para crear los usuarios.
+3.Accede a index.php y prueba el login.
+¿Listo para avanzar con la gestión de usuarios o deseas revisar algo antes?

@@ -22,10 +22,12 @@ CREATE TABLE categorias (
 );
 
 -- Tabla de subcategorías
+
 CREATE TABLE subcategorias (
     id_subcategoria INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     nombre VARCHAR(45),
     descripcion VARCHAR(45),
+    fecha_creacion DATETIME DEFAULT CURRENT_TIMESTAMP,
     id_categoria INT NOT NULL,
     FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria)
 );
@@ -44,7 +46,13 @@ CREATE TABLE productos (
     valor_unitario VARCHAR(45),
     marca VARCHAR(45),
     id_subcategoria INT NOT NULL,
-    FOREIGN KEY (id_subcategoria) REFERENCES subcategorias(id_subcategoria)
+    id_categoria INT NOT NULL,
+    id_proveedores INT NOT NULL,
+    num_doc INT NOT NULL,
+    FOREIGN KEY (id_subcategoria) REFERENCES subcategorias(id_subcategoria),
+    FOREIGN KEY (id_categoria) REFERENCES categorias(id_categoria),
+    FOREIGN KEY (id_proveedores) REFERENCES proveedores(id_proveedores),
+    FOREIGN KEY (num_doc) REFERENCES usuarios(num_doc)
 );
 
 -- Tabla de proveedores
@@ -86,7 +94,11 @@ CREATE TABLE rutas (
     nombre_local VARCHAR(45),
     nombre_cliente VARCHAR(45),
     id_clientes INT NOT NULL,
-    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes)
+    id_reportes INT,
+    id_ventas INT,
+    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
+    FOREIGN KEY (id_reportes) REFERENCES reportes(id_reportes),
+    FOREIGN KEY (id_ventas) REFERENCES ventas(id_ventas)
 );
 
 -- Tabla de ventas
@@ -99,8 +111,10 @@ CREATE TABLE ventas (
     id_clientes INT NOT NULL,
     id_reportes INT,
     id_ruta INT,
+    id_productos INT NOT NULL,
     FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
-    FOREIGN KEY (id_ruta) REFERENCES rutas(id_ruta)
+    FOREIGN KEY (id_ruta) REFERENCES rutas(id_ruta),
+    FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );
 
 -- Tabla de reportes
@@ -111,7 +125,9 @@ CREATE TABLE reportes (
     fecha VARCHAR(45),
     estado VARCHAR(45),
     id_ventas INT,
-    FOREIGN KEY (id_ventas) REFERENCES ventas(id_ventas)
+    id_productos INT NOT NULL,
+    FOREIGN KEY (id_ventas) REFERENCES ventas(id_ventas),
+    FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );
 
 -- Tabla de alertas
@@ -119,5 +135,7 @@ CREATE TABLE alertas (
     id_alertas INT NOT NULL PRIMARY KEY AUTO_INCREMENT,
     cliente_no_disponible VARCHAR(45),
     id_clientes INT NOT NULL,
-    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes)
+    id_productos INT NOT NULL,
+    FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
+    FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );
