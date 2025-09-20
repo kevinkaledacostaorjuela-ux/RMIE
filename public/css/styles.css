@@ -45,3 +45,41 @@ body {
     background: #0056b3;
     color: #fff;
 }
+
+.subcategorias-container {
+    max-width: 900px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+.subcategorias-container h1 {
+    margin-bottom: 2rem;
+    color: #2c3e50;
+}
+.table-subcategorias {
+    margin-bottom: 2rem;
+}
+.table-subcategorias th {
+    background: #007bff;
+    color: #fff;
+    font-weight: 500;
+}
+.table-subcategorias td {
+    vertical-align: middle;
+}
+.btn-subcategorias {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 0.4rem 1rem;
+    border-radius: 0.3rem;
+    text-decoration: none;
+    margin-right: 0.3rem;
+    transition: background 0.2s;
+}
+.btn-subcategorias:hover {
+    background: #0056b3;
+    color: #fff;
+}

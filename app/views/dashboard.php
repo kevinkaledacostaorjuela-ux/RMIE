@@ -44,7 +44,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Categorías</h5>
-                        <a href="../views/categorias/index.php" class="btn btn-primary">Ir</a>
+                        <a href="/RMIE/app/controllers/CategoryController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

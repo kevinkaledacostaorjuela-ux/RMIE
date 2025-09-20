@@ -16,6 +16,6 @@
         <input type="text" name="descripcion" value="<?= $categoria->descripcion ?>" required><br>
         <button type="submit">Actualizar</button>
     </form>
-    <a href="/RMIE/app/controllers/CategoryController.php?accion=index">Volver</a>
+    <a href="/RMIE/app/controllers/CategoryController.php?accion=index">Volver al listado de categorías</a>
 </body>
 </html>
