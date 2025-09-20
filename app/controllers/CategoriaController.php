@@ -12,7 +12,9 @@ $categoriaModel = new Categoria($pdo);
 $action = $_GET['action'] ?? 'list';
 switch ($action) {
     case 'list':
-        $categorias = $categoriaModel->obtenerTodas();
+        $filtroNombre = $_GET['filtro_nombre'] ?? '';
+        $orden = $_GET['orden'] ?? 'asc';
+        $categorias = $categoriaModel->obtenerTodas($filtroNombre, $orden);
         include __DIR__ . '/../views/categorias/list.php';
         break;
     case 'create':

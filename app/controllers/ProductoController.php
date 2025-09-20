@@ -11,7 +11,13 @@ $productoModel = new Producto($pdo);
 $action = $_GET['action'] ?? 'listar_productos';
 switch ($action) {
     case 'listar_productos':
-        $productos = $productoModel->obtenerTodos();
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'categoria' => $_GET['categoria'] ?? '',
+            'subcategoria' => $_GET['subcategoria'] ?? '',
+            'orden' => $_GET['orden'] ?? 'asc',
+        ];
+        $productos = $productoModel->obtenerTodos($filtros);
         $categorias = $productoModel->obtenerCategorias();
         $subcategorias = $productoModel->obtenerSubcategorias();
         include __DIR__ . '/../views/productos/productos_listar.php';

@@ -8,8 +8,18 @@ class Categoria {
         $this->pdo = $pdo;
     }
 
-    public function obtenerTodas() {
-        $stmt = $this->pdo->query("SELECT * FROM categorias");
+
+    public function obtenerTodas($filtroNombre = '', $orden = 'asc') {
+        $sql = "SELECT * FROM categorias WHERE 1=1";
+        $params = [];
+        if ($filtroNombre !== '') {
+            $sql .= " AND nombre LIKE ?";
+            $params[] = "%$filtroNombre%";
+        }
+        $orden = strtolower($orden) === 'desc' ? 'DESC' : 'ASC';
+        $sql .= " ORDER BY nombre $orden";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

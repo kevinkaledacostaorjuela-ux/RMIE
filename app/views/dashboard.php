@@ -43,7 +43,7 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Alertas</h5>
+                        <h5 class="card-title">Alertas</h5>
                         <a href="/RMIE/app/controllers/AlertaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
@@ -51,7 +51,7 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Proveedores</h5>
+                        <h5 class="card-title">Proveedores</h5>
                         <a href="/RMIE/app/controllers/ProveedorController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
@@ -59,7 +59,7 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Productos</h5>
+                        <h5 class="card-title">Productos</h5>
                         <a href="/RMIE/app/controllers/ProductoController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
@@ -67,7 +67,7 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Subcategorías</h5>
+                        <h5 class="card-title">Subcategorías</h5>
                         <a href="/RMIE/app/controllers/SubcategoriaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
@@ -75,7 +75,7 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Categorías</h5>
+                        <h5 class="card-title">Categorías</h5>
                         <a href="/RMIE/app/controllers/CategoriaController.php?action=list" class="btn btn-primary">Ir</a>
                     </div>
                 </div>

@@ -9,8 +9,28 @@ class Producto {
         $this->pdo = $pdo;
     }
 
-    public function obtenerTodos() {
-        $stmt = $this->pdo->query("SELECT p.*, s.nombre AS subcategoria_nombre, s.id_subcategoria, c.nombre AS categoria_nombre, c.id_categoria FROM productos p JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria JOIN categorias c ON s.id_categoria = c.id_categoria");
+    public function obtenerTodos($filtros = []) {
+        $sql = "SELECT p.*, s.nombre AS subcategoria_nombre, s.id_subcategoria, c.nombre AS categoria_nombre, c.id_categoria FROM productos p JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria JOIN categorias c ON s.id_categoria = c.id_categoria WHERE 1=1";
+        $params = [];
+        if (!empty($filtros['nombre'])) {
+            $sql .= " AND p.nombre LIKE ?";
+            $params[] = '%' . $filtros['nombre'] . '%';
+        }
+        if (!empty($filtros['categoria'])) {
+            $sql .= " AND c.id_categoria = ?";
+            $params[] = $filtros['categoria'];
+        }
+        if (!empty($filtros['subcategoria'])) {
+            $sql .= " AND s.id_subcategoria = ?";
+            $params[] = $filtros['subcategoria'];
+        }
+        $orden = 'ASC';
+        if (!empty($filtros['orden']) && $filtros['orden'] === 'desc') {
+            $orden = 'DESC';
+        }
+        $sql .= " ORDER BY p.nombre $orden";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 

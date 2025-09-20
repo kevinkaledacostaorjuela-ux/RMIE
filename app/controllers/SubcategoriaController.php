@@ -11,7 +11,12 @@ $subcategoriaModel = new Subcategoria($pdo);
 $action = $_GET['action'] ?? 'listar_subcategorias';
 switch ($action) {
     case 'listar_subcategorias':
-        $subcategorias = $subcategoriaModel->obtenerTodas();
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'categoria' => $_GET['categoria'] ?? '',
+            'orden' => $_GET['orden'] ?? 'asc',
+        ];
+        $subcategorias = $subcategoriaModel->obtenerTodas($filtros);
         $categorias = $subcategoriaModel->obtenerCategorias();
         include __DIR__ . '/../views/subcategorias/subcategorias_listar.php';
         break;

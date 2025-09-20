@@ -8,8 +8,24 @@ class Subcategoria {
         $this->pdo = $pdo;
     }
 
-    public function obtenerTodas() {
-        $stmt = $this->pdo->query("SELECT s.*, c.nombre AS categoria_nombre FROM subcategorias s JOIN categorias c ON s.id_categoria = c.id_categoria");
+    public function obtenerTodas($filtros = []) {
+        $sql = "SELECT s.*, c.nombre AS categoria_nombre FROM subcategorias s JOIN categorias c ON s.id_categoria = c.id_categoria WHERE 1=1";
+        $params = [];
+        if (!empty($filtros['nombre'])) {
+            $sql .= " AND s.nombre LIKE ?";
+            $params[] = '%' . $filtros['nombre'] . '%';
+        }
+        if (!empty($filtros['categoria'])) {
+            $sql .= " AND s.id_categoria = ?";
+            $params[] = $filtros['categoria'];
+        }
+        $orden = 'ASC';
+        if (!empty($filtros['orden']) && $filtros['orden'] === 'desc') {
+            $orden = 'DESC';
+        }
+        $sql .= " ORDER BY s.nombre $orden";
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
         return $stmt->fetchAll();
     }
 
