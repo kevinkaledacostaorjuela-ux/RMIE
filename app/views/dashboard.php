@@ -21,7 +21,7 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="../views/categorias/index.php">Gestión de Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../../categorias.php?accion=index">Gestión de Categorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../views/subcategorias/index.php">Subcategorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../views/productos/index.php">Productos</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../views/ventas/index.php">Ventas</a></li>
