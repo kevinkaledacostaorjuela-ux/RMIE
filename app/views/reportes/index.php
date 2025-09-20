@@ -5,10 +5,11 @@
 <html>
 <head>
     <title>Reportes</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <h1>Listado de Reportes</h1>
+    <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
     <form method="GET" action="">
         <label>Filtrar por Producto:</label>
         <select name="producto">
@@ -30,17 +31,19 @@
             <th>Estado</th>
             <th>ID Venta</th>
         </tr>
-        <?php foreach ($reportes as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_reportes ?></td>
-            <td><?= $item['producto_nombre'] ?></td>
-            <td><?= $item['obj']->nombre ?></td>
-            <td><?= $item['obj']->descripcion ?></td>
-            <td><?= $item['obj']->fecha ?></td>
-            <td><?= $item['obj']->estado ?></td>
-            <td><?= $item['obj']->id_ventas ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($reportes) && is_array($reportes)): ?>
+            <?php foreach ($reportes as $item): ?>
+            <tr>
+                <td><?= $item['obj']->id_reportes ?></td>
+                <td><?= $item['producto_nombre'] ?></td>
+                <td><?= $item['obj']->nombre ?></td>
+                <td><?= $item['obj']->descripcion ?></td>
+                <td><?= $item['obj']->fecha ?></td>
+                <td><?= $item['obj']->estado ?></td>
+                <td><?= $item['obj']->id_ventas ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
 </body>
 </html>

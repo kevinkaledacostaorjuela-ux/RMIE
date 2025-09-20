@@ -5,7 +5,7 @@
 <html>
 <head>
     <title>Ventas</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <div class="categorias-container">
@@ -40,24 +40,26 @@
             <th>ID Reporte</th>
             <th>ID Ruta</th>
         </tr>
-        <?php foreach ($ventas as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_ventas ?></td>
-            <td><?= $item['producto_nombre'] ?></td>
-            <td><?= $item['obj']->nombre ?></td>
-            <td><?= $item['obj']->direccion ?></td>
-            <td><?= $item['obj']->cantidad ?></td>
-            <td><?= $item['obj']->fecha_venta ?></td>
-            <td><?= $item['cliente_nombre'] ?></td>
-            <td><?= $item['obj']->id_reportes ?></td>
-            <td><?= $item['obj']->id_ruta ?></td>
-            <td><?= $item['obj']->cantidad ?></td>
-            <td><?= $item['obj']->fecha_venta ?></td>
-            <td><?= $item['obj']->id_clientes ?></td>
-            <td><?= $item['obj']->id_reportes ?></td>
-            <td><?= $item['obj']->id_ruta ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($ventas) && is_array($ventas)): ?>
+            <?php foreach ($ventas as $item): ?>
+            <tr>
+                <td><?= $item['obj']->id_ventas ?></td>
+                <td><?= $item['producto_nombre'] ?></td>
+                <td><?= $item['obj']->nombre ?></td>
+                <td><?= $item['obj']->direccion ?></td>
+                <td><?= $item['obj']->cantidad ?></td>
+                <td><?= $item['obj']->fecha_venta ?></td>
+                <td><?= $item['cliente_nombre'] ?></td>
+                <td><?= $item['obj']->id_reportes ?></td>
+                <td><?= $item['obj']->id_ruta ?></td>
+                <td><?= $item['obj']->cantidad ?></td>
+                <td><?= $item['obj']->fecha_venta ?></td>
+                <td><?= $item['obj']->id_clientes ?></td>
+                <td><?= $item['obj']->id_reportes ?></td>
+                <td><?= $item['obj']->id_ruta ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
 </body>
 </html>

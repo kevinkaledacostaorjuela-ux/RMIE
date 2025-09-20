@@ -6,7 +6,7 @@
 </head>
 <body>
     <h1>Crear Local</h1>
-    <form method="POST" action="">
+    <form method="POST" action="create.php">
         <label>Nombre:</label>
         <input type="text" name="nombre" required><br>
         <label>Dirección:</label>

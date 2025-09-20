@@ -21,17 +21,17 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="../views/categorias/index.php">Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/categorias/index.php">Gestión de Categorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../views/subcategorias/index.php">Subcategorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../views/productos/index.php">Productos</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Ventas</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Reportes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Alertas</a></li>
-                <li class="nav-item"><a class="nav-link text-white" href="../views/proveedores/index.php">Proveedores</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Usuarios</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Clientes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Locales</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Rutas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/ventas/index.php">Ventas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/reportes/index.php">Reportes</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/alertas/index.php">Alertas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/proveedores/index.php">Proveedores</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/usuarios/index.php">Usuarios</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/clientes/index.php">Clientes</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/locales/index.php">Locales</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../views/rutas/index.php">Rutas</a></li>
         </ul>
         <hr>
         <a href="../../logout.php" class="btn btn-danger btn-sm">Cerrar sesión</a>
@@ -43,12 +43,91 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Gestión de Productos</h5>
-                        <a href="#" class="btn btn-primary">Ir</a>
+                        <h5 class="card-title">Categorías</h5>
+                        <a href="../views/categorias/index.php" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
-            <!-- ...otros accesos rápidos... -->
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Subcategorías</h5>
+                        <a href="../views/subcategorias/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Productos</h5>
+                        <a href="../views/productos/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas</h5>
+                        <a href="../views/ventas/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Reportes</h5>
+                        <a href="../views/reportes/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Alertas</h5>
+                        <a href="../views/alertas/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Proveedores</h5>
+                        <a href="../views/proveedores/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Usuarios</h5>
+                        <a href="../views/usuarios/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Clientes</h5>
+                        <a href="../views/clientes/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Locales</h5>
+                        <a href="../views/locales/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Rutas</h5>
+                        <a href="../views/rutas/index.php" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="row mt-4">
             <div class="col">

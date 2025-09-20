@@ -5,11 +5,12 @@
 <html>
 <head>
     <title>Subcategorías</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <div class="categorias-container">
         <h1>Listado de Subcategorías</h1>
+        <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
         <a href="create.php" class="btn-categorias">Agregar Subcategoría</a>
         <table class="table table-striped table-bordered table-categorias">
         <tr>
@@ -20,19 +21,21 @@
             <th>Fecha de Creación</th>
             <th>Acciones</th>
         </tr>
-        <?php foreach ($subcategorias as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_subcategoria ?></td>
-            <td><?= $item['obj']->nombre ?></td>
-            <td><?= $item['obj']->descripcion ?></td>
-            <td><?= $item['categoria_nombre'] ?></td>
-            <td><?= $item['obj']->fecha_creacion ?></td>
-            <td>
-                <a href="edit.php?id=<?= $item['obj']->id_subcategoria ?>">Editar</a> |
-                <a href="delete.php?id=<?= $item['obj']->id_subcategoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
-            </td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+            <?php foreach ($subcategorias as $sub): ?>
+            <tr>
+                <td><?= $sub->id_subcategoria ?></td>
+                <td><?= $sub->nombre ?></td>
+                <td><?= $sub->descripcion ?></td>
+                <td><?= $sub->fecha_creacion ?></td>
+                <td><?= $sub->id_categoria ?></td>
+                <td>
+                    <a href="edit.php?id=<?= $sub->id_subcategoria ?>">Editar</a> |
+                    <a href="delete.php?id=<?= $sub->id_subcategoria ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
+                </td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
 </body>
 </html>

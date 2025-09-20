@@ -5,10 +5,11 @@
 <html>
 <head>
     <title>Rutas</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <h1>Listado de Rutas</h1>
+    <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
     <form method="GET" action="">
         <label>Filtrar por Reporte:</label>
         <select name="reporte">
@@ -39,16 +40,18 @@
             <th>Reporte</th>
             <th>Venta</th>
         </tr>
-        <?php foreach ($rutas as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_ruta ?></td>
-            <td><?= $item['obj']->direccion ?></td>
-            <td><?= $item['obj']->nombre_local ?></td>
-            <td><?= $item['obj']->nombre_cliente ?></td>
-            <td><?= $item['reporte_nombre'] ?></td>
-            <td><?= $item['venta_nombre'] ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($rutas) && is_array($rutas)): ?>
+            <?php foreach ($rutas as $item): ?>
+            <tr>
+                <td><?= $item['obj']->id_ruta ?></td>
+                <td><?= $item['obj']->direccion ?></td>
+                <td><?= $item['obj']->nombre_local ?></td>
+                <td><?= $item['obj']->nombre_cliente ?></td>
+                <td><?= $item['reporte_nombre'] ?></td>
+                <td><?= $item['venta_nombre'] ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
         </div>
 </body>

@@ -9,7 +9,7 @@
 </head>
 <body>
     <h1>Agregar Proveedor</h1>
-    <form method="POST" action="">
+    <form method="POST" action="create.php">
         <label>Nombre Distribuidor:</label>
         <input type="text" name="nombre_distribuidor" required><br>
         <label>Correo:</label>

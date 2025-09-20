@@ -25,8 +25,18 @@ class Category {
     public static function create($conn, $nombre, $descripcion) {
         $sql = "INSERT INTO categorias (nombre, descripcion, fecha_creacion) VALUES (?, ?, NOW())";
         $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            echo '<pre>Error al preparar el statement: ' . $conn->error . '</pre>';
+            return false;
+        }
         $stmt->bind_param("ss", $nombre, $descripcion);
-        return $stmt->execute();
+        $result = $stmt->execute();
+        if (!$result) {
+            echo '<pre>Error al ejecutar el statement: ' . $stmt->error . '</pre>';
+        } else {
+            echo '<pre>Statement ejecutado correctamente.</pre>';
+        }
+        return $result;
     }
 
     public static function getById($conn, $id_categoria) {

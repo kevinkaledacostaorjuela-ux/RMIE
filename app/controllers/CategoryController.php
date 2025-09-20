@@ -12,11 +12,21 @@ class CategoryController {
 	public function create() {
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 			global $conn;
-			$nombre = $_POST['nombre'];
-			$descripcion = $_POST['descripcion'];
-			Category::create($conn, $nombre, $descripcion);
-			header('Location: index.php');
-			exit();
+			echo '<pre>POST: ' . print_r($_POST, true) . '</pre>';
+			$nombre = $_POST['nombre'] ?? null;
+			$descripcion = $_POST['descripcion'] ?? null;
+			$result = Category::create($conn, $nombre, $descripcion);
+			if (!$result) {
+				if (isset($conn->error)) {
+					echo '<pre>Error SQL: ' . $conn->error . '</pre>';
+				} else {
+					echo '<pre>Error al guardar la categoría.</pre>';
+				}
+			} else {
+				echo '<pre>Categoría guardada correctamente.</pre>';
+				header('Location: index.php');
+				exit();
+			}
 		}
 		include __DIR__ . '/../views/categorias/create.php';
 	}

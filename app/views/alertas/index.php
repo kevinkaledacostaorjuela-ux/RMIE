@@ -5,10 +5,11 @@
 <html>
 <head>
     <title>Alertas</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <h1>Listado de Alertas</h1>
+    <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
     <form method="GET" action="">
         <label>Filtrar por Producto:</label>
         <select name="producto">
@@ -30,14 +31,16 @@
             <th>Cliente No Disponible</th>
             <th>ID Cliente</th>
         </tr>
-        <?php foreach ($alertas as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_alertas ?></td>
-            <td><?= $item['producto_nombre'] ?></td>
-            <td><?= $item['obj']->cliente_no_disponible ?></td>
-            <td><?= $item['obj']->id_clientes ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($alertas) && is_array($alertas)): ?>
+            <?php foreach ($alertas as $item): ?>
+            <tr>
+                <td><?= $item['obj']->id_alertas ?></td>
+                <td><?= $item['producto_nombre'] ?></td>
+                <td><?= $item['obj']->cliente_no_disponible ?></td>
+                <td><?= $item['obj']->id_clientes ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
         </div>
 </body>

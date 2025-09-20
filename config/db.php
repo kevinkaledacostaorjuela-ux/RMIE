@@ -1,16 +1,12 @@
 <?php
-// Configuración de conexión a la base de datos
+// Configuración de conexión a la base de datos usando mysqli
 $host = 'localhost';
 $db = 'rmie';
 $user = 'root';
 $pass = '';
-$options = [
-    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-];
-try {
-    $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass, $options);
-} catch (PDOException $e) {
-    die('Error de conexión: ' . $e->getMessage());
+
+$conn = new mysqli($host, $user, $pass, $db);
+if ($conn->connect_error) {
+    die('Error de conexión: ' . $conn->connect_error);
 }
 ?>

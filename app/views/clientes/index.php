@@ -5,10 +5,11 @@
 <html>
 <head>
     <title>Clientes</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <h1>Listado de Clientes</h1>
+    <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
     <form method="GET" action="">
         <label>Filtrar por Local:</label>
         <select name="local">
@@ -30,17 +31,19 @@
             <th>Estado</th>
             <th>Local</th>
         </tr>
-        <?php foreach ($clientes as $item): ?>
-        <tr>
-            <td><?= $item['obj']->id_clientes ?></td>
-            <td><?= $item['obj']->nombre ?></td>
-            <td><?= $item['obj']->descripcion ?></td>
-            <td><?= $item['obj']->cel_cliente ?></td>
-            <td><?= $item['obj']->correo ?></td>
-            <td><?= $item['obj']->estado ?></td>
-            <td><?= $item['local_nombre'] ?></td>
-        </tr>
-        <?php endforeach; ?>
+        <?php if (isset($clientes) && is_array($clientes)): ?>
+            <?php foreach ($clientes as $item): ?>
+            <tr>
+                <td><?= $item['obj']->id_clientes ?></td>
+                <td><?= $item['obj']->nombre ?></td>
+                <td><?= $item['obj']->descripcion ?></td>
+                <td><?= $item['obj']->cel_cliente ?></td>
+                <td><?= $item['obj']->correo ?></td>
+                <td><?= $item['obj']->estado ?></td>
+                <td><?= $item['local_nombre'] ?></td>
+            </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </table>
 </body>
 </html>

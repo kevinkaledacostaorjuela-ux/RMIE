@@ -1,5 +1,11 @@
 <?php
 class Report {
+    public static function create($conn, $nombre, $descripcion, $id_productos) {
+        $sql = "INSERT INTO reportes (nombre, descripcion, fecha, estado, id_productos) VALUES (?, ?, NOW(), 'activo', ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ssi", $nombre, $descripcion, $id_productos);
+        return $stmt->execute();
+    }
     public $id_reportes;
     public $nombre;
     public $descripcion;

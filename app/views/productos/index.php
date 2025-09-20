@@ -5,10 +5,11 @@
 <html>
 <head>
     <title>Productos</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <h1>Listado de Productos</h1>
+    <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
     <a href="create.php">Agregar Producto</a>
     <form method="GET" action="">
         <label>Filtrar por Categoría:</label>
@@ -28,29 +29,31 @@
         <label>Filtrar por Proveedor:</label>
         <select name="proveedor">
             <option value="">Todos</option>
-            <?php foreach ($proveedores as $prov): ?>
-                <option value="<?= $prov->id_proveedores ?>" <?= isset($_GET['proveedor']) && $_GET['proveedor'] == $prov->id_proveedores ? 'selected' : '' ?>><?= $prov->nombre_distribuidor ?></option>
-            <?php endforeach; ?>
-        </select>
-        <label>Filtrar por Usuario:</label>
-        <select name="usuario">
-            <option value="">Todos</option>
-            <?php foreach ($usuarios as $user): ?>
-                <option value="<?= $user->num_doc ?>" <?= isset($_GET['usuario']) && $_GET['usuario'] == $user->num_doc ? 'selected' : '' ?>><?= $user->nombres ?> <?= $user->apellidos ?></option>
-            <?php endforeach; ?>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
-    <br>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Nombre</th>
-            <th>Descripción</th>
-            <th>Fecha Entrada</th>
-            <th>Fecha Fabricación</th>
-            <th>Fecha Caducidad</th>
-            <th>Stock</th>
+            <?php if (isset($productos) && is_array($productos)): ?>
+                <?php foreach ($productos as $prod): ?>
+                <tr>
+                    <td><?= $prod->id_productos ?></td>
+                    <td><?= $prod->nombre ?></td>
+                    <td><?= $prod->descripcion ?></td>
+                    <td><?= $prod->fecha_entrada ?></td>
+                    <td><?= $prod->fecha_fabricacion ?></td>
+                    <td><?= $prod->fecha_caducidad ?></td>
+                    <td><?= $prod->stock ?></td>
+                    <td><?= $prod->precio_unitario ?></td>
+                    <td><?= $prod->precio_mayor ?></td>
+                    <td><?= $prod->valor_unitario ?></td>
+                    <td><?= $prod->marca ?></td>
+                    <td><?= $prod->categoria_nombre ?></td>
+                    <td><?= $prod->subcategoria_nombre ?></td>
+                    <td><?= $prod->proveedor_nombre ?></td>
+                    <td><?= $prod->usuario_nombre ?></td>
+                    <td>
+                        <a href="edit.php?id=<?= $prod->id_productos ?>">Editar</a> |
+                        <a href="delete.php?id=<?= $prod->id_productos ?>" onclick="return confirm('¿Seguro de eliminar?')">Eliminar</a>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
+            <?php endif; ?>
             <th>Precio Unitario</th>
             <th>Precio Mayor</th>
             <th>Valor Unitario</th>

@@ -5,11 +5,12 @@
 <html>
 <head>
     <title>Categorías</title>
-    <link rel="stylesheet" href="../../public/css/styles.css">
+    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>
     <div class="categorias-container">
         <h1>Listado de Categorías</h1>
+        <a href="../dashboard.php" class="btn-categorias">Volver al menú principal</a>
         <a href="create.php" class="btn-categorias">Agregar Categoría</a>
         <table class="table table-striped table-bordered table-categorias">
         <tr>
