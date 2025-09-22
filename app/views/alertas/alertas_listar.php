@@ -1,6 +1,7 @@
 <!-- Vista para listar alertas con filtro por producto -->
 <div class="container mt-4">
     <h2>Alertas</h2>
+    <a href="/RMIE/app/views/dashboard.php" class="btn btn-primary mb-3">Regresar al Dashboard</a>
     <form method="get" class="row g-3 mb-3">
         <input type="hidden" name="action" value="listar_alertas">
         <div class="col-md-6">

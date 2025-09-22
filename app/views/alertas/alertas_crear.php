@@ -24,7 +24,8 @@
                 <?php endforeach; ?>
             </select>
         </div>
-        <button type="submit" class="btn btn-success">Guardar</button>
-        <a href="?action=listar_alertas" class="btn btn-secondary">Cancelar</a>
+    <button type="submit" class="btn btn-success">Guardar</button>
+    <a href="?action=listar_alertas" class="btn btn-secondary">Cancelar</a>
+    <a href="/RMIE/app/views/dashboard.php" class="btn btn-primary">Regresar al Dashboard</a>
     </form>
 </div>

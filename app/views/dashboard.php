@@ -29,8 +29,8 @@ $rol = $_SESSION['rol'];
             <li class="nav-item"><a class="nav-link text-white" href="#">Ventas</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Reportes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Usuarios</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Clientes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Locales</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/ClienteController.php?action=listar">Clientes</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/LocalController.php?action=listar">Locales</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Rutas</a></li>
         </ul>
         <hr>
@@ -77,6 +77,22 @@ $rol = $_SESSION['rol'];
                     <div class="card-body">
                         <h5 class="card-title">Categorías</h5>
                         <a href="/RMIE/app/controllers/CategoriaController.php?action=list" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Clientes</h5>
+                        <a href="/RMIE/app/controllers/ClienteController.php?action=listar" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Locales</h5>
+                        <a href="/RMIE/app/controllers/LocalController.php?action=listar" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
