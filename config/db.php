@@ -2,8 +2,8 @@
 // Configuración de conexión a la base de datos
 $host = 'localhost';
 $db = 'rmie';
-$user = 'root';
-$pass = '';
+$user = 'admin';
+$pass = 'admin123';
 $options = [
     PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
