@@ -1,35 +1,27 @@
 <?php
 require_once '../config/db.php';
+require_once '../models/Categoria.php';
 
 $mensaje = '';
 $id = $_GET['id'] ?? null;
 
-// Si no hay ID, redirigir al listado
 if (!$id) {
-    header('Location: index.php');
+    header('Location: list.php');
     exit();
 }
 
-// Obtener la categoría actual
-$stmt = $pdo->prepare('SELECT * FROM categorias WHERE id = :id');
-$stmt->execute(['id' => $id]);
-$categoria = $stmt->fetch();
-
+$categoria = Categoria::find($pdo, $id);
 if (!$categoria) {
-    header('Location: index.php');
+    header('Location: list.php');
     exit();
 }
 
-// Procesar el formulario
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
-
     if (!empty($nombre)) {
-        $stmt = $pdo->prepare('UPDATE categorias SET nombre = :nombre WHERE id = :id');
-        if ($stmt->execute(['nombre' => $nombre, 'id' => $id])) {
-            $mensaje = 'Categoría actualizada correctamente.';
-            // Actualizar el nombre mostrado
-            $categoria['nombre'] = $nombre;
+        if (Categoria::update($pdo, $id, $nombre)) {
+            header('Location: list.php?msg=actualizada');
+            exit;
         } else {
             $mensaje = 'Error al actualizar la categoría.';
         }
@@ -55,6 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="nombre" id="nombre" value="<?php echo htmlspecialchars($categoria['nombre']); ?>" required>
         <button type="submit">Actualizar</button>
     </form>
-    <a href="index.php">Volver al listado</a>
+    <a href="list.php">Volver al listado</a>
 </body>
 </html>

@@ -1,0 +1,2 @@
+<?php
+// Listado de subcategorías

@@ -1,15 +1,15 @@
 <?php
 require_once '../config/db.php';
+require_once '../models/Categoria.php';
 
 $mensaje = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nombre = trim($_POST['nombre'] ?? '');
-
     if (!empty($nombre)) {
-        $stmt = $pdo->prepare('INSERT INTO categorias (nombre) VALUES (:nombre)');
-        if ($stmt->execute(['nombre' => $nombre])) {
-            $mensaje = 'Categoría creada correctamente.';
+        if (Categoria::create($pdo, $nombre)) {
+            header('Location: list.php?msg=creada');
+            exit;
         } else {
             $mensaje = 'Error al crear la categoría.';
         }
@@ -35,6 +35,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <input type="text" name="nombre" id="nombre" required>
         <button type="submit">Crear</button>
     </form>
-    <a href="index.php">Volver al listado</a>
+    <a href="list.php">Volver al listado</a>
 </body>
 </html>
