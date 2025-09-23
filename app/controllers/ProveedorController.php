@@ -32,11 +32,37 @@ switch ($action) {
         header('Location: ProveedorController.php?action=listar_proveedores');
         exit();
     case 'listar_proveedores':
-        // Aquí iría la lógica para listar proveedores (no implementada en este parche)
-        echo '<h2>Listado de Proveedores (en construcción)</h2>';
+        $filtroProducto = isset($_GET['producto']) ? $_GET['producto'] : '';
+        $filtroNombre = isset($_GET['nombre']) ? trim($_GET['nombre']) : '';
+        $filtroEstado = isset($_GET['estado']) ? trim($_GET['estado']) : '';
+        $productos = $productoModel->obtenerTodos();
+        $proveedores = $proveedorModel->obtenerTodos();
+        // Filtrar por producto
+        if ($filtroProducto) {
+            $proveedores = array_filter($proveedores, function($prov) use ($proveedorModel, $filtroProducto) {
+                $prods = $proveedorModel->obtenerProductosPorProveedor($prov['id_proveedores']);
+                foreach ($prods as $p) {
+                    if ($p['id_productos'] == $filtroProducto) return true;
+                }
+                return false;
+            });
+        }
+        // Filtrar por nombre
+        if ($filtroNombre) {
+            $proveedores = array_filter($proveedores, function($prov) use ($filtroNombre) {
+                return stripos($prov['nombre_distribuidor'], $filtroNombre) !== false;
+            });
+        }
+        // Filtrar por estado
+        if ($filtroEstado) {
+            $proveedores = array_filter($proveedores, function($prov) use ($filtroEstado) {
+                return stripos($prov['estado'], $filtroEstado) !== false;
+            });
+        }
+        include __DIR__ . '/../views/proveedores/proveedores_listar.php';
         break;
     default:
-        header('Location: ProveedorController.php?action=crear');
+        header('Location: ProveedorController.php?action=listar_proveedores');
         exit();
 }
 ?>
