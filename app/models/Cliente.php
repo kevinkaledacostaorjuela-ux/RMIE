@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/../../config/db.php';
+// No incluir la conexión aquí, se inyecta por el constructor
 
 class Cliente {
     private $pdo;

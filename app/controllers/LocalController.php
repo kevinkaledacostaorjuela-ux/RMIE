@@ -42,8 +42,8 @@ switch ($action) {
         $nombre = isset($_GET['nombre']) ? $_GET['nombre'] : '';
         $estado = isset($_GET['estado']) ? $_GET['estado'] : '';
         $locales = array_filter(Local::getAll(), function($local) use ($nombre, $estado) {
-            $nombreMatch = $nombre === '' || stripos($local['nombre'], $nombre) !== false;
-            $estadoMatch = $estado === '' || $local['estado'] === $estado;
+            $nombreMatch = $nombre === '' || (isset($local['nombre_local']) && stripos($local['nombre_local'], $nombre) !== false);
+            $estadoMatch = $estado === '' || (isset($local['estado']) && $local['estado'] === $estado);
             return $nombreMatch && $estadoMatch;
         });
         require_once __DIR__ . '/../views/locales/locales_listar.php';

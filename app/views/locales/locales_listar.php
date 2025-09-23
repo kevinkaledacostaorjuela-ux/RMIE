@@ -3,6 +3,7 @@
 ?>
 <h2>Lista de Locales</h2>
 <a href="/RMIE/app/controllers/LocalController.php?action=crear_local">Crear nuevo local</a>
+<br><a href="/RMIE/app/views/dashboard.php" style="margin-top:10px;display:inline-block;">Regresar al Dashboard</a>
 
 <form method="get" action="/RMIE/app/controllers/LocalController.php" style="margin: 20px 0;">
     <input type="hidden" name="action" value="filtrar_locales">

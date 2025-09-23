@@ -1,3 +1,4 @@
+
 <?php
 // app/views/dashboard.php
 session_start();
@@ -26,9 +27,9 @@ $rol = $_SESSION['rol'];
             <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/CategoriaController.php?action=list">Categorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/SubcategoriaController.php?action=list">Subcategorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/ProductoController.php?action=list">Productos</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Ventas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/VentaController.php?action=listar">Ventas</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Reportes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="#">Usuarios</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/UserController.php?action=listar">Usuarios</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/ClienteController.php?action=listar">Clientes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="/RMIE/app/controllers/LocalController.php?action=listar">Locales</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="#">Rutas</a></li>
@@ -39,7 +40,7 @@ $rol = $_SESSION['rol'];
     <!-- Contenido principal -->
     <main class="flex-fill p-4">
         <h2>Bienvenido, <?php echo htmlspecialchars($_SESSION['user']); ?> (<?php echo $rol; ?>)</h2>
-        <div class="row mt-4">
+    <div class="row mt-4">
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
@@ -93,6 +94,22 @@ $rol = $_SESSION['rol'];
                     <div class="card-body">
                         <h5 class="card-title">Locales</h5>
                         <a href="/RMIE/app/controllers/LocalController.php?action=listar" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Ventas</h5>
+                        <a href="/RMIE/app/controllers/VentaController.php?action=listar" class="btn btn-primary">Ir</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-3">
+                <div class="card text-center">
+                    <div class="card-body">
+                        <h5 class="card-title">Usuarios</h5>
+                        <a href="/RMIE/app/controllers/UserController.php?action=listar" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

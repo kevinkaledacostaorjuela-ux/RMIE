@@ -22,3 +22,4 @@
     <button type="submit">Actualizar</button>
 </form>
 <a href="/RMIE/app/controllers/LocalController.php?action=listar_locales">Volver a la lista</a>
+<br><a href="/RMIE/app/views/dashboard.php" style="margin-top:10px;display:inline-block;">Regresar al Dashboard</a>
