@@ -14,6 +14,7 @@ $rol = $_SESSION['rol'];
     <title>Dashboard RMIE</title>
     <link href="../../public/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../public/css/styles.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
 <div class="d-flex">
@@ -30,7 +31,7 @@ $rol = $_SESSION['rol'];
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/ProviderController.php?accion=index">Proveedores</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/UserController.php?accion=index">Usuarios</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/ClientController.php?accion=index">Clientes</a></li>
-            <li class="nav-item"><a class="nav-link text-white" href="../controllers/LocalController.php?accion=index">Locales</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/LocalController.php?action=index"><i class="fas fa-building"></i> Locales</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/RouteController.php?accion=index">Rutas</a></li>
         </ul>
         <hr>
@@ -115,8 +116,12 @@ $rol = $_SESSION['rol'];
             <div class="col-md-4 mb-3">
                 <div class="card text-center">
                     <div class="card-body">
+                        <i class="fas fa-building fa-2x text-primary mb-2"></i>
                         <h5 class="card-title">Locales</h5>
-                        <a href="../controllers/LocalController.php?accion=index" class="btn btn-primary">Ir</a>
+                        <p class="card-text">Gestión de sucursales y puntos de venta</p>
+                        <a href="../controllers/LocalController.php?action=index" class="btn btn-primary">
+                            <i class="fas fa-store"></i> Gestionar Locales
+                        </a>
                     </div>
                 </div>
             </div>
