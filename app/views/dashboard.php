@@ -21,7 +21,7 @@ $rol = $_SESSION['rol'];
     <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link text-white" href="../controllers/CategoryController.php?accion=index">Gestión de Categorías</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/CategoryController.php?accion=index">Categorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/SubcategoryController.php?accion=index">Subcategorías</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/ProductController.php?accion=index">Productos</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/SaleController.php?accion=index">Ventas</a></li>
@@ -52,7 +52,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Subcategorías</h5>
-                        <a href="../views/subcategorias/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/SubcategoryController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -60,7 +60,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Productos</h5>
-                        <a href="../views/productos/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/ProductController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -92,7 +92,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Proveedores</h5>
-                        <a href="../views/proveedores/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/ProviderController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Usuarios</h5>
-                        <a href="../views/usuarios/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/UserController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -116,7 +116,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Locales</h5>
-                        <a href="../views/locales/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/LocalController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

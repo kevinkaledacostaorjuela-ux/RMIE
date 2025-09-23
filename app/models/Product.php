@@ -5,7 +5,7 @@ class Product {
         $result = $conn->query($sql);
         $productos = [];
         while ($row = $result->fetch_assoc()) {
-            $productos[] = new Product($row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], $row['id_categoria']);
+            $productos[] = new Product($row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], $row['id_categoria'], $row['id_proveedores'] ?? null, $row['num_doc'] ?? null);
         }
         return $productos;
     }
@@ -22,8 +22,10 @@ class Product {
     public $marca;
     public $id_subcategoria;
     public $id_categoria;
+    public $id_proveedores;
+    public $num_doc;
 
-    public function __construct($id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria) {
+    public function __construct($id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores = null, $num_doc = null) {
         $this->id_productos = $id_productos;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
@@ -37,6 +39,8 @@ class Product {
         $this->marca = $marca;
         $this->id_subcategoria = $id_subcategoria;
         $this->id_categoria = $id_categoria;
+        $this->id_proveedores = $id_proveedores;
+        $this->num_doc = $num_doc;
     }
 
     public static function getFiltered($conn, $categoria = '', $subcategoria = '', $proveedor = '', $usuario = '') {
@@ -86,10 +90,10 @@ class Product {
         return $productos;
     }
 
-    public static function create($conn, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria) {
-        $sql = "INSERT INTO productos (nombre, descripcion, fecha_entrada, fecha_fabricacion, fecha_caducidad, stock, precio_unitario, precio_por_mayor, valor_unitario, marca, id_subcategoria, id_categoria) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    public static function create($conn, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc) {
+        $sql = "INSERT INTO productos (nombre, descripcion, fecha_entrada, fecha_fabricacion, fecha_caducidad, stock, precio_unitario, precio_por_mayor, valor_unitario, marca, id_subcategoria, id_categoria, id_proveedores, num_doc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssssii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria);
+        $stmt->bind_param("ssssssssssiiii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
         return $stmt->execute();
     }
 
@@ -100,15 +104,15 @@ class Product {
         $stmt->execute();
         $result = $stmt->get_result();
         if ($row = $result->fetch_assoc()) {
-            return new Product($row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], $row['id_categoria']);
+            return new Product($row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], $row['id_categoria'], $row['id_proveedores'] ?? null, $row['num_doc'] ?? null);
         }
         return null;
     }
 
-    public static function update($conn, $id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria) {
-        $sql = "UPDATE productos SET nombre = ?, descripcion = ?, fecha_entrada = ?, fecha_fabricacion = ?, fecha_caducidad = ?, stock = ?, precio_unitario = ?, precio_por_mayor = ?, valor_unitario = ?, marca = ?, id_subcategoria = ?, id_categoria = ? WHERE id_productos = ?";
+    public static function update($conn, $id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc) {
+        $sql = "UPDATE productos SET nombre = ?, descripcion = ?, fecha_entrada = ?, fecha_fabricacion = ?, fecha_caducidad = ?, stock = ?, precio_unitario = ?, precio_por_mayor = ?, valor_unitario = ?, marca = ?, id_subcategoria = ?, id_categoria = ?, id_proveedores = ?, num_doc = ? WHERE id_productos = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssssiii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_productos);
+        $stmt->bind_param("ssssssssssiiiii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc, $id_productos);
         return $stmt->execute();
     }
 

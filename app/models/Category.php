@@ -16,6 +16,17 @@ class Category {
         $sql = "SELECT * FROM categorias";
         $result = $conn->query($sql);
         $categorias = [];
+        
+        if ($result === false) {
+            echo '<pre>Error en la consulta: ' . $conn->error . '</pre>';
+            return $categorias; // Devolver array vacío en caso de error
+        }
+        
+        if ($result->num_rows === 0) {
+            echo '<pre>No hay categorías en la base de datos.</pre>';
+            return $categorias; // Devolver array vacío si no hay registros
+        }
+        
         while ($row = $result->fetch_assoc()) {
             $categorias[] = new Category($row['id_categoria'], $row['nombre'], $row['descripcion'], $row['fecha_creacion'] ?? null);
         }

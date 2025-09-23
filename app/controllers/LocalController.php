@@ -3,10 +3,278 @@ require_once __DIR__ . '/../models/Local.php';
 require_once __DIR__ . '/../../config/db.php';
 
 class LocalController {
+    
+    public function handleRequest() {
+        session_start();
+        
+        if (!isset($_SESSION['usuario_id'])) {
+            header('Location: /RMIE/index.php');
+            exit();
+        }
+        
+        $action = $_GET['action'] ?? 'index';
+        
+        switch ($action) {
+            case 'index':
+                $this->index();
+                break;
+            case 'create':
+                $this->create();
+                break;
+            case 'store':
+                $this->store();
+                break;
+            case 'edit':
+                $this->edit();
+                break;
+            case 'update':
+                $this->update();
+                break;
+            case 'delete':
+                $this->delete();
+                break;
+            case 'destroy':
+                $this->destroy();
+                break;
+            default:
+                $this->index();
+                break;
+        }
+    }
+    
     public function index() {
         global $conn;
-        $locales = Local::getAll($conn);
+        
+        // Filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'localidad' => $_GET['localidad'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'barrio' => $_GET['barrio'] ?? ''
+        ];
+        
+        // Obtener locales con filtros
+        $locales = Local::getAll($conn, $filtros);
+        
+        // Obtener estadísticas
+        $stats = Local::getStats($conn);
+        
+        // Obtener estadísticas por local para gráficos
+        $localStats = Local::getLocalStats($conn);
+        
         include __DIR__ . '/../views/locales/index.php';
     }
+    
+    public function create() {
+        include __DIR__ . '/../views/locales/create.php';
+    }
+    
+    public function store() {
+        global $conn;
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [
+                'direccion' => trim($_POST['direccion'] ?? ''),
+                'nombre_local' => trim($_POST['nombre_local'] ?? ''),
+                'cel_local' => trim($_POST['cel_local'] ?? ''),
+                'estado' => trim($_POST['estado'] ?? ''),
+                'localidad' => trim($_POST['localidad'] ?? ''),
+                'barrio' => trim($_POST['barrio'] ?? '')
+            ];
+            
+            // Validaciones
+            $errors = [];
+            
+            if (empty($data['nombre_local'])) {
+                $errors[] = "El nombre del local es obligatorio";
+            }
+            
+            if (empty($data['direccion'])) {
+                $errors[] = "La dirección es obligatoria";
+            }
+            
+            if (empty($data['cel_local'])) {
+                $errors[] = "El celular es obligatorio";
+            }
+            
+            if (empty($data['localidad'])) {
+                $errors[] = "La localidad es obligatoria";
+            }
+            
+            if (empty($data['barrio'])) {
+                $errors[] = "El barrio es obligatorio";
+            }
+            
+            // Verificar si ya existe un local con el mismo nombre
+            if (Local::getByName($conn, $data['nombre_local'])) {
+                $errors[] = "Ya existe un local con ese nombre";
+            }
+            
+            if (!empty($errors)) {
+                $_SESSION['error'] = implode(', ', $errors);
+                header('Location: /RMIE/app/controllers/LocalController.php?action=create');
+                exit();
+            }
+            
+            // Crear local
+            if (Local::create($conn, $data)) {
+                $_SESSION['success'] = "Local creado exitosamente";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            } else {
+                $_SESSION['error'] = "Error al crear el local";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=create');
+            }
+            exit();
+        }
+    }
+    
+    public function edit() {
+        global $conn;
+        
+        $id = $_GET['id'] ?? null;
+        
+        if (!$id) {
+            $_SESSION['error'] = "ID de local no válido";
+            header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            exit();
+        }
+        
+        $local = Local::getById($conn, $id);
+        
+        if (!$local) {
+            $_SESSION['error'] = "Local no encontrado";
+            header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            exit();
+        }
+        
+        include __DIR__ . '/../views/locales/edit.php';
+    }
+    
+    public function update() {
+        global $conn;
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? null;
+            
+            if (!$id) {
+                $_SESSION['error'] = "ID de local no válido";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+                exit();
+            }
+            
+            $data = [
+                'direccion' => trim($_POST['direccion'] ?? ''),
+                'nombre_local' => trim($_POST['nombre_local'] ?? ''),
+                'cel_local' => trim($_POST['cel_local'] ?? ''),
+                'estado' => trim($_POST['estado'] ?? ''),
+                'localidad' => trim($_POST['localidad'] ?? ''),
+                'barrio' => trim($_POST['barrio'] ?? '')
+            ];
+            
+            // Validaciones
+            $errors = [];
+            
+            if (empty($data['nombre_local'])) {
+                $errors[] = "El nombre del local es obligatorio";
+            }
+            
+            if (empty($data['direccion'])) {
+                $errors[] = "La dirección es obligatoria";
+            }
+            
+            if (empty($data['cel_local'])) {
+                $errors[] = "El celular es obligatorio";
+            }
+            
+            if (empty($data['localidad'])) {
+                $errors[] = "La localidad es obligatoria";
+            }
+            
+            if (empty($data['barrio'])) {
+                $errors[] = "El barrio es obligatorio";
+            }
+            
+            // Verificar si ya existe otro local con el mismo nombre
+            $existingLocal = Local::getByName($conn, $data['nombre_local']);
+            if ($existingLocal && $existingLocal->id_locales != $id) {
+                $errors[] = "Ya existe otro local con ese nombre";
+            }
+            
+            if (!empty($errors)) {
+                $_SESSION['error'] = implode(', ', $errors);
+                header('Location: /RMIE/app/controllers/LocalController.php?action=edit&id=' . $id);
+                exit();
+            }
+            
+            // Actualizar local
+            if (Local::update($conn, $id, $data)) {
+                $_SESSION['success'] = "Local actualizado exitosamente";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            } else {
+                $_SESSION['error'] = "Error al actualizar el local";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=edit&id=' . $id);
+            }
+            exit();
+        }
+    }
+    
+    public function delete() {
+        global $conn;
+        
+        $id = $_GET['id'] ?? null;
+        
+        if (!$id) {
+            $_SESSION['error'] = "ID de local no válido";
+            header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            exit();
+        }
+        
+        $local = Local::getById($conn, $id);
+        
+        if (!$local) {
+            $_SESSION['error'] = "Local no encontrado";
+            header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            exit();
+        }
+        
+        include __DIR__ . '/../views/locales/delete.php';
+    }
+    
+    public function destroy() {
+        global $conn;
+        
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $id = $_POST['id'] ?? null;
+            
+            if (!$id) {
+                $_SESSION['error'] = "ID de local no válido";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+                exit();
+            }
+            
+            // Verificar si el local tiene relaciones (clientes, productos, etc.)
+            $canDelete = Local::canDelete($conn, $id);
+            
+            if (!$canDelete) {
+                $_SESSION['error'] = "No se puede eliminar el local porque tiene registros asociados (clientes, productos, etc.)";
+                header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+                exit();
+            }
+            
+            // Eliminar local
+            if (Local::delete($conn, $id)) {
+                $_SESSION['success'] = "Local eliminado exitosamente";
+            } else {
+                $_SESSION['error'] = "Error al eliminar el local";
+            }
+            
+            header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+            exit();
+        }
+    }
 }
+
+// Manejar la solicitud
+$controller = new LocalController();
+$controller->handleRequest();
 ?>
