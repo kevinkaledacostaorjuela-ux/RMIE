@@ -187,19 +187,6 @@ class Local {
         if ($row['count'] > 0) {
             return false;
         }
-        
-        // Verificar si hay ventas asociadas a este local
-        $sql = "SELECT COUNT(*) as count FROM ventas WHERE id_locales = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        
-        if ($row['count'] > 0) {
-            return false;
-        }
-        
         return true;
     }
     
@@ -237,45 +224,19 @@ class Local {
         return $stats;
     }
     
-    public static function getLocalStats($conn) {
-        $stats = [];
-        
-        // Clientes por local
-        $sql = "SELECT l.nombre_local, COUNT(c.id_clientes) as clientes 
-                FROM locales l 
-                LEFT JOIN clientes c ON l.id_locales = c.id_locales 
-                GROUP BY l.id_locales, l.nombre_local 
-                ORDER BY clientes DESC";
-        $result = $conn->query($sql);
-        $stats['clientes_por_local'] = [];
-        while ($row = $result->fetch_assoc()) {
-            $stats['clientes_por_local'][] = $row;
+    public static function getLocalStats($conn, $id) {
+        $stats = [
+            'clientes' => 0
+        ];
+        $sql = "SELECT COUNT(*) as clientes FROM clientes WHERE id_locales = ?";
+        if ($stmt = $conn->prepare($sql)) {
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($row = $result->fetch_assoc()) {
+                $stats['clientes'] = $row['clientes'];
+            }
         }
-        
-        // Productos por local
-        $sql = "SELECT l.nombre_local, COUNT(p.id_productos) as productos 
-                FROM locales l 
-                LEFT JOIN productos p ON l.id_locales = p.id_locales 
-                GROUP BY l.id_locales, l.nombre_local 
-                ORDER BY productos DESC";
-        $result = $conn->query($sql);
-        $stats['productos_por_local'] = [];
-        while ($row = $result->fetch_assoc()) {
-            $stats['productos_por_local'][] = $row;
-        }
-        
-        // Ventas por local
-        $sql = "SELECT l.nombre_local, COUNT(v.id_ventas) as ventas, SUM(v.total) as total_ventas
-                FROM locales l 
-                LEFT JOIN ventas v ON l.id_locales = v.id_locales 
-                GROUP BY l.id_locales, l.nombre_local 
-                ORDER BY total_ventas DESC";
-        $result = $conn->query($sql);
-        $stats['ventas_por_local'] = [];
-        while ($row = $result->fetch_assoc()) {
-            $stats['ventas_por_local'][] = $row;
-        }
-        
         return $stats;
     }
 }

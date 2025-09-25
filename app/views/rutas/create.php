@@ -1,26 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Ruta</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
+    <link rel="stylesheet" href="/public/css/styles.css">
 </head>
 <body>
-    <div class="categorias-container">
-        <h1>Crear Ruta</h1>
-    <form method="POST" action="create.php">
-            <label>Dirección:</label>
-            <input type="text" name="direccion" required><br>
-            <label>Local:</label>
-            <input type="text" name="id_locales" required><br>
-            <label>Cliente:</label>
-            <input type="text" name="id_clientes" required><br>
-            <label>Reporte:</label>
-            <input type="text" name="id_reportes" required><br>
-            <label>Venta:</label>
-            <input type="text" name="id_ventas" required><br>
-            <button type="submit" class="btn-categorias">Guardar</button>
-        </form>
-        <a href="index.php" class="btn-categorias">Volver al listado</a>
-    </div>
+    <h1>Crear Nueva Ruta</h1>
+    <form action="" method="POST">
+        <label for="direccion">Dirección:</label>
+        <input type="text" name="direccion" id="direccion" required>
+        <br>
+        <label for="nombre_local">Nombre Local:</label>
+        <input type="text" name="nombre_local" id="nombre_local" required>
+        <br>
+        <label for="nombre_cliente">Nombre Cliente:</label>
+        <input type="text" name="nombre_cliente" id="nombre_cliente" required>
+        <br>
+        <label for="id_clientes">ID Cliente:</label>
+        <input type="number" name="id_clientes" id="id_clientes" required>
+        <br>
+        <label for="id_reportes">ID Reporte:</label>
+        <input type="number" name="id_reportes" id="id_reportes" required>
+        <br>
+        <label for="id_ventas">ID Venta:</label>
+        <input type="number" name="id_ventas" id="id_ventas" required>
+        <br>
+        <button type="submit">Crear</button>
+    </form>
 </body>
 </html>

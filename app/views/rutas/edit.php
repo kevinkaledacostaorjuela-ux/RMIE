@@ -1,26 +1,33 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Ruta</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
+    <link rel="stylesheet" href="/public/css/styles.css">
 </head>
 <body>
-    <div class="categorias-container">
-        <h1>Editar Ruta</h1>
-        <form method="POST" action="">
-            <label>Dirección:</label>
-            <input type="text" name="direccion" value="<?= $ruta->direccion ?>" required><br>
-            <label>Local:</label>
-            <input type="text" name="id_locales" value="<?= $ruta->id_locales ?>" required><br>
-            <label>Cliente:</label>
-            <input type="text" name="id_clientes" value="<?= $ruta->id_clientes ?>" required><br>
-            <label>Reporte:</label>
-            <input type="text" name="id_reportes" value="<?= $ruta->id_reportes ?>" required><br>
-            <label>Venta:</label>
-            <input type="text" name="id_ventas" value="<?= $ruta->id_ventas ?>" required><br>
-            <button type="submit" class="btn-categorias">Actualizar</button>
-        </form>
-        <a href="index.php" class="btn-categorias">Volver al listado</a>
-    </div>
+    <h1>Editar Ruta</h1>
+    <form action="" method="POST">
+        <label for="direccion">Dirección:</label>
+        <input type="text" name="direccion" id="direccion" value="<?= $route['direccion'] ?>" required>
+        <br>
+        <label for="nombre_local">Nombre Local:</label>
+        <input type="text" name="nombre_local" id="nombre_local" value="<?= $route['nombre_local'] ?>" required>
+        <br>
+        <label for="nombre_cliente">Nombre Cliente:</label>
+        <input type="text" name="nombre_cliente" id="nombre_cliente" value="<?= $route['nombre_cliente'] ?>" required>
+        <br>
+        <label for="id_clientes">ID Cliente:</label>
+        <input type="number" name="id_clientes" id="id_clientes" value="<?= $route['id_clientes'] ?>" required>
+        <br>
+        <label for="id_reportes">ID Reporte:</label>
+        <input type="number" name="id_reportes" id="id_reportes" value="<?= $route['id_reportes'] ?>" required>
+        <br>
+        <label for="id_ventas">ID Venta:</label>
+        <input type="number" name="id_ventas" id="id_ventas" value="<?= $route['id_ventas'] ?>" required>
+        <br>
+        <button type="submit">Actualizar</button>
+    </form>
 </body>
 </html>

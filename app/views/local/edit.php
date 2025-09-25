@@ -1,11 +1,14 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['user'])) {
     header('Location: ../../../index.php');
     exit();
 }
 
-require_once '../../models/Local.php';
+require_once __DIR__ . '/../../models/Local.php';
+require_once __DIR__ . '/../../../config/db.php';
 
 $id = $_GET['id'] ?? 0;
 $errors = [];
@@ -15,8 +18,6 @@ if (!$id) {
     header('Location: ../../controllers/LocalController.php?action=index');
     exit();
 }
-
-require_once '../../config/db.php';
 
 try {
     $local = Local::getById($conn, $id);

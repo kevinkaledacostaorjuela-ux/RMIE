@@ -1,11 +1,66 @@
 <?php
-session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
+if (session_status() === PHP_SESSION_NONE) session_start();
+require_once __DIR__ . '/../../../config/db.php';
+require_once __DIR__ . '/../../models/Local.php';
+
+$id = $_GET['id'] ?? 0;
+$errors = [];
+$success = '';
+
+if (!$id) {
+    header('Location: /RMIE/app/controllers/LocalController.php?action=index');
     exit();
 }
 
-require_once '../../models/Local.php';
+try {
+    $local = Local::getById($conn, $id);
+
+    if (!$local) {
+        header('Location: /RMIE/app/controllers/LocalController.php?action=index');
+        exit();
+    }
+
+    // Solo verificar clientes asociados
+    $canDelete = true;
+    $sql = "SELECT COUNT(*) as count FROM clientes WHERE id_locales = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if ($row['count'] > 0) {
+        $canDelete = false;
+    }
+} catch (Exception $e) {
+    $errors[] = 'Error al cargar el local: ' . $e->getMessage();
+    $local = null;
+    $canDelete = false;
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_eliminar'])) {
+    if ($canDelete) {
+        try {
+            $result = Local::delete($conn, $id);
+            if ($result) {
+                $success = 'Local eliminado exitosamente';
+                echo "<script>setTimeout(function(){ window.location.href = '/RMIE/app/controllers/LocalController.php?action=index'; }, 2000);</script>";
+            } else {
+                $errors[] = 'Error al eliminar el local';
+            }
+        } catch (Exception $e) {
+            $errors[] = 'Error: ' . $e->getMessage();
+        }
+    } else {
+        $errors[] = 'No se puede eliminar este local porque tiene clientes asociados.';
+    }
+}
+?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+require_once __DIR__ . '/../../models/Local.php';
+require_once __DIR__ . '/../../../config/db.php';
 
 $id = $_GET['id'] ?? 0;
 $errors = [];
@@ -15,8 +70,6 @@ if (!$id) {
     header('Location: ../../controllers/LocalController.php?action=index');
     exit();
 }
-
-require_once '../../config/db.php';
 
 try {
     $local = Local::getById($conn, $id);
@@ -51,15 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_eliminar'])
                 $success = 'Local eliminado exitosamente';
                 // Redireccionar después de 2 segundos
                 echo "<script>setTimeout(function(){ window.location.href = '../../controllers/LocalController.php?action=index'; }, 2000);</script>";
-            } else {
-                $errors[] = 'Error al eliminar el local';
-            }
-        } catch (Exception $e) {
-            $errors[] = 'Error: ' . $e->getMessage();
-        }
-    } else {
-        $errors[] = 'No se puede eliminar este local porque tiene registros asociados';
-    }
+            } 
 }
 
 // Obtener estadísticas del local
@@ -322,32 +367,6 @@ try {
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>Cargando Confirmación...</h3>
-            <p>Verificando dependencias</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="delete-container">
-            <div class="warning-icon">
-                <i class="fas fa-exclamation-triangle"></i>
-            </div>
-
-            <h1 class="page-title">
-                Eliminar Local #<?php echo $local['id']; ?>
-            </h1>
-
-            <?php if ($success): ?>
-                <div class="alert alert-modern alert-success-modern">
-                    <i class="fas fa-check-circle"></i> <?php echo $success; ?>
-                    <br><small>Redirigiendo en unos segundos...</small>
-                </div>
-            <?php endif; ?>
-
             <?php if (!empty($errors)): ?>
                 <div class="alert alert-modern alert-danger-modern">
                     <i class="fas fa-exclamation-circle"></i>
@@ -401,123 +420,10 @@ try {
                     </span>
                     <span class="local-value"><?php echo ucfirst($local['estado']); ?></span>
                 </div>
-                
-                <?php if (!empty($local['descripcion'])): ?>
-                <div class="local-detail">
-                    <span class="local-label">
-                        <i class="fas fa-align-left"></i> Descripción:
-                    </span>
-                    <span class="local-value"><?php echo htmlspecialchars($local['descripcion']); ?></span>
-                </div>
-                <?php endif; ?>
-            </div>
-
-            <!-- Estadísticas -->
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $localStats['productos'] ?? 0; ?></div>
-                    <div class="stat-label">Productos</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $localStats['ventas'] ?? 0; ?></div>
-                    <div class="stat-label">Ventas</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number"><?php echo $localStats['clientes'] ?? 0; ?></div>
-                    <div class="stat-label">Clientes</div>
-                </div>
-            </div>
-
-            <?php if (!$canDelete): ?>
-                <!-- Sección de dependencias -->
-                <div class="dependencies-section">
-                    <div class="dependencies-title">
-                        <i class="fas fa-link"></i> Este local tiene registros asociados
-                    </div>
-                    <div class="dependency-item">
-                        <i class="fas fa-box"></i> Productos registrados en este local
-                    </div>
-                    <div class="dependency-item">
-                        <i class="fas fa-shopping-cart"></i> Ventas realizadas en este local
-                    </div>
-                    <div class="dependency-item">
-                        <i class="fas fa-users"></i> Clientes asignados a este local
-                    </div>
-                </div>
-
-                <div class="alert alert-modern alert-warning-modern">
-                    <i class="fas fa-info-circle"></i>
-                    <strong>No se puede eliminar:</strong> Este local tiene información asociada. 
-                    Elimine primero todos los registros relacionados o cambie el estado a "Inactivo".
-                </div>
-            <?php else: ?>
-                <!-- Sección de confirmación -->
-                <div class="confirmation-section">
-                    <div class="confirmation-text">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        ¿Está completamente seguro de que desea eliminar este local?
-                    </div>
-                    <div class="text-center text-white">
-                        <strong>Esta acción no se puede deshacer</strong>
-                    </div>
-                </div>
-            <?php endif; ?>
-
-            <!-- Botones de acción -->
-            <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                <a href="../../controllers/LocalController.php?action=index" 
-                   class="btn btn-modern btn-secondary-modern me-md-2">
-                    <i class="fas fa-arrow-left"></i> Volver
-                </a>
-                
-                <?php if ($canDelete && !$success): ?>
-                    <form method="POST" style="display: inline;" id="deleteForm">
-                        <button type="button" 
-                                class="btn btn-modern btn-danger-modern"
-                                onclick="showConfirmation()">
-                            <i class="fas fa-trash"></i> Eliminar Local
-                        </button>
-                        <input type="hidden" name="confirmar_eliminar" value="1">
-                    </form>
-                <?php else: ?>
-                    <a href="../../controllers/LocalController.php?action=edit&id=<?php echo $local['id']; ?>" 
-                       class="btn btn-modern btn-secondary-modern">
-                        <i class="fas fa-edit"></i> Editar Local
-                    </a>
-                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Modal de confirmación -->
-    <div class="modal fade" id="confirmModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.2);">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title text-white">
-                        <i class="fas fa-exclamation-triangle text-danger"></i>
-                        Confirmación Final
-                    </h5>
-                </div>
-                <div class="modal-body text-center">
-                    <div class="text-white mb-3">
-                        <i class="fas fa-trash-alt fa-3x text-danger mb-3"></i>
-                        <h4>¿Confirma la eliminación?</h4>
-                        <p>Esta acción eliminará permanentemente el local<br>
-                        <strong>"<?php echo htmlspecialchars($local['nombre']); ?>"</strong></p>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 justify-content-center">
-                    <button type="button" class="btn btn-modern btn-secondary-modern" data-bs-dismiss="modal">
-                        <i class="fas fa-times"></i> Cancelar
-                    </button>
-                    <button type="button" class="btn btn-modern btn-danger-modern" onclick="confirmDelete()">
-                        <i class="fas fa-check"></i> Sí, Eliminar
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>

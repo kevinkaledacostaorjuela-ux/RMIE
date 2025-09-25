@@ -19,7 +19,7 @@ $rol = $_SESSION['rol'];
 <body>
 <div class="d-flex">
     <!-- Menú lateral -->
-    <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;">
+    <nav class="bg-dark text-white p-3" style="min-width:220px;min-height:100vh;"
         <h4>Gestiones</h4>
         <ul class="nav flex-column">
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/CategoryController.php?accion=index">Categorías</a></li>
@@ -33,6 +33,7 @@ $rol = $_SESSION['rol'];
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/ClientController.php?accion=index">Clientes</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/LocalController.php?action=index"><i class="fas fa-building"></i> Locales</a></li>
             <li class="nav-item"><a class="nav-link text-white" href="../controllers/RouteController.php?accion=index">Rutas</a></li>
+            <li class="nav-item"><a class="nav-link text-white" href="../controllers/AlertController.php">Gestión de Alertas</a></li>
         </ul>
         <hr>
         <a href="../../logout.php" class="btn btn-danger btn-sm">Cerrar sesión</a>
@@ -85,7 +86,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Alertas</h5>
-                        <a href="../views/alertas/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/AlertController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

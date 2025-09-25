@@ -70,10 +70,22 @@ class Category {
     }
 
     public static function delete($conn, $id_categoria) {
+        // Eliminar productos asociados a la categoría
+        $sqlProductos = "DELETE FROM productos WHERE id_categoria = ?";
+        $stmtProductos = $conn->prepare($sqlProductos);
+        $stmtProductos->bind_param("i", $id_categoria);
+        $stmtProductos->execute();
+
+        // Ahora eliminar la categoría
         $sql = "DELETE FROM categorias WHERE id_categoria = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_categoria);
-        return $stmt->execute();
+        try {
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            // Retornar el mensaje de error para que el controlador lo maneje
+            return $e;
+        }
     }
 }
 ?>

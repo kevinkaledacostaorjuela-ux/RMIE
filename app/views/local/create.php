@@ -1,5 +1,5 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: ../../../index.php');
     exit();
@@ -13,12 +13,14 @@ $local = [
     'cel_local' => '',
     'localidad' => '',
     'barrio' => '',
-    'estado' => 'activo'
+    'estado' => 'activo',
+    'descripcion' => ''
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    global $conn;
     require_once '../../config/db.php';
-    require_once '../../models/Local.php';
+    require_once __DIR__ . '/../../../app/models/Local.php';
     
     $local = [
         'nombre_local' => trim($_POST['nombre'] ?? ''),
@@ -26,7 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         'cel_local' => trim($_POST['telefono'] ?? ''),
         'localidad' => $_POST['localidad'] ?? '',
         'barrio' => $_POST['barrio'] ?? '',
-        'estado' => $_POST['estado'] ?? 'activo'
+        'estado' => $_POST['estado'] ?? 'activo',
+        'descripcion' => $_POST['descripcion'] ?? ''
     ];
     
     // Validaciones
@@ -51,7 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'cel_local' => '',
                     'localidad' => '',
                     'barrio' => '',
-                    'estado' => 'activo'
+                    'estado' => 'activo',
+                    'descripcion' => ''
                 ];
             } else {
                 $errors[] = 'Error al crear el local';

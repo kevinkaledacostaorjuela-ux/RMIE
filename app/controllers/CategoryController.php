@@ -50,9 +50,18 @@ class CategoryController {
 
 	public function delete($id) {
 		global $conn;
-		Category::delete($conn, $id);
-	header('Location: /RMIE/app/controllers/CategoryController.php?accion=index');
-		exit();
+		$result = Category::delete($conn, $id);
+		if ($result instanceof \mysqli_sql_exception) {
+			// Error de clave foránea
+			echo '<script>alert("No se puede eliminar la categoría porque tiene productos asociados. Elimine o reasigne los productos antes de eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		} else if (!$result) {
+			echo '<script>alert("Error al eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		} else {
+			header('Location: /RMIE/app/controllers/CategoryController.php?accion=index');
+			exit();
+		}
 	}
 }
 

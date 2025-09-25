@@ -6,8 +6,7 @@ class LocalController {
     
     public function handleRequest() {
         session_start();
-        
-        if (!isset($_SESSION['usuario_id'])) {
+        if (!isset($_SESSION['user'])) {
             header('Location: /RMIE/index.php');
             exit();
         }
@@ -60,13 +59,16 @@ class LocalController {
         $stats = Local::getStats($conn);
         
         // Obtener estadísticas por local para gráficos
-        $localStats = Local::getLocalStats($conn);
+        $localStats = [];
+        foreach ($locales as $local) {
+            $localStats[$local->id_locales] = Local::getLocalStats($conn, $local->id_locales);
+        }
         
-        include __DIR__ . '/../views/locales/index.php';
+        include __DIR__ . '/../views/local/index.php';
     }
     
     public function create() {
-        include __DIR__ . '/../views/locales/create.php';
+        include __DIR__ . '/../views/local/create.php';
     }
     
     public function store() {
@@ -147,7 +149,7 @@ class LocalController {
             exit();
         }
         
-        include __DIR__ . '/../views/locales/edit.php';
+        include __DIR__ . '/../views/local/edit.php';
     }
     
     public function update() {
@@ -237,7 +239,7 @@ class LocalController {
             exit();
         }
         
-        include __DIR__ . '/../views/locales/delete.php';
+        include __DIR__ . '/../views/local/delete.php';
     }
     
     public function destroy() {

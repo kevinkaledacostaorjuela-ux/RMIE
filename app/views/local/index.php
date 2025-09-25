@@ -1,16 +1,18 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: ../../../index.php');
     exit();
 }
 
 require_once '../../config/db.php';
-require_once '../../models/Local.php';
+require_once __DIR__ . '/../../../app/models/Local.php';
 
 $filtros = [
     'nombre' => $_GET['nombre'] ?? '',
-    'estado' => $_GET['estado'] ?? ''
+    'estado' => $_GET['estado'] ?? '',
+    'buscar' => $_GET['buscar'] ?? '',
+    'tipo' => $_GET['tipo'] ?? ''
 ];
 
 // Usar la conexión global y obtener locales
@@ -324,20 +326,20 @@ $stats = $statsQuery->fetch_assoc();
                 <div class="stat-number"><?php echo $stats['locales_activos']; ?></div>
                 <div class="stat-label">Locales Activos</div>
             </div>
-            <div class="stat-card">
+            <!-- <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-store"></i>
                 </div>
-                <div class="stat-number"><?php echo $stats['sucursales']; ?></div>
+                <div class="stat-number">-</div>
                 <div class="stat-label">Sucursales</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">
                     <i class="fas fa-warehouse"></i>
                 </div>
-                <div class="stat-number"><?php echo $stats['bodegas']; ?></div>
+                <div class="stat-number">-</div>
                 <div class="stat-label">Bodegas</div>
-            </div>
+            </div> -->
         </div>
 
         <!-- Filtros -->
@@ -385,11 +387,11 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Botón Nuevo -->
         <div class="mb-3">
-            <a href="../../controllers/LocalController.php?action=create" 
+            <a href="/RMIE/app/controllers/LocalController.php?action=create" 
                class="btn btn-modern btn-success-modern">
                 <i class="fas fa-plus"></i> Nuevo Local
             </a>
-            <a href="../dashboard.php" class="btn btn-modern btn-primary-modern">
+            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </div>
@@ -401,7 +403,7 @@ $stats = $statsQuery->fetch_assoc();
                     <i class="fas fa-building fa-3x mb-3" style="opacity: 0.5;"></i>
                     <h3>No hay locales registrados</h3>
                     <p>Comienza agregando tu primer local</p>
-                    <a href="../../controllers/LocalController.php?accion=create" 
+                    <a href="/RMIE/app/controllers/LocalController.php?action=create" 
                        class="btn btn-modern btn-success-modern">
                         <i class="fas fa-plus"></i> Crear Primer Local
                     </a>
@@ -424,47 +426,47 @@ $stats = $statsQuery->fetch_assoc();
                         <tbody>
                             <?php foreach ($locales as $local): ?>
                             <tr>
-                                <td><strong>#<?php echo $local['id']; ?></strong></td>
+                                <td><strong>#<?php echo $local->id_locales; ?></strong></td>
                                 <td>
-                                    <div class="fw-bold"><?php echo htmlspecialchars($local['nombre']); ?></div>
-                                    <?php if (!empty($local['descripcion'])): ?>
-                                        <small class="text-muted"><?php echo htmlspecialchars($local['descripcion']); ?></small>
+                                    <div class="fw-bold"><?php echo htmlspecialchars($local->nombre_local); ?></div>
+                                    <?php if (!empty($local->barrio)): ?>
+                                        <small class="text-muted"><?php echo htmlspecialchars($local->barrio); ?></small>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <i class="fas fa-map-marker-alt text-primary"></i>
-                                    <?php echo htmlspecialchars($local['direccion']); ?>
+                                    <?php echo htmlspecialchars($local->direccion); ?>
                                 </td>
                                 <td>
-                                    <?php if (!empty($local['telefono'])): ?>
+                                    <?php if (!empty($local->cel_local)): ?>
                                         <i class="fas fa-phone text-success"></i>
-                                        <?php echo htmlspecialchars($local['telefono']); ?>
+                                        <?php echo htmlspecialchars($local->cel_local); ?>
                                     <?php else: ?>
                                         <span class="text-muted">Sin teléfono</span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status badge-<?php echo $local['tipo']; ?>">
-                                        <?php echo ucfirst($local['tipo']); ?>
+                                    <span class="badge badge-status">
+                                        -
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status badge-<?php echo $local['estado']; ?>">
-                                        <?php echo ucfirst($local['estado']); ?>
+                                    <span class="badge badge-status badge-<?php echo $local->estado; ?>">
+                                        <?php echo ucfirst($local->estado); ?>
                                     </span>
                                 </td>
                                 <td>
                                     <i class="fas fa-calendar text-info"></i>
-                                    <?php echo date('d/m/Y', strtotime($local['fecha_creacion'])); ?>
+                                    <?php echo date('d/m/Y', strtotime($local->fecha_creacion)); ?>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="../../controllers/LocalController.php?action=edit&id=<?php echo $local['id']; ?>" 
+                                        <a href="/RMIE/app/controllers/LocalController.php?action=edit&id=<?php echo $local->id_locales; ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="../../controllers/LocalController.php?action=delete&id=<?php echo $local['id']; ?>" 
+                                        <a href="/RMIE/app/controllers/LocalController.php?action=delete&id=<?php echo $local->id_locales; ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar"
                                            onclick="return confirm('¿Estás seguro de eliminar este local?')">

@@ -1,56 +1,76 @@
 <?php
 class Route {
-    public $id_ruta;
-    public $direccion;
-    public $nombre_local;
-    public $nombre_cliente;
-    public $id_clientes;
-    public $id_reportes;
-    public $id_ventas;
+    public static function getAll($conn) {
+        $sql = "SELECT * FROM rutas";
+        $result = $conn->query($sql);
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
 
-    public function __construct($id_ruta, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas) {
-        $this->id_ruta = $id_ruta;
-        $this->direccion = $direccion;
-        $this->nombre_local = $nombre_local;
-        $this->nombre_cliente = $nombre_cliente;
-        $this->id_clientes = $id_clientes;
-        $this->id_reportes = $id_reportes;
-        $this->id_ventas = $id_ventas;
+    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas) {
+        try {
+            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_reportes, id_ventas) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $conn->error);
+            }
+            $stmt->bind_param('sssiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas);
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+            echo "<p>Ruta creada exitosamente en el modelo.</p>";
+        } catch (Exception $e) {
+            echo "<p>Error en el modelo: " . $e->getMessage() . "</p>";
+            throw new Exception("Error al crear la ruta: " . $e->getMessage());
+        }
+    }
+
+    public static function getById($conn, $id) {
+        $sql = "SELECT * FROM rutas WHERE id_ruta = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
+    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas) {
+        $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_reportes = ?, id_ventas = ? WHERE id_ruta = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('sssiiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas, $id);
+        $stmt->execute();
+    }
+
+    public static function delete($conn, $id) {
+        $sql = "DELETE FROM rutas WHERE id_ruta = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
     }
 
     public static function getFiltered($conn, $reporte = '', $venta = '') {
-        $sql = "SELECT r.*, rep.nombre AS reporte_nombre, v.nombre AS venta_nombre FROM rutas r LEFT JOIN reportes rep ON r.id_reportes = rep.id_reportes LEFT JOIN ventas v ON r.id_ventas = v.id_ventas";
+        $sql = "SELECT * FROM rutas WHERE 1=1";
         $params = [];
         $types = '';
-        $where = [];
-        if ($reporte) {
-            $where[] = "r.id_reportes = ?";
+
+        if (!empty($reporte)) {
+            $sql .= " AND id_reportes = ?";
             $params[] = $reporte;
             $types .= 'i';
         }
-        if ($venta) {
-            $where[] = "r.id_ventas = ?";
+
+        if (!empty($venta)) {
+            $sql .= " AND id_ventas = ?";
             $params[] = $venta;
             $types .= 'i';
         }
-        if ($where) {
-            $sql .= " WHERE " . implode(" AND ", $where);
-        }
+
         $stmt = $conn->prepare($sql);
-        if ($params) {
+        if (!empty($params)) {
             $stmt->bind_param($types, ...$params);
         }
         $stmt->execute();
         $result = $stmt->get_result();
-        $rutas = [];
-        while ($row = $result->fetch_assoc()) {
-            $rutas[] = [
-                'obj' => new Route($row['id_ruta'], $row['direccion'], $row['nombre_local'], $row['nombre_cliente'], $row['id_clientes'], $row['id_reportes'], $row['id_ventas']),
-                'reporte_nombre' => $row['reporte_nombre'],
-                'venta_nombre' => $row['venta_nombre']
-            ];
-        }
-        return $rutas;
+        return $result->fetch_all(MYSQLI_ASSOC);
     }
 }
 ?>
