@@ -88,7 +88,7 @@ class ReportController {
                 $_SESSION['error'] = 'Error al crear el reporte';
             }
             
-            header('Location: ReportController.php?action=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
             exit();
         }
     }
@@ -129,7 +129,7 @@ class ReportController {
                 $_SESSION['error'] = 'Error al actualizar el reporte';
             }
             
-            header('Location: ReportController.php?action=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
             exit();
         }
     }
@@ -155,7 +155,7 @@ class ReportController {
                 $_SESSION['error'] = 'Error al eliminar el reporte';
             }
             
-            header('Location: ReportController.php?action=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
             exit();
         }
         

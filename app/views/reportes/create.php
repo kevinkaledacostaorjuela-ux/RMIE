@@ -160,6 +160,10 @@ if (!isset($_SESSION['user_id'])) {
                                 </div>
                             </div>
                         </form>
+
+                        <a href="/RMIE/app/controllers/MainController.php?action=dashboard" class="neo-btn neo-btn-secondary mb-3">
+                            <i class="fas fa-home"></i> Volver al Dashboard
+                        </a>
                     </div>
                 </div>
             </div>

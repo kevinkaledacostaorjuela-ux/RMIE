@@ -1000,3 +1000,332 @@ button {
 button:hover {
     background-color: #0056b3;
 }
+
+/* ===============================
+   ESTILOS PARA MÓDULO DE ALERTAS
+   =============================== */
+
+/* Contenedor principal (lista/filtrado) */
+.dashboard-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+
+.page-title {
+    margin: 0 0 1.25rem 0;
+    font-weight: 800;
+    font-size: 2rem;
+    color: #1f2937;
+}
+
+/* Barra de filtros */
+.dashboard-container form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    background: #f8fafc;
+    border: 1px solid #e5e7eb;
+    padding: 12px;
+    border-radius: 12px;
+}
+.dashboard-container select,
+.dashboard-container input[type="text"],
+.dashboard-container input[type="date"],
+.dashboard-container input[type="number"] {
+    appearance: none;
+    background-color: #fff;
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #374151;
+    transition: all .2s ease;
+}
+.dashboard-container select:focus,
+.dashboard-container input:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+.dashboard-container button[type="submit"] {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.dashboard-container button[type="submit"]:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 18px rgba(29, 78, 216, 0.25);
+}
+
+/* Tabla de alertas */
+.dashboard-container table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.dashboard-container thead th {
+    background: linear-gradient(180deg, #f8fafc, #eef2f7);
+    color: #111827;
+    font-weight: 700;
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.dashboard-container tbody td {
+    padding: 12px 14px;
+    color: #374151;
+    border-bottom: 1px solid #f1f5f9;
+}
+.dashboard-container tbody tr:hover {
+    background: #f9fafb;
+}
+.dashboard-container tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Botones reutilizados */
+.btn-categorias {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: #fff !important;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 600;
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.25);
+}
+.btn-categorias:hover {
+    filter: brightness(1.05);
+    transform: translateY(-1px);
+    box-shadow: 0 10px 20px rgba(16, 185, 129, 0.35);
+}
+
+/* Formularios (crear/editar) */
+.form-container,
+.categorias-container {
+    max-width: 800px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+}
+.form-container h1,
+.categorias-container h1 {
+    margin-bottom: 1.25rem;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #111827;
+}
+.form-container label,
+.categorias-container label {
+    display: block;
+    margin: 10px 0 6px;
+    font-weight: 700;
+    color: #374151;
+}
+.form-container input,
+.form-container select,
+.categorias-container input,
+.categorias-container select {
+    width: 100%;
+    border: 1.5px solid #d1d5db;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 14px;
+    color: #374151;
+    transition: all .2s ease;
+}
+.form-container input:focus,
+.form-container select:focus,
+.categorias-container input:focus,
+.categorias-container select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15);
+}
+
+/* Mensajes */
+.alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin: 10px 0 16px;
+    background: #eff6ff;
+    color: #1e40af;
+    border: 1px solid #bfdbfe;
+}
+.alert-success { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
+.alert-danger  { background: #fef2f2; color: #991b1b; border-color: #fecaca; }
+
+/* Eliminar alerta */
+.delete-container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(16, 24, 40, 0.08);
+    border-left: 6px solid #ef4444;
+}
+.delete-container h1 {
+    color: #991b1b;
+    font-weight: 800;
+}
+.delete-container .btn-categorias {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.25);
+}
+.delete-container .btn-categorias:hover {
+    box-shadow: 0 10px 20px rgba(239, 68, 68, 0.35);
+}
+
+/* Responsivo */
+@media (max-width: 640px) {
+    .dashboard-container form { flex-direction: column; align-items: stretch; }
+    .dashboard-container table { font-size: 13px; }
+    .btn-categorias { width: 100%; text-align: center; margin-bottom: 8px; }
+}
+
+/* =============================
+   MÓDULO: ALERTAS (RMIE)
+   ============================= */
+.dashboard-container {
+    max-width: 1100px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.page-title {
+    margin: 0 0 1rem 0;
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Filtro superior */
+.dashboard-container form[action$="AlertController.php"] {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.dashboard-container select[name="producto"],
+.dashboard-container select[name="id_productos"],
+.dashboard-container input[type="date"],
+.dashboard-container input[type="number"] {
+    border: 2px solid #e9ecef;
+    border-radius: .5rem;
+    padding: .5rem .75rem;
+}
+.dashboard-container button[type="submit"],
+.dashboard-container .btn-categorias {
+    padding: .5rem 1rem;
+}
+
+/* Tabla de alertas */
+.dashboard-container table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    overflow: hidden;
+    border-radius: .75rem;
+}
+.dashboard-container thead th {
+    background: #0d6efd;
+    color: #fff;
+    padding: .75rem;
+    font-weight: 600;
+}
+.dashboard-container tbody td {
+    padding: .75rem;
+    border-bottom: 1px solid #eef2f7;
+}
+.dashboard-container tbody tr:hover {
+    background: #f8fbff;
+}
+
+/* Formularios (crear/editar) */
+.form-container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+.form-container label {
+    display: block;
+    margin: .5rem 0 .25rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+.form-container select,
+.form-container input[type="date"],
+.form-container input[type="number"],
+.form-container input[type="text"] {
+    width: 100%;
+    border: 2px solid #e9ecef;
+    border-radius: .5rem;
+    padding: .5rem .75rem;
+}
+.form-container .btn-categorias {
+    margin-top: .75rem;
+}
+
+/* Vista de eliminación */
+.delete-container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+/* Alertas de estado */
+.alert { 
+    padding: .75rem 1rem; 
+    border-radius: .5rem; 
+    margin: .75rem 0; 
+}
+.alert-success { 
+    background: #d1e7dd; 
+    color: #0f5132; 
+    border: 1px solid #badbcc; 
+}
+.alert-danger { 
+    background: #f8d7da; 
+    color: #842029; 
+    border: 1px solid #f5c2c7; 
+}
+
+/* Responsivo */
+@media (max-width: 576px) {
+    .dashboard-container {
+        padding: 1rem;
+        margin: 20px 10px;
+    }
+    .dashboard-container form[action$="AlertController.php"] {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .dashboard-container table {
+        font-size: .9rem;
+    }
+}

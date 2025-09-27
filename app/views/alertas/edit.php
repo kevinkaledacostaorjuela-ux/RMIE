@@ -1,50 +1,10 @@
 <?php
 session_start();
 if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
+    header('Location: /RMIE/index.php');
     exit();
 }
-
-require_once '../../models/Alert.php';
-require_once '../../models/Product.php';
-require_once '../../config/db.php';
-
-$id = $_GET['id'] ?? 0;
-$errors = [];
-$success = '';
-
-if (!$id) {
-    header('Location: index.php');
-    exit();
-}
-
-$alerta = Alert::getById($conn, $id);
-
-if (!$alerta) {
-    header('Location: index.php');
-    exit();
-}
-
-// Obtener productos para el select
-$productos = Product::getAll($conn);
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $alerta['id_productos'] = $_POST['id_productos'] ?? '';
-    $alerta['cantidad_minima'] = $_POST['cantidad_minima'] ?? '';
-    $alerta['fecha_caducidad'] = $_POST['fecha_caducidad'] ?? '';
-    $alerta['id_clientes'] = $_POST['id_clientes'] ?? '';
-
-    if (empty($alerta['id_productos'])) $errors[] = 'El producto es obligatorio';
-    if (empty($alerta['cantidad_minima'])) $errors[] = 'La cantidad mínima es obligatoria';
-    if (empty($alerta['fecha_caducidad'])) $errors[] = 'La fecha de caducidad es obligatoria';
-    if (empty($alerta['id_clientes'])) $errors[] = 'El cliente es obligatorio';
-
-    if (empty($errors)) {
-        $result = Alert::update($conn, $id, $alerta);
-        if ($result) $success = 'Alerta actualizada exitosamente';
-        else $errors[] = 'Error al actualizar la alerta';
-    }
-}
+// Variables: $alerta, $productos, $errors, $success provienen del controlador
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -55,33 +15,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="form-container">
-        <h1>Editar Alerta #<?= isset($alerta['id_alertas']) ? $alerta['id_alertas'] : $id ?></h1>
-        <?php if ($success): ?>
-            <div class="alert alert-success"> <?= $success ?> </div>
+        <h1>Editar Alerta #<?= isset($alerta['id_alertas']) ? htmlspecialchars($alerta['id_alertas']) : '' ?></h1>
+        <?php if (!empty($success)): ?>
+            <div class="alert alert-success"> <?= htmlspecialchars($success) ?> </div>
         <?php endif; ?>
         <?php if (!empty($errors)): ?>
             <div class="alert alert-danger">
                 <ul>
-                    <?php foreach ($errors as $error): ?><li><?= $error ?></li><?php endforeach; ?>
+                    <?php foreach ($errors as $error): ?><li><?= htmlspecialchars($error) ?></li><?php endforeach; ?>
                 </ul>
             </div>
         <?php endif; ?>
-        <form method="POST">
+        <form method="POST" action="/RMIE/app/controllers/AlertController.php?action=edit&id=<?= urlencode($alerta['id_alertas']) ?>">
             <label>Producto:</label>
             <select name="id_productos" required>
                 <option value="">Selecciona un producto</option>
                 <?php foreach ($productos as $prod): ?>
-                    <option value="<?= $prod->id_productos ?>" <?= $alerta['id_productos'] == $prod->id_productos ? 'selected' : '' ?>><?= $prod->nombre ?></option>
+                    <option value="<?= $prod->id_productos ?>" <?= ($alerta['id_productos'] == $prod->id_productos ? 'selected' : '') ?>><?= htmlspecialchars($prod->nombre) ?></option>
                 <?php endforeach; ?>
             </select><br>
             <label>Cantidad mínima para alerta:</label>
             <input type="number" name="cantidad_minima" min="1" value="<?= htmlspecialchars($alerta['cantidad_minima']) ?>" required><br>
             <label>Fecha de caducidad:</label>
             <input type="date" name="fecha_caducidad" value="<?= htmlspecialchars($alerta['fecha_caducidad']) ?>" required><br>
-            <label>ID Cliente:</label>
-            <input type="text" name="id_clientes" value="<?= htmlspecialchars($alerta['id_clientes']) ?>" required><br>
+            <label>Cliente:</label>
+            <select name="id_clientes" required>
+                <option value="">Selecciona un cliente</option>
+                <?php if (!empty($clientes)) { foreach ($clientes as $cli): ?>
+                    <option value="<?= $cli->id_clientes ?>" <?= ($alerta['id_clientes'] == $cli->id_clientes ? 'selected' : '') ?>><?= htmlspecialchars($cli->nombre) ?></option>
+                <?php endforeach; } ?>
+            </select><br>
             <button type="submit" class="btn-categorias">Guardar Cambios</button>
-            <a href="index.php" class="btn-categorias">Cancelar</a>
+            <a href="/RMIE/app/controllers/AlertController.php" class="btn-categorias">Cancelar</a>
         </form>
     </div>
 </body>

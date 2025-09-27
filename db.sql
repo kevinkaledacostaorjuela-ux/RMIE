@@ -136,6 +136,8 @@ CREATE TABLE alertas (
     cliente_no_disponible VARCHAR(45),
     id_clientes INT NOT NULL,
     id_productos INT NOT NULL,
+    cantidad_minima INT NULL,
+    fecha_caducidad DATE NULL,
     FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
     FOREIGN KEY (id_productos) REFERENCES productos(id_productos)
 );

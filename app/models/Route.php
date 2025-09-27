@@ -6,14 +6,14 @@ class Route {
         return $result->fetch_all(MYSQLI_ASSOC);
     }
 
-    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas) {
+    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas) {
         try {
-            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_reportes, id_ventas) VALUES (?, ?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta: " . $conn->error);
             }
-            $stmt->bind_param('sssiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas);
+            $stmt->bind_param('sssii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
             if (!$stmt->execute()) {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
@@ -33,10 +33,10 @@ class Route {
         return $result->fetch_assoc();
     }
 
-    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas) {
-        $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_reportes = ?, id_ventas = ? WHERE id_ruta = ?";
+    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas) {
+        $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, = ?, id_ventas = ? WHERE id_ruta = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssiiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas, $id);
+        $stmt->bind_param('sssiiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id);
         $stmt->execute();
     }
 
@@ -47,16 +47,10 @@ class Route {
         $stmt->execute();
     }
 
-    public static function getFiltered($conn, $reporte = '', $venta = '') {
+    public static function getFiltered($conn, $venta = '') {
         $sql = "SELECT * FROM rutas WHERE 1=1";
         $params = [];
         $types = '';
-
-        if (!empty($reporte)) {
-            $sql .= " AND id_reportes = ?";
-            $params[] = $reporte;
-            $types .= 'i';
-        }
 
         if (!empty($venta)) {
             $sql .= " AND id_ventas = ?";

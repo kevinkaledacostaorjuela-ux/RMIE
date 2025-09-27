@@ -1,6 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Alert.php';
 require_once __DIR__ . '/../models/Product.php';
+require_once __DIR__ . '/../models/Client.php';
 require_once __DIR__ . '/../../config/db.php';
 
 class AlertController {
@@ -15,18 +16,29 @@ class AlertController {
     public function create() {
         global $conn;
         $productos = Product::getAll($conn);
+        $clientes = Client::getAll($conn);
         $mensaje = '';
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id_producto = $_POST['id_productos'] ?? '';
-            $cantidad_minima = $_POST['cantidad_minima'] ?? '';
+            $id_producto = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
+            $cantidad_minima = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $fecha_caducidad = $_POST['fecha_caducidad'] ?? '';
-            $id_cliente = $_POST['id_clientes'] ?? '';
+            $id_cliente = isset($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : 0;
+
             if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_cliente) {
-                $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente);
-                if ($resultado) {
-                    $mensaje = '¡Alerta creada exitosamente!';
+                // Validar existencia en BD
+                $prod = Product::getById($conn, $id_producto);
+                $cli = Client::getById($conn, $id_cliente);
+                if (!$prod) {
+                    $mensaje = 'Producto no válido.';
+                } elseif (!$cli) {
+                    $mensaje = 'Cliente no válido.';
                 } else {
-                    $mensaje = 'Error al crear la alerta.';
+                    try {
+                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente);
+                        $mensaje = $resultado ? '¡Alerta creada exitosamente!' : 'Error al crear la alerta.';
+                    } catch (Throwable $e) {
+                        $mensaje = 'Error al crear la alerta: ' . $e->getMessage();
+                    }
                 }
             } else {
                 $mensaje = 'Por favor, completa todos los campos.';
@@ -42,21 +54,34 @@ class AlertController {
         $success = '';
         $alerta = Alert::getById($conn, $id);
         if (!$alerta) {
-            header('Location: index.php');
+            header('Location: /RMIE/app/controllers/AlertController.php?action=index');
             exit();
         }
         $productos = Product::getAll($conn);
+        $clientes = Client::getAll($conn);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $alerta['id_productos'] = $_POST['id_productos'] ?? '';
-            $alerta['cantidad_minima'] = $_POST['cantidad_minima'] ?? '';
+            $alerta['id_productos'] = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
+            $alerta['cantidad_minima'] = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $alerta['fecha_caducidad'] = $_POST['fecha_caducidad'] ?? '';
-            $alerta['id_clientes'] = $_POST['id_clientes'] ?? '';
+            $alerta['id_clientes'] = isset($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : 0;
+
             if (empty($alerta['id_productos'])) $errors[] = 'El producto es obligatorio';
             if (empty($alerta['cantidad_minima'])) $errors[] = 'La cantidad mínima es obligatoria';
             if (empty($alerta['fecha_caducidad'])) $errors[] = 'La fecha de caducidad es obligatoria';
             if (empty($alerta['id_clientes'])) $errors[] = 'El cliente es obligatorio';
+
             if (empty($errors)) {
-                $result = Alert::update($conn, $id, $alerta);
+                // Validar existencia en BD
+                if (!Product::getById($conn, $alerta['id_productos'])) {
+                    $errors[] = 'Producto no válido';
+                }
+                if (!Client::getById($conn, $alerta['id_clientes'])) {
+                    $errors[] = 'Cliente no válido';
+                }
+            }
+
+            if (empty($errors)) {
+                $result = Alert::update($conn, (int)$id, $alerta);
                 if ($result) $success = 'Alerta actualizada exitosamente';
                 else $errors[] = 'Error al actualizar la alerta';
             }
@@ -71,14 +96,14 @@ class AlertController {
         $success = '';
         $alerta = Alert::getById($conn, $id);
         if (!$alerta) {
-            header('Location: index.php');
+            header('Location: /RMIE/app/controllers/AlertController.php?action=index');
             exit();
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_eliminar'])) {
             $result = Alert::delete($conn, $id);
             if ($result) {
                 $success = 'Alerta eliminada exitosamente';
-                echo "<script>setTimeout(function(){ window.location.href = 'index.php'; }, 2000);</script>";
+                echo "<script>setTimeout(function(){ window.location.href = '/RMIE/app/controllers/AlertController.php?action=index'; }, 2000);</script>";
             } else {
                 $errors[] = 'Error al eliminar la alerta';
             }
@@ -87,7 +112,7 @@ class AlertController {
     }
 
     public function handleRequest() {
-        $action = $_GET['action'] ?? 'index';
+        $action = $_GET['action'] ?? $_GET['accion'] ?? 'index';
         switch ($action) {
             case 'create':
                 $this->create();

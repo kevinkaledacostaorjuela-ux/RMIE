@@ -39,7 +39,7 @@ if (isset($ventas) && is_array($ventas)) {
         <!-- Breadcrumb -->
         <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
+                <li class="breadcrumb-item"><a href="/RMIE/app/controllers/MainController.php?action=dashboard"><i class="fas fa-home"></i> Inicio</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Ventas</li>
             </ol>
         </nav>

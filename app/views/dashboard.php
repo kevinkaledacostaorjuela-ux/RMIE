@@ -1,6 +1,8 @@
 <?php
 // app/views/dashboard.php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
@@ -70,7 +72,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Ventas</h5>
-                        <a href="../views/ventas/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/SaleController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

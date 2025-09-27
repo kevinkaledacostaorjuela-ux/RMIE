@@ -391,7 +391,7 @@ $stats = $statsQuery->fetch_assoc();
                class="btn btn-modern btn-success-modern">
                 <i class="fas fa-plus"></i> Nuevo Local
             </a>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
+            <a href="/RMIE/app/controllers/MainController.php?action=dashboard" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </div>
@@ -466,12 +466,12 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/LocalController.php?action=delete&id=<?php echo $local->id_locales; ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
-                                           title="Eliminar"
-                                           onclick="return confirm('¿Estás seguro de eliminar este local?')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
+                                        <form action="/RMIE/app/controllers/LocalController.php?action=destroy" method="POST" style="display:inline;">
+                                            <input type="hidden" name="id" value="<?php echo $local->id_locales; ?>">
+                                            <button type="submit" class="btn btn-sm btn-modern btn-danger-modern" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este local?')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </td>
                             </tr>

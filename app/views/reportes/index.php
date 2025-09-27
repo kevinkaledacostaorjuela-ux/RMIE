@@ -231,10 +231,10 @@
                     <p class="lead">Centro de control y análisis de informes empresariales</p>
                 </div>
                 <div class="col-lg-4 text-end">
-                    <a href="../dashboard.php" class="btn btn-outline-light me-3">
+                    <a href="/RMIE/app/controllers/MainController.php?action=dashboard" class="btn btn-outline-light me-3">
                         <i class="fas fa-arrow-left me-2"></i>Volver
                     </a>
-                    <a href="ReportController.php?action=create" class="btn btn-light">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=create" class="btn btn-light">
                         <i class="fas fa-plus me-2"></i>Nuevo Reporte
                     </a>
                 </div>
@@ -284,7 +284,7 @@
 
         <div class="glass-container">
             <h5 class="mb-4"><i class="fas fa-filter me-2"></i>Filtros de Búsqueda</h5>
-            <form method="GET" action="ReportController.php">
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
                 <input type="hidden" name="action" value="index">
                 <div class="row">
                     <div class="col-lg-3 col-md-6 mb-3">
@@ -315,7 +315,7 @@
                         <button type="submit" class="btn btn-modern me-2">
                             <i class="fas fa-search me-2"></i>Buscar
                         </button>
-                        <a href="ReportController.php?action=index" class="btn btn-outline-secondary">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=index" class="btn btn-outline-secondary">
                             <i class="fas fa-times"></i>
                         </a>
                     </div>
@@ -338,7 +338,7 @@
                     <i class="fas fa-inbox"></i>
                     <h4>No hay reportes disponibles</h4>
                     <p>No se encontraron reportes con los criterios de búsqueda especificados.</p>
-                    <a href="ReportController.php?action=create" class="btn btn-modern">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=create" class="btn btn-modern">
                         <i class="fas fa-plus me-2"></i>Crear Primer Reporte
                     </a>
                 </div>
@@ -382,15 +382,15 @@
                                         </span>
                                     </td>
                                     <td>
-                                        <a href="ReportController.php?action=generate&id=<?php echo $reporte->id_reportes; ?>" 
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=generate&id=<?php echo $reporte->id_reportes; ?>" 
                                            class="btn-action btn-view" title="Generar Reporte">
                                             <i class="fas fa-eye"></i>
                                         </a>  
-                                        <a href="ReportController.php?action=edit&id=<?php echo $reporte->id_reportes; ?>" 
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=edit&id=<?php echo $reporte->id_reportes; ?>" 
                                            class="btn-action btn-edit" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="ReportController.php?action=delete&id=<?php echo $reporte->id_reportes; ?>" 
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=delete&id=<?php echo $reporte->id_reportes; ?>" 
                                            class="btn-action btn-delete" title="Eliminar"
                                            onclick="return confirm('¿Estás seguro de eliminar este reporte?')">
                                             <i class="fas fa-trash"></i>
@@ -404,7 +404,7 @@
             <?php endif; ?>
         </div>
 
-        <a href="ReportController.php?action=create" class="floating-add-btn" title="Nuevo Reporte">
+        <a href="/RMIE/app/controllers/ReportController.php?action=create" class="floating-add-btn" title="Nuevo Reporte">
             <i class="fas fa-plus"></i>
         </a>
     </div>

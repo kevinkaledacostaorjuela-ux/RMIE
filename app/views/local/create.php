@@ -407,7 +407,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="../../controllers/LocalController.php?action=index" 
+                            <a href="/RMIE/app/controllers/LocalController.php?action=index" 
                                class="btn btn-modern btn-secondary-modern me-md-2">
                                 <i class="fas fa-arrow-left"></i> Cancelar
                             </a>

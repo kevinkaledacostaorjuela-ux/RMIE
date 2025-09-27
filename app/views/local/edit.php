@@ -15,7 +15,7 @@ $errors = [];
 $success = '';
 
 if (!$id) {
-    header('Location: ../../controllers/LocalController.php?action=index');
+    header('Location: /RMIE/app/controllers/LocalController.php?action=index');
     exit();
 }
 
@@ -23,7 +23,7 @@ try {
     $local = Local::getById($conn, $id);
     
     if (!$local) {
-        header('Location: ../../controllers/LocalController.php?action=index');
+        header('Location: /RMIE/app/controllers/LocalController.php?action=index');
         exit();
     }
 } catch (Exception $e) {
@@ -447,7 +447,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="../../controllers/LocalController.php?action=index" 
+                            <a href="/RMIE/app/controllers/LocalController.php?action=index" 
                                class="btn btn-modern btn-secondary-modern me-md-2">
                                 <i class="fas fa-arrow-left"></i> Cancelar
                             </a>
@@ -487,14 +487,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Loading screen
         window.addEventListener('load', function() {
+            document.getElementById('loadingScreen').style.opacity = '0';
             setTimeout(function() {
-                document.getElementById('loadingScreen').style.opacity = '0';
-                setTimeout(function() {
-                    document.getElementById('loadingScreen').style.display = 'none';
-                }, 500);
-            }, 800);
+                document.getElementById('loadingScreen').style.display = 'none';
+            }, 500);
         });
 
         // Original values for comparison

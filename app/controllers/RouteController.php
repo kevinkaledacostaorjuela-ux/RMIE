@@ -6,17 +6,15 @@ require_once __DIR__ . '/../../config/db.php';
 
 class RouteController {
     public function index() {
-        global $conn;
-        $filtro_reporte = isset($_GET['reporte']) ? $_GET['reporte'] : '';
-        $filtro_venta = isset($_GET['venta']) ? $_GET['venta'] : '';
-        $reportes = Report::getFiltered($conn, $filtro_reporte);
-        $ventas = Sale::getFiltered($conn);
-        $rutas = Route::getFiltered($conn, $filtro_reporte, $filtro_venta);
+    global $conn;
+    $filtro_venta = isset($_GET['venta']) ? $_GET['venta'] : '';
+    $ventas = Sale::getFiltered($conn);
+    $rutas = Route::getFiltered($conn, $filtro_venta);
 
-        // Asegurarse de que $rutas sea un array válido
-        $routes = is_array($rutas) ? $rutas : [];
+    // Asegurarse de que $rutas sea un array válido
+    $routes = is_array($rutas) ? $rutas : [];
 
-        include __DIR__ . '/../views/rutas/index.php';
+    include __DIR__ . '/../views/rutas/index.php';
     }
 
     public function create() {
@@ -26,11 +24,10 @@ class RouteController {
             $nombre_local = $_POST['nombre_local'];
             $nombre_cliente = $_POST['nombre_cliente'];
             $id_clientes = $_POST['id_clientes'];
-            $id_reportes = $_POST['id_reportes'];
             $id_ventas = $_POST['id_ventas'];
 
-            Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas);
-            header('Location: /app/views/rutas/index.php');
+            Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
+            header('Location: /RMIE/app/views/rutas/index.php');
             exit;
         }
         include __DIR__ . '/../views/rutas/create.php';
@@ -44,10 +41,9 @@ class RouteController {
             $nombre_local = $_POST['nombre_local'];
             $nombre_cliente = $_POST['nombre_cliente'];
             $id_clientes = $_POST['id_clientes'];
-            $id_reportes = $_POST['id_reportes'];
             $id_ventas = $_POST['id_ventas'];
 
-            Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas);
+            Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
             header('Location: /app/views/rutas/index.php');
             exit;
         }

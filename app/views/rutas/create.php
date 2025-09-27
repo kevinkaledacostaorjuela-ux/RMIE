@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>Crear Nueva Ruta</h1>
-    <form action="" method="POST">
+    <form action="/RMIE/app/routes.php?action=create_ruta" method="POST">
         <label for="direccion">Dirección:</label>
         <input type="text" name="direccion" id="direccion" required>
         <br>
@@ -20,9 +20,6 @@
         <br>
         <label for="id_clientes">ID Cliente:</label>
         <input type="number" name="id_clientes" id="id_clientes" required>
-        <br>
-        <label for="id_reportes">ID Reporte:</label>
-        <input type="number" name="id_reportes" id="id_reportes" required>
         <br>
         <label for="id_ventas">ID Venta:</label>
         <input type="number" name="id_ventas" id="id_ventas" required>

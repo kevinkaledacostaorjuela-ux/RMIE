@@ -21,9 +21,6 @@
         <label for="id_clientes">ID Cliente:</label>
         <input type="number" name="id_clientes" id="id_clientes" value="<?= $route['id_clientes'] ?>" required>
         <br>
-        <label for="id_reportes">ID Reporte:</label>
-        <input type="number" name="id_reportes" id="id_reportes" value="<?= $route['id_reportes'] ?>" required>
-        <br>
         <label for="id_ventas">ID Venta:</label>
         <input type="number" name="id_ventas" id="id_ventas" value="<?= $route['id_ventas'] ?>" required>
         <br>

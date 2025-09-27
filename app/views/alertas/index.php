@@ -1,17 +1,10 @@
 <?php
 session_start();
 if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
+    header('Location: /RMIE/index.php');
     exit();
 }
-require_once '../../models/Alert.php';
-require_once '../../models/Product.php';
-require_once '../../config/db.php';
-
-// Filtro por producto
-$filtro_producto = $_GET['producto'] ?? '';
-$alertas = Alert::getFiltered($conn, $filtro_producto);
-$productos = Product::getAll($conn);
+// Las variables $productos, $alertas y $filtro_producto vienen desde el controlador
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -23,17 +16,20 @@ $productos = Product::getAll($conn);
 <body>
     <div class="dashboard-container">
         <h1 class="page-title">Gestión de Alertas</h1>
-        <form method="GET">
+        <form method="GET" action="/RMIE/app/controllers/AlertController.php">
+            <input type="hidden" name="action" value="index" />
             <select name="producto">
                 <option value="">Todos los productos</option>
                 <?php foreach ($productos as $prod): ?>
-                    <option value="<?= $prod->id_productos ?>" <?= $filtro_producto == $prod->id_productos ? 'selected' : '' ?>><?= $prod->nombre ?></option>
+                    <option value="<?= $prod->id_productos ?>" <?= ($filtro_producto == $prod->id_productos ? 'selected' : '') ?>><?= htmlspecialchars($prod->nombre) ?></option>
                 <?php endforeach; ?>
             </select>
             <button type="submit">Filtrar</button>
         </form>
-        <a href="create.php" class="btn-categorias">Nueva Alerta</a>
-        <a href="../../dashboard.php" class="btn-categorias">Volver al Dashboard</a>
+        <div style="margin: 12px 0;">
+            <a href="/RMIE/app/controllers/AlertController.php?action=create" class="btn-categorias">Nueva Alerta</a>
+            <a href="/RMIE/app/views/dashboard.php" class="btn-categorias">Volver al Dashboard</a>
+        </div>
         <table>
             <thead>
                 <tr>
@@ -46,19 +42,23 @@ $productos = Product::getAll($conn);
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($alertas as $alerta): ?>
-                <tr>
-                    <td><?= $alerta['id_alertas'] ?></td>
-                    <td><?= htmlspecialchars($alerta['producto_nombre'] ?? $alerta['id_productos']) ?></td>
-                    <td><?= htmlspecialchars($alerta['cantidad_minima']) ?></td>
-                    <td><?= htmlspecialchars($alerta['fecha_caducidad']) ?></td>
-                    <td><?= htmlspecialchars($alerta['id_clientes']) ?></td>
-                    <td>
-                        <a href="edit.php?id=<?= $alerta['id_alertas'] ?>" class="btn-categorias">Editar</a>
-                        <a href="delete.php?id=<?= $alerta['id_alertas'] ?>" class="btn-categorias" onclick="return confirm('¿Eliminar?')">Eliminar</a>
-                    </td>
-                </tr>
-                <?php endforeach; ?>
+                <?php if (!empty($alertas)): ?>
+                    <?php foreach ($alertas as $alerta): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($alerta['id_alertas']) ?></td>
+                        <td><?= htmlspecialchars($alerta['producto_nombre'] ?? $alerta['id_productos']) ?></td>
+                        <td><?= htmlspecialchars($alerta['cantidad_minima'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($alerta['fecha_caducidad'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($alerta['id_clientes']) ?></td>
+                        <td>
+                            <a href="/RMIE/app/controllers/AlertController.php?action=edit&id=<?= urlencode($alerta['id_alertas']) ?>" class="btn-categorias">Editar</a>
+                            <a href="/RMIE/app/controllers/AlertController.php?action=delete&id=<?= urlencode($alerta['id_alertas']) ?>" class="btn-categorias" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="6">No hay alertas.</td></tr>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>
