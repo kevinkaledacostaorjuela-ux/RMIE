@@ -296,13 +296,5 @@
     });
     </script>
 </body>
-</html>
-            <?php foreach ($subcategorias as $sub): ?>
-                <option value="<?= $sub['obj']->id_subcategoria ?>"><?= $sub['obj']->nombre ?></option>
-            <?php endforeach; ?>
-        </select><br>
-        <button type="submit">Guardar</button>
-    </form>
-    <a href="index.php">Volver</a>
-</body>
-</html>
+
+

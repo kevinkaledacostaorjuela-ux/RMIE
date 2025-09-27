@@ -294,7 +294,7 @@ if (!isset($_SESSION['user'])) {
                 <?php unset($_SESSION['success']); ?>
             <?php endif; ?>
 
-            <form action="/RMIE/app/controllers/ReportController.php?accion=store" method="POST">
+            <form action="/RMIE/app/controllers/ReportController.php?action=store" method="POST">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
@@ -390,7 +390,7 @@ if (!isset($_SESSION['user'])) {
                     <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Crear Reporte
                     </button>
-                    <a href="/RMIE/app/controllers/ReportController.php?accion=index" class="btn btn-secondary">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=index" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Cancelar
                     </a>
                 </div>

@@ -6,6 +6,17 @@ require_once __DIR__ . '/../../config/db.php';
 class ClientController {
     
     public function handleRequest() {
+        // Iniciar sesión si no está iniciada
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Verificar que el usuario esté autenticado
+        if (!isset($_SESSION['user'])) {
+            header('Location: ../../index.php');
+            exit();
+        }
+        
         $accion = $_GET['accion'] ?? 'index';
         
         switch ($accion) {

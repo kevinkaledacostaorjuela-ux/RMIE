@@ -1,70 +1,21 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
-    exit();
-}
+// La vista asume que la sesión ya fue verificada por el controlador
+// Obtener mensajes de sesión
+$error_message = $_SESSION['error'] ?? '';
+$success_message = $_SESSION['success'] ?? '';
 
-$errors = [];
-$success = '';
+// Limpiar mensajes de sesión
+unset($_SESSION['error'], $_SESSION['success']);
+
+// Datos por defecto para el formulario
 $local = [
     'nombre_local' => '',
     'direccion' => '',
     'cel_local' => '',
     'localidad' => '',
     'barrio' => '',
-    'estado' => 'activo',
-    'descripcion' => ''
+    'estado' => 'activo'
 ];
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    global $conn;
-    require_once '../../config/db.php';
-    require_once __DIR__ . '/../../../app/models/Local.php';
-    
-    $local = [
-        'nombre_local' => trim($_POST['nombre'] ?? ''),
-        'direccion' => trim($_POST['direccion'] ?? ''),
-        'cel_local' => trim($_POST['telefono'] ?? ''),
-        'localidad' => $_POST['localidad'] ?? '',
-        'barrio' => $_POST['barrio'] ?? '',
-        'estado' => $_POST['estado'] ?? 'activo',
-        'descripcion' => $_POST['descripcion'] ?? ''
-    ];
-    
-    // Validaciones
-    if (empty($local['nombre_local'])) {
-        $errors[] = 'El nombre es obligatorio';
-    }
-    if (empty($local['direccion'])) {
-        $errors[] = 'La dirección es obligatoria';
-    }
-    if (!in_array($local['estado'], ['activo', 'inactivo'])) {
-        $errors[] = 'Estado inválido';
-    }
-    
-    if (empty($errors)) {
-        try {
-            $id = Local::create($conn, $local);
-            if ($id) {
-                $success = 'Local creado exitosamente';
-                $local = [
-                    'nombre_local' => '',
-                    'direccion' => '',
-                    'cel_local' => '',
-                    'localidad' => '',
-                    'barrio' => '',
-                    'estado' => 'activo',
-                    'descripcion' => ''
-                ];
-            } else {
-                $errors[] = 'Error al crear el local';
-            }
-        } catch (Exception $e) {
-            $errors[] = 'Error: ' . $e->getMessage();
-        }
-    }
-}
 ?>
 
 <!DOCTYPE html>
@@ -296,55 +247,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <i class="fas fa-plus-circle"></i> Crear Nuevo Local
             </h1>
 
-            <?php if ($success): ?>
+            <?php if ($success_message): ?>
                 <div class="alert alert-modern alert-success-modern">
-                    <i class="fas fa-check-circle"></i> <?php echo $success; ?>
+                    <i class="fas fa-check-circle"></i> <?php echo $success_message; ?>
                 </div>
             <?php endif; ?>
 
-            <?php if (!empty($errors)): ?>
+            <?php if ($error_message): ?>
                 <div class="alert alert-modern alert-danger-modern">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <ul class="mb-0">
-                        <?php foreach ($errors as $error): ?>
-                            <li><?php echo $error; ?></li>
-                        <?php endforeach; ?>
-                    </ul>
+                    <i class="fas fa-exclamation-circle"></i> <?php echo $error_message; ?>
                 </div>
             <?php endif; ?>
 
             <div class="row">
                 <div class="col-md-8">
-                    <form method="POST" id="localForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <input type="text" 
-                                           class="form-control form-control-modern" 
-                                           id="nombre" 
-                                           name="nombre" 
-                                           value="<?php echo htmlspecialchars($local['nombre_local']); ?>"
-                                           placeholder="Nombre del local"
-                                           required>
-                                    <label for="nombre">
-                                        <i class="fas fa-building"></i> Nombre del Local
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <select class="form-control form-control-modern" 
-                                            id="tipo" 
-                                            name="tipo"
-                                            required>
-                                        <option value="sucursal" <?php echo $local['tipo'] === 'sucursal' ? 'selected' : ''; ?>>Sucursal</option>
-                                        <option value="bodega" <?php echo $local['tipo'] === 'bodega' ? 'selected' : ''; ?>>Bodega</option>
-                                        <option value="oficina" <?php echo $local['tipo'] === 'oficina' ? 'selected' : ''; ?>>Oficina</option>
-                                    </select>
-                                    <label for="tipo">
-                                        <i class="fas fa-tag"></i> Tipo de Local
-                                    </label>
-                                </div>
+                    <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=store" id="localForm">
+                        <div class="mb-3">
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control form-control-modern" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       value="<?php echo htmlspecialchars($local['nombre_local']); ?>"
+                                       placeholder="Nombre del local"
+                                       required>
+                                <label for="nombre">
+                                    <i class="fas fa-building"></i> Nombre del Local
+                                </label>
                             </div>
                         </div>
 
@@ -371,7 +300,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                            id="telefono" 
                                            name="telefono" 
                                            value="<?php echo htmlspecialchars($local['cel_local']); ?>"
-                                           placeholder="Número de teléfono">
+                                           placeholder="Número de teléfono"
+                                           required>
                                     <label for="telefono">
                                         <i class="fas fa-phone"></i> Teléfono
                                     </label>
@@ -393,21 +323,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <div class="form-floating-modern">
-                                <textarea class="form-control form-control-modern" 
-                                          id="descripcion" 
-                                          name="descripcion" 
-                                          rows="3"
-                                          placeholder="Descripción adicional"><?php echo htmlspecialchars($local['descripcion']); ?></textarea>
-                                <label for="descripcion">
-                                    <i class="fas fa-align-left"></i> Descripción (Opcional)
-                                </label>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-modern">
+                                    <input type="text" 
+                                           class="form-control form-control-modern" 
+                                           id="localidad" 
+                                           name="localidad" 
+                                           value="<?php echo htmlspecialchars($local['localidad']); ?>"
+                                           placeholder="Localidad"
+                                           required>
+                                    <label for="localidad">
+                                        <i class="fas fa-city"></i> Localidad
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <div class="form-floating-modern">
+                                    <input type="text" 
+                                           class="form-control form-control-modern" 
+                                           id="barrio" 
+                                           name="barrio" 
+                                           value="<?php echo htmlspecialchars($local['barrio']); ?>"
+                                           placeholder="Barrio"
+                                           required>
+                                    <label for="barrio">
+                                        <i class="fas fa-map-marked-alt"></i> Barrio
+                                    </label>
+                                </div>
                             </div>
                         </div>
 
+
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/RMIE/app/controllers/LocalController.php?action=index" 
+                            <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
                                class="btn btn-modern btn-secondary-modern me-md-2">
                                 <i class="fas fa-arrow-left"></i> Cancelar
                             </a>
@@ -429,10 +379,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <span class="preview-value" id="preview-nombre">-</span>
                             </div>
                             <div class="preview-item">
-                                <span class="preview-label">Tipo:</span>
-                                <span class="preview-value" id="preview-tipo">Sucursal</span>
-                            </div>
-                            <div class="preview-item">
                                 <span class="preview-label">Dirección:</span>
                                 <span class="preview-value" id="preview-direccion">-</span>
                             </div>
@@ -443,10 +389,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <div class="preview-item">
                                 <span class="preview-label">Estado:</span>
                                 <span class="preview-value" id="preview-estado">Activo</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Descripción:</span>
-                                <span class="preview-value" id="preview-descripcion">-</span>
                             </div>
                         </div>
                     </div>
@@ -470,27 +412,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Real-time preview
         function updatePreview() {
             const nombre = document.getElementById('nombre').value || '-';
-            const tipo = document.getElementById('tipo').value || 'Sucursal';
             const direccion = document.getElementById('direccion').value || '-';
             const telefono = document.getElementById('telefono').value || '-';
             const estado = document.getElementById('estado').value || 'Activo';
-            const descripcion = document.getElementById('descripcion').value || '-';
 
             document.getElementById('preview-nombre').textContent = nombre;
-            document.getElementById('preview-tipo').textContent = tipo.charAt(0).toUpperCase() + tipo.slice(1);
             document.getElementById('preview-direccion').textContent = direccion;
             document.getElementById('preview-telefono').textContent = telefono;
             document.getElementById('preview-estado').textContent = estado.charAt(0).toUpperCase() + estado.slice(1);
-            document.getElementById('preview-descripcion').textContent = descripcion;
         }
 
         // Event listeners for real-time preview
         document.getElementById('nombre').addEventListener('input', updatePreview);
-        document.getElementById('tipo').addEventListener('change', updatePreview);
         document.getElementById('direccion').addEventListener('input', updatePreview);
         document.getElementById('telefono').addEventListener('input', updatePreview);
         document.getElementById('estado').addEventListener('change', updatePreview);
-        document.getElementById('descripcion').addEventListener('input', updatePreview);
 
         // Form validation
         document.getElementById('localForm').addEventListener('submit', function(e) {

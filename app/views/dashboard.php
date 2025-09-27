@@ -80,7 +80,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Reportes</h5>
-                        <a href="../views/reportes/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/ReportController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Clientes</h5>
-                        <a href="../views/clientes/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/ClientController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>
@@ -132,7 +132,7 @@ $rol = $_SESSION['rol'];
                 <div class="card text-center">
                     <div class="card-body">
                         <h5 class="card-title">Rutas</h5>
-                        <a href="../views/rutas/index.php" class="btn btn-primary">Ir</a>
+                        <a href="../controllers/RouteController.php?accion=index" class="btn btn-primary">Ir</a>
                     </div>
                 </div>
             </div>

@@ -7,9 +7,43 @@ require_once __DIR__ . '/../../config/db.php';
 class AlertController {
     public function index() {
         global $conn;
+        
+        // Obtener productos para el filtro
         $productos = Product::getAll($conn);
-        $filtro_producto = isset($_GET['producto']) ? $_GET['producto'] : '';
-        $alertas = Alert::getFiltered($conn, $filtro_producto);
+        
+        // Recoger filtros
+        $filtros = [
+            'producto' => $_GET['producto'] ?? '',
+            'nombre_producto' => $_GET['nombre_producto'] ?? '',
+            'cantidad_min' => $_GET['cantidad_min'] ?? '',
+            'cantidad_max' => $_GET['cantidad_max'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
+        // Obtener alertas filtradas
+        $alertas = Alert::getFiltered($conn, $filtros);
+        
+        // Calcular estadísticas
+        $total_alertas = count($alertas);
+        $alertas_proximas = 0;
+        $alertas_vencidas = 0;
+        $fecha_actual = date('Y-m-d');
+        
+        foreach ($alertas as $alerta) {
+            if ($alerta['fecha_caducidad'] < $fecha_actual) {
+                $alertas_vencidas++;
+            } elseif ($alerta['fecha_caducidad'] <= date('Y-m-d', strtotime('+30 days'))) {
+                $alertas_proximas++;
+            }
+        }
+        
+        $estadisticas = [
+            'total' => $total_alertas,
+            'proximas' => $alertas_proximas,
+            'vencidas' => $alertas_vencidas
+        ];
+        
         include __DIR__ . '/../views/alertas/index.php';
     }
 
@@ -96,14 +130,15 @@ class AlertController {
         $success = '';
         $alerta = Alert::getById($conn, $id);
         if (!$alerta) {
-            header('Location: /RMIE/app/controllers/AlertController.php?action=index');
+            header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
             exit();
         }
         if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_eliminar'])) {
             $result = Alert::delete($conn, $id);
             if ($result) {
-                $success = 'Alerta eliminada exitosamente';
-                echo "<script>setTimeout(function(){ window.location.href = '/RMIE/app/controllers/AlertController.php?action=index'; }, 2000);</script>";
+                $_SESSION['success'] = 'Alerta eliminada exitosamente';
+                header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                exit();
             } else {
                 $errors[] = 'Error al eliminar la alerta';
             }

@@ -108,8 +108,8 @@ class Report {
             $hasNewColumns = $checkColumns->num_rows > 0;
             
             if ($hasNewColumns) {
-                $sql = "INSERT INTO reportes (nombre, descripcion, fecha, estado, tipo, parametros, id_ventas) 
-                        VALUES (?, ?, ?, ?, ?, ?, NULL)";
+                $sql = "INSERT INTO reportes (nombre, descripcion, fecha, estado, tipo, parametros, id_ventas, fecha_creacion, fecha_actualizacion) 
+                        VALUES (?, ?, ?, ?, ?, ?, 0, NOW(), NOW())";
                 $stmt = $conn->prepare($sql);
                 $parametros = $data['parametros'] ?? '{}';
                 $tipo = $data['tipo'] ?? 'general';
@@ -123,7 +123,7 @@ class Report {
                 );
             } else {
                 // Fallback para la estructura antigua
-                $sql = "INSERT INTO reportes (nombre, descripcion, fecha, estado, id_ventas) VALUES (?, ?, ?, ?, NULL)";
+                $sql = "INSERT INTO reportes (nombre, descripcion, fecha, estado, id_ventas) VALUES (?, ?, ?, ?, 0)";
                 $stmt = $conn->prepare($sql);
                 $result = $stmt->bind_param("ssss", 
                     $data['nombre'], 

@@ -164,30 +164,110 @@ class Local {
     }
     
     public static function canDelete($conn, $id) {
-        // Verificar si hay clientes asociados a este local
-        $sql = "SELECT COUNT(*) as count FROM clientes WHERE id_locales = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        
-        if ($row['count'] > 0) {
+        try {
+            // Verificar si hay clientes asociados a este local
+            $sql = "SELECT COUNT(*) as count FROM clientes WHERE id_locales = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            
+            if ($row['count'] > 0) {
+                return false;
+            }
+            
+            // Verificar si hay productos asociados a este local (si la columna existe)
+            $checkColumn = $conn->query("SHOW COLUMNS FROM productos LIKE 'id_locales'");
+            if ($checkColumn && $checkColumn->num_rows > 0) {
+                $sql = "SELECT COUNT(*) as count FROM productos WHERE id_locales = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+                
+                if ($row['count'] > 0) {
+                    return false;
+                }
+            }
+            
+            // Verificar si hay ventas asociadas a este local (si la tabla existe)
+            $checkTable = $conn->query("SHOW TABLES LIKE 'ventas'");
+            if ($checkTable && $checkTable->num_rows > 0) {
+                $checkColumn = $conn->query("SHOW COLUMNS FROM ventas LIKE 'id_locales'");
+                if ($checkColumn && $checkColumn->num_rows > 0) {
+                    $sql = "SELECT COUNT(*) as count FROM ventas WHERE id_locales = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $row = $result->fetch_assoc();
+                    
+                    if ($row['count'] > 0) {
+                        return false;
+                    }
+                }
+            }
+            
+            return true;
+        } catch (Exception $e) {
+            // En caso de error, prevenir eliminación por seguridad
             return false;
         }
+    }
+    
+    public static function getRelatedRecords($conn, $id) {
+        $relations = [];
         
-        // Verificar si hay productos asociados a este local
-        $sql = "SELECT COUNT(*) as count FROM productos WHERE id_locales = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $row = $result->fetch_assoc();
-        
-        if ($row['count'] > 0) {
-            return false;
+        try {
+            // Contar clientes
+            $sql = "SELECT COUNT(*) as count FROM clientes WHERE id_locales = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $count = $result->fetch_assoc()['count'];
+            if ($count > 0) {
+                $relations['clientes'] = $count;
+            }
+            
+            // Contar productos (si existe la columna)
+            $checkColumn = $conn->query("SHOW COLUMNS FROM productos LIKE 'id_locales'");
+            if ($checkColumn && $checkColumn->num_rows > 0) {
+                $sql = "SELECT COUNT(*) as count FROM productos WHERE id_locales = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $count = $result->fetch_assoc()['count'];
+                if ($count > 0) {
+                    $relations['productos'] = $count;
+                }
+            }
+            
+            // Contar ventas (si existe la tabla y columna)
+            $checkTable = $conn->query("SHOW TABLES LIKE 'ventas'");
+            if ($checkTable && $checkTable->num_rows > 0) {
+                $checkColumn = $conn->query("SHOW COLUMNS FROM ventas LIKE 'id_locales'");
+                if ($checkColumn && $checkColumn->num_rows > 0) {
+                    $sql = "SELECT COUNT(*) as count FROM ventas WHERE id_locales = ?";
+                    $stmt = $conn->prepare($sql);
+                    $stmt->bind_param("i", $id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $count = $result->fetch_assoc()['count'];
+                    if ($count > 0) {
+                        $relations['ventas'] = $count;
+                    }
+                }
+            }
+            
+        } catch (Exception $e) {
+            // Si hay error, asumir que no se puede eliminar
         }
-        return true;
+        
+        return $relations;
     }
     
     public static function getStats($conn) {

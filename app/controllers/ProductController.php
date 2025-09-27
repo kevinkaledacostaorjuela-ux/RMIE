@@ -26,7 +26,7 @@ class ProductController {
             $filtro_proveedor = isset($_GET['proveedor']) ? $_GET['proveedor'] : '';
             $filtro_usuario = isset($_GET['usuario']) ? $_GET['usuario'] : '';
             
-            $productos = Product::getAll($conn);
+            $productos = Product::getFiltered($conn, $filtro_categoria, $filtro_subcategoria, $filtro_proveedor, $filtro_usuario);
             include __DIR__ . '/../views/productos/index.php';
         } catch (Exception $e) {
             echo '<pre>Error en index: ' . $e->getMessage() . '</pre>';

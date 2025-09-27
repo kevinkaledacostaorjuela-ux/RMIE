@@ -1,85 +1,13 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
-    exit();
-}
+// La vista asume que ya se ha verificado la sesión y que $local está disponible
+// Todas las validaciones se manejan en el controlador
+$errors = $_SESSION['error'] ?? '';
+$success = $_SESSION['success'] ?? '';
 
-require_once __DIR__ . '/../../models/Local.php';
-require_once __DIR__ . '/../../../config/db.php';
+// Limpiar mensajes de sesión
+unset($_SESSION['error'], $_SESSION['success']);
 
-$id = $_GET['id'] ?? 0;
-$errors = [];
-$success = '';
-
-if (!$id) {
-    header('Location: /RMIE/app/controllers/LocalController.php?action=index');
-    exit();
-}
-
-try {
-    $local = Local::getById($conn, $id);
-    
-    if (!$local) {
-        header('Location: /RMIE/app/controllers/LocalController.php?action=index');
-        exit();
-    }
-} catch (Exception $e) {
-    $errors[] = 'Error al cargar el local: ' . $e->getMessage();
-    $local = [
-        'id' => $id,
-        'nombre' => '',
-        'direccion' => '',
-        'telefono' => '',
-        'tipo' => 'sucursal',
-        'estado' => 'activo',
-        'descripcion' => ''
-    ];
-}
-
-$originalLocal = $local; // Para detectar cambios
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $local = [
-        'id' => $id,
-        'nombre' => trim($_POST['nombre'] ?? ''),
-        'direccion' => trim($_POST['direccion'] ?? ''),
-        'telefono' => trim($_POST['telefono'] ?? ''),
-        'tipo' => $_POST['tipo'] ?? 'sucursal',
-        'estado' => $_POST['estado'] ?? 'activo',
-        'descripcion' => trim($_POST['descripcion'] ?? '')
-    ];
-    
-    // Validaciones
-    if (empty($local['nombre'])) {
-        $errors[] = 'El nombre es obligatorio';
-    }
-    if (empty($local['direccion'])) {
-        $errors[] = 'La dirección es obligatoria';
-    }
-    if (!in_array($local['tipo'], ['sucursal', 'bodega', 'oficina'])) {
-        $errors[] = 'Tipo de local inválido';
-    }
-    if (!in_array($local['estado'], ['activo', 'inactivo'])) {
-        $errors[] = 'Estado inválido';
-    }
-    
-    if (empty($errors)) {
-        try {
-            $result = Local::update($conn, $id, $local);
-            if ($result) {
-                $success = 'Local actualizado exitosamente';
-                $originalLocal = $local; // Actualizar referencia original
-            } else {
-                $errors[] = 'Error al actualizar el local';
-            }
-        } catch (Exception $e) {
-            $errors[] = 'Error: ' . $e->getMessage();
-        }
-    }
-}
+// El procesamiento del formulario se maneja en el controlador
 ?>
 
 <!DOCTYPE html>
@@ -334,7 +262,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="container">
         <div class="form-container">
             <h1 class="page-title">
-                <i class="fas fa-edit"></i> Editar Local #<?php echo $local['id']; ?>
+                <i class="fas fa-edit"></i> Editar Local #<?php echo $local->id_locales; ?>
             </h1>
 
             <?php if ($success): ?>
@@ -361,11 +289,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="info-label">Creado el:</div>
                         <div class="info-value">
                             <i class="fas fa-calendar"></i>
-                            <?php echo isset($local['fecha_creacion']) ? date('d/m/Y H:i', strtotime($local['fecha_creacion'])) : 'No disponible'; ?>
+                            <?php echo isset($local->fecha_creacion) ? date('d/m/Y H:i', strtotime($local->fecha_creacion)) : 'No disponible'; ?>
                         </div>
                     </div>
 
-                    <form method="POST" id="localForm">
+                    <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=update&id=<?php echo $local->id_locales; ?>" id="localForm">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="nombre" class="form-label">
@@ -375,24 +303,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                        class="form-control form-control-modern" 
                                        id="nombre" 
                                        name="nombre" 
-                                       value="<?php echo htmlspecialchars($local['nombre']); ?>"
-                                       data-original="<?php echo htmlspecialchars($originalLocal['nombre']); ?>"
+                                       value="<?php echo htmlspecialchars($local->nombre_local); ?>"
                                        required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="tipo" class="form-label">
-                                    <i class="fas fa-tag"></i> Tipo de Local
-                                </label>
-                                <select class="form-control form-control-modern" 
-                                        id="tipo" 
-                                        name="tipo"
-                                        data-original="<?php echo $originalLocal['tipo']; ?>"
-                                        required>
-                                    <option value="sucursal" <?php echo $local['tipo'] === 'sucursal' ? 'selected' : ''; ?>>Sucursal</option>
-                                    <option value="bodega" <?php echo $local['tipo'] === 'bodega' ? 'selected' : ''; ?>>Bodega</option>
-                                    <option value="oficina" <?php echo $local['tipo'] === 'oficina' ? 'selected' : ''; ?>>Oficina</option>
-                                </select>
-                            </div>
+
                         </div>
 
                         <div class="mb-3">
@@ -403,8 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                    class="form-control form-control-modern" 
                                    id="direccion" 
                                    name="direccion" 
-                                   value="<?php echo htmlspecialchars($local['direccion']); ?>"
-                                   data-original="<?php echo htmlspecialchars($originalLocal['direccion']); ?>"
+                                   value="<?php echo htmlspecialchars($local->direccion); ?>"
                                    required>
                         </div>
 
@@ -417,8 +330,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                        class="form-control form-control-modern" 
                                        id="telefono" 
                                        name="telefono" 
-                                       value="<?php echo htmlspecialchars($local['telefono']); ?>"
-                                       data-original="<?php echo htmlspecialchars($originalLocal['telefono']); ?>">
+                                       value="<?php echo htmlspecialchars($local->cel_local); ?>"
+                                       required>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="estado" class="form-label">
@@ -427,27 +340,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <select class="form-control form-control-modern" 
                                         id="estado" 
                                         name="estado"
-                                        data-original="<?php echo $originalLocal['estado']; ?>"
                                         required>
-                                    <option value="activo" <?php echo $local['estado'] === 'activo' ? 'selected' : ''; ?>>Activo</option>
-                                    <option value="inactivo" <?php echo $local['estado'] === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                                    <option value="activo" <?php echo $local->estado === 'activo' ? 'selected' : ''; ?>>Activo</option>
+                                    <option value="inactivo" <?php echo $local->estado === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
                                 </select>
                             </div>
                         </div>
 
-                        <div class="mb-4">
-                            <label for="descripcion" class="form-label">
-                                <i class="fas fa-align-left"></i> Descripción
-                            </label>
-                            <textarea class="form-control form-control-modern" 
-                                      id="descripcion" 
-                                      name="descripcion" 
-                                      rows="3"
-                                      data-original="<?php echo htmlspecialchars($originalLocal['descripcion']); ?>"><?php echo htmlspecialchars($local['descripcion']); ?></textarea>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="localidad" class="form-label">
+                                    <i class="fas fa-city"></i> Localidad
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-modern" 
+                                       id="localidad" 
+                                       name="localidad" 
+                                       value="<?php echo htmlspecialchars($local->localidad ?? ''); ?>"
+                                       required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="barrio" class="form-label">
+                                    <i class="fas fa-map-marked-alt"></i> Barrio
+                                </label>
+                                <input type="text" 
+                                       class="form-control form-control-modern" 
+                                       id="barrio" 
+                                       name="barrio" 
+                                       value="<?php echo htmlspecialchars($local->barrio ?? ''); ?>"
+                                       required>
+                            </div>
                         </div>
 
+
+
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/RMIE/app/controllers/LocalController.php?action=index" 
+                            <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
                                class="btn btn-modern btn-secondary-modern me-md-2">
                                 <i class="fas fa-arrow-left"></i> Cancelar
                             </a>

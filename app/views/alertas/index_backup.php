@@ -1,7 +1,5 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
-    session_start();
-}
+session_start();
 if (!isset($_SESSION['user'])) {
     header('Location: /RMIE/index.php');
     exit();
@@ -356,163 +354,37 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </div>
-
-        <!-- Tabla de Alertas -->
-        <div class="table-container">
-            <div class="table-responsive">
-                <table class="table table-modern table-hover">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-hashtag"></i> ID</th>
-                            <th><i class="fas fa-box"></i> Producto</th>
-                            <th><i class="fas fa-user"></i> Cliente</th>
-                            <th><i class="fas fa-sort-numeric-up"></i> Cantidad Mín.</th>
-                            <th><i class="fas fa-calendar-alt"></i> Fecha Caducidad</th>
-                            <th><i class="fas fa-traffic-light"></i> Estado</th>
-                            <th><i class="fas fa-cogs"></i> Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (!empty($alertas)): ?>
-                            <?php foreach ($alertas as $alerta): 
-                                $fecha_actual = date('Y-m-d');
-                                $fecha_caducidad = $alerta['fecha_caducidad'];
-                                $dias_restantes = (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24);
-                                
-                                // Determinar estado y badge
-                                if ($dias_restantes < 0) {
-                                    $estado = 'Vencida';
-                                    $badge_class = 'badge-danger';
-                                    $icono = 'fas fa-times-circle';
-                                } elseif ($dias_restantes <= 7) {
-                                    $estado = 'Crítica';
-                                    $badge_class = 'badge-danger';
-                                    $icono = 'fas fa-exclamation-triangle';
-                                } elseif ($dias_restantes <= 30) {
-                                    $estado = 'Próxima';
-                                    $badge_class = 'badge-warning';
-                                    $icono = 'fas fa-exclamation-circle';
-                                } else {
-                                    $estado = 'Normal';
-                                    $badge_class = 'badge-success';
-                                    $icono = 'fas fa-check-circle';
-                                }
-                            ?>
-                            <tr>
-                                <td>
-                                    <strong>#<?= htmlspecialchars($alerta['id_alertas']) ?></strong>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2">
-                                            <i class="fas fa-box text-info"></i>
-                                        </div>
-                                        <div>
-                                            <strong><?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?></strong>
-                                            <br>
-                                            <small class="text-muted">ID: <?= $alerta['id_productos'] ?></small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="me-2">
-                                            <i class="fas fa-user text-warning"></i>
-                                        </div>
-                                        <div>
-                                            <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
-                                            <br>
-                                            <small class="text-muted">ID: <?= $alerta['id_clientes'] ?></small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="badge badge-modern badge-warning">
-                                        <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?> unidades
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="text-center">
-                                        <strong><?= date('d/m/Y', strtotime($fecha_caducidad)) ?></strong>
-                                        <br>
-                                        <small class="text-muted">
-                                            <?php if ($dias_restantes < 0): ?>
-                                                Vencida hace <?= abs(round($dias_restantes)) ?> días
-                                            <?php else: ?>
-                                                <?= round($dias_restantes) ?> días restantes
-                                            <?php endif; ?>
-                                        </small>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <span class="badge badge-modern <?= $badge_class ?>">
-                                        <i class="<?= $icono ?>"></i> <?= $estado ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= $alerta['id_alertas'] ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
-                                           title="Editar alerta">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <a href="/RMIE/app/controllers/AlertController.php?accion=delete&id=<?= $alerta['id_alertas'] ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
-                                           title="Eliminar alerta"
-                                           onclick="return confirm('¿Está seguro de eliminar esta alerta del producto \'<?= addslashes($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>\'?\n\nEsta acción no se puede deshacer.')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="7" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="fas fa-inbox fa-3x mb-3"></i>
-                                        <h5>No hay alertas disponibles</h5>
-                                        <p>No se encontraron alertas que coincidan con los filtros aplicados.</p>
-                                        <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern">
-                                            <i class="fas fa-plus"></i> Crear Primera Alerta
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Cantidad mínima</th>
+                    <th>Fecha caducidad</th>
+                    <th>ID Cliente</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if (!empty($alertas)): ?>
+                    <?php foreach ($alertas as $alerta): ?>
+                    <tr>
+                        <td><?= htmlspecialchars($alerta['id_alertas']) ?></td>
+                        <td><?= htmlspecialchars($alerta['producto_nombre'] ?? $alerta['id_productos']) ?></td>
+                        <td><?= htmlspecialchars($alerta['cantidad_minima'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($alerta['fecha_caducidad'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($alerta['id_clientes']) ?></td>
+                        <td>
+                            <a href="/RMIE/app/controllers/AlertController.php?action=edit&id=<?= urlencode($alerta['id_alertas']) ?>" class="btn-categorias">Editar</a>
+                            <a href="/RMIE/app/controllers/AlertController.php?action=delete&id=<?= urlencode($alerta['id_alertas']) ?>" class="btn-categorias" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                        </td>
+                    </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <tr><td colspan="6">No hay alertas.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        function limpiarFiltros() {
-            document.getElementById('filterForm').reset();
-            window.location.href = '/RMIE/app/controllers/AlertController.php?accion=index';
-        }
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert-modern');
-            alerts.forEach(function(alert) {
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 5000);
-
-        // Confirmar eliminación con más detalles
-        document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const productoNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
-                if (confirm(`¿Está seguro de eliminar la alerta del producto "${productoNombre}"?\n\nEsta acción no se puede deshacer.`)) {
-                    window.location.href = this.href;
-                }
-            });
-        });
-    </script>
 </body>
 </html>

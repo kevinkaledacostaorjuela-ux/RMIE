@@ -5,14 +5,16 @@ require_once __DIR__ . '/../../config/db.php';
 class ReportController {
     
     public function handleRequest() {
-        session_start();
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
         
         if (!isset($_SESSION['user'])) {
             header('Location: /RMIE/index.php');
             exit();
         }
         
-        $action = $_GET['action'] ?? 'index';
+        $action = $_GET['action'] ?? $_GET['accion'] ?? 'index';
         
         switch ($action) {
             case 'index':
@@ -101,9 +103,12 @@ class ReportController {
         
         if (!$reporte) {
             $_SESSION['error'] = 'Reporte no encontrado';
-            header('Location: ReportController.php?action=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
             exit();
         }
+        
+        // Procesar parámetros para la vista
+        $parametros = json_decode($reporte['parametros'] ?? '{}', true);
         
         include __DIR__ . '/../views/reportes/edit.php';
     }
@@ -112,7 +117,14 @@ class ReportController {
         global $conn;
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $id = $_POST['id'] ?? 0;
+            $id = $_GET['id'] ?? 0; // Obtener ID de GET en lugar de POST
+            
+            if (!$id) {
+                $_SESSION['error'] = 'ID de reporte no especificado';
+                header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
+                exit();
+            }
+            
             $data = [
                 'nombre' => trim($_POST['nombre'] ?? ''),
                 'descripcion' => trim($_POST['descripcion'] ?? ''),
@@ -129,7 +141,7 @@ class ReportController {
                 $_SESSION['error'] = 'Error al actualizar el reporte';
             }
             
-            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
             exit();
         }
     }
@@ -174,7 +186,8 @@ class ReportController {
             exit();
         }
         
-        $data = Report::generateData($conn, $id);
+        $parametros = json_decode($reporte['parametros'] ?? '{}', true);
+        $data = Report::generateReportData($conn, $reporte['tipo'], $parametros);
         
         include __DIR__ . '/../views/reportes/generate.php';
     }
@@ -193,7 +206,8 @@ class ReportController {
             exit();
         }
         
-        $data = Report::generateData($conn, $id);
+        $parametros = json_decode($reporte['parametros'] ?? '{}', true);
+        $data = Report::generateReportData($conn, $reporte['tipo'], $parametros);
         
         switch ($format) {
             case 'pdf':

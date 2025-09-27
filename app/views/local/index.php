@@ -1,24 +1,16 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
-if (!isset($_SESSION['user'])) {
-    header('Location: ../../../index.php');
-    exit();
-}
+// La vista asume que el controlador ha pasado las variables necesarias
+// Variables disponibles: $locales, $filtros, mensajes de sesión
 
-require_once '../../config/db.php';
-require_once __DIR__ . '/../../../app/models/Local.php';
+// Obtener mensajes de sesión
+$error_message = $_SESSION['error'] ?? '';
+$success_message = $_SESSION['success'] ?? '';
 
-$filtros = [
-    'nombre' => $_GET['nombre'] ?? '',
-    'estado' => $_GET['estado'] ?? '',
-    'buscar' => $_GET['buscar'] ?? '',
-    'tipo' => $_GET['tipo'] ?? ''
-];
-
-// Usar la conexión global y obtener locales
-$locales = Local::getAll($conn, $filtros);
+// Limpiar mensajes de sesión
+unset($_SESSION['error'], $_SESSION['success']);
 
 // Obtener estadísticas básicas
+global $conn;
 $statsQuery = $conn->query("SELECT 
     COUNT(*) as total_locales,
     SUM(CASE WHEN estado = 'activo' THEN 1 ELSE 0 END) as locales_activos
@@ -256,6 +248,161 @@ $stats = $statsQuery->fetch_assoc();
             50% { transform: translateY(-10px); }
         }
 
+        .alert-modern {
+            border-radius: 15px;
+            border: none;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            padding: 20px 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            animation: slideInDown 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .alert-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        .alert-success-modern {
+            background: rgba(46, 204, 113, 0.3);
+            color: #fff;
+            border: 2px solid rgba(46, 204, 113, 0.6);
+            box-shadow: 0 10px 30px rgba(46, 204, 113, 0.3);
+        }
+
+        .alert-danger-modern {
+            background: rgba(231, 76, 60, 0.3);
+            color: #fff;
+            border: 2px solid rgba(231, 76, 60, 0.6);
+            box-shadow: 0 10px 30px rgba(231, 76, 60, 0.3);
+        }
+
+        /* Estilos adicionales para la tabla mejorada */
+        .local-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .ubicacion-info {
+            min-width: 200px;
+        }
+
+        .contacto-info {
+            min-width: 150px;
+        }
+
+        .fecha-info {
+            min-width: 120px;
+        }
+
+        .table-modern td {
+            padding: 15px 12px;
+            vertical-align: middle;
+        }
+
+        .badge {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border-radius: 12px;
+        }
+
+        .badge i {
+            margin-right: 4px;
+        }
+
+        .fw-semibold {
+            font-weight: 600;
+        }
+
+        .table-modern .btn-group .btn {
+            padding: 8px 12px;
+            margin: 0 2px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .table-modern .btn-group .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .info-badge {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 10px 20px;
+            color: white;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .acciones-principales .btn {
+            margin-right: 10px;
+        }
+
+        .resumen-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .table-container .table-responsive {
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
         .floating {
             animation: float 3s ease-in-out infinite;
         }
@@ -310,6 +457,19 @@ $stats = $statsQuery->fetch_assoc();
             <i class="fas fa-building"></i> Gestión de Locales
         </h1>
 
+        <!-- Mensajes -->
+        <?php if ($success_message): ?>
+            <div class="alert alert-modern alert-success-modern">
+                <i class="fas fa-check-circle"></i> <?php echo $success_message; ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($error_message): ?>
+            <div class="alert alert-modern alert-danger-modern">
+                <i class="fas fa-exclamation-circle"></i> <?php echo $error_message; ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Estadísticas -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -344,69 +504,112 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Filtros -->
         <div class="filters-container">
-            <form method="GET" class="row g-3">
-                <div class="col-md-4">
+            <form method="GET" action="/RMIE/app/controllers/LocalController.php" class="row g-3">
+                <input type="hidden" name="accion" value="index">
+                <div class="col-md-3">
                     <label class="form-label text-white">
                         <i class="fas fa-search"></i> Buscar
                     </label>
                     <input type="text" class="form-control form-control-modern" 
-                           name="buscar" value="<?php echo htmlspecialchars($filtros['buscar']); ?>" 
-                           placeholder="Nombre, dirección o teléfono">
+                           name="buscar" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>" 
+                           placeholder="Buscar por nombre del local">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label text-white">
-                        <i class="fas fa-tag"></i> Tipo
+                        <i class="fas fa-city"></i> Localidad
                     </label>
-                    <select class="form-control form-control-modern" name="tipo">
-                        <option value="">Todos los tipos</option>
-                        <option value="sucursal" <?php echo $filtros['tipo'] === 'sucursal' ? 'selected' : ''; ?>>Sucursal</option>
-                        <option value="bodega" <?php echo $filtros['tipo'] === 'bodega' ? 'selected' : ''; ?>>Bodega</option>
-                        <option value="oficina" <?php echo $filtros['tipo'] === 'oficina' ? 'selected' : ''; ?>>Oficina</option>
-                    </select>
+                    <input type="text" class="form-control form-control-modern" 
+                           name="localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>" 
+                           placeholder="Localidad">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
+                    <label class="form-label text-white">
+                        <i class="fas fa-map-marked-alt"></i> Barrio
+                    </label>
+                    <input type="text" class="form-control form-control-modern" 
+                           name="barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>" 
+                           placeholder="Barrio">
+                </div>
+                <div class="col-md-2">
                     <label class="form-label text-white">
                         <i class="fas fa-toggle-on"></i> Estado
                     </label>
                     <select class="form-control form-control-modern" name="estado">
                         <option value="">Todos</option>
-                        <option value="activo" <?php echo $filtros['estado'] === 'activo' ? 'selected' : ''; ?>>Activo</option>
-                        <option value="inactivo" <?php echo $filtros['estado'] === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                        <option value="activo" <?php echo ($filtros['estado'] ?? '') === 'activo' ? 'selected' : ''; ?>>Activo</option>
+                        <option value="inactivo" <?php echo ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
                     </select>
                 </div>
                 <div class="col-md-2">
                     <label class="form-label text-white">&nbsp;</label>
-                    <div class="d-grid">
+                    <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-modern btn-primary-modern">
                             <i class="fas fa-filter"></i> Filtrar
                         </button>
+                        <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
+                           class="btn btn-modern btn-secondary-modern">
+                            <i class="fas fa-times"></i> Limpiar
+                        </a>
                     </div>
                 </div>
             </form>
         </div>
 
-        <!-- Botón Nuevo -->
-        <div class="mb-3">
-            <a href="/RMIE/app/controllers/LocalController.php?action=create" 
-               class="btn btn-modern btn-success-modern">
-                <i class="fas fa-plus"></i> Nuevo Local
-            </a>
-            <a href="/RMIE/app/controllers/MainController.php?action=dashboard" class="btn btn-modern btn-primary-modern">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
+        <!-- Barra de acciones y resumen -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="acciones-principales">
+                <a href="/RMIE/app/controllers/LocalController.php?accion=create" 
+                   class="btn btn-modern btn-success-modern">
+                    <i class="fas fa-plus"></i> Nuevo Local
+                </a>
+                <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
+                    <i class="fas fa-arrow-left"></i> Volver al Dashboard
+                </a>
+            </div>
+            <div class="resumen-info">
+                <?php 
+                $total_mostrados = count($locales);
+                $filtros_activos = !empty($filtros['nombre']) || !empty($filtros['localidad']) || !empty($filtros['barrio']) || !empty($filtros['estado']);
+                ?>
+                <div class="info-badge">
+                    <i class="fas fa-list"></i>
+                    <span class="fw-bold"><?php echo $total_mostrados; ?></span> 
+                    <?php echo $filtros_activos ? 'locales filtrados' : 'locales totales'; ?>
+                    <?php if ($filtros_activos): ?>
+                        <small class="text-muted">(<?php echo $stats['total_locales']; ?> en total)</small>
+                    <?php endif; ?>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de Locales -->
         <div class="table-container">
             <?php if (empty($locales)): ?>
-                <div class="text-center text-white py-5">
-                    <i class="fas fa-building fa-3x mb-3" style="opacity: 0.5;"></i>
-                    <h3>No hay locales registrados</h3>
-                    <p>Comienza agregando tu primer local</p>
-                    <a href="/RMIE/app/controllers/LocalController.php?action=create" 
-                       class="btn btn-modern btn-success-modern">
-                        <i class="fas fa-plus"></i> Crear Primer Local
-                    </a>
+                <div class="empty-state">
+                    <i class="fas fa-building"></i>
+                    <?php if ($filtros_activos): ?>
+                        <h3>No se encontraron locales</h3>
+                        <p>No hay locales que coincidan con los filtros aplicados</p>
+                        <div class="mt-3">
+                            <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
+                               class="btn btn-modern btn-secondary-modern me-2">
+                                <i class="fas fa-times"></i> Limpiar Filtros
+                            </a>
+                            <a href="/RMIE/app/controllers/LocalController.php?accion=create" 
+                               class="btn btn-modern btn-success-modern">
+                                <i class="fas fa-plus"></i> Crear Nuevo Local
+                            </a>
+                        </div>
+                    <?php else: ?>
+                        <h3>No hay locales registrados</h3>
+                        <p>Comienza creando tu primer local comercial</p>
+                        <div class="mt-3">
+                            <a href="/RMIE/app/controllers/LocalController.php?accion=create" 
+                               class="btn btn-modern btn-success-modern">
+                                <i class="fas fa-plus"></i> Crear Primer Local
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
@@ -414,10 +617,11 @@ $stats = $statsQuery->fetch_assoc();
                         <thead>
                             <tr>
                                 <th><i class="fas fa-hashtag"></i> ID</th>
-                                <th><i class="fas fa-building"></i> Nombre</th>
-                                <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
-                                <th><i class="fas fa-phone"></i> Teléfono</th>
-                                <th><i class="fas fa-tag"></i> Tipo</th>
+                                <th><i class="fas fa-building"></i> Local</th>
+                                <th><i class="fas fa-map-marker-alt"></i> Ubicación</th>
+                                <th><i class="fas fa-phone"></i> Contacto</th>
+                                <th><i class="fas fa-city"></i> Localidad</th>
+                                <th><i class="fas fa-map-marked-alt"></i> Barrio</th>
                                 <th><i class="fas fa-toggle-on"></i> Estado</th>
                                 <th><i class="fas fa-calendar"></i> Creado</th>
                                 <th><i class="fas fa-cogs"></i> Acciones</th>
@@ -426,52 +630,104 @@ $stats = $statsQuery->fetch_assoc();
                         <tbody>
                             <?php foreach ($locales as $local): ?>
                             <tr>
-                                <td><strong>#<?php echo $local->id_locales; ?></strong></td>
                                 <td>
-                                    <div class="fw-bold"><?php echo htmlspecialchars($local->nombre_local); ?></div>
-                                    <?php if (!empty($local->barrio)): ?>
-                                        <small class="text-muted"><?php echo htmlspecialchars($local->barrio); ?></small>
-                                    <?php endif; ?>
+                                    <span class="badge" style="background: linear-gradient(45deg, #667eea, #764ba2); color: white; font-weight: bold;">
+                                        #<?php echo $local->id_locales; ?>
+                                    </span>
                                 </td>
                                 <td>
-                                    <i class="fas fa-map-marker-alt text-primary"></i>
-                                    <?php echo htmlspecialchars($local->direccion); ?>
+                                    <div class="d-flex align-items-center">
+                                        <div class="local-icon me-2">
+                                            <i class="fas fa-building text-primary" style="font-size: 1.2em;"></i>
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-primary"><?php echo htmlspecialchars($local->nombre_local); ?></div>
+                                            <small class="text-muted"><i class="fas fa-info-circle"></i> Local comercial</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="ubicacion-info">
+                                        <div class="mb-1">
+                                            <i class="fas fa-map-marker-alt text-danger"></i>
+                                            <span class="fw-semibold"><?php echo htmlspecialchars($local->direccion); ?></span>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-location-dot"></i> 
+                                            <?php echo htmlspecialchars($local->localidad ?? 'Sin localidad'); ?>, 
+                                            <?php echo htmlspecialchars($local->barrio ?? 'Sin barrio'); ?>
+                                        </small>
+                                    </div>
                                 </td>
                                 <td>
                                     <?php if (!empty($local->cel_local)): ?>
-                                        <i class="fas fa-phone text-success"></i>
-                                        <?php echo htmlspecialchars($local->cel_local); ?>
+                                        <div class="contacto-info">
+                                            <div class="mb-1">
+                                                <i class="fas fa-phone text-success"></i>
+                                                <span class="fw-semibold"><?php echo htmlspecialchars($local->cel_local); ?></span>
+                                            </div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-mobile-alt"></i> Contacto principal
+                                            </small>
+                                        </div>
                                     <?php else: ?>
-                                        <span class="text-muted">Sin teléfono</span>
+                                        <div class="text-center">
+                                            <i class="fas fa-phone-slash text-muted"></i>
+                                            <small class="d-block text-muted">Sin teléfono</small>
+                                        </div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status">
-                                        -
+                                    <?php if (!empty($local->localidad)): ?>
+                                        <span class="badge" style="background: linear-gradient(45deg, #4facfe, #00f2fe); color: white;">
+                                            <i class="fas fa-city"></i> <?php echo htmlspecialchars($local->localidad); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Sin localidad</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($local->barrio)): ?>
+                                        <span class="badge" style="background: linear-gradient(45deg, #fa709a, #fee140); color: white;">
+                                            <i class="fas fa-map-marked-alt"></i> <?php echo htmlspecialchars($local->barrio); ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="text-muted">Sin barrio</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <span class="badge badge-status badge-<?php echo $local->estado; ?> d-flex align-items-center justify-content-center">
+                                        <?php if ($local->estado === 'activo'): ?>
+                                            <i class="fas fa-check-circle me-1"></i> Activo
+                                        <?php else: ?>
+                                            <i class="fas fa-times-circle me-1"></i> Inactivo
+                                        <?php endif; ?>
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status badge-<?php echo $local->estado; ?>">
-                                        <?php echo ucfirst($local->estado); ?>
-                                    </span>
-                                </td>
-                                <td>
-                                    <i class="fas fa-calendar text-info"></i>
-                                    <?php echo date('d/m/Y', strtotime($local->fecha_creacion)); ?>
+                                    <div class="fecha-info">
+                                        <div class="mb-1">
+                                            <i class="fas fa-calendar text-info"></i>
+                                            <span class="fw-semibold"><?php echo date('d/m/Y', strtotime($local->fecha_creacion)); ?></span>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-clock"></i> <?php echo date('H:i', strtotime($local->fecha_creacion)); ?>
+                                        </small>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/LocalController.php?action=edit&id=<?php echo $local->id_locales; ?>" 
+                                        <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?php echo $local->id_locales; ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <form action="/RMIE/app/controllers/LocalController.php?action=destroy" method="POST" style="display:inline;">
-                                            <input type="hidden" name="id" value="<?php echo $local->id_locales; ?>">
-                                            <button type="submit" class="btn btn-sm btn-modern btn-danger-modern" title="Eliminar" onclick="return confirm('¿Estás seguro de eliminar este local?')">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
+                                        <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
+                                           class="btn btn-sm btn-modern btn-danger-modern" 
+                                           title="Eliminar local"
+                                           onclick="return confirm('¿Estás seguro de eliminar el local \'<?php echo addslashes($local->nombre_local); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                            <i class="fas fa-trash"></i>
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

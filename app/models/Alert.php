@@ -64,25 +64,70 @@ class Alert {
         return $stmt->execute();
     }
 
-    public static function getFiltered($conn, $producto = '') {
-        $sql = "SELECT a.*, p.nombre AS producto_nombre FROM alertas a JOIN productos p ON a.id_productos = p.id_productos";
+    public static function getFiltered($conn, $filters = []) {
+        $sql = "SELECT a.*, p.nombre AS producto_nombre, c.nombre AS cliente_nombre 
+                FROM alertas a 
+                JOIN productos p ON a.id_productos = p.id_productos 
+                LEFT JOIN clientes c ON a.id_clientes = c.id_clientes";
+        
         $params = [];
         $types = '';
         $where = [];
-        if ($producto) {
+        
+        // Filtro por producto ID
+        if (!empty($filters['producto'])) {
             $where[] = "a.id_productos = ?";
-            $params[] = $producto;
+            $params[] = $filters['producto'];
             $types .= 'i';
         }
+        
+        // Filtro por nombre de producto
+        if (!empty($filters['nombre_producto'])) {
+            $where[] = "p.nombre LIKE ?";
+            $params[] = '%' . $filters['nombre_producto'] . '%';
+            $types .= 's';
+        }
+        
+        // Filtro por cantidad mínima
+        if (!empty($filters['cantidad_min'])) {
+            $where[] = "a.cantidad_minima >= ?";
+            $params[] = $filters['cantidad_min'];
+            $types .= 'i';
+        }
+        
+        if (!empty($filters['cantidad_max'])) {
+            $where[] = "a.cantidad_minima <= ?";
+            $params[] = $filters['cantidad_max'];
+            $types .= 'i';
+        }
+        
+        // Filtro por fecha de caducidad
+        if (!empty($filters['fecha_desde'])) {
+            $where[] = "a.fecha_caducidad >= ?";
+            $params[] = $filters['fecha_desde'];
+            $types .= 's';
+        }
+        
+        if (!empty($filters['fecha_hasta'])) {
+            $where[] = "a.fecha_caducidad <= ?";
+            $params[] = $filters['fecha_hasta'];
+            $types .= 's';
+        }
+        
+        // Construir consulta
         if ($where) {
             $sql .= " WHERE " . implode(" AND ", $where);
         }
+        
+        $sql .= " ORDER BY a.fecha_caducidad ASC, p.nombre ASC";
+        
         $stmt = $conn->prepare($sql);
         if ($params) {
             $stmt->bind_param($types, ...$params);
         }
         $stmt->execute();
         $result = $stmt->get_result();
+        
         $alertas = [];
         while ($row = $result->fetch_assoc()) {
             $alertas[] = $row;
