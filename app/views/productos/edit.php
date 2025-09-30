@@ -9,6 +9,23 @@
     <title>Editar Producto - RMIE</title>
     <link rel="stylesheet" href="/RMIE/public/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .optional-field {
+            color: #6c757d;
+            font-weight: normal;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+        
+        .form-group label .optional-field {
+            margin-left: 5px;
+        }
+        
+        .productos-form select option[value=""] {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <div class="productos-container">
@@ -24,7 +41,7 @@
         <h1><i class="fas fa-edit"></i> Editar Producto: <?= htmlspecialchars($producto->nombre ?? '') ?></h1>
         
         <div class="productos-form">
-            <form method="POST" action="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= $producto->id_producto ?>" id="formEditarProducto">
+            <form method="POST" action="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= $producto->id_productos ?>" id="formEditarProducto">
                 <div class="row">
                     <!-- Información básica -->
                     <div class="col-md-6">
@@ -210,10 +227,10 @@
                         
                         <div class="form-group">
                             <label for="id_proveedor">
-                                <i class="fas fa-truck"></i> Proveedor:
+                                <i class="fas fa-truck"></i> Proveedor <span class="optional-field">(Opcional)</span>:
                             </label>
-                            <select id="id_proveedor" name="id_proveedor" required>
-                                <option value="">Seleccione un proveedor</option>
+                            <select id="id_proveedor" name="id_proveedor">
+                                <option value="">Seleccione un proveedor (opcional)</option>
                                 <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                     <?php foreach ($proveedores as $prov): ?>
                                         <option value="<?= htmlspecialchars($prov->id_proveedores) ?>" 
@@ -279,7 +296,7 @@
                 
                 <!-- Botones -->
                 <div class="subcategorias-buttons">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" id="btnActualizar">
                         <i class="fas fa-save"></i> Actualizar Producto
                     </button>
                     <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-secondary">
@@ -352,6 +369,46 @@
     
     document.getElementById('precio_unitario').addEventListener('input', actualizarValorInventario);
     document.getElementById('stock').addEventListener('input', actualizarValorInventario);
+    
+    // Validación del formulario y debugging
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('formEditarProducto');
+        const btnActualizar = document.getElementById('btnActualizar');
+        
+        console.log('🔧 DEBUG: Formulario de edición cargado');
+        console.log('📋 DEBUG: Action del formulario:', form.action);
+        console.log('🎯 DEBUG: Método del formulario:', form.method);
+        
+        // Validación antes del envío
+        form.addEventListener('submit', function(e) {
+            console.log('📤 DEBUG: Enviando formulario...');
+            
+            const nombre = document.getElementById('nombre').value.trim();
+            const descripcion = document.getElementById('descripcion').value.trim();
+            
+            if (!nombre || !descripcion) {
+                e.preventDefault();
+                alert('Por favor, complete todos los campos obligatorios (Nombre y Descripción).');
+                console.log('❌ DEBUG: Validación fallida - Campos vacíos');
+                return false;
+            }
+            
+            console.log('✅ DEBUG: Validación exitosa, enviando formulario');
+            btnActualizar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+            btnActualizar.disabled = true;
+        });
+        
+        // Verificar que todos los elementos necesarios existen
+        const camposRequeridos = ['nombre', 'descripcion', 'stock', 'precio_unitario'];
+        camposRequeridos.forEach(campo => {
+            const elemento = document.getElementById(campo);
+            if (!elemento) {
+                console.error(`❌ ERROR: Campo requerido '${campo}' no encontrado`);
+            } else {
+                console.log(`✅ DEBUG: Campo '${campo}' encontrado`);
+            }
+        });
+    });
     </script>
 </body>
 </html>

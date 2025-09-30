@@ -58,14 +58,61 @@ class SubcategoryController {
 
     public function delete($id) {
         global $conn;
-        $result = SubcategorySimple::deleteSimple($conn, $id);
-        if (!$result) {
-            echo '<pre>Error al eliminar la subcategoría.</pre>';
-        } else {
-            echo '<pre>Subcategoría eliminada correctamente.</pre>';
+        
+        // Verificar si es eliminación forzada
+        $force = isset($_GET['force']) && $_GET['force'] == '1';
+        
+        $result = SubcategorySimple::delete($conn, $id, $force);
+        
+        if (isset($result['error'])) {
+            switch ($result['error']) {
+                case 'dependencies':
+                    $deps = $result['data'];
+                    $message = "No se puede eliminar la subcategoría porque tiene dependencias:\\n\\n";
+                    
+                    if (isset($deps['productos'])) {
+                        $message .= "• {$deps['productos']} producto(s) asociado(s)\\n";
+                    }
+                    if (isset($deps['ventas'])) {
+                        $message .= "• {$deps['ventas']} venta(s) relacionada(s) con productos de esta subcategoría\\n";
+                    }
+                    
+                    if (!isset($deps['ventas'])) {
+                        $message .= "\\n¿Desea eliminar la subcategoría y desasociar los productos?";
+                        echo '<script>
+                            if (confirm("' . $message . '")) {
+                                window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=' . $id . '&force=1";
+                            } else {
+                                window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";
+                            }
+                        </script>';
+                    } else {
+                        $message .= "\\nNo se puede realizar eliminación forzada porque hay ventas asociadas.";
+                        echo '<script>alert("' . $message . '"); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+                    }
+                    exit();
+                    break;
+                    
+                case 'has_sales':
+                    echo '<script>alert("No se puede eliminar la subcategoría porque tiene ventas asociadas. Las ventas no pueden ser eliminadas automáticamente por seguridad."); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+                    exit();
+                    break;
+                    
+                case 'delete_failed':
+                    echo '<script>alert("Error al eliminar la subcategoría."); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+                    exit();
+                    break;
+                    
+                case 'exception':
+                    echo '<script>alert("Error de base de datos: ' . addslashes($result['message']) . '"); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+                    exit();
+                    break;
+            }
+        } else if (isset($result['success'])) {
+            $successMessage = $force ? "Subcategoría eliminada exitosamente y productos desasociados." : "Subcategoría eliminada exitosamente.";
+            echo '<script>alert("' . $successMessage . '"); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+            exit();
         }
-        header('Location: /RMIE/app/controllers/SubcategoryController.php?accion=index');
-        exit();
     }
 }
 

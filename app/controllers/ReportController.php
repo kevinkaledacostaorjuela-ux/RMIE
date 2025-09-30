@@ -103,7 +103,7 @@ class ReportController {
         
         if (!$reporte) {
             $_SESSION['error'] = 'Reporte no encontrado';
-            header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
             exit();
         }
         
@@ -121,7 +121,7 @@ class ReportController {
             
             if (!$id) {
                 $_SESSION['error'] = 'ID de reporte no especificado';
-                header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
+                header('Location: /RMIE/app/controllers/ReportController.php?action=index');
                 exit();
             }
             
@@ -141,7 +141,7 @@ class ReportController {
                 $_SESSION['error'] = 'Error al actualizar el reporte';
             }
             
-            header('Location: /RMIE/app/controllers/ReportController.php?accion=index');
+            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
             exit();
         }
     }
@@ -149,7 +149,15 @@ class ReportController {
     public function delete() {
         global $conn;
         
-        $id = $_GET['id'] ?? 0;
+        $id = $_GET['id'] ?? $_POST['id'] ?? 0;
+        
+        if (!$id) {
+            $_SESSION['error'] = 'ID de reporte no válido';
+            header('Location: ReportController.php?action=index');
+            exit();
+        }
+        
+        // Verificar si existe el reporte
         $reporte = Report::getById($conn, $id);
         
         if (!$reporte) {
@@ -158,7 +166,8 @@ class ReportController {
             exit();
         }
         
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Si viene con confirmación (confirmado por JavaScript), procesar eliminación
+        if (isset($_GET['confirm']) && $_GET['confirm'] === 'yes') {
             $result = Report::delete($conn, $id);
             
             if ($result) {
@@ -167,10 +176,11 @@ class ReportController {
                 $_SESSION['error'] = 'Error al eliminar el reporte';
             }
             
-            header('Location: /RMIE/app/controllers/ReportController.php?action=index');
+            header('Location: ReportController.php?action=index');
             exit();
         }
         
+        // Si no viene confirmación, mostrar página de confirmación
         include __DIR__ . '/../views/reportes/delete.php';
     }
     

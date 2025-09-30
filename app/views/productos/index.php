@@ -524,10 +524,9 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar producto">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?= urlencode($prod->id_productos) ?>" 
+                                        <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
-                                           title="Eliminar producto"
-                                           onclick="return confirm('¿Está seguro de eliminar el producto \'<?= addslashes($prod->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           title="Eliminar producto">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>

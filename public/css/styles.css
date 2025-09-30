@@ -600,6 +600,163 @@ body {
     backdrop-filter: blur(10px);
 }
 
+/* =================================================================
+   ESTILOS PARA PÁGINA DE ELIMINACIÓN DE CATEGORÍAS
+   ================================================================= */
+
+/* Contenedor de la página de eliminación */
+.delete-confirmation-page {
+    background: linear-gradient(135deg, #ff7b7b 0%, #ff416c 100%);
+    min-height: 100vh;
+    position: relative;
+}
+
+.delete-confirmation-page::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(255, 123, 123, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 65, 108, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Alertas de confirmación */
+.alert-confirmation {
+    border: none;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+    margin-bottom: 1.5rem;
+}
+
+.alert-info.alert-confirmation {
+    background: rgba(23, 162, 184, 0.1);
+    border-left: 4px solid #17a2b8;
+    color: #0c5460;
+}
+
+.alert-warning.alert-confirmation {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    color: #856404;
+}
+
+.alert-danger.alert-confirmation {
+    background: rgba(220, 53, 69, 0.1);
+    border-left: 4px solid #dc3545;
+    color: #721c24;
+}
+
+.alert-success.alert-confirmation {
+    background: rgba(40, 167, 69, 0.1);
+    border-left: 4px solid #28a745;
+    color: #155724;
+}
+
+/* Botones de confirmación especiales */
+.confirmation-buttons {
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.btn-confirm-delete {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.btn-confirm-delete:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+    background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+}
+
+.btn-cancel-delete {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    border: none;
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-cancel-delete:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(108, 117, 125, 0.4);
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%);
+}
+
+/* Iconos de advertencia animados */
+.warning-icon {
+    animation: pulse-warning 2s infinite;
+    color: #ffc107;
+    font-size: 1.2em;
+}
+
+@keyframes pulse-warning {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* Información de dependencias */
+.dependency-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.dependency-item:last-child {
+    border-bottom: none;
+}
+
+.dependency-item i {
+    margin-right: 0.75rem;
+    font-size: 1.1em;
+    color: #6c757d;
+}
+
+.dependency-count {
+    font-weight: bold;
+    color: #dc3545;
+}
+
+/* Contenedor de confirmación con estilo glassmorphism */
+.confirmation-container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
 .changes-list {
     max-height: 200px;
     overflow-y: auto;
@@ -2289,6 +2446,390 @@ button:hover {
 .rutas-stat-card:hover {
   transform: translateY(-8px) scale(1.02);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* =================================================================
+   ESTILOS PARA PÁGINA DE LOGIN - DISEÑO PROFESIONAL Y MODERNO
+   ================================================================= */
+
+/* Fondo animado para login */
+.login-body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(102, 126, 234, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+    animation: backgroundFloat 20s ease-in-out infinite;
+}
+
+@keyframes backgroundFloat {
+    0%, 100% {
+        transform: translate(0, 0) rotate(0deg);
+    }
+    33% {
+        transform: translate(30px, -30px) rotate(120deg);
+    }
+    66% {
+        transform: translate(-20px, 20px) rotate(240deg);
+    }
+}
+
+/* Contenedor principal del login */
+.login-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 450px;
+    margin: 2rem;
+}
+
+/* Tarjeta de login */
+.login-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    padding: 3rem 2.5rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+    position: relative;
+    overflow: hidden;
+    animation: slideInUp 0.8s ease-out;
+}
+
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+    background-size: 300% 100%;
+    animation: shimmerLogin 3s ease-in-out infinite;
+}
+
+@keyframes shimmerLogin {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Logo y título */
+.login-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.login-logo {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    animation: logoPulse 3s ease-in-out infinite;
+}
+
+@keyframes logoPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    }
+}
+
+.login-logo i {
+    font-size: 2.5rem;
+    color: white;
+}
+
+.login-title {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+}
+
+.login-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1rem;
+    margin: 0.5rem 0 0 0;
+    font-weight: 400;
+}
+
+/* Formulario de login */
+.login-form {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+    width: 100%;
+}
+
+.login-form-group {
+    margin-bottom: 1.8rem;
+    position: relative;
+}
+
+.login-form-label {
+    color: white;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.login-form-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 15px;
+    padding: 1rem 1.2rem;
+    font-size: 1rem;
+    color: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+}
+
+.login-form-input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+    font-weight: 400;
+}
+
+.login-form-input:focus {
+    outline: none;
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+    box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+}
+
+.login-form-input:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* Botón de login */
+.login-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 15px;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    position: relative;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.login-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+}
+
+.login-btn:hover::before {
+    left: 100%;
+}
+
+.login-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.login-btn:active {
+    transform: translateY(-1px) scale(0.98);
+    transition: all 0.1s ease;
+}
+
+.login-btn i {
+    margin-right: 0.5rem;
+    font-size: 1.2em;
+}
+
+/* Enlaces adicionales */
+.login-links {
+    text-align: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.login-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+    margin: 0 1rem;
+}
+
+.login-link:hover {
+    color: white;
+    text-decoration: none;
+}
+
+/* Efectos de partículas flotantes */
+.login-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.particle {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    animation: float 15s infinite linear;
+}
+
+.particle:nth-child(1) {
+    width: 10px;
+    height: 10px;
+    left: 10%;
+    animation-delay: 0s;
+}
+
+.particle:nth-child(2) {
+    width: 15px;
+    height: 15px;
+    left: 20%;
+    animation-delay: 2s;
+}
+
+.particle:nth-child(3) {
+    width: 8px;
+    height: 8px;
+    left: 70%;
+    animation-delay: 4s;
+}
+
+.particle:nth-child(4) {
+    width: 12px;
+    height: 12px;
+    left: 80%;
+    animation-delay: 6s;
+}
+
+@keyframes float {
+    0% {
+        top: 100%;
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        top: -10%;
+        opacity: 0;
+    }
+}
+
+/* Responsive para login */
+@media (max-width: 768px) {
+    .login-container {
+        max-width: 90%;
+        margin: 1rem;
+    }
+    
+    .login-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.6rem;
+    }
+    
+    .login-logo {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .login-logo i {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-card {
+        padding: 1.5rem 1rem;
+    }
+    
+    .login-title {
+        font-size: 1.4rem;
+    }
+    
+    .login-form-input {
+        padding: 0.8rem 1rem;
+    }
+    
+    .login-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+    }
 }
 
 .rutas-stat-icon {

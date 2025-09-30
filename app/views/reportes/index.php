@@ -442,22 +442,22 @@ if (isset($reportes) && is_array($reportes)) {
         <div class="quick-actions">
             <div class="row text-center">
                 <div class="col-md-3 mb-2">
-                    <a href="/RMIE/app/controllers/ReportController.php?accion=generate&tipo=ventas" class="btn btn-modern btn-success-modern w-100">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=generate&tipo=ventas" class="btn btn-modern btn-success-modern w-100">
                         <i class="fas fa-shopping-cart"></i> Reporte de Ventas
                     </a>
                 </div>
                 <div class="col-md-3 mb-2">
-                    <a href="/RMIE/app/controllers/ReportController.php?accion=generate&tipo=inventario" class="btn btn-modern btn-info-modern w-100">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=generate&tipo=inventario" class="btn btn-modern btn-info-modern w-100">
                         <i class="fas fa-boxes"></i> Reporte de Inventario
                     </a>
                 </div>
                 <div class="col-md-3 mb-2">
-                    <a href="/RMIE/app/controllers/ReportController.php?accion=generate&tipo=alertas" class="btn btn-modern btn-warning-modern w-100">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=generate&tipo=alertas" class="btn btn-modern btn-warning-modern w-100">
                         <i class="fas fa-exclamation-triangle"></i> Reporte de Alertas
                     </a>
                 </div>
                 <div class="col-md-3 mb-2">
-                    <a href="/RMIE/app/controllers/ReportController.php?accion=generate&tipo=financiero" class="btn btn-modern btn-primary-modern w-100">
+                    <a href="/RMIE/app/controllers/ReportController.php?action=generate&tipo=financiero" class="btn btn-modern btn-primary-modern w-100">
                         <i class="fas fa-dollar-sign"></i> Reporte Financiero
                     </a>
                 </div>
@@ -533,7 +533,7 @@ if (isset($reportes) && is_array($reportes)) {
 
         <!-- Botones de acción -->
         <div class="mb-4 text-center">
-            <a href="/RMIE/app/controllers/ReportController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
+            <a href="/RMIE/app/controllers/ReportController.php?action=create" class="btn btn-modern btn-success-modern me-2">
                 <i class="fas fa-plus"></i> Nuevo Reporte
             </a>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
@@ -637,20 +637,20 @@ if (isset($reportes) && is_array($reportes)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/ReportController.php?accion=view&id=<?= urlencode($reporte->id_reportes) ?>" 
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=view&id=<?= urlencode($reporte->id_reportes) ?>" 
                                            class="btn btn-sm btn-modern btn-info-modern" 
                                            title="Ver reporte">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/ReportController.php?accion=edit&id=<?= urlencode($reporte->id_reportes) ?>" 
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=edit&id=<?= urlencode($reporte->id_reportes) ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar reporte">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/ReportController.php?accion=delete&id=<?= urlencode($reporte->id_reportes) ?>" 
+                                        <a href="javascript:void(0)" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar reporte"
-                                           onclick="return confirm('¿Está seguro de eliminar este reporte?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="eliminarReporte(<?= $reporte->id_reportes ?>)">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>
@@ -664,7 +664,7 @@ if (isset($reportes) && is_array($reportes)) {
                                         <i class="fas fa-chart-bar fa-3x mb-3"></i>
                                         <h5>No hay reportes disponibles</h5>
                                         <p>No se encontraron reportes que coincidan con los filtros aplicados.</p>
-                                        <a href="/RMIE/app/controllers/ReportController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                        <a href="/RMIE/app/controllers/ReportController.php?action=create" class="btn btn-modern btn-success-modern">
                                             <i class="fas fa-plus"></i> Crear Primer Reporte
                                         </a>
                                     </div>
@@ -681,7 +681,7 @@ if (isset($reportes) && is_array($reportes)) {
     <script>
         function limpiarFiltros() {
             document.getElementById('filterForm').reset();
-            window.location.href = '/RMIE/app/controllers/ReportController.php?accion=index';
+            window.location.href = '/RMIE/app/controllers/ReportController.php?action=index';
         }
 
         // Auto-hide alerts after 5 seconds
@@ -694,16 +694,12 @@ if (isset($reportes) && is_array($reportes)) {
             });
         }, 5000);
 
-        // Confirmar eliminación con más detalles
-        document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const reporteId = this.closest('tr').querySelector('td:nth-child(1) strong').textContent;
-                if (confirm(`¿Está seguro de eliminar el reporte ${reporteId}?\n\nEsta acción no se puede deshacer.`)) {
-                    window.location.href = this.href;
-                }
-            });
-        });
+        // Función para eliminar reporte con confirmación
+        window.eliminarReporte = function(id) {
+            if (confirm('¿Está seguro de eliminar este reporte?\n\nEsta acción no se puede deshacer.')) {
+                window.location.href = '/RMIE/app/controllers/ReportController.php?action=delete&id=' + id + '&confirm=yes';
+            }
+        };
     </script>
 </body>
 </html>

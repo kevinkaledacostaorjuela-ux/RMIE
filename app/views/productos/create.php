@@ -9,6 +9,23 @@
     <title>Agregar Producto - RMIE</title>
     <link rel="stylesheet" href="/RMIE/public/css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .optional-field {
+            color: #6c757d;
+            font-weight: normal;
+            font-size: 0.85em;
+            font-style: italic;
+        }
+        
+        .form-group label .optional-field {
+            margin-left: 5px;
+        }
+        
+        .productos-form select option[value=""] {
+            color: #6c757d;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
     <div class="productos-container">
@@ -198,10 +215,10 @@
                         
                         <div class="form-group">
                             <label for="id_proveedor">
-                                <i class="fas fa-truck"></i> Proveedor:
+                                <i class="fas fa-truck"></i> Proveedor <span class="optional-field">(Opcional)</span>:
                             </label>
-                            <select id="id_proveedor" name="id_proveedor" required>
-                                <option value="">Seleccione un proveedor</option>
+                            <select id="id_proveedor" name="id_proveedor">
+                                <option value="">Seleccione un proveedor (opcional)</option>
                                 <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                     <?php foreach ($proveedores as $prov): ?>
                                         <option value="<?= htmlspecialchars($prov->id_proveedores) ?>">

@@ -143,9 +143,9 @@ if (!$report) {
                                     <i class="fas fa-arrow-left me-2"></i>Cancelar
                                 </a>
                                 
-                                <form action="../../controllers/ReportController.php?action=destroy" method="POST" class="d-inline">
+                                <form action="../../controllers/ReportController.php?action=delete" method="POST" class="d-inline">
                                     <input type="hidden" name="id" value="<?php echo $report['id_reportes']; ?>">
-                                    <button type="submit" class="neo-btn neo-btn-danger" onclick="return confirmDelete()">
+                                    <button type="submit" class="neo-btn neo-btn-danger" onclick="return confirm('⚠️ ATENCIÓN: Esta acción eliminará permanentemente el reporte &quot;<?php echo htmlspecialchars($report['nombre'] ?? $report['title']); ?>&quot; y todos sus datos asociados.\\n\\n¿Está absolutamente seguro de que desea continuar?');">
                                         <i class="fas fa-trash me-2"></i>Eliminar Permanentemente
                                     </button>
                                 </form>
@@ -159,10 +159,6 @@ if (!$report) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function confirmDelete() {
-            return confirm('⚠️ ATENCIÓN: Esta acción eliminará permanentemente el reporte "<?php echo htmlspecialchars($report['title']); ?>" y todos sus datos asociados.\n\n¿Está absolutamente seguro de que desea continuar?');
-        }
-
         // Auto-focus en el botón cancelar para evitar eliminaciones accidentales
         document.addEventListener('DOMContentLoaded', function() {
             const cancelButton = document.querySelector('.neo-btn-primary');

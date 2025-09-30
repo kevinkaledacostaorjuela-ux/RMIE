@@ -50,16 +50,62 @@ class CategoryController {
 
 	public function delete($id) {
 		global $conn;
-		$result = Category::delete($conn, $id);
-		if ($result instanceof \mysqli_sql_exception) {
-			// Error de clave foránea
-			echo '<script>alert("No se puede eliminar la categoría porque tiene productos asociados. Elimine o reasigne los productos antes de eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
-			exit();
-		} else if (!$result) {
-			echo '<script>alert("Error al eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
-			exit();
-		} else {
-			header('Location: /RMIE/app/controllers/CategoryController.php?accion=index');
+		
+		// Verificar si es eliminación forzada
+		$force = isset($_GET['force']) && $_GET['force'] == '1';
+		
+		$result = Category::delete($conn, $id, $force);
+		
+		if (isset($result['error'])) {
+			switch ($result['error']) {
+				case 'dependencies':
+					$deps = $result['data'];
+					$message = "No se puede eliminar la categoría porque tiene dependencias:\\n\\n";
+					
+					if (isset($deps['productos'])) {
+						$message .= "• {$deps['productos']} producto(s) asociado(s)\\n";
+					}
+					if (isset($deps['subcategorias'])) {
+						$message .= "• {$deps['subcategorias']} subcategoría(s) asociada(s)\\n";
+					}
+					if (isset($deps['ventas'])) {
+						$message .= "• {$deps['ventas']} venta(s) relacionada(s) con productos de esta categoría\\n";
+					}
+					
+					if (!isset($deps['ventas'])) {
+						$message .= "\\n¿Desea eliminar la categoría y reasignar/eliminar las dependencias?";
+						echo '<script>
+							if (confirm("' . $message . '")) {
+								window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=delete&id=' . $id . '&force=1";
+							} else {
+								window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";
+							}
+						</script>';
+					} else {
+						$message .= "\\nNo se puede realizar eliminación forzada porque hay ventas asociadas.";
+						echo '<script>alert("' . $message . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+					}
+					exit();
+					break;
+					
+				case 'has_sales':
+					echo '<script>alert("No se puede eliminar la categoría porque tiene ventas asociadas. Las ventas no pueden ser eliminadas automáticamente por seguridad."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+					exit();
+					break;
+					
+				case 'delete_failed':
+					echo '<script>alert("Error al eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+					exit();
+					break;
+					
+				case 'exception':
+					echo '<script>alert("Error de base de datos: ' . addslashes($result['message']) . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+					exit();
+					break;
+			}
+		} else if (isset($result['success'])) {
+			$successMessage = $force ? "Categoría eliminada exitosamente junto con sus dependencias." : "Categoría eliminada exitosamente.";
+			echo '<script>alert("' . $successMessage . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
 			exit();
 		}
 	}

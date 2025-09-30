@@ -19,8 +19,9 @@ $totalProveedores = count($proveedores ?? []);
 $proveedoresActivos = 0;
 $proveedoresInactivos = 0;
 $proveedoresPendientes = 0;
-$proveedoresConContacto = 0;
+$proveedoresSinContacto = 0;
 $proveedoresConEmail = 0;
+$proveedoresConContacto = 0;
 
 if (isset($proveedores) && is_array($proveedores)) {
     foreach ($proveedores as $prov) {
@@ -36,11 +37,11 @@ if (isset($proveedores) && is_array($proveedores)) {
                 break;
         }
         
-        if (!empty($prov->telefono)) {
+        if (!empty($prov->cel_proveedor)) {
             $proveedoresConContacto++;
         }
         
-        if (!empty($prov->email)) {
+        if (!empty($prov->correo)) {
             $proveedoresConEmail++;
         }
     }
@@ -510,7 +511,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                             <?php foreach ($proveedores as $proveedor): ?>
                             <tr>
                                 <td>
-                                    <strong>#<?= htmlspecialchars($proveedor->id_proveedor) ?></strong>
+                                    <strong>#<?= htmlspecialchars($proveedor->id_proveedores) ?></strong>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -518,35 +519,26 @@ if (isset($proveedores) && is_array($proveedores)) {
                                             <i class="fas fa-truck"></i>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($proveedor->nombre) ?></strong>
+                                            <strong><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></strong>
                                             <br>
                                             <small class="text-muted">
-                                                <i class="fas fa-barcode"></i> ID: <?= $proveedor->id_proveedor ?>
+                                                <i class="fas fa-barcode"></i> ID: <?= $proveedor->id_proveedores ?>
                                             </small>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <?php if (!empty($proveedor->nit)): ?>
+                                    <?php if (!empty($proveedor->cel_proveedor)): ?>
                                         <div class="contact-info mb-1">
-                                            <i class="fas fa-id-card"></i> NIT: <?= htmlspecialchars($proveedor->nit) ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if (!empty($proveedor->direccion)): ?>
-                                        <div class="contact-info">
-                                            <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($proveedor->direccion) ?>
+                                            <i class="fas fa-mobile-alt"></i> Celular: <?= htmlspecialchars($proveedor->cel_proveedor) ?>
                                         </div>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if (!empty($proveedor->telefono)): ?>
-                                        <div class="contact-info mb-1">
-                                            <i class="fas fa-phone"></i> <?= htmlspecialchars($proveedor->telefono) ?>
-                                        </div>
-                                    <?php endif; ?>
-                                    <?php if (!empty($proveedor->email)): ?>
+                                    <!-- Teléfono: Campo no disponible en modelo -->
+                                    <?php if (!empty($proveedor->correo)): ?>
                                         <div class="contact-info">
-                                            <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->email) ?>
+                                            <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->correo) ?>
                                         </div>
                                     <?php else: ?>
                                         <span class="badge badge-modern badge-secondary">
@@ -555,15 +547,10 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if (!empty($proveedor->ciudad)): ?>
-                                        <span class="badge badge-modern badge-info">
-                                            <i class="fas fa-city"></i> <?= htmlspecialchars($proveedor->ciudad) ?>
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-question"></i> N/A
-                                        </span>
-                                    <?php endif; ?>
+                                    <!-- Ciudad: Campo no disponible en modelo -->
+                                    <span class="badge badge-modern badge-secondary">
+                                        <i class="fas fa-question"></i> N/A
+                                    </span>
                                 </td>
                                 <td>
                                     <?php
@@ -596,24 +583,25 @@ if (isset($proveedores) && is_array($proveedores)) {
                                 <td>
                                     <div class="text-center">
                                         <i class="fas fa-calendar text-info"></i>
-                                        <strong><?= date('d/m/Y', strtotime($proveedor->fecha_registro ?? 'now')) ?></strong>
+                                        <strong><?= date('d/m/Y') ?></strong>
                                         <br>
                                         <small class="text-muted">
-                                            <?= date('H:i', strtotime($proveedor->fecha_registro ?? 'now')) ?>
+                                            <!-- Fecha registro no disponible -->
+                                            N/A
                                         </small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedor) ?>" 
+                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar proveedor">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedor) ?>" 
+                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar proveedor"
-                                           onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>

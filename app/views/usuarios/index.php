@@ -36,18 +36,11 @@ if (isset($usuarios) && is_array($usuarios)) {
                 break;
         }
         
-        // Contar por estado
-        switch (strtolower($usuario->estado ?? 'activo')) {
-            case 'activo':
-                $usuariosActivos++;
-                break;
-            case 'inactivo':
-                $usuariosInactivos++;
-                break;
-        }
+        // Contar por estado (todos activos por defecto)
+        $usuariosActivos++;
         
         // Contar usuarios recientes (últimos 30 días)
-        if (!empty($usuario->fecha_registro) && $usuario->fecha_registro >= $fechaReciente) {
+        if (!empty($usuario->fecha_creacion) && $usuario->fecha_creacion >= $fechaReciente) {
             $usuariosRecientes++;
         }
     }
@@ -545,18 +538,18 @@ if (isset($usuarios) && is_array($usuarios)) {
                             <?php foreach ($usuarios as $usuario): ?>
                             <tr>
                                 <td>
-                                    <strong>#<?= htmlspecialchars($usuario->id_usuario) ?></strong>
+                                    <strong>#<?= htmlspecialchars($usuario->num_doc) ?></strong>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
                                         <div class="user-icon">
-                                            <?= strtoupper(substr($usuario->nombre ?? 'U', 0, 1)) ?>
+                                            <?= strtoupper(substr($usuario->nombres ?? 'U', 0, 1)) ?>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($usuario->nombre ?? 'Sin nombre') ?></strong>
+                                            <strong><?= htmlspecialchars($usuario->nombres ?? 'Sin nombre') ?></strong>
                                             <br>
                                             <small class="text-muted">
-                                                <i class="fas fa-at"></i> <?= htmlspecialchars($usuario->usuario ?? 'N/A') ?>
+                                                <i class="fas fa-id-card"></i> Doc: <?= htmlspecialchars($usuario->num_doc ?? 'N/A') ?>
                                             </small>
                                         </div>
                                     </div>
@@ -584,7 +577,8 @@ if (isset($usuarios) && is_array($usuarios)) {
                                 </td>
                                 <td>
                                     <?php
-                                    $estado = strtolower($usuario->estado ?? 'activo');
+                                    // Estado fijo ya que no existe en modelo
+                                    $estado = 'activo';
                                     $badgeClass = '';
                                     $iconClass = '';
                                     
@@ -608,42 +602,34 @@ if (isset($usuarios) && is_array($usuarios)) {
                                 </td>
                                 <td>
                                     <div class="text-center">
-                                        <?php if (!empty($usuario->ultimo_acceso)): ?>
-                                            <i class="fas fa-clock text-info"></i>
-                                            <strong><?= date('d/m/Y', strtotime($usuario->ultimo_acceso)) ?></strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <?= date('H:i', strtotime($usuario->ultimo_acceso)) ?>
-                                            </small>
-                                        <?php else: ?>
-                                            <span class="badge badge-modern badge-secondary">
-                                                <i class="fas fa-minus"></i> Nunca
-                                            </span>
-                                        <?php endif; ?>
+                                        <!-- Último acceso: Campo no disponible en modelo -->
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-minus"></i> N/A
+                                        </span>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="text-center">
                                         <i class="fas fa-calendar text-info"></i>
-                                        <strong><?= date('d/m/Y', strtotime($usuario->fecha_registro ?? 'now')) ?></strong>
+                                        <strong><?= date('d/m/Y', strtotime($usuario->fecha_creacion ?? 'now')) ?></strong>
                                         <br>
                                         <small class="text-muted">
-                                            <?= date('H:i', strtotime($usuario->fecha_registro ?? 'now')) ?>
+                                            <?= date('H:i', strtotime($usuario->fecha_creacion ?? 'now')) ?>
                                         </small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/UserController.php?accion=edit&id=<?= urlencode($usuario->id_usuario) ?>" 
+                                        <a href="/RMIE/app/controllers/UserController.php?accion=edit&id=<?= urlencode($usuario->num_doc) ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar usuario">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <?php if (strtolower($usuario->rol ?? '') !== 'admin' || $_SESSION['user']->rol === 'admin'): ?>
-                                        <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->id_usuario) ?>" 
+                                        <?php if (strtolower($usuario->rol ?? '') !== 'admin' || ($_SESSION['rol'] ?? '') === 'admin'): ?>
+                                        <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->num_doc) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar usuario"
-                                           onclick="return confirm('¿Está seguro de eliminar el usuario \'<?= addslashes($usuario->nombre ?? $usuario->usuario) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirm('¿Está seguro de eliminar el usuario \'<?= addslashes($usuario->nombres ?? 'Usuario') ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -688,14 +674,16 @@ if (isset($usuarios) && is_array($usuarios)) {
             });
         }, 5000);
 
-        // Confirmar eliminación con más detalles
-        document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const userName = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
-                if (confirm(`¿Está seguro de eliminar el usuario "${userName}"?\n\nEsta acción no se puede deshacer.`)) {
-                    window.location.href = this.href;
-                }
+        // Efectos adicionales para la tabla
+        document.querySelectorAll('.table-modern tbody tr').forEach(function(row) {
+            row.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.02)';
+                this.style.zIndex = '10';
+            });
+            
+            row.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+                this.style.zIndex = '1';
             });
         });
     </script>

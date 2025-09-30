@@ -155,7 +155,11 @@ class ClientController {
                     'cel_cliente' => trim($_POST['cel_cliente'] ?? ''),
                     'correo' => trim($_POST['correo']),
                     'estado' => $_POST['estado'] ?? 'activo',
-                    'id_locales' => (int)$_POST['id_locales']
+                    'id_locales' => (int)$_POST['id_locales'],
+                    'direccion' => trim($_POST['direccion'] ?? ''),
+                    'ciudad' => trim($_POST['ciudad'] ?? ''),
+                    'fecha_nacimiento' => $_POST['fecha_nacimiento'] ?? null,
+                    'preferencias' => trim($_POST['preferencias'] ?? '')
                 ]);
                 
                 $success = "Cliente actualizado exitosamente";

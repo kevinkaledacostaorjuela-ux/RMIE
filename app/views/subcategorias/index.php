@@ -499,10 +499,9 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar subcategoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?= urlencode($subcat->id_subcategoria) ?>" 
+                                        <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
-                                           title="Eliminar subcategoría"
-                                           onclick="return confirm('¿Está seguro de eliminar la subcategoría \'<?= addslashes($subcat->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           title="Eliminar subcategoría">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                     </div>

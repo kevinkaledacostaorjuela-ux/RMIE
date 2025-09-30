@@ -78,7 +78,7 @@ class SubcategorySimple {
         return $subcategorias;
     }
 
-    // Obtener por ID sin fecha_creacion
+    // Obtener por ID sin fecha_creacion (devuelve objeto)
     public static function getByIdSimple($conn, $id_subcategoria) {
         $sql = "SELECT * FROM subcategorias WHERE id_subcategoria = ?";
         $stmt = $conn->prepare($sql);
@@ -88,6 +88,23 @@ class SubcategorySimple {
         
         if ($row = $result->fetch_assoc()) {
             return new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria']);
+        }
+        return null;
+    }
+
+    // Obtener por ID sin fecha_creacion (devuelve array)
+    public static function getById($conn, $id_subcategoria) {
+        $sql = "SELECT s.*, c.nombre AS categoria_nombre 
+                FROM subcategorias s 
+                LEFT JOIN categorias c ON s.id_categoria = c.id_categoria 
+                WHERE s.id_subcategoria = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_subcategoria);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            return $row;
         }
         return null;
     }
@@ -129,12 +146,101 @@ class SubcategorySimple {
         return $result;
     }
 
-    // Eliminar
-    public static function deleteSimple($conn, $id_subcategoria) {
-        $sql = "DELETE FROM subcategorias WHERE id_subcategoria = ?";
-        $stmt = $conn->prepare($sql);
+    // Verificar si la subcategoría tiene dependencias
+    public static function checkDependencies($conn, $id_subcategoria) {
+        $dependencies = [];
+        
+        // Verificar productos asociados
+        $sqlProductos = "SELECT COUNT(*) as count FROM productos WHERE id_subcategoria = ?";
+        $stmt = $conn->prepare($sqlProductos);
         $stmt->bind_param("i", $id_subcategoria);
-        return $stmt->execute();
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $productos = $result->fetch_assoc()['count'];
+        
+        if ($productos > 0) {
+            $dependencies['productos'] = $productos;
+            
+            // Verificar ventas relacionadas con productos de esta subcategoría
+            $sqlVentas = "SELECT COUNT(DISTINCT v.id_ventas) as count 
+                         FROM ventas v 
+                         INNER JOIN productos p ON v.id_productos = p.id_productos 
+                         WHERE p.id_subcategoria = ?";
+            $stmt = $conn->prepare($sqlVentas);
+            $stmt->bind_param("i", $id_subcategoria);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $ventas = $result->fetch_assoc()['count'];
+            
+            if ($ventas > 0) {
+                $dependencies['ventas'] = $ventas;
+            }
+        }
+        
+        return $dependencies;
+    }
+
+    // Eliminar con manejo de dependencias
+    public static function delete($conn, $id_subcategoria, $force = false) {
+        // Verificar dependencias
+        $dependencies = self::checkDependencies($conn, $id_subcategoria);
+        
+        if (!empty($dependencies) && !$force) {
+            return ['error' => 'dependencies', 'data' => $dependencies];
+        }
+        
+        try {
+            // Iniciar transacción
+            $conn->autocommit(false);
+            
+            if ($force && !empty($dependencies)) {
+                // Si hay ventas, no permitir eliminación forzada
+                if (isset($dependencies['ventas'])) {
+                    $conn->rollback();
+                    return ['error' => 'has_sales', 'data' => $dependencies];
+                }
+                
+                // Actualizar productos para que no tengan subcategoría (NULL)
+                if (isset($dependencies['productos'])) {
+                    $sqlProductos = "UPDATE productos SET id_subcategoria = NULL WHERE id_subcategoria = ?";
+                    $stmt = $conn->prepare($sqlProductos);
+                    $stmt->bind_param("i", $id_subcategoria);
+                    $stmt->execute();
+                }
+            }
+            
+            // Eliminar la subcategoría
+            $sql = "DELETE FROM subcategorias WHERE id_subcategoria = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_subcategoria);
+            $result = $stmt->execute();
+            
+            if ($result) {
+                $conn->commit();
+                return ['success' => true];
+            } else {
+                $conn->rollback();
+                return ['error' => 'delete_failed'];
+            }
+            
+        } catch (mysqli_sql_exception $e) {
+            $conn->rollback();
+            return ['error' => 'exception', 'message' => $e->getMessage()];
+        } finally {
+            $conn->autocommit(true);
+        }
+    }
+
+    // Eliminar simple (mantenido para compatibilidad)
+    public static function deleteSimple($conn, $id_subcategoria) {
+        try {
+            $sql = "DELETE FROM subcategorias WHERE id_subcategoria = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $id_subcategoria);
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            return ['error' => 'exception', 'message' => $e->getMessage()];
+        }
     }
 }
 ?>

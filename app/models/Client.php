@@ -9,8 +9,13 @@ class Client {
     public $id_locales;
     public $fecha_creacion;
     public $local_nombre;
+    // Nuevos campos
+    public $direccion;
+    public $ciudad;
+    public $fecha_nacimiento;
+    public $preferencias;
 
-    public function __construct($id_clientes, $nombre, $descripcion, $cel_cliente, $correo, $estado, $id_locales, $fecha_creacion = null, $local_nombre = null) {
+    public function __construct($id_clientes, $nombre, $descripcion, $cel_cliente, $correo, $estado, $id_locales, $fecha_creacion = null, $local_nombre = null, $direccion = null, $ciudad = null, $fecha_nacimiento = null, $preferencias = null) {
         $this->id_clientes = $id_clientes;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
@@ -20,6 +25,10 @@ class Client {
         $this->id_locales = $id_locales;
         $this->fecha_creacion = $fecha_creacion;
         $this->local_nombre = $local_nombre;
+        $this->direccion = $direccion;
+        $this->ciudad = $ciudad;
+        $this->fecha_nacimiento = $fecha_nacimiento;
+        $this->preferencias = $preferencias;
     }
 
     public static function getAll($conn, $filtros = []) {
@@ -175,17 +184,25 @@ class Client {
                 cel_cliente = ?, 
                 correo = ?, 
                 estado = ?, 
-                id_locales = ? 
+                id_locales = ?,
+                direccion = ?,
+                ciudad = ?,
+                fecha_nacimiento = ?,
+                preferencias = ?
                 WHERE id_clientes = ?";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssssii', 
+        $stmt->bind_param('sssssiisssi', 
             $data['nombre'], 
             $data['descripcion'], 
             $data['cel_cliente'], 
             $data['correo'], 
             $data['estado'], 
             $data['id_locales'],
+            $data['direccion'] ?? null,
+            $data['ciudad'] ?? null,
+            $data['fecha_nacimiento'] ?? null,
+            $data['preferencias'] ?? null,
             $id
         );
         

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html>
 <head>
     <title>Agregar Categoría</title>
@@ -12,9 +12,11 @@
             <input type="text" name="nombre" required><br>
             <label>Descripción:</label>
             <input type="text" name="descripcion" required><br>
-            <button type="submit">Guardar</button>
+            <button type="submit" class="btn btn-success">Guardar</button>
         </form>
-    <a href="/RMIE/app/controllers/CategoryController.php?accion=index">Volver al listado de categorías</a>
+    <a href="/RMIE/app/controllers/CategoryController.php?accion=index" class="btn btn-primary" style="margin-top:15px;display:inline-block;">
+        <i class="fas fa-arrow-left"></i> Volver al listado de categorías
+    </a>
     </div>
 </body>
 </html>

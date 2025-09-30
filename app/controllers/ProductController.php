@@ -57,15 +57,11 @@ class ProductController {
             $marca = $_POST['marca'] ?? null;
             $id_subcategoria = $_POST['id_subcategoria'] ?? null;
             $id_categoria = $_POST['id_categoria'] ?? null;
-            $id_proveedores = $_POST['id_proveedor'] ?? null;
+            $id_proveedores = !empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
             
             // Validar campos requeridos
-            if (empty($id_proveedores)) {
-                echo '<pre>Error: Debe seleccionar un proveedor.</pre>';
-                return;
-            }
-            
+            // El proveedor ahora es opcional
             if (empty($num_doc)) {
                 echo '<pre>Error: Debe seleccionar un usuario responsable.</pre>';
                 return;
@@ -103,6 +99,9 @@ class ProductController {
         $usuarios = User::getAll($conn);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            echo '<pre>POST recibido: ' . print_r($_POST, true) . '</pre>';
+            echo '<pre>ID del producto: ' . $id . '</pre>';
+            
             $nombre = $_POST['nombre'] ?? null;
             $descripcion = $_POST['descripcion'] ?? null;
             $fecha_entrada = $_POST['fecha_entrada'] ?? null;
@@ -115,17 +114,23 @@ class ProductController {
             $marca = $_POST['marca'] ?? null;
             $id_subcategoria = $_POST['id_subcategoria'] ?? null;
             $id_categoria = $_POST['id_categoria'] ?? null;
-            $id_proveedores = $_POST['id_proveedor'] ?? null;
+            $id_proveedores = !empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
             
-            $result = Product::update($conn, $id, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
-            
-            if (!$result) {
-                echo '<pre>Error al actualizar el producto.</pre>';
+            // Validación de datos requeridos
+            if (empty($nombre) || empty($descripcion)) {
+                echo '<pre>Error: Nombre y descripción son obligatorios.</pre>';
             } else {
-                echo '<pre>Producto actualizado correctamente.</pre>';
-                header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
-                exit();
+                echo '<pre>Intentando actualizar producto...</pre>';
+                $result = Product::update($conn, $id, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
+                
+                if (!$result) {
+                    echo '<pre>Error al actualizar el producto.</pre>';
+                } else {
+                    echo '<pre>Producto actualizado correctamente.</pre>';
+                    echo '<script>alert("Producto actualizado exitosamente."); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+                    exit();
+                }
             }
         }
         include __DIR__ . '/../views/productos/edit.php';
@@ -133,12 +138,48 @@ class ProductController {
 
     public function delete($id) {
         global $conn;
-        $result = Product::delete($conn, $id);
-        if (!$result) {
-            echo '<pre>Error al eliminar el producto.</pre>';
-        } else {
-            echo '<pre>Producto eliminado correctamente.</pre>';
+        
+        // Verificar si es eliminación forzada (aunque para productos no debería permitirse si hay ventas)
+        $force = isset($_GET['force']) && $_GET['force'] == '1';
+        
+        $result = Product::deleteWithDependencies($conn, $id, $force);
+        
+        if (isset($result['error'])) {
+            switch ($result['error']) {
+                case 'dependencies':
+                    $deps = $result['data'];
+                    $message = "No se puede eliminar el producto porque tiene dependencias:\\n\\n";
+                    
+                    if (isset($deps['ventas'])) {
+                        $message .= "• {$deps['ventas']} venta(s) asociada(s)\\n";
+                        $message .= "\\nLos productos no pueden ser eliminados si tienen ventas asociadas por seguridad y trazabilidad.";
+                    }
+                    
+                    echo '<script>alert("' . $message . '"); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+                    exit();
+                    break;
+                    
+                case 'has_sales':
+                    echo '<script>alert("No se puede eliminar el producto porque tiene ventas asociadas. Los productos con ventas no pueden ser eliminados por seguridad."); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+                    exit();
+                    break;
+                    
+                case 'delete_failed':
+                    echo '<script>alert("Error al eliminar el producto."); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+                    exit();
+                    break;
+                    
+                case 'exception':
+                    echo '<script>alert("Error de base de datos: ' . addslashes($result['message']) . '"); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+                    exit();
+                    break;
+            }
+        } else if (isset($result['success'])) {
+            echo '<script>alert("Producto eliminado exitosamente."); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
+            exit();
         }
+        
+        // Fallback en caso de resultado inesperado
         header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
         exit();
     }
