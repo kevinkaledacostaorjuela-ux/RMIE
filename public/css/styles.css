@@ -2882,3 +2882,368 @@ button:hover {
     overflow-x: auto;
   }
 }
+
+/* === MENÚ LATERAL MODERNO === */
+.sidebar-modern {
+    background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    min-width: 280px;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+}
+
+.sidebar-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="rgba(255,255,255,0.02)"/><circle cx="75" cy="75" r="1" fill="rgba(255,255,255,0.02)"/><circle cx="50" cy="10" r="0.5" fill="rgba(255,255,255,0.03)"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
+    opacity: 0.4;
+    pointer-events: none;
+}
+
+.sidebar-header {
+    position: relative;
+    z-index: 2;
+    padding: 25px 20px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.sidebar-title {
+    color: #ffffff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 0;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sidebar-title i {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-size: 1.6rem;
+}
+
+.sidebar-nav {
+    position: relative;
+    z-index: 2;
+    padding: 20px 0;
+    list-style: none;
+    margin: 0;
+}
+
+.nav-item-modern {
+    margin: 5px 15px;
+    position: relative;
+}
+
+.nav-link-modern {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.nav-link-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s ease;
+}
+
+.nav-link-modern:hover::before {
+    left: 100%;
+}
+
+.nav-link-modern:hover {
+    color: #ffffff;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(10px);
+    transform: translateX(8px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+
+.nav-link-modern.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    transform: translateX(5px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+}
+
+.nav-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 15px;
+    font-size: 1.1rem;
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.nav-link-modern:hover .nav-icon {
+    transform: scale(1.2);
+}
+
+.nav-text {
+    flex: 1;
+    white-space: nowrap;
+}
+
+.nav-arrow {
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all 0.3s ease;
+    font-size: 0.8rem;
+}
+
+.nav-link-modern:hover .nav-arrow {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.sidebar-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    margin: 20px 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.logout-section {
+    position: relative;
+    z-index: 2;
+    padding: 20px;
+    margin-top: auto;
+}
+
+.btn-logout-modern {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 65, 108, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-logout-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.btn-logout-modern:hover::before {
+    left: 100%;
+}
+
+.btn-logout-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 65, 108, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-logout-modern i {
+    margin-right: 10px;
+    font-size: 1.1rem;
+}
+
+/* Animaciones suaves para el menú */
+@keyframes slideInLeft {
+    from {
+        transform: translateX(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.sidebar-modern {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+.nav-item-modern {
+    animation: slideInLeft 0.5s ease-out;
+    animation-fill-mode: both;
+}
+
+.nav-item-modern:nth-child(1) { animation-delay: 0.1s; }
+.nav-item-modern:nth-child(2) { animation-delay: 0.2s; }
+.nav-item-modern:nth-child(3) { animation-delay: 0.3s; }
+.nav-item-modern:nth-child(4) { animation-delay: 0.4s; }
+.nav-item-modern:nth-child(5) { animation-delay: 0.5s; }
+.nav-item-modern:nth-child(6) { animation-delay: 0.6s; }
+.nav-item-modern:nth-child(7) { animation-delay: 0.7s; }
+.nav-item-modern:nth-child(8) { animation-delay: 0.8s; }
+.nav-item-modern:nth-child(9) { animation-delay: 0.9s; }
+.nav-item-modern:nth-child(10) { animation-delay: 1.0s; }
+.nav-item-modern:nth-child(11) { animation-delay: 1.1s; }
+
+/* Responsive para el menú */
+@media (max-width: 768px) {
+    .sidebar-modern {
+        min-width: 250px;
+    }
+    
+    .nav-link-modern {
+        padding: 12px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .sidebar-title {
+        font-size: 1.2rem;
+    }
+}
+
+/* Efectos adicionales */
+.nav-link-modern:active {
+    transform: translateX(8px) scale(0.98);
+}
+
+.sidebar-modern::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-modern::-webkit-scrollbar-track {
+    background: rgba(255,255,255,0.1);
+}
+
+.sidebar-modern::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 3px;
+}
+
+.sidebar-modern::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* === ESTILOS ADICIONALES PARA DASHBOARD === */
+.dashboard-section-title {
+    color: #333;
+    font-weight: 600;
+    border-left: 4px solid;
+    padding-left: 15px;
+    margin-bottom: 20px;
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dashboard-section-title i {
+    font-size: 1.4rem;
+}
+
+.dashboard-card {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
+    z-index: 1;
+}
+
+.dashboard-card:hover::before {
+    left: 100%;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-15px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2) !important;
+}
+
+.dashboard-card .btn {
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 2;
+}
+
+.dashboard-card .btn:hover {
+    transform: scale(1.05);
+}
+
+/* Animaciones de entrada para las secciones */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.row {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.dashboard-section-title {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+/* Espaciado mejorado */
+.container-fluid {
+    padding-left: 2rem !important;
+    padding-right: 2rem !important;
+}
+
+@media (max-width: 768px) {
+    .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    .dashboard-card {
+        height: 160px !important;
+    }
+    
+    .dashboard-section-title {
+        font-size: 1.1rem;
+        margin-bottom: 15px;
+    }
+}
