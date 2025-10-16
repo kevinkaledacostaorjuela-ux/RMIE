@@ -42,6 +42,11 @@ class ClientController {
         global $conn;
         
         try {
+            // Capturar mensaje de éxito de la URL
+            if (isset($_GET['success'])) {
+                $_SESSION['success'] = $_GET['success'];
+            }
+            
             // Obtener estadísticas
             $stats = Client::getStats($conn);
             
@@ -155,17 +160,12 @@ class ClientController {
                     'cel_cliente' => trim($_POST['cel_cliente'] ?? ''),
                     'correo' => trim($_POST['correo']),
                     'estado' => $_POST['estado'] ?? 'activo',
-                    'id_locales' => (int)$_POST['id_locales'],
-                    'direccion' => trim($_POST['direccion'] ?? ''),
-                    'ciudad' => trim($_POST['ciudad'] ?? ''),
-                    'fecha_nacimiento' => $_POST['fecha_nacimiento'] ?? null,
-                    'preferencias' => trim($_POST['preferencias'] ?? '')
+                    'id_locales' => (int)$_POST['id_locales']
                 ]);
                 
-                $success = "Cliente actualizado exitosamente";
-                
-                // Recargar datos del cliente
-                $cliente = Client::getById($conn, $id);
+                // Redirigir al index con mensaje de éxito
+                header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente actualizado exitosamente');
+                exit;
             }
             
         } catch (Exception $e) {
