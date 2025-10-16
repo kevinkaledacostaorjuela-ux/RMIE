@@ -69,17 +69,24 @@ class ReportController {
         
         include __DIR__ . '/../views/reportes/create.php';
     }
-    
-    public function store() {
+      public function store() {
         global $conn;
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Procesar la fecha de creación
+            $fecha_creacion = '';
+            if (!empty($_POST['fecha_creacion'])) {
+                // Usar la fecha especificada por el usuario
+                $fecha_creacion = $_POST['fecha_creacion'] . ' ' . date('H:i:s');
+            }
+            
             $data = [
                 'nombre' => trim($_POST['nombre'] ?? ''),
                 'descripcion' => trim($_POST['descripcion'] ?? ''),
                 'tipo' => $_POST['tipo'] ?? 'general',
                 'estado' => $_POST['estado'] ?? 'activo',
-                'parametros' => json_encode($_POST['parametros'] ?? [])
+                'parametros' => json_encode($_POST['parametros'] ?? []),
+                'fecha_creacion' => $fecha_creacion
             ];
             
             $result = Report::create($conn, $data);

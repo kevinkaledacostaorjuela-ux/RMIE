@@ -608,13 +608,20 @@
                                 <input type="number" id="total" name="total" class="form-control" 
                                        step="0.01" readonly value="<?= htmlspecialchars($_POST['total'] ?? '') ?>">
                             </div>
-                        </div>
-
-                        <!-- Configuración de la venta -->
+                        </div>                        <!-- Configuración de la venta -->
                         <div class="form-section">
                             <h5 class="section-title">
                                 <i class="fas fa-cogs"></i> Configuración de la Venta
                             </h5>
+                            
+                            <div class="form-group">
+                                <label for="fecha_venta">
+                                    <i class="fas fa-calendar-alt"></i> Fecha de Venta:
+                                </label>
+                                <input type="date" id="fecha_venta" name="fecha_venta" class="form-control" 
+                                       required value="<?= htmlspecialchars($_POST['fecha_venta'] ?? date('Y-m-d')) ?>">
+                                <small class="form-text text-muted">Fecha en que se realiza la venta</small>
+                            </div>
                             
                             <div class="form-group">
                                 <label for="estado">
@@ -660,6 +667,12 @@
                         <div class="summary-header">
                             <h5><i class="fas fa-receipt"></i> Resumen de la Venta</h5>
                         </div>
+                          <div class="summary-item">
+                            <span class="summary-label">
+                                <i class="fas fa-calendar-alt"></i> Fecha de Venta:
+                            </span>
+                            <span class="summary-value" id="fecha-mostrar"><?= date('d/m/Y') ?></span>
+                        </div>
                         
                         <div class="summary-item">
                             <span class="summary-label">
@@ -694,13 +707,12 @@
                                 <i class="fas fa-calculator"></i> Total a Pagar:
                             </span>
                             <span class="summary-value" id="total-mostrar">$0.00</span>
-                        </div>
-
-                        <!-- Información adicional -->
+                        </div>                        <!-- Información adicional -->
                         <div class="info-alert">
                             <i class="fas fa-info-circle"></i>
                             <strong>Información Importante:</strong>
                             <ul class="mb-0 mt-2">
+                                <li>La fecha se establece automáticamente al día actual</li>
                                 <li>El precio se carga automáticamente del producto seleccionado</li>
                                 <li>Verifique siempre el stock disponible antes de procesar</li>
                                 <li>El total se calcula automáticamente al cambiar la cantidad</li>
@@ -845,8 +857,7 @@
                 actualizarProducto();
             }, 100);
         });
-        
-        cantidadInput.addEventListener('input', function() {
+          cantidadInput.addEventListener('input', function() {
             this.style.transform = 'scale(0.98)';
             setTimeout(() => {
                 this.style.transform = 'scale(1)';
@@ -855,17 +866,34 @@
             }, 100);
         });
         
-        // Validación del formulario mejorada
+        // Event listener para la fecha
+        const fechaInput = document.getElementById('fecha_venta');
+        fechaInput.addEventListener('change', function() {
+            const fecha = new Date(this.value);
+            const fechaFormateada = fecha.toLocaleDateString('es-ES');
+            updateSummaryWithAnimation('fecha-mostrar', fechaFormateada);
+        });
+          // Validación del formulario mejorada
         form.addEventListener('submit', function(e) {
             const cliente = document.getElementById('id_clientes').value;
             const producto = productoSelect.value;
             const cantidad = parseInt(cantidadInput.value || 0);
             const usuario = document.getElementById('num_doc').value;
+            const fecha = document.getElementById('fecha_venta').value;
             
             let errors = [];
-            
-            if (!cliente) errors.push('Debe seleccionar un cliente');
+              if (!cliente) errors.push('Debe seleccionar un cliente');
             if (!producto) errors.push('Debe seleccionar un producto');
+            if (!fecha) errors.push('Debe seleccionar una fecha de venta');
+            else {
+                // Validar que la fecha no sea futura
+                const fechaVenta = new Date(fecha);
+                const hoy = new Date();
+                hoy.setHours(0, 0, 0, 0);
+                if (fechaVenta > hoy) {
+                    errors.push('La fecha de venta no puede ser futura');
+                }
+            }
             if (cantidad <= 0) errors.push('La cantidad debe ser mayor a 0');
             if (!usuario) errors.push('Debe seleccionar un usuario responsable');
             

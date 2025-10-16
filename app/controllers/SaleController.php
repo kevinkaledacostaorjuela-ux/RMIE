@@ -59,9 +59,7 @@ class SaleController {
             error_log("Error en SaleController::index: " . $e->getMessage());
             echo "Error: " . htmlspecialchars($e->getMessage());
         }
-    }
-
-    public function create() {
+    }    public function create() {
         try {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos
@@ -83,7 +81,8 @@ class SaleController {
                 }
                 
                 if (empty($fecha_venta)) {
-                    throw new Exception("La fecha de venta es requerida");
+                    // Si no se proporciona fecha, usar la fecha actual
+                    $fecha_venta = date('Y-m-d');
                 }
                 
                 if (empty($cantidad) || $cantidad <= 0) {
@@ -161,13 +160,13 @@ class SaleController {
                 if (empty($id_productos)) {
                     throw new Exception("Debe seleccionar un producto");
                 }
-                
-                if (empty($id_clientes)) {
+                  if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");
                 }
                 
                 if (empty($fecha_venta)) {
-                    throw new Exception("La fecha de venta es requerida");
+                    // Si no se proporciona fecha, mantener la fecha actual de la venta o usar la fecha actual
+                    $fecha_venta = $venta->fecha_venta ?? date('Y-m-d');
                 }
                 
                 if (empty($cantidad) || $cantidad <= 0) {

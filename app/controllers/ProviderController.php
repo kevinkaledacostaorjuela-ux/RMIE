@@ -54,6 +54,7 @@ class ProviderController {
                 $correo = trim($_POST['correo'] ?? '');
                 $cel_proveedor = trim($_POST['cel_proveedor'] ?? '');
                 $estado = trim($_POST['estado'] ?? '');
+                $ubicacion = trim($_POST['ubicacion'] ?? '');
                 
                 if (empty($nombre_distribuidor)) {
                     throw new Exception("El nombre del distribuidor es requerido");
@@ -72,7 +73,7 @@ class ProviderController {
                 }
                 
                 global $conn;
-                $resultado = Provider::create($conn, $nombre_distribuidor, $correo, $cel_proveedor, $estado);
+                $resultado = Provider::create($conn, $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
                 
                 if ($resultado) {
                     header('Location: ' . $this->baseUrl . '?accion=index&success=created');
@@ -112,6 +113,7 @@ class ProviderController {
                 $correo = trim($_POST['correo'] ?? '');
                 $cel_proveedor = trim($_POST['cel_proveedor'] ?? '');
                 $estado = trim($_POST['estado'] ?? '');
+                $ubicacion = trim($_POST['ubicacion'] ?? '');
                 
                 if (empty($nombre_distribuidor)) {
                     throw new Exception("El nombre del distribuidor es requerido");
@@ -129,7 +131,7 @@ class ProviderController {
                     throw new Exception("El estado es requerido");
                 }
                 
-                $resultado = Provider::update($conn, $id, $nombre_distribuidor, $correo, $cel_proveedor, $estado);
+                $resultado = Provider::update($conn, $id, $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
                 
                 if ($resultado) {
                     header('Location: ' . $this->baseUrl . '?accion=index&success=updated');

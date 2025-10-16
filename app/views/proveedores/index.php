@@ -101,22 +101,22 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .form-control-modern {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.9);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
-            color: #fff;
+            color: #000;
             padding: 10px 15px;
         }
 
         .form-control-modern::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(0, 0, 0, 0.6);
         }
 
         .form-control-modern:focus {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.95);
             border-color: #4facfe;
             box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
-            color: #fff;
+            color: #000;
         }
 
         .stats-grid {
@@ -189,12 +189,13 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .table-modern {
-            background: transparent;
-            color: #fff;
+            background: rgba(255, 255, 255, 0.95);
+            color: #000;
+            border-radius: 10px;
         }
 
         .table-modern th {
-            background: rgba(255, 255, 255, 0.2);
+            background: rgba(52, 58, 64, 0.8);
             color: #fff;
             border: none;
             padding: 15px 10px;
@@ -202,15 +203,25 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .table-modern td {
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.1);
             padding: 12px 10px;
             vertical-align: middle;
             transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
         }
 
         .table-modern tbody tr:hover {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(240, 240, 240, 0.9) !important;
             transform: scale(1.02);
+        }
+
+        .table-modern td strong,
+        .table-modern td .contact-info {
+            color: #000 !important;
+        }
+
+        .table-modern td {
+            color: #000 !important;
         }
 
         .btn-modern {
@@ -356,7 +367,11 @@ if (isset($proveedores) && is_array($proveedores)) {
 
         .contact-info {
             font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.8);
+            color: #000 !important;
+        }
+
+        .text-muted {
+            color: #6c757d !important;
         }
     </style>
 </head>
@@ -547,10 +562,15 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <!-- Ciudad: Campo no disponible en modelo -->
-                                    <span class="badge badge-modern badge-secondary">
-                                        <i class="fas fa-question"></i> N/A
-                                    </span>
+                                    <?php if (!empty($proveedor->ubicacion)): ?>
+                                        <div class="contact-info">
+                                            <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars(substr($proveedor->ubicacion, 0, 30)) ?><?= strlen($proveedor->ubicacion) > 30 ? '...' : '' ?>
+                                        </div>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-question"></i> Sin ubicación
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php

@@ -106,9 +106,26 @@
                 
                 <!-- Información adicional -->
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <h5><i class="fas fa-clipboard-list"></i> Información Adicional</h5>
                         
+                        <div class="form-group">
+                            <label for="ubicacion">
+                                <i class="fas fa-map-marker-alt"></i> Ubicación/Dirección:
+                            </label>
+                            <textarea id="ubicacion" 
+                                      name="ubicacion" 
+                                      rows="3"
+                                      value="<?= htmlspecialchars($_POST['ubicacion'] ?? '') ?>"
+                                      placeholder="Ingrese la dirección completa del proveedor (ciudad, estado, dirección específica)"
+                                      maxlength="255"><?= htmlspecialchars($_POST['ubicacion'] ?? '') ?></textarea>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Este campo es opcional pero recomendado para ubicar al proveedor
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle"></i>
                             <strong>Nota:</strong> Asegúrese de que toda la información sea correcta antes de guardar. 

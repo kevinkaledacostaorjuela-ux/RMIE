@@ -104,6 +104,30 @@
                     </div>
                 </div>
                 
+                <!-- Campo de ubicación -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-map-marker-alt"></i> Ubicación</h5>
+                        
+                        <div class="form-group">
+                            <label for="ubicacion">
+                                <i class="fas fa-map-marker-alt"></i> Ubicación/Dirección:
+                            </label>
+                            <textarea id="ubicacion" 
+                                      name="ubicacion" 
+                                      rows="3"
+                                      placeholder="Ingrese la dirección completa del proveedor (ciudad, estado, dirección específica)"
+                                      maxlength="255"><?= htmlspecialchars($proveedor->ubicacion ?? '') ?></textarea>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Este campo es opcional pero recomendado para ubicar al proveedor
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <!-- Espacio para información adicional si es necesario -->
+                    </div>
+                </div>
+                
                 <!-- Información del estado actual -->
                 <div class="row">
                     <div class="col-md-6">

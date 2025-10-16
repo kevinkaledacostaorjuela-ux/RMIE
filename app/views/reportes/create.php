@@ -322,14 +322,38 @@ if (!isset($_SESSION['user'])) {
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <div class="form-group">
+                </div>                <div class="form-group">
                     <label for="descripcion">
                         <i class="fas fa-align-left"></i> Descripción:
                     </label>
                     <textarea id="descripcion" name="descripcion" class="form-control" rows="4"
                               placeholder="Describa el contenido y propósito del reporte..."></textarea>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="fecha_creacion">
+                                <i class="fas fa-calendar-plus"></i> Fecha de Creación:
+                            </label>
+                            <input type="date" id="fecha_creacion" name="fecha_creacion" class="form-control" 
+                                   value="<?= date('Y-m-d') ?>" required>
+                            <small class="form-text text-muted">Fecha en que se crea el reporte</small>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="estado">
+                                <i class="fas fa-flag"></i> Estado:
+                            </label>
+                            <select id="estado" name="estado" class="form-select">
+                                <option value="activo">Activo</option>
+                                <option value="inactivo">Inactivo</option>
+                                <option value="borrador">Borrador</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -350,22 +374,7 @@ if (!isset($_SESSION['user'])) {
                             <input type="date" id="fecha_fin" name="parametros[fecha_fin]" class="form-control">
                         </div>
                     </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="estado">
-                                <i class="fas fa-flag"></i> Estado:
-                            </label>
-                            <select id="estado" name="estado" class="form-select">
-                                <option value="activo">Activo</option>
-                                <option value="inactivo">Inactivo</option>
-                                <option value="borrador">Borrador</option>
-                            </select>
-                        </div>
-                    </div>
-                    
+                </div>                <div class="row">
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="formato">
@@ -471,10 +480,10 @@ if (!isset($_SESSION['user'])) {
             
             parametrosContainer.innerHTML = html;
         });
-        
-        // Validar fechas
+          // Validar fechas
         const fechaInicio = document.getElementById('fecha_inicio');
         const fechaFin = document.getElementById('fecha_fin');
+        const fechaCreacion = document.getElementById('fecha_creacion');
         
         fechaInicio.addEventListener('change', function() {
             fechaFin.min = this.value;
@@ -482,6 +491,20 @@ if (!isset($_SESSION['user'])) {
         
         fechaFin.addEventListener('change', function() {
             fechaInicio.max = this.value;
+        });
+        
+        // Validar fecha de creación
+        fechaCreacion.addEventListener('change', function() {
+            const fechaSeleccionada = new Date(this.value);
+            const hoy = new Date();
+            const ayer = new Date(hoy);
+            ayer.setDate(hoy.getDate() - 1);
+            
+            // No permitir fechas futuras, pero permitir hasta ayer
+            if (fechaSeleccionada > hoy) {
+                alert('La fecha de creación no puede ser futura. Se establecerá la fecha actual.');
+                this.value = hoy.toISOString().split('T')[0];
+            }
         });
         
         // Efecto en campos del formulario

@@ -97,11 +97,17 @@ class Report {
             return $row;
         }
         return null;
-    }
-
-    public static function create($conn, $data) {
+    }    public static function create($conn, $data) {
         try {
-            $fecha = date('Y-m-d H:i:s');
+            // Asegurar zona horaria correcta para Colombia
+            date_default_timezone_set('America/Bogota');
+            
+            // Usar la fecha proporcionada o la fecha actual
+            if (!empty($data['fecha_creacion'])) {
+                $fecha = $data['fecha_creacion'];
+            } else {
+                $fecha = date('Y-m-d H:i:s');
+            }
             
             // Verificar si la tabla tiene las columnas nuevas
             $checkColumns = $conn->query("SHOW COLUMNS FROM reportes LIKE 'tipo'");
