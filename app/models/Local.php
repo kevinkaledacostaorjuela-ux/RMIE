@@ -8,8 +8,9 @@ class Local {
     public $localidad;
     public $barrio;
     public $fecha_creacion;
+    public $total_clientes;
 
-    public function __construct($id_locales, $direccion, $nombre_local, $cel_local, $estado, $localidad, $barrio, $fecha_creacion = null) {
+    public function __construct($id_locales, $direccion, $nombre_local, $cel_local, $estado, $localidad, $barrio, $fecha_creacion = null, $total_clientes = 0) {
         $this->id_locales = $id_locales;
         $this->direccion = $direccion;
         $this->nombre_local = $nombre_local;
@@ -18,39 +19,44 @@ class Local {
         $this->localidad = $localidad;
         $this->barrio = $barrio;
         $this->fecha_creacion = $fecha_creacion;
+        $this->total_clientes = $total_clientes;
     }
 
     public static function getAll($conn, $filtros = []) {
-        $sql = "SELECT * FROM locales WHERE 1=1";
+        $sql = "SELECT l.*, 
+                       COUNT(c.id_clientes) as total_clientes
+                FROM locales l
+                LEFT JOIN clientes c ON l.id_locales = c.id_locales
+                WHERE 1=1";
         $params = [];
         $types = "";
         
         // Aplicar filtros
         if (!empty($filtros['nombre'])) {
-            $sql .= " AND nombre_local LIKE ?";
+            $sql .= " AND l.nombre_local LIKE ?";
             $params[] = "%" . $filtros['nombre'] . "%";
             $types .= "s";
         }
         
         if (!empty($filtros['localidad'])) {
-            $sql .= " AND localidad LIKE ?";
+            $sql .= " AND l.localidad LIKE ?";
             $params[] = "%" . $filtros['localidad'] . "%";
             $types .= "s";
         }
         
         if (!empty($filtros['estado'])) {
-            $sql .= " AND estado = ?";
+            $sql .= " AND l.estado = ?";
             $params[] = $filtros['estado'];
             $types .= "s";
         }
         
         if (!empty($filtros['barrio'])) {
-            $sql .= " AND barrio LIKE ?";
+            $sql .= " AND l.barrio LIKE ?";
             $params[] = "%" . $filtros['barrio'] . "%";
             $types .= "s";
         }
         
-        $sql .= " ORDER BY fecha_creacion DESC";
+        $sql .= " GROUP BY l.id_locales ORDER BY l.fecha_creacion DESC";
         
         $stmt = $conn->prepare($sql);
         
@@ -71,7 +77,8 @@ class Local {
                 $row['estado'],
                 $row['localidad'],
                 $row['barrio'],
-                $row['fecha_creacion']
+                $row['fecha_creacion'],
+                $row['total_clientes']
             );
         }
         

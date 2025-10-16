@@ -12,9 +12,11 @@ unset($_SESSION['error'], $_SESSION['success']);
 // Obtener estadísticas básicas
 global $conn;
 $statsQuery = $conn->query("SELECT 
-    COUNT(*) as total_locales,
-    SUM(CASE WHEN estado = 'activo' THEN 1 ELSE 0 END) as locales_activos
-    FROM locales");
+    COUNT(DISTINCT l.id_locales) as total_locales,
+    SUM(CASE WHEN l.estado = 'activo' THEN 1 ELSE 0 END) as locales_activos,
+    COUNT(DISTINCT c.id_clientes) as total_clientes
+    FROM locales l
+    LEFT JOIN clientes c ON l.id_locales = c.id_locales");
 $stats = $statsQuery->fetch_assoc();
 ?>
 
@@ -486,20 +488,13 @@ $stats = $statsQuery->fetch_assoc();
                 <div class="stat-number"><?php echo $stats['locales_activos']; ?></div>
                 <div class="stat-label">Locales Activos</div>
             </div>
-            <!-- <div class="stat-card">
-                <div class="stat-icon">
-                    <i class="fas fa-store"></i>
-                </div>
-                <div class="stat-number">-</div>
-                <div class="stat-label">Sucursales</div>
-            </div>
             <div class="stat-card">
                 <div class="stat-icon">
-                    <i class="fas fa-warehouse"></i>
+                    <i class="fas fa-users"></i>
                 </div>
-                <div class="stat-number">-</div>
-                <div class="stat-label">Bodegas</div>
-            </div> -->
+                <div class="stat-number"><?php echo $stats['total_clientes'] ?? 0; ?></div>
+                <div class="stat-label">Total Clientes</div>
+            </div>
         </div>
 
         <!-- Filtros -->
@@ -622,6 +617,7 @@ $stats = $statsQuery->fetch_assoc();
                                 <th><i class="fas fa-phone"></i> Contacto</th>
                                 <th><i class="fas fa-city"></i> Localidad</th>
                                 <th><i class="fas fa-map-marked-alt"></i> Barrio</th>
+                                <th><i class="fas fa-users"></i> Clientes</th>
                                 <th><i class="fas fa-toggle-on"></i> Estado</th>
                                 <th><i class="fas fa-calendar"></i> Creado</th>
                                 <th><i class="fas fa-cogs"></i> Acciones</th>
@@ -694,6 +690,23 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php else: ?>
                                         <span class="text-muted">Sin barrio</span>
                                     <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="text-center">
+                                        <?php if ($local->total_clientes > 0): ?>
+                                            <span class="badge" style="background: linear-gradient(45deg, #11998e, #38ef7d); color: white; font-size: 1rem; padding: 8px 15px;">
+                                                <i class="fas fa-users"></i> <?php echo $local->total_clientes; ?>
+                                            </span>
+                                            <small class="d-block text-muted mt-1">
+                                                <?php echo $local->total_clientes == 1 ? 'cliente' : 'clientes'; ?>
+                                            </small>
+                                        <?php else: ?>
+                                            <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5);">
+                                                <i class="fas fa-user-slash"></i> 0
+                                            </span>
+                                            <small class="d-block text-muted mt-1">Sin clientes</small>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td>
                                     <span class="badge badge-status badge-<?php echo $local->estado; ?> d-flex align-items-center justify-content-center">
