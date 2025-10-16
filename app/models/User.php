@@ -207,6 +207,40 @@ class User {
         $row = $result->fetch_assoc();
         return $row['total'];
     }
+    
+    // Verificar si el usuario tiene productos asociados
+    public static function hasAssociatedProducts($conn, $num_doc) {
+        $sql = "SELECT COUNT(*) as total FROM productos WHERE num_doc = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $num_doc);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['total'];
+    }
+    
+    // Verificar todas las relaciones del usuario
+    public static function getAssociatedRecords($conn, $num_doc) {
+        $relations = [];
+        
+        // Verificar productos
+        $sql = "SELECT COUNT(*) as total FROM productos WHERE num_doc = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $num_doc);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $relations['productos'] = $result->fetch_assoc()['total'];
+        
+        // Verificar ventas
+        $sql = "SELECT COUNT(*) as total FROM ventas WHERE num_doc = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $num_doc);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $relations['ventas'] = $result->fetch_assoc()['total'];
+        
+        return $relations;
+    }
 
     // Obtener estadísticas de usuarios
     public static function getStats($conn) {

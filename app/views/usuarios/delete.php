@@ -29,6 +29,29 @@
             </div>
         <?php endif; ?>
         
+        <!-- Verificar registros asociados -->
+        <?php 
+            $relaciones = User::getAssociatedRecords($conn, $usuario->num_doc);
+            $tieneRelaciones = $relaciones['productos'] > 0 || $relaciones['ventas'] > 0;
+        ?>
+        
+        <?php if ($tieneRelaciones): ?>
+            <div class="alert alert-warning" role="alert">
+                <h5 class="alert-heading"><i class="fas fa-exclamation-circle"></i> Advertencia: Registros Asociados</h5>
+                <p class="mb-2">Este usuario tiene los siguientes registros asociados:</p>
+                <ul class="mb-0">
+                    <?php if ($relaciones['productos'] > 0): ?>
+                        <li><strong><?= $relaciones['productos'] ?></strong> producto(s) registrado(s)</li>
+                    <?php endif; ?>
+                    <?php if ($relaciones['ventas'] > 0): ?>
+                        <li><strong><?= $relaciones['ventas'] ?></strong> venta(s) registrada(s)</li>
+                    <?php endif; ?>
+                </ul>
+                <hr>
+                <p class="mb-0"><i class="fas fa-info-circle"></i> <strong>Nota:</strong> Debe eliminar o reasignar estos registros antes de poder eliminar el usuario.</p>
+            </div>
+        <?php endif; ?>
+        
         <div class="delete-confirmation">
             <!-- Información del usuario a eliminar -->
             <div class="user-info-card">
@@ -184,9 +207,15 @@
             <input type="hidden" name="admin_password_confirm" id="admin_password_confirm">
             
             <div class="usuarios-buttons danger-zone">
-                <button type="submit" class="btn btn-danger" id="deleteButton" disabled>
-                    <i class="fas fa-trash-alt"></i> Eliminar Usuario Permanentemente
-                </button>
+                <?php if ($tieneRelaciones): ?>
+                    <button type="button" class="btn btn-danger" disabled title="No se puede eliminar - Tiene registros asociados">
+                        <i class="fas fa-ban"></i> No se Puede Eliminar (Registros Asociados)
+                    </button>
+                <?php else: ?>
+                    <button type="submit" class="btn btn-danger" id="deleteButton" disabled>
+                        <i class="fas fa-trash-alt"></i> Eliminar Usuario Permanentemente
+                    </button>
+                <?php endif; ?>
                 <a href="/RMIE/app/controllers/UserController.php?accion=index" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Cancelar
                 </a>

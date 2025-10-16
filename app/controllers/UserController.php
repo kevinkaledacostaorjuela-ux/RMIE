@@ -195,11 +195,20 @@ class UserController {
             }
             
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Verificar si el usuario tiene ventas asociadas
-                $ventasAsociadas = User::hasAssociatedSales($conn, $id);
+                // Verificar si el usuario tiene registros asociados
+                $relaciones = User::getAssociatedRecords($conn, $id);
+                $mensajesError = [];
                 
-                if ($ventasAsociadas > 0) {
-                    $error = "No se puede eliminar el usuario porque tiene $ventasAsociadas venta(s) asociada(s)";
+                if ($relaciones['productos'] > 0) {
+                    $mensajesError[] = "{$relaciones['productos']} producto(s)";
+                }
+                
+                if ($relaciones['ventas'] > 0) {
+                    $mensajesError[] = "{$relaciones['ventas']} venta(s)";
+                }
+                
+                if (!empty($mensajesError)) {
+                    $error = "No se puede eliminar el usuario porque tiene registros asociados: " . implode(", ", $mensajesError) . ". Primero debe eliminar o reasignar estos registros.";
                 } else {
                     $resultado = User::delete($conn, $id);
                     
@@ -213,7 +222,12 @@ class UserController {
             }
             
         } catch (Exception $e) {
-            $error = "Error al procesar la solicitud: " . $e->getMessage();
+            // Capturar errores de restricción de clave foránea
+            if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
+                $error = "No se puede eliminar el usuario porque tiene registros asociados en el sistema. Primero debe eliminar o reasignar los productos, ventas u otros registros relacionados.";
+            } else {
+                $error = "Error al procesar la solicitud: " . $e->getMessage();
+            }
         }
         
         include __DIR__ . '/../views/usuarios/delete.php';
