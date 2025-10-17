@@ -1,4 +1,5 @@
 <?php
+session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -9,15 +10,25 @@ require_once __DIR__ . '/../../config/db.php';
 
 class RouteController {
     public function index() {
-    global $conn;
-    $filtro_venta = isset($_GET['venta']) ? $_GET['venta'] : '';
-    $ventas = Sale::getFiltered($conn);
-    $rutas = Route::getFiltered($conn, $filtro_venta);
+        global $conn;
+        
+        // Capturar mensajes de sesión
+        $success_message = $_SESSION['success'] ?? '';
+        $error_message = $_SESSION['error'] ?? '';
+        
+        // Limpiar mensajes de sesión después de capturarlos
+        unset($_SESSION['success'], $_SESSION['error']);
+        
+        $filtro_venta = isset($_GET['venta']) ? $_GET['venta'] : '';
+        $ventas = Sale::getFiltered($conn);
+        $rutas = Route::getFiltered($conn, $filtro_venta);
 
-    // Asegurarse de que $rutas sea un array válido
-    $routes = is_array($rutas) ? $rutas : [];
+        // Asegurarse de que $rutas sea un array válido
+        if (!is_array($rutas)) {
+            $rutas = [];
+        }
 
-    include __DIR__ . '/../views/rutas/index.php';
+        include __DIR__ . '/../views/rutas/index.php';
     }
 
     public function create() {
@@ -87,12 +98,21 @@ class RouteController {
 
     public function edit($id) {
         global $conn;
+        
+        // Limpiar cualquier error residual de sesión cuando se carga por primera vez
+        if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['from_post'])) {
+            unset($_SESSION['error']);
+        }
+        
         try {
             $route = Route::getById($conn, $id);
             if (!$route) {
-                throw new Exception("Ruta no encontrada.");
+                $_SESSION['error'] = "Ruta no encontrada.";
+                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                exit;
             }
 
+            // Solo procesar datos POST si es una petición POST
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos
                 $direccion = trim($_POST['direccion'] ?? '');
@@ -101,7 +121,7 @@ class RouteController {
                 $id_clientes = intval($_POST['id_clientes'] ?? 0);
                 $id_ventas = intval($_POST['id_ventas'] ?? 0);
 
-                // Validaciones
+                // Validaciones solo para POST
                 if (empty($direccion) || strlen($direccion) < 5) {
                     throw new Exception("La dirección debe tener al menos 5 caracteres.");
                 }
@@ -111,15 +131,40 @@ class RouteController {
                 if (empty($nombre_cliente) || strlen($nombre_cliente) < 2) {
                     throw new Exception("El nombre del cliente debe tener al menos 2 caracteres.");
                 }
+                if ($id_clientes <= 0) {
+                    throw new Exception("El ID del cliente debe ser un número positivo.");
+                }
+                if ($id_ventas <= 0) {
+                    throw new Exception("El ID de la venta debe ser un número positivo.");
+                }
 
-                Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
-                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
-                exit;
+                // Intentar actualizar la ruta (mantener id_reportes existente)
+                $id_reportes = $route['id_reportes']; // Mantener el valor existente
+                $success = Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes);
+                
+                if ($success) {
+                    $_SESSION['success'] = "Ruta actualizada exitosamente.";
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                } else {
+                    throw new Exception("No se pudo actualizar la ruta. Inténtalo de nuevo.");
+                }
             }
+            
+            // Si llegamos aquí y es GET, mostrar el formulario
+            include __DIR__ . '/../views/rutas/edit.php';
+            
         } catch (Exception $e) {
-            echo "<div class='alert alert-error'><i class='fas fa-exclamation-triangle'></i> Error: " . $e->getMessage() . "</div>";
+            $_SESSION['error'] = $e->getMessage();
+            // Si es POST, redirigir para evitar reenvío del formulario
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                header('Location: /RMIE/app/controllers/RouteController.php?accion=edit&id=' . $id . '&from_post=1');
+                exit;
+            } else {
+                // Si es GET y hay error, mostrar el formulario con el error
+                include __DIR__ . '/../views/rutas/edit.php';
+            }
         }
-        include __DIR__ . '/../views/rutas/edit.php';
     }
 
     public function delete($id) {

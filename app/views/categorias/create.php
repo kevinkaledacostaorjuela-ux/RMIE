@@ -292,6 +292,97 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+        
+        /* Estilos móviles */
+        @media (max-width: 768px) {
+            .categorias-container {
+                margin: 10px;
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            .categorias-container h1 {
+                font-size: 20px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .categorias-container h1 i {
+                font-size: 22px;
+            }
+            
+            form {
+                padding: 20px;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            label {
+                font-size: 14px;
+                margin-bottom: 8px;
+            }
+            
+            input[type="text"],
+            textarea {
+                font-size: 16px; /* Evita zoom en iOS */
+                padding: 12px 15px;
+            }
+            
+            textarea {
+                min-height: 100px;
+            }
+            
+            .btn-form {
+                width: 100%;
+                margin-bottom: 10px;
+                padding: 12px;
+                font-size: 16px;
+            }
+            
+            .d-flex {
+                flex-direction: column;
+            }
+            
+            .alert {
+                margin: 10px;
+                padding: 15px;
+                font-size: 14px;
+            }
+            
+            .breadcrumb {
+                margin: 10px;
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .categorias-container {
+                margin: 5px;
+                padding: 10px;
+                border-radius: 10px;
+            }
+            
+            .categorias-container h1 {
+                font-size: 18px;
+                padding: 15px;
+            }
+            
+            form {
+                padding: 15px;
+            }
+            
+            .char-count {
+                font-size: 11px;
+            }
+            
+            .btn-form {
+                font-size: 14px;
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>

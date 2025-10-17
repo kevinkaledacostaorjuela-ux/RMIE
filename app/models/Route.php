@@ -17,9 +17,9 @@ class Route {
             if (!$stmt->execute()) {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
-            echo "<p>Ruta creada exitosamente en el modelo.</p>";
+            return $conn->insert_id; // Retornar el ID de la nueva ruta creada
         } catch (Exception $e) {
-            echo "<p>Error en el modelo: " . $e->getMessage() . "</p>";
+            error_log("Error al crear ruta: " . $e->getMessage());
             throw new Exception("Error al crear la ruta: " . $e->getMessage());
         }
     }
@@ -33,20 +33,74 @@ class Route {
         return $result->fetch_assoc();
     }
 
-    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas) {
+    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes = null) {
         try {
-            $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ? WHERE id_ruta = ?";
+            // Depuración: verificar datos de entrada
+            error_log("DEBUG Update - ID: $id, Direccion: $direccion, Local: $nombre_local, Cliente: $nombre_cliente, ID_Clientes: $id_clientes, ID_Ventas: $id_ventas, ID_Reportes: $id_reportes");
+            
+            // Verificar que la ruta existe antes de actualizar
+            $checkSql = "SELECT * FROM rutas WHERE id_ruta = ?";
+            $checkStmt = $conn->prepare($checkSql);
+            $checkStmt->bind_param('i', $id);
+            $checkStmt->execute();
+            $result = $checkStmt->get_result();
+            $existing = $result->fetch_assoc();
+            
+            if (!$existing) {
+                throw new Exception("La ruta con ID $id no existe en la base de datos.");
+            }
+            
+            error_log("DEBUG - Ruta existente encontrada: " . json_encode($existing));
+            
+            // Actualizar incluyendo id_reportes
+            $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, id_reportes = ? WHERE id_ruta = ?";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta: " . $conn->error);
             }
-            $stmt->bind_param('sssiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id);
+            
+            error_log("DEBUG - SQL preparado: $sql");
+            
+            $stmt->bind_param('sssiiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes, $id);
+            
             if (!$stmt->execute()) {
+                error_log("DEBUG - Error en execute: " . $stmt->error);
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
-            echo "<p>Ruta actualizada exitosamente.</p>";
+            
+            $affected = $stmt->affected_rows;
+            error_log("DEBUG - Filas afectadas: $affected");
+            
+            // Verificar que se actualizó al menos una fila
+            if ($affected === 0) {
+                error_log("DEBUG - No se actualizó ninguna fila. Puede ser que no hubo cambios en los datos.");
+                // En lugar de lanzar excepción, vamos a verificar si realmente los datos son diferentes
+                $newCheckSql = "SELECT * FROM rutas WHERE id_ruta = ?";
+                $newCheckStmt = $conn->prepare($newCheckSql);
+                $newCheckStmt->bind_param('i', $id);
+                $newCheckStmt->execute();
+                $newResult = $newCheckStmt->get_result();
+                $updated = $newResult->fetch_assoc();
+                error_log("DEBUG - Datos después de update: " . json_encode($updated));
+                
+                // Si los datos son iguales, no hay problema
+                if ($updated['direccion'] === $direccion && 
+                    $updated['nombre_local'] === $nombre_local && 
+                    $updated['nombre_cliente'] === $nombre_cliente && 
+                    $updated['id_clientes'] == $id_clientes && 
+                    $updated['id_ventas'] == $id_ventas &&
+                    ($id_reportes === null ? $updated['id_reportes'] === null : $updated['id_reportes'] == $id_reportes)) {
+                    error_log("DEBUG - Los datos ya eran iguales, update exitoso conceptualmente");
+                    return true;
+                } else {
+                    throw new Exception("No se pudo actualizar la ruta. Datos no coinciden después del update.");
+                }
+            }
+            
+            error_log("DEBUG - Update exitoso, $affected filas afectadas");
+            return true; // Retornar true en caso de éxito
         } catch (Exception $e) {
-            echo "<p>Error en el modelo: " . $e->getMessage() . "</p>";
+            error_log("ERROR al actualizar ruta ID $id: " . $e->getMessage());
             throw new Exception("Error al actualizar la ruta: " . $e->getMessage());
         }
     }

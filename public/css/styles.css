@@ -3247,3 +3247,1393 @@ button:hover {
         margin-bottom: 15px;
     }
 }
+
+/* ==========================================
+   ESTILOS PARA TABLA MÓVIL DE CATEGORÍAS
+   ========================================== */
+
+/* Adaptaciones móviles para la tabla de categorías */
+@media (max-width: 768px) {
+    .d-block.d-md-none .table-container {
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .d-block.d-md-none .table-modern {
+        font-size: 0.75rem;
+    }
+    
+    .d-block.d-md-none .table-modern th {
+        padding: 8px 4px;
+        font-size: 0.7rem;
+        text-align: center;
+        vertical-align: middle;
+    }
+    
+    .d-block.d-md-none .table-modern td {
+        padding: 8px 4px;
+        font-size: 0.75rem;
+        vertical-align: middle;
+        word-wrap: break-word;
+    }
+    
+    /* Ajustes específicos para cada columna */
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        /* ID column */
+        text-align: center;
+        min-width: 40px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        /* Categoría column */
+        min-width: 100px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .category-icon {
+        display: none; /* Ocultar icono en móviles para ahorrar espacio */
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) strong {
+        font-size: 0.8rem;
+        margin-bottom: 2px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) small {
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        /* Descripción column */
+        max-width: 80px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        /* Fecha column */
+        min-width: 70px;
+        text-align: center;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) strong {
+        font-size: 0.7rem;
+        display: block;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) small {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) i {
+        font-size: 0.7rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        /* Acciones column */
+        min-width: 60px;
+    }
+    
+    .d-block.d-md-none .btn-group {
+        flex-direction: column;
+        gap: 2px;
+    }
+    
+    .d-block.d-md-none .btn-sm {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+        min-width: 35px;
+        height: 28px;
+    }
+    
+    .d-block.d-md-none .btn-sm i {
+        font-size: 0.7rem;
+    }
+    
+    /* Efectos hover adaptados para móvil */
+    .d-block.d-md-none .table-modern tbody tr:hover {
+        transform: scale(1.005); /* Menos efecto de escala en móviles */
+    }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .d-block.d-md-none .table-modern {
+        font-size: 0.7rem;
+    }
+    
+    .d-block.d-md-none .table-modern th {
+        padding: 6px 2px;
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern td {
+        padding: 6px 2px;
+        font-size: 0.7rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) strong {
+        font-size: 0.75rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) small {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.6rem;
+        padding: 1px 4px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) strong {
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) small {
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .btn-sm {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        min-width: 30px;
+        height: 24px;
+    }
+    
+    .d-block.d-md-none .btn-sm i {
+        font-size: 0.65rem;
+    }
+}
+
+/* Contenedor de tabla móvil */
+.table-container-mobile {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 15px 0;
+}
+
+/* Tabla específica para móviles */
+.table-mobile {
+    background: transparent;
+    color: #fff;
+    font-size: 0.85rem;
+    margin-bottom: 0;
+}
+
+.table-mobile th {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    border: none;
+    padding: 10px 5px;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.table-mobile td {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 8px 5px;
+    vertical-align: middle;
+    background: rgba(255, 255, 255, 0.05);
+    transition: all 0.3s ease;
+}
+
+.table-mobile tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.01);
+}
+
+/* Elementos específicos de la categoría móvil */
+.category-mobile {
+    text-align: left;
+}
+
+.category-mobile strong {
+    color: #fff;
+    font-size: 0.9rem;
+    display: block;
+    margin-bottom: 2px;
+}
+
+.category-mobile small {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.description-mobile {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.2;
+    display: block;
+    word-wrap: break-word;
+}
+
+/* Grupo de botones móviles */
+.btn-group-mobile {
+    display: flex;
+    gap: 3px;
+    justify-content: center;
+}
+
+.btn-sm-mobile {
+    padding: 4px 6px;
+    font-size: 0.7rem;
+    border-radius: 4px;
+    min-width: 30px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-sm-mobile i {
+    font-size: 0.7rem;
+}
+
+/* Badge para ID */
+.table-mobile .badge {
+    font-size: 0.7rem;
+    padding: 3px 6px;
+}
+
+/* Responsive adicional para pantallas muy pequeñas */
+@media (max-width: 480px) {
+    .table-mobile {
+        font-size: 0.75rem;
+    }
+    
+    .table-mobile th,
+    .table-mobile td {
+        padding: 6px 3px;
+    }
+    
+    .category-mobile strong {
+        font-size: 0.8rem;
+    }
+    
+    .category-mobile small {
+        font-size: 0.65rem;
+    }
+    
+    .description-mobile {
+        font-size: 0.7rem;
+    }
+    
+    .btn-sm-mobile {
+        padding: 3px 5px;
+        font-size: 0.65rem;
+        min-width: 26px;
+        height: 24px;
+    }
+    
+    .btn-sm-mobile i {
+        font-size: 0.65rem;
+    }
+    
+    .table-mobile .badge {
+        font-size: 0.65rem;
+        padding: 2px 5px;
+    }
+}
+
+/* ===========================================
+   ESTILOS ESPECÍFICOS PARA EDITAR RUTAS
+   =========================================== */
+
+/* Formulario de edición de rutas */
+.rutas-form {
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.rutas-form h3 {
+    color: #667eea;
+    border-bottom: 2px solid #667eea;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.rutas-form h3 i {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.2em;
+}
+
+/* Panel de información actual */
+.ruta-info-panel {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(245, 247, 250, 0.9));
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    position: relative;
+    z-index: 2;
+}
+
+.ruta-info-panel h3 {
+    color: #667eea;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+}
+
+.current-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.info-card {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+}
+
+.info-icon {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.info-content {
+    flex: 1;
+}
+
+.info-label {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+    font-weight: 500;
+}
+
+.info-value {
+    font-weight: 600;
+    color: #333;
+    font-size: 0.95rem;
+}
+
+/* Estructura del formulario en filas */
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.form-section {
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(102, 126, 234, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-section:hover {
+    border-color: rgba(102, 126, 234, 0.3);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+/* Estilos de campos del formulario */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
+}
+
+.form-group label i {
+    color: #667eea;
+    font-size: 1rem;
+}
+
+.form-control {
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: white;
+    width: 100%;
+}
+
+.form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    outline: none;
+}
+
+.form-control:invalid {
+    border-color: #dc3545;
+}
+
+.form-control:valid {
+    border-color: #28a745;
+}
+
+/* Texto de ayuda */
+.form-text {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.form-text i {
+    color: #667eea;
+}
+
+/* Contador de caracteres */
+.char-counter {
+    text-align: right;
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+/* Panel de cambios */
+.changes-preview {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid #e1e5e9;
+}
+
+.change-item {
+    background: rgba(255, 193, 7, 0.1);
+    border-left: 4px solid #ffc107;
+    padding: 0.75rem;
+    margin: 0.5rem 0;
+    border-radius: 0 8px 8px 0;
+}
+
+.old-value {
+    color: #dc3545;
+    font-style: italic;
+}
+
+.new-value {
+    color: #28a745;
+    font-weight: 600;
+}
+
+/* Alertas personalizadas */
+.alert {
+    border-radius: 8px;
+    border: none;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.alert-info {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    border-left: 4px solid #667eea;
+}
+
+.alert-warning {
+    background: rgba(255, 193, 7, 0.1);
+    color: #856404;
+    border-left: 4px solid #ffc107;
+}
+
+/* Panel de advertencias */
+.warning-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.warning-item {
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    padding: 1rem;
+    border-left: 4px solid #ffc107;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+}
+
+.warning-item i {
+    color: #ffc107;
+    margin-top: 0.2rem;
+    flex-shrink: 0;
+}
+
+.warning-item strong {
+    color: #856404;
+}
+
+/* Botones de acción */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.btn-rutas {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn-rutas:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-rutas:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+}
+
+.btn-secondary:hover {
+    background: #545b62;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-outline {
+    background: transparent;
+    color: #667eea;
+    border: 2px solid #667eea;
+    padding: 0.75rem 2rem;
+    border-radius: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    font-size: 0.95rem;
+    cursor: pointer;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+/* Estado de error */
+.error-state {
+    text-align: center;
+    padding: 3rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    margin: 2rem 0;
+    position: relative;
+    z-index: 2;
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.error-state h3 {
+    color: #dc3545;
+    margin-bottom: 1rem;
+}
+
+.error-state p {
+    color: #666;
+    margin-bottom: 2rem;
+}
+
+/* Breadcrumb personalizado */
+.rutas-breadcrumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem;
+    margin-bottom: 1.5rem;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.breadcrumb {
+    margin: 0;
+    background: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.breadcrumb-item {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.9rem;
+}
+
+.breadcrumb-item a {
+    color: white;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    transition: all 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.breadcrumb-item.current {
+    color: white;
+    font-weight: 600;
+}
+
+.breadcrumb-item:not(:last-child)::after {
+    content: '/';
+    margin-left: 0.5rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Header de página */
+.page-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    z-index: 2;
+}
+
+.header-content h1 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.header-content p {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
+    margin: 0;
+}
+
+/* Responsive para formulario de edición */
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .current-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .warning-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .btn-rutas,
+    .btn-secondary,
+    .btn-outline {
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .header-content h1 {
+        font-size: 2rem;
+    }
+    
+    .rutas-form {
+        padding: 1rem;
+    }
+    
+    .form-section {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .rutas-breadcrumb {
+        padding: 0.5rem 1rem;
+    }
+    
+    .breadcrumb {
+        font-size: 0.8rem;
+    }
+    
+    .header-content h1 {
+        font-size: 1.75rem;
+    }
+    
+    .header-content p {
+        font-size: 1rem;
+    }
+    
+    .info-card {
+        padding: 0.75rem;
+    }
+    
+    .info-icon {
+        width: 35px;
+        height: 35px;
+        font-size: 1rem;
+    }
+}
+
+/* ==========================================
+   ESTILOS PARA TABLA MÓVIL DE SUBCATEGORÍAS
+   ========================================== */
+
+/* Adaptaciones móviles específicas para subcategorías (6 columnas) */
+@media (max-width: 768px) {
+    /* Subcategorías tienen una columna adicional, ajustar tamaños */
+    .d-block.d-md-none .table-modern th:nth-child(1) {
+        /* ID column - más compacta */
+        max-width: 35px;
+        padding: 6px 2px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        /* ID column */
+        max-width: 35px;
+        padding: 6px 2px;
+        text-align: center;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(2) {
+        /* Subcategoría column */
+        max-width: 90px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        /* Subcategoría column */
+        max-width: 90px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .subcategory-icon {
+        display: none; /* Ocultar icono para ahorrar espacio */
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(3) {
+        /* Categoría Padre column */
+        max-width: 80px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        /* Categoría Padre column */
+        max-width: 80px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(4) {
+        /* Descripción column */
+        max-width: 70px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        /* Descripción column */
+        max-width: 70px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(5) {
+        /* Fecha column */
+        max-width: 65px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        /* Fecha column */
+        max-width: 65px;
+        text-align: center;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) strong {
+        font-size: 0.65rem;
+        display: block;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) small {
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) i {
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(6) {
+        /* Acciones column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) {
+        /* Acciones column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .btn-group {
+        flex-direction: column;
+        gap: 1px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .btn-sm {
+        padding: 3px 6px;
+        font-size: 0.65rem;
+        min-width: 28px;
+        height: 24px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .btn-sm i {
+        font-size: 0.65rem;
+    }
+}
+
+/* Para pantallas muy pequeñas - subcategorías */
+@media (max-width: 480px) {
+    .d-block.d-md-none .table-modern th:nth-child(1),
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        max-width: 30px;
+        padding: 4px 1px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(2),
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        max-width: 75px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) strong {
+        font-size: 0.7rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) small {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(3),
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        max-width: 65px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(4),
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        max-width: 60px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) .badge {
+        font-size: 0.55rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(5),
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) strong {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) small {
+        font-size: 0.5rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(6),
+    .d-block.d-md-none .table-modern td:nth-child(6) {
+        max-width: 45px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .btn-sm {
+        padding: 2px 4px;
+        font-size: 0.6rem;
+        min-width: 24px;
+        height: 20px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .btn-sm i {
+        font-size: 0.6rem;
+    }
+}
+
+/* ==========================================
+   ESTILOS PARA TABLA MÓVIL DE PROVEEDORES
+   ========================================== */
+
+/* Adaptaciones móviles específicas para proveedores (8 columnas) */
+@media (max-width: 768px) {
+    /* Proveedores tienen 8 columnas, ajustar tamaños específicos */
+    .d-block.d-md-none .table-modern th:nth-child(1) {
+        /* ID column */
+        max-width: 30px;
+        padding: 6px 2px;
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        /* ID column */
+        max-width: 30px;
+        padding: 6px 2px;
+        text-align: center;
+        font-size: 0.7rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(2) {
+        /* Proveedor column */
+        max-width: 80px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        /* Proveedor column */
+        max-width: 80px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .provider-icon {
+        display: none; /* Ocultar icono para ahorrar espacio */
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) .d-flex {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) strong {
+        font-size: 0.75rem;
+        margin-bottom: 2px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) small {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(3) {
+        /* Información column */
+        max-width: 60px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        /* Información column */
+        max-width: 60px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(4) {
+        /* Contacto column */
+        max-width: 50px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        /* Contacto column */
+        max-width: 50px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(5) {
+        /* Ubicación column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        /* Ubicación column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(6) {
+        /* Estado column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) {
+        /* Estado column */
+        max-width: 55px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .badge {
+        font-size: 0.6rem;
+        padding: 2px 4px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(7) {
+        /* Fecha column */
+        max-width: 50px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) {
+        /* Fecha column */
+        max-width: 50px;
+        text-align: center;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) strong {
+        font-size: 0.6rem;
+        display: block;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) small {
+        font-size: 0.5rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) i {
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(8) {
+        /* Acciones column */
+        max-width: 45px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) {
+        /* Acciones column */
+        max-width: 45px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-group {
+        flex-direction: column;
+        gap: 1px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm {
+        padding: 3px 5px;
+        font-size: 0.6rem;
+        min-width: 24px;
+        height: 20px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm i {
+        font-size: 0.6rem;
+    }
+}
+
+/* Para pantallas muy pequeñas - proveedores */
+@media (max-width: 480px) {
+    .d-block.d-md-none .table-modern th:nth-child(1),
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        max-width: 25px;
+        padding: 4px 1px;
+        font-size: 0.6rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(2),
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        max-width: 65px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) strong {
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(2) small {
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(3),
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        max-width: 50px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(3) .badge {
+        font-size: 0.5rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(4),
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        max-width: 40px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(4) .badge {
+        font-size: 0.5rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(5),
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        max-width: 45px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(5) .badge {
+        font-size: 0.5rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(6),
+    .d-block.d-md-none .table-modern td:nth-child(6) {
+        max-width: 45px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(6) .badge {
+        font-size: 0.5rem;
+        padding: 1px 3px;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(7),
+    .d-block.d-md-none .table-modern td:nth-child(7) {
+        max-width: 40px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) strong {
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(7) small {
+        font-size: 0.45rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(8),
+    .d-block.d-md-none .table-modern td:nth-child(8) {
+        max-width: 35px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm {
+        padding: 2px 3px;
+        font-size: 0.55rem;
+        min-width: 20px;
+        height: 18px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm i {
+        font-size: 0.55rem;
+    }
+}
+
+/* Estilos específicos para tabla de proveedores móvil (8 columnas) */
+@media (max-width: 768px) {
+    /* Vista móvil de proveedores */
+    .d-block.d-md-none .table-modern {
+        font-size: 0.65rem;
+    }
+    
+    .d-block.d-md-none .table-modern th {
+        padding: 8px 3px;
+        font-size: 0.6rem;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .d-block.d-md-none .table-modern td {
+        padding: 6px 3px;
+        font-size: 0.6rem;
+        text-align: center;
+        word-wrap: break-word;
+    }
+    
+    /* Ancho específico para cada columna de proveedores */
+    .d-block.d-md-none .table-modern th:nth-child(1),
+    .d-block.d-md-none .table-modern td:nth-child(1) {
+        width: 8%;
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(2),
+    .d-block.d-md-none .table-modern td:nth-child(2) {
+        width: 20%;
+        font-size: 0.58rem;
+        font-weight: 600;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(3),
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        width: 18%;
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(4),
+    .d-block.d-md-none .table-modern td:nth-child(4) {
+        width: 12%;
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(5),
+    .d-block.d-md-none .table-modern td:nth-child(5) {
+        width: 10%;
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(6),
+    .d-block.d-md-none .table-modern td:nth-child(6) {
+        width: 12%;
+        font-size: 0.55rem;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(7),
+    .d-block.d-md-none .table-modern td:nth-child(7) {
+        width: 8%;
+    }
+    
+    .d-block.d-md-none .table-modern th:nth-child(8),
+    .d-block.d-md-none .table-modern td:nth-child(8) {
+        width: 12%;
+    }
+    
+    /* Estilos para badges en proveedores móvil */
+    .d-block.d-md-none .table-modern .badge {
+        font-size: 0.5rem;
+        padding: 2px 4px;
+        white-space: nowrap;
+    }
+    
+    /* Estilos para información de contacto en móvil */
+    .d-block.d-md-none .table-modern .contact-info {
+        font-size: 0.5rem;
+        line-height: 1.2;
+    }
+    
+    .d-block.d-md-none .table-modern .contact-info strong {
+        font-size: 0.52rem;
+        font-weight: 600;
+    }
+    
+    /* Botones de acción para proveedores móvil */
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm {
+        padding: 1px 2px;
+        font-size: 0.5rem;
+        min-width: 18px;
+        height: 16px;
+        margin: 0 1px;
+    }
+    
+    .d-block.d-md-none .table-modern td:nth-child(8) .btn-sm i {
+        font-size: 0.5rem;
+    }
+    
+    /* Ajustes específicos para texto largo en proveedores */
+    .d-block.d-md-none .table-modern td:nth-child(2) strong,
+    .d-block.d-md-none .table-modern td:nth-child(3) {
+        word-break: break-word;
+        hyphens: auto;
+    }
+}

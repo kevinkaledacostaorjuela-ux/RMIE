@@ -130,7 +130,7 @@ if (isset($proveedores) && is_array($proveedores)) {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 25px;
+            padding: 25px;  
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.2);
             transition: all 0.3s ease;
@@ -189,13 +189,13 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .table-modern {
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.1);
             color: #000;
             border-radius: 10px;
         }
 
         .table-modern th {
-            background: rgba(52, 58, 64, 0.8);
+            background: rgba(255, 255, 255, 0.2);
             color: #fff;
             border: none;
             padding: 15px 10px;
@@ -208,6 +208,7 @@ if (isset($proveedores) && is_array($proveedores)) {
             vertical-align: middle;
             transition: all 0.3s ease;
             background: rgba(255, 255, 255, 0.9);
+            color: #000;
         }
 
         .table-modern tbody tr:hover {
@@ -217,10 +218,6 @@ if (isset($proveedores) && is_array($proveedores)) {
 
         .table-modern td strong,
         .table-modern td .contact-info {
-            color: #000 !important;
-        }
-
-        .table-modern td {
             color: #000 !important;
         }
 
@@ -373,6 +370,99 @@ if (isset($proveedores) && is_array($proveedores)) {
         .text-muted {
             color: #6c757d !important;
         }
+
+        /* Scroll horizontal para móviles - Proveedores */
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 15px;
+                overflow: visible;
+            }
+            
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto !important;
+                overflow-y: visible;
+                border-radius: 10px;
+                max-width: 100%;
+                position: relative;
+            }
+            
+            .table-responsive::-webkit-scrollbar {
+                height: 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 6px;
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.7);
+            }
+            
+            .d-block.d-md-none .table-modern {
+                min-width: 1200px !important; /* Ancho mínimo para 8 columnas */
+                margin-bottom: 0;
+                width: 1200px;
+            }
+            
+            .d-block.d-md-none .table-modern th,
+            .d-block.d-md-none .table-modern td {
+                white-space: nowrap !important;
+                padding: 10px 8px;
+                font-size: 0.85rem;
+                min-width: 120px;
+            }
+            
+            /* Anchos específicos para proveedores móvil (8 columnas) */
+            .d-block.d-md-none .table-modern th:nth-child(1),
+            .d-block.d-md-none .table-modern td:nth-child(1) { min-width: 70px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(2),
+            .d-block.d-md-none .table-modern td:nth-child(2) { min-width: 180px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(3),
+            .d-block.d-md-none .table-modern td:nth-child(3) { min-width: 170px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(4),
+            .d-block.d-md-none .table-modern td:nth-child(4) { min-width: 140px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(5),
+            .d-block.d-md-none .table-modern td:nth-child(5) { min-width: 180px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(6),
+            .d-block.d-md-none .table-modern td:nth-child(6) { min-width: 180px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(7),
+            .d-block.d-md-none .table-modern td:nth-child(7) { min-width: 120px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(8),
+            .d-block.d-md-none .table-modern td:nth-child(8) { min-width: 140px; }
+            
+            /* Scroll indicator */
+            .scroll-hint {
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.8rem;
+                font-style: italic;
+                animation: pulse 2s ease-in-out infinite;
+                background: rgba(0, 0, 0, 0.3);
+                padding: 5px 10px;
+                border-radius: 15px;
+                backdrop-filter: blur(5px);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+        }
     </style>
 </head>
 <body>
@@ -505,8 +595,8 @@ if (isset($proveedores) && is_array($proveedores)) {
             </a>
         </div>
 
-        <!-- Tabla de Proveedores -->
-        <div class="table-container">
+        <!-- Tabla de Proveedores (Desktop) -->
+        <div class="table-container d-none d-md-block">
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -545,12 +635,15 @@ if (isset($proveedores) && is_array($proveedores)) {
                                 <td>
                                     <?php if (!empty($proveedor->cel_proveedor)): ?>
                                         <div class="contact-info mb-1">
-                                            <i class="fas fa-mobile-alt"></i> Celular: <?= htmlspecialchars($proveedor->cel_proveedor) ?>
+                                            <i class="fas fa-mobile-alt"></i> <?= htmlspecialchars($proveedor->cel_proveedor) ?>
                                         </div>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-minus"></i> Sin celular
+                                        </span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <!-- Teléfono: Campo no disponible en modelo -->
                                     <?php if (!empty($proveedor->correo)): ?>
                                         <div class="contact-info">
                                             <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->correo) ?>
@@ -606,8 +699,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                                         <strong><?= date('d/m/Y') ?></strong>
                                         <br>
                                         <small class="text-muted">
-                                            <!-- Fecha registro no disponible -->
-                                            N/A
+                                            <?= date('H:i') ?>
                                         </small>
                                     </div>
                                 </td>
@@ -644,6 +736,156 @@ if (isset($proveedores) && is_array($proveedores)) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Vista de Tabla Móvil -->
+        <div class="d-block d-md-none">
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-truck"></i> Proveedor</th>
+                                <th><i class="fas fa-address-card"></i> Información</th>
+                                <th><i class="fas fa-phone"></i> Contacto</th>
+                                <th><i class="fas fa-map-marker-alt"></i> Ubicación</th>
+                                <th><i class="fas fa-traffic-light"></i> Estado</th>
+                                <th><i class="fas fa-calendar-alt"></i> Fecha Registro</th>
+                                <th><i class="fas fa-cogs"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (isset($proveedores) && is_array($proveedores) && !empty($proveedores)): ?>
+                                <?php foreach ($proveedores as $proveedor): ?>
+                                <tr>
+                                    <td>
+                                        <strong>#<?= htmlspecialchars($proveedor->id_proveedores) ?></strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="provider-icon">
+                                                <i class="fas fa-truck"></i>
+                                            </div>
+                                            <div>
+                                                <strong><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-barcode"></i> ID: <?= $proveedor->id_proveedores ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($proveedor->cel_proveedor)): ?>
+                                            <span class="badge badge-modern badge-info" title="Celular: <?= htmlspecialchars($proveedor->cel_proveedor) ?>">
+                                                <i class="fas fa-mobile-alt"></i> <?= htmlspecialchars(substr($proveedor->cel_proveedor, 0, 10)) ?><?= strlen($proveedor->cel_proveedor) > 10 ? '...' : '' ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-modern badge-secondary">
+                                                <i class="fas fa-minus"></i> Sin celular
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($proveedor->correo)): ?>
+                                            <span class="badge badge-modern badge-primary" title="Email: <?= htmlspecialchars($proveedor->correo) ?>">
+                                                <i class="fas fa-envelope"></i> Email
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-modern badge-secondary">
+                                                <i class="fas fa-minus"></i> Sin email
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($proveedor->ubicacion)): ?>
+                                            <span class="badge badge-modern badge-success" title="Ubicación: <?= htmlspecialchars($proveedor->ubicacion) ?>">
+                                                <i class="fas fa-map-marker-alt"></i> Ubicación
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-modern badge-secondary">
+                                                <i class="fas fa-question"></i> Sin ubicación
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php
+                                        $estado = strtolower($proveedor->estado ?? 'pendiente');
+                                        $badgeClass = '';
+                                        $iconClass = '';
+                                        
+                                        switch ($estado) {
+                                            case 'activo':
+                                                $badgeClass = 'badge-success';
+                                                $iconClass = 'fas fa-check-circle';
+                                                break;
+                                            case 'inactivo':
+                                                $badgeClass = 'badge-danger';
+                                                $iconClass = 'fas fa-times-circle';
+                                                break;
+                                            case 'pendiente':
+                                                $badgeClass = 'badge-warning';
+                                                $iconClass = 'fas fa-clock';
+                                                break;
+                                            default:
+                                                $badgeClass = 'badge-secondary';
+                                                $iconClass = 'fas fa-question-circle';
+                                        }
+                                        ?>
+                                        <span class="badge badge-modern <?= $badgeClass ?>">
+                                            <i class="<?= $iconClass ?>"></i> <?= ucfirst($estado) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <i class="fas fa-calendar text-info"></i>
+                                            <strong><?= date('d/m/Y') ?></strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <?= date('H:i') ?>
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                               class="btn btn-sm btn-modern btn-warning-modern" 
+                                               title="Editar proveedor">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                               class="btn btn-sm btn-modern btn-danger-modern" 
+                                               title="Eliminar proveedor"
+                                               onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="fas fa-truck fa-3x mb-3"></i>
+                                            <h5>No hay proveedores disponibles</h5>
+                                            <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                                <i class="fas fa-plus"></i> Crear Primer Proveedor
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Indicador de scroll para móviles -->
+                <div class="scroll-hint d-block d-md-none">
+                    <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
+                </div>
             </div>
         </div>
     </div>

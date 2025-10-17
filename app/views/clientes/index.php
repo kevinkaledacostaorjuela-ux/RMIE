@@ -324,6 +324,99 @@ $stats = $statsQuery->fetch_assoc();
         .badge-secondary {
             background: linear-gradient(45deg, #667eea, #764ba2);
         }
+
+        /* Scroll horizontal para móviles - Clientes */
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 15px;
+                overflow: visible;
+            }
+            
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto !important;
+                overflow-y: visible;
+                border-radius: 10px;
+                max-width: 100%;
+                position: relative;
+            }
+            
+            .table-responsive::-webkit-scrollbar {
+                height: 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 6px;
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.7);
+            }
+            
+            .table-modern {
+                min-width: 1300px !important; /* Ancho mínimo para 8 columnas */
+                margin-bottom: 0;
+                width: 1300px;
+            }
+            
+            .table-modern th,
+            .table-modern td {
+                white-space: nowrap !important;
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                min-width: 120px;
+            }
+            
+            /* Anchos específicos para clientes (8 columnas) */
+            .table-modern th:nth-child(1),
+            .table-modern td:nth-child(1) { min-width: 70px; }
+            
+            .table-modern th:nth-child(2),
+            .table-modern td:nth-child(2) { min-width: 200px; }
+            
+            .table-modern th:nth-child(3),
+            .table-modern td:nth-child(3) { min-width: 180px; }
+            
+            .table-modern th:nth-child(4),
+            .table-modern td:nth-child(4) { min-width: 140px; }
+            
+            .table-modern th:nth-child(5),
+            .table-modern td:nth-child(5) { min-width: 150px; }
+            
+            .table-modern th:nth-child(6),
+            .table-modern td:nth-child(6) { min-width: 220px; }
+            
+            .table-modern th:nth-child(7),
+            .table-modern td:nth-child(7) { min-width: 120px; }
+            
+            .table-modern th:nth-child(8),
+            .table-modern td:nth-child(8) { min-width: 120px; }
+            
+            /* Scroll indicator */
+            .scroll-hint {
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.8rem;
+                font-style: italic;
+                animation: pulse 2s ease-in-out infinite;
+                background: rgba(0, 0, 0, 0.3);
+                padding: 5px 10px;
+                border-radius: 15px;
+                backdrop-filter: blur(5px);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+        }
     </style>
 </head>
 <body>
@@ -444,6 +537,7 @@ $stats = $statsQuery->fetch_assoc();
                             <th><i class="fas fa-user"></i> Cliente</th>
                             <th><i class="fas fa-envelope"></i> Email</th>
                             <th><i class="fas fa-phone"></i> Teléfono</th>
+                            <th><i class="fas fa-store"></i> Local</th>
                             <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
                             <th><i class="fas fa-toggle-on"></i> Estado</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
@@ -471,9 +565,9 @@ $stats = $statsQuery->fetch_assoc();
                                     </div>
                                 </td>
                                 <td>
-                                    <?php if (!empty($cliente->email)): ?>
+                                    <?php if (!empty($cliente->correo)): ?>
                                         <i class="fas fa-envelope text-info"></i>
-                                        <small><?= htmlspecialchars($cliente->email) ?></small>
+                                        <small><?= htmlspecialchars($cliente->correo) ?></small>
                                     <?php else: ?>
                                         <span class="badge badge-modern badge-secondary">
                                             <i class="fas fa-minus"></i> Sin email
@@ -491,7 +585,18 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if (!empty($cliente->direccion)): ?>
+                                    <?php if (!empty($cliente->local_nombre)): ?>
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-store"></i> <?= htmlspecialchars($cliente->local_nombre) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-minus"></i> Sin local
+                                        </span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (isset($cliente->direccion) && !empty($cliente->direccion)): ?>
                                         <span class="badge badge-modern badge-info" title="<?= htmlspecialchars($cliente->direccion) ?>">
                                             <i class="fas fa-map-marker-alt"></i> 
                                             <?= strlen($cliente->direccion) > 30 ? substr(htmlspecialchars($cliente->direccion), 0, 30) . '...' : htmlspecialchars($cliente->direccion) ?>
@@ -546,6 +651,10 @@ $stats = $statsQuery->fetch_assoc();
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+            <!-- Indicador de scroll para móviles -->
+            <div class="scroll-hint d-block d-md-none">
+                <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
             </div>
         </div>
     </div>

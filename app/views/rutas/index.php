@@ -7,12 +7,8 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 
-// Obtener mensajes de sesión
-$error_message = $_SESSION['error'] ?? '';
-$success_message = $_SESSION['success'] ?? '';
-
-// Limpiar mensajes de sesión
-unset($_SESSION['error'], $_SESSION['success']);
+// Los mensajes de sesión ya vienen del controlador
+// $error_message y $success_message están disponibles desde el controlador
 
 // Calcular estadísticas de rutas
 $totalRutas = count($rutas ?? []);
@@ -26,7 +22,7 @@ $fechaReciente = date('Y-m-d', strtotime('-7 days'));
 
 if (isset($rutas) && is_array($rutas)) {
     foreach ($rutas as $ruta) {
-        switch (strtolower($ruta->estado ?? 'pendiente')) {
+        switch (strtolower($ruta['estado'] ?? 'pendiente')) {
             case 'activa':
                 $rutasActivas++;
                 break;
@@ -42,7 +38,7 @@ if (isset($rutas) && is_array($rutas)) {
         }
         
         // Contar rutas recientes (últimos 7 días)
-        if (!empty($ruta->fecha_creacion) && $ruta->fecha_creacion >= $fechaReciente) {
+        if (!empty($ruta['fecha_creacion']) && $ruta['fecha_creacion'] >= $fechaReciente) {
             $rutasRecientes++;
         }
     }
@@ -1091,6 +1087,102 @@ if (isset($rutas) && is_array($rutas)) {
                 justify-content: center;
             }
         }
+
+        /* Scroll horizontal para móviles - Rutas */
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 15px;
+                overflow: visible;
+            }
+            
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto !important;
+                overflow-y: visible;
+                border-radius: 10px;
+                max-width: 100%;
+                position: relative;
+            }
+            
+            .table-responsive::-webkit-scrollbar {
+                height: 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 6px;
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.7);
+            }
+            
+            .table-modern {
+                min-width: 1400px !important; /* Ancho mínimo para 9 columnas */
+                margin-bottom: 0;
+                width: 1400px;
+            }
+            
+            .table-modern th,
+            .table-modern td {
+                white-space: nowrap !important;
+                padding: 10px 12px;
+                font-size: 0.85rem;
+                min-width: 120px;
+            }
+            
+            /* Anchos específicos para rutas (9 columnas) */
+            .table-modern th:nth-child(1),
+            .table-modern td:nth-child(1) { min-width: 70px; }
+            
+            .table-modern th:nth-child(2),
+            .table-modern td:nth-child(2) { min-width: 180px; }
+            
+            .table-modern th:nth-child(3),
+            .table-modern td:nth-child(3) { min-width: 200px; }
+            
+            .table-modern th:nth-child(4),
+            .table-modern td:nth-child(4) { min-width: 180px; }
+            
+            .table-modern th:nth-child(5),
+            .table-modern td:nth-child(5) { min-width: 150px; }
+            
+            .table-modern th:nth-child(6),
+            .table-modern td:nth-child(6) { min-width: 180px; }
+            
+            .table-modern th:nth-child(7),
+            .table-modern td:nth-child(7) { min-width: 120px; }
+            
+            .table-modern th:nth-child(8),
+            .table-modern td:nth-child(8) { min-width: 150px; }
+            
+            .table-modern th:nth-child(9),
+            .table-modern td:nth-child(9) { min-width: 120px; }
+            
+            /* Scroll indicator */
+            .scroll-hint {
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.8rem;
+                font-style: italic;
+                animation: pulse 2s ease-in-out infinite;
+                background: rgba(0, 0, 0, 0.3);
+                padding: 5px 10px;
+                border-radius: 15px;
+                backdrop-filter: blur(5px);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+        }
     </style>
 </head>
 <body>
@@ -1502,12 +1594,14 @@ if (isset($rutas) && is_array($rutas)) {
                                            title="Editar ruta">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($rol_usuario !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar ruta"
                                            onclick="return confirm('¿Está seguro de eliminar la ruta \'<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -1534,6 +1628,10 @@ if (isset($rutas) && is_array($rutas)) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+            <!-- Indicador de scroll para móviles -->
+            <div class="scroll-hint d-block d-md-none">
+                <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
             </div>
         </div>
     </div>

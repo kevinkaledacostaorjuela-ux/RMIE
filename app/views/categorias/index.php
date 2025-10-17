@@ -273,6 +273,90 @@ $stats = $statsQuery->fetch_assoc();
         .badge-secondary {
             background: linear-gradient(45deg, #667eea, #764ba2);
         }
+
+        /* Scroll horizontal para móviles - Categorías */
+        @media (max-width: 768px) {
+            .table-container {
+                padding: 15px;
+                overflow: visible;
+            }
+            
+            .table-responsive {
+                -webkit-overflow-scrolling: touch;
+                overflow-x: auto !important;
+                overflow-y: visible;
+                border-radius: 10px;
+                max-width: 100%;
+                position: relative;
+            }
+            
+            .table-responsive::-webkit-scrollbar {
+                height: 12px;
+                background: rgba(255, 255, 255, 0.2);
+                border-radius: 6px;
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.5);
+                border-radius: 6px;
+                border: 2px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .table-responsive::-webkit-scrollbar-thumb:hover {
+                background: rgba(255, 255, 255, 0.7);
+            }
+            
+            .d-block.d-md-none .table-modern {
+                min-width: 750px !important; /* Ancho mínimo para 5 columnas */
+                margin-bottom: 0;
+                width: 750px;
+            }
+            
+            .d-block.d-md-none .table-modern th,
+            .d-block.d-md-none .table-modern td {
+                white-space: nowrap !important;
+                padding: 10px 8px;
+                font-size: 0.85rem;
+                min-width: 120px;
+            }
+            
+            /* Anchos específicos para categorías móvil (5 columnas) */
+            .d-block.d-md-none .table-modern th:nth-child(1),
+            .d-block.d-md-none .table-modern td:nth-child(1) { min-width: 70px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(2),
+            .d-block.d-md-none .table-modern td:nth-child(2) { min-width: 200px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(3),
+            .d-block.d-md-none .table-modern td:nth-child(3) { min-width: 250px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(4),
+            .d-block.d-md-none .table-modern td:nth-child(4) { min-width: 120px; }
+            
+            .d-block.d-md-none .table-modern th:nth-child(5),
+            .d-block.d-md-none .table-modern td:nth-child(5) { min-width: 120px; }
+            
+            /* Scroll indicator */
+            .scroll-hint {
+                position: absolute;
+                bottom: -30px;
+                left: 50%;
+                transform: translateX(-50%);
+                color: rgba(255, 255, 255, 0.8);
+                font-size: 0.8rem;
+                font-style: italic;
+                animation: pulse 2s ease-in-out infinite;
+                background: rgba(0, 0, 0, 0.3);
+                padding: 5px 10px;
+                border-radius: 15px;
+                backdrop-filter: blur(5px);
+            }
+            
+            @keyframes pulse {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+        }
     </style>
 </head>
 <body>
@@ -322,8 +406,8 @@ $stats = $statsQuery->fetch_assoc();
             </a>
         </div>
 
-        <!-- Tabla de Categorías -->
-        <div class="table-container">
+        <!-- Tabla de Categorías (Desktop) -->
+        <div class="table-container d-none d-md-block">
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -409,6 +493,102 @@ $stats = $statsQuery->fetch_assoc();
                         <?php endif; ?>
                     </tbody>
                 </table>
+            </div>
+        </div>
+
+        <!-- Vista de Tabla Móvil -->
+        <div class="d-block d-md-none">
+            <div class="table-container">
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-hashtag"></i> ID</th>
+                                <th><i class="fas fa-tag"></i> Categoría</th>
+                                <th><i class="fas fa-align-left"></i> Descripción</th>
+                                <th><i class="fas fa-calendar-alt"></i> Fecha Creación</th>
+                                <th><i class="fas fa-cogs"></i> Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (isset($categorias) && is_array($categorias) && !empty($categorias)): ?>
+                                <?php foreach ($categorias as $cat): ?>
+                                <tr>
+                                    <td>
+                                        <strong>#<?= htmlspecialchars($cat->id_categoria) ?></strong>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="category-icon">
+                                                <i class="fas fa-tag"></i>
+                                            </div>
+                                            <div>
+                                                <strong><?= htmlspecialchars($cat->nombre) ?></strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-barcode"></i> ID: <?= $cat->id_categoria ?>
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($cat->descripcion)): ?>
+                                            <span class="badge badge-modern badge-info" title="<?= htmlspecialchars($cat->descripcion) ?>">
+                                                <?= strlen($cat->descripcion) > 50 ? substr(htmlspecialchars($cat->descripcion), 0, 50) . '...' : htmlspecialchars($cat->descripcion) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-modern badge-secondary">
+                                                <i class="fas fa-minus"></i> Sin descripción
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="text-center">
+                                            <i class="fas fa-calendar text-info"></i>
+                                            <strong><?= date('d/m/Y', strtotime($cat->fecha_creacion)) ?></strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <?= date('H:i', strtotime($cat->fecha_creacion)) ?>
+                                            </small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria) ?>" 
+                                               class="btn btn-sm btn-modern btn-warning-modern" 
+                                               title="Editar categoría">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <a href="/RMIE/app/views/categorias/delete.php?id=<?= urlencode($cat->id_categoria) ?>" 
+                                               class="btn btn-sm btn-modern btn-danger-modern" 
+                                               title="Eliminar categoría">
+                                                <i class="fas fa-trash"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">
+                                        <div class="text-muted">
+                                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                                            <h5>No hay categorías disponibles</h5>
+                                            <p>No se encontraron categorías registradas en el sistema.</p>
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                                <i class="fas fa-plus"></i> Crear Primera Categoría
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Indicador de scroll para móviles -->
+                <div class="scroll-hint d-block d-md-none">
+                    <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
+                </div>
             </div>
         </div>
     </div>
