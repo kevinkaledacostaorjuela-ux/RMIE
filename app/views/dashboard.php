@@ -84,113 +84,134 @@ $rol = $_SESSION['rol'];
             }
         }
 
-        /* Estilos del cohete animado */
-        .rocket-container {
+        /* Estilos de la moto animada */
+        .bike-container {
             position: relative;
             overflow: hidden;
         }
 
-        .rocket-wrapper {
+        .bike-wrapper {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            animation: rocketFlight 8s infinite linear;
+            bottom: 20px;
+            right: -100px;
+            animation: bikeDrive 8s infinite linear;
             z-index: 5;
+            transform: scaleX(-1);
         }
 
-        .rocket {
-            width: 40px;
-            height: 60px;
+        .bike {
+            width: 60px;
+            height: 35px;
             position: relative;
-            transform: rotate(-45deg);
         }
 
-        .rocket-body {
-            width: 20px;
-            height: 40px;
-            background: linear-gradient(145deg, #e8eaf6 0%, #c5cae9 100%);
-            border-radius: 10px 10px 2px 2px;
-            position: relative;
-            margin: 0 auto;
-            box-shadow: inset 2px 2px 4px rgba(255,255,255,0.3), inset -2px -2px 4px rgba(0,0,0,0.2);
-        }
-
-        .rocket-tip {
-            width: 0;
-            height: 0;
-            border-left: 10px solid transparent;
-            border-right: 10px solid transparent;
-            border-bottom: 20px solid #f44336;
+        .bike-body {
+            width: 35px;
+            height: 10px;
+            background: linear-gradient(45deg, #ff6b35, #f7931e);
+            border-radius: 5px;
             position: absolute;
-            top: -19px;
-            left: 50%;
-            transform: translateX(-50%);
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            bottom: 18px;
+            left: 12px;
+            box-shadow: 0 2px 4px rgba(255, 107, 53, 0.3);
         }
 
-        .rocket-window {
+        .bike-seat {
             width: 8px;
-            height: 8px;
-            background: radial-gradient(circle, #42a5f5 0%, #1976d2 100%);
+            height: 4px;
+            background: #2c3e50;
+            border-radius: 2px;
+            position: absolute;
+            bottom: 28px;
+            left: 28px;
+        }
+
+        .bike-handle {
+            width: 12px;
+            height: 2px;
+            background: #95a5a6;
+            border-radius: 1px;
+            position: absolute;
+            bottom: 30px;
+            left: 8px;
+            transform: rotate(-10deg);
+        }
+
+        .bike-wheel {
+            width: 14px;
+            height: 14px;
+            background: #2c3e50;
             border-radius: 50%;
             position: absolute;
-            top: 8px;
-            left: 50%;
-            transform: translateX(-50%);
-            box-shadow: 0 0 6px rgba(66, 165, 245, 0.8);
+            bottom: 2px;
+            border: 1px solid #1a252f;
         }
 
-        .rocket-fin {
+        .bike-wheel.front {
+            left: 8px;
+            animation: wheelSpin 0.3s infinite linear;
+        }
+
+        .bike-wheel.rear {
+            right: 8px;
+            animation: wheelSpin 0.3s infinite linear;
+        }
+
+        .bike-rider {
+            position: absolute;
+            bottom: 28px;
+            left: 20px;
+            width: 10px;
+            height: 15px;
+        }
+
+        .rider-head {
             width: 8px;
-            height: 15px;
-            background: linear-gradient(145deg, #ff7043 0%, #d84315 100%);
-            position: absolute;
-            bottom: -2px;
-            border-radius: 0 0 4px 4px;
-        }
-
-        .left-fin {
-            left: -4px;
-            transform: skew(-20deg);
-        }
-
-        .right-fin {
-            right: -4px;
-            transform: skew(20deg);
-        }
-
-        .rocket-fire {
-            position: absolute;
-            bottom: -15px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 12px;
-            height: 15px;
-        }
-
-        .fire-particle {
-            position: absolute;
-            width: 4px;
             height: 8px;
-            background: linear-gradient(180deg, #ff5722 0%, #ff9800 50%, #ffc107 100%);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            animation: fireFlicker 0.3s infinite alternate;
+            background: #f39c12;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            left: 1px;
+            border: 1px solid #e67e22;
         }
 
-        .fire-particle:nth-child(1) {
-            left: 0;
+        .rider-body {
+            width: 6px;
+            height: 10px;
+            background: #3498db;
+            border-radius: 3px;
+            position: absolute;
+            bottom: 0;
+            left: 2px;
+        }
+
+        .exhaust-smoke:nth-child(1) {
             animation-delay: 0s;
         }
 
-        .fire-particle:nth-child(2) {
-            left: 4px;
-            animation-delay: 0.1s;
-            height: 12px;
+        .exhaust-smoke:nth-child(2) {
+            animation-delay: 0.2s;
         }
 
-        .fire-particle:nth-child(3) {
-            left: 8px;
-            animation-delay: 0.2s;
+        .exhaust-smoke:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        .road-lines {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 15px,
+                #fff 15px,
+                #fff 30px
+            );
+            animation: roadMove 1.5s infinite linear;
         }
 
         /* Estrellas de fondo */
@@ -221,57 +242,65 @@ $rol = $_SESSION['rol'];
         .star:nth-child(7) { top: 80%; left: 40%; animation-delay: 3s; }
         .star:nth-child(8) { top: 25%; left: 75%; animation-delay: 3.5s; }
 
-        .rocket-text {
+        .bike-text {
             position: relative;
             z-index: 10;
             margin-top: 40px;
         }
 
         /* Animaciones */
-        @keyframes rocketFlight {
+        @keyframes bikeDrive {
             0% { 
-                transform: translate(0, 0) rotate(-45deg);
-                opacity: 1;
+                right: -100px; 
+                bottom: 20px; 
             }
             15% { 
-                transform: translate(150px, -30px) rotate(-30deg);
-                opacity: 1;
+                right: 15%; 
+                bottom: 22px; 
             }
             30% { 
-                transform: translate(300px, -20px) rotate(-15deg);
-                opacity: 1;
+                right: 30%; 
+                bottom: 18px; 
             }
             45% { 
-                transform: translate(450px, -40px) rotate(0deg);
-                opacity: 1;
+                right: 45%; 
+                bottom: 24px; 
             }
             60% { 
-                transform: translate(600px, -60px) rotate(15deg);
-                opacity: 1;
+                right: 60%; 
+                bottom: 19px; 
             }
             75% { 
-                transform: translate(750px, -30px) rotate(30deg);
-                opacity: 1;
-            }
-            90% { 
-                transform: translate(900px, -10px) rotate(45deg);
-                opacity: 0.5;
+                right: 75%; 
+                bottom: 23px; 
             }
             100% { 
-                transform: translate(1050px, 20px) rotate(60deg);
-                opacity: 0;
+                right: calc(100% + 100px); 
+                bottom: 20px; 
             }
         }
 
-        @keyframes fireFlicker {
+        @keyframes wheelSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes smokeRise {
             0% { 
-                transform: scaleY(1) scaleX(1);
-                opacity: 1;
+                bottom: 0; 
+                opacity: 0.8; 
+                transform: scale(0.5);
             }
             100% { 
-                transform: scaleY(1.3) scaleX(0.8);
-                opacity: 0.8;
+                bottom: 20px; 
+                opacity: 0; 
+                transform: scale(1.5);
             }
+        }
+
+        @keyframes roadMove {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-30px); }
         }
 
         @keyframes twinkle {
@@ -287,40 +316,45 @@ $rol = $_SESSION['rol'];
 
         /* Responsive para móviles */
         @media (max-width: 768px) {
-            .rocket-wrapper {
-                animation: rocketFlightMobile 6s infinite linear;
+            .bike-wrapper {
+                animation: bikeDriveMobile 6s infinite linear;
             }
             
-            .rocket {
-                width: 30px;
-                height: 45px;
+            .bike {
+                width: 45px;
+                height: 25px;
             }
             
-            .rocket-body {
-                width: 15px;
-                height: 30px;
+            .bike-body {
+                width: 22px;
+                height: 6px;
             }
             
-            @keyframes rocketFlightMobile {
+            .bike-wheel {
+                width: 12px;
+                height: 12px;
+            }
+            
+            @keyframes bikeDriveMobile {
                 0% { 
-                    transform: translate(0, 0) rotate(-45deg);
-                    opacity: 1;
+                    right: -60px; 
+                    bottom: 15px; 
                 }
                 25% { 
-                    transform: translate(100px, -20px) rotate(-15deg);
-                    opacity: 1;
+                    right: 25%; 
+                    bottom: 18px; 
                 }
                 50% { 
-                    transform: translate(200px, -30px) rotate(15deg);
-                    opacity: 1;
+                    right: 50%; 
+                    bottom: 15px; 
                 }
                 75% { 
-                    transform: translate(300px, -10px) rotate(35deg);
-                    opacity: 0.7;
+                    right: 75%; 
+                    bottom: 18px; 
                 }
                 100% { 
-                    transform: translate(400px, 10px) rotate(45deg);
-                    opacity: 0;
+                    right: calc(100% + 60px); 
+                    bottom: 15px; 
                 }
             }
         }
@@ -698,55 +732,6 @@ $rol = $_SESSION['rol'];
                     </div>
                 </div>
             </div>
-
-            <!-- Panel de información adicional -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="rocket-container" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 30px; color: white; text-align: center; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.2); position: relative; overflow: hidden; min-height: 200px;">
-                        
-                        <!-- Cohete animado -->
-                        <div class="rocket-wrapper">
-                            <div class="rocket">
-                                <!-- Cuerpo del cohete -->
-                                <div class="rocket-body"></div>
-                                <!-- Punta del cohete -->
-                                <div class="rocket-tip"></div>
-                                <!-- Ventanas -->
-                                <div class="rocket-window"></div>
-                                <!-- Aletas -->
-                                <div class="rocket-fin left-fin"></div>
-                                <div class="rocket-fin right-fin"></div>
-                                <!-- Fuego del cohete -->
-                                <div class="rocket-fire">
-                                    <div class="fire-particle"></div>
-                                    <div class="fire-particle"></div>
-                                    <div class="fire-particle"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Estrellas de fondo -->
-                        <div class="stars">
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                            <div class="star"></div>
-                        </div>
-
-                        <!-- Texto -->
-                        <div class="rocket-text">
-                            <h4 style="margin: 0 0 10px 0; font-weight: 700; z-index: 10; position: relative;">Sistema RMIE</h4>
-                            <p style="margin: 0; font-size: 1.1rem; opacity: 0.9; z-index: 10; position: relative;">
-                                Gestión integral de inventario, ventas y reportes
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
     </main>
 </div>
@@ -810,5 +795,73 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+
+<!-- Footer con moto animada -->
+<footer class="mt-5 p-0" style="position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+    <div class="bike-container" style="min-height: 120px; padding: 20px 0; color: white; text-align: center; position: relative; overflow: hidden;">
+        
+        <!-- Moto animada -->
+        <div class="bike-wrapper">
+            <div class="bike">
+                <!-- Cuerpo de la moto -->
+                <div class="bike-body"></div>
+                <!-- Asiento -->
+                <div class="bike-seat"></div>
+                <!-- Manillar -->
+                <div class="bike-handle"></div>
+                <!-- Faro delantero -->
+                <div style="position: absolute; left: 2px; bottom: 22px; width: 6px; height: 4px; background: #f1c40f; border-radius: 2px; box-shadow: 0 0 8px #f1c40f;"></div>
+                <!-- Ruedas -->
+                <div class="bike-wheel front">
+                    <div class="bike-spoke spoke-1"></div>
+                    <div class="bike-spoke spoke-2"></div>
+                    <div class="bike-spoke spoke-3"></div>
+                    <div class="bike-spoke spoke-4"></div>
+                </div>
+                <div class="bike-wheel rear">
+                    <div class="bike-spoke spoke-1"></div>
+                    <div class="bike-spoke spoke-2"></div>
+                    <div class="bike-spoke spoke-3"></div>
+                    <div class="bike-spoke spoke-4"></div>
+                </div>
+                <!-- Conductor -->
+                <div class="bike-rider">
+                    <div class="rider-head"></div>
+                    <div class="rider-body"></div>
+                </div>
+                <!-- Escape -->
+                <div class="bike-exhaust">
+                    <div class="exhaust-smoke"></div>
+                    <div class="exhaust-smoke"></div>
+                    <div class="exhaust-smoke"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Líneas de carretera -->
+        <div class="road-lines"></div>
+
+        <!-- Estrellas de fondo -->
+        <div class="stars">
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+            <div class="star"></div>
+        </div>
+
+        <!-- Texto del footer -->
+        <div class="bike-text">
+            <h4 style="margin: 10px 0 5px 0; font-weight: 700; z-index: 10; position: relative;">🏍️ Sistema RMIE</h4>
+            <p style="margin: 0; font-size: 1rem; opacity: 0.9; z-index: 10; position: relative;">
+                Gestión integral de inventario, ventas y reportes
+            </p>
+        </div>
+    </div>
+</footer>
+
 </body>
 </html>

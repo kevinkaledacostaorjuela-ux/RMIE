@@ -1,14 +1,11 @@
-<?php
-// ...existing code...
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Producto - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Crear Nuevo Producto - RMIE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -23,12 +20,15 @@
             padding: 20px;
         }
         
-        .productos-container {
-            max-width: 1200px;
+        .main-container {
+            max-width: 1000px;
+            width: 100%;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: fadeInUp 0.6s ease-out;
         }
@@ -36,7 +36,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
             to {
                 opacity: 1;
@@ -44,459 +44,350 @@
             }
         }
         
-        .subcategorias-breadcrumb {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            padding: 15px 30px;
-            border-radius: 0;
-        }
-        
-        .breadcrumb {
-            background: transparent;
-            margin: 0;
-            padding: 0;
-            list-style: none;
-            display: flex;
-            flex-wrap: wrap;
-        }
-        
-        .breadcrumb-item {
-            color: white;
-            font-size: 14px;
-        }
-        
-        .breadcrumb-item + .breadcrumb-item::before {
-            content: "›";
-            padding: 0 10px;
-            color: white;
-        }
-        
-        .breadcrumb-item a {
-            color: white;
-            text-decoration: none;
-            transition: all 0.3s;
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-        
-        .breadcrumb-item a:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-        
-        .breadcrumb-item.active {
-            font-weight: 600;
-        }
-        
-        .productos-container h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            margin: 0;
-            font-size: 32px;
-            font-weight: 700;
+        .header-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
         
-        .productos-container h1 i {
-            margin-right: 15px;
-        }
-        
-        .productos-form {
-            padding: 40px;
-        }
-        
-        .row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -15px;
-        }
-        
-        .col-md-6,
-        .col-md-4 {
-            padding: 0 15px;
-            flex: 0 0 50%;
-            max-width: 50%;
-        }
-        
-        .col-md-4 {
-            flex: 0 0 33.333333%;
-            max-width: 33.333333%;
-        }
-        
-        h5 {
-            color: #667eea;
-            font-size: 20px;
-            font-weight: 600;
-            margin: 30px 0 20px 0;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+        .header-title {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
         
-        h5 i {
-            margin-right: 10px;
-            font-size: 22px;
+        .header-title i {
+            font-size: 2.5rem;
+            opacity: 0.9;
         }
         
-        .form-group {
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .form-section {
+            padding: 40px 30px;
+        }
+        
+        .section-title {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            font-size: 1.4rem;
+            opacity: 0.8;
+        }
+        
+        .form-row {
+            display: grid;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .form-row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        
+        .form-row-4 {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row-2,
+            .form-row-3,
+            .form-row-4 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+        
+        .form-floating-modern {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .form-control-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-select-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+        
+        .form-select-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-floating-modern label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: rgba(102, 126, 234, 0.8);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-floating-modern label i {
+            font-size: 16px;
+        }
+        
+        .form-control-modern:focus ~ label,
+        .form-control-modern:not(:placeholder-shown) ~ label,
+        .form-select-modern:focus ~ label,
+        .form-select-modern:not([value=""]) ~ label {
+            top: 2px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        .char-counter {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .form-section-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
             margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .buttons-section {
+            padding: 20px 30px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modern {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 160px;
+            justify-content: center;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #00d4ff 0%, #667eea 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+            background: linear-gradient(135deg, #00b8d4 0%, #5a67d8 100%);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .buttons-section {
+                padding: 20px 20px 30px;
+                flex-direction: column;
+            }
+            
+            .btn-modern {
+                width: 100%;
+            }
+        }
+        
+        /* Animaciones */
+        .form-section-card {
             animation: slideIn 0.5s ease-out;
+            animation-fill-mode: both;
+        }
+        
+        .form-section-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+        
+        .form-section-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .form-section-card:nth-child(3) {
+            animation-delay: 0.3s;
         }
         
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateX(-30px);
             }
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .form-group label i {
-            margin-right: 8px;
-            color: #667eea;
-            width: 20px;
-        }
-        
-        .optional-field {
-            color: #95a5a6;
-            font-weight: normal;
-            font-size: 12px;
-            font-style: italic;
-            margin-left: 5px;
-        }
-        
-        .form-group input[type="text"],
-        .form-group input[type="number"],
-        .form-group input[type="date"],
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
-            transition: all 0.3s;
-            background: white;
-        }
-        
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .form-group input:hover,
-        .form-group select:hover {
-            border-color: #764ba2;
-        }
-        
-        .form-group select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23667eea' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            padding-right: 40px;
-        }
-        
-        .form-group select option[value=""] {
-            color: #95a5a6;
-            font-style: italic;
-        }
-        
-        .subcategorias-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 2px solid #e0e0e0;
-        }
-        
-        .btn {
-            padding: 14px 35px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-        }
-        
-        .btn i {
-            font-size: 18px;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
-            color: white;
-        }
-        
-        .btn-secondary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(89, 97, 100, 0.4);
-        }
-        
-        /* Animación para inputs con error */
-        .form-group input.error,
-        .form-group select.error {
-            border-color: #e74c3c;
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .col-md-6,
-            .col-md-4 {
-                flex: 0 0 100%;
-                max-width: 100%;
-            }
-            
-            .productos-container h1 {
-                font-size: 24px;
-                padding: 20px;
-            }
-            
-            .productos-form {
-                padding: 20px;
-            }
-            
-            .subcategorias-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-        
-        /* Estilo para campos de precio */
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            opacity: 1;
-        }
-        
-        /* Tooltip efecto */
-        .form-group {
-            position: relative;
-        }
-        
-        .form-group input:focus + .tooltip,
-        .form-group select:focus + .tooltip {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        /* Indicador de campo requerido */
-        .form-group label::after {
-            content: "*";
-            color: #e74c3c;
-            margin-left: 5px;
-            font-weight: bold;
-        }
-        
-        .form-group:has(select:not([required])) label::after,
-        .form-group:has(input:not([required])) label::after {
-            content: "";
-        }
     </style>
 </head>
 <body>
-    <div class="productos-container">
-        <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
-                <li class="breadcrumb-item"><a href="/RMIE/app/controllers/ProductController.php?accion=index">Productos</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Agregar</li>
-            </ol>
-        </nav>
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1 class="header-title">
+                <i class="fas fa-box"></i>
+                Crear Nuevo Producto
+            </h1>
+            <p class="header-subtitle">Complete todos los campos para agregar un nuevo producto al inventario</p>
+        </div>
 
-        <h1><i class="fas fa-plus-circle"></i> Agregar Nuevo Producto</h1>
-        
-        <div class="productos-form">
-            <form method="POST" action="/RMIE/app/controllers/ProductController.php?accion=create" id="formProducto">
-                <div class="row">
-                    <!-- Información básica -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-info-circle"></i> Información Básica</h5>
-                        
-                        <div class="form-group">
-                            <label for="nombre">
-                                <i class="fas fa-box"></i> Nombre del Producto:
-                            </label>
+        <!-- Form -->
+        <div class="form-section">
+            <form action="/RMIE/app/controllers/ProductController.php?accion=create" method="POST" id="productForm">
+                
+                <!-- Información Básica -->
+                <div class="form-section-card">
+                    <div class="section-title">
+                        <i class="fas fa-info-circle"></i>
+                        Información Básica
+                    </div>
+                    
+                    <div class="form-row form-row-2">
+                        <div class="form-floating-modern">
                             <input type="text" 
+                                   class="form-control-modern" 
                                    id="nombre" 
                                    name="nombre" 
-                                   required 
-                                   placeholder="Ingrese el nombre del producto"
-                                   maxlength="45">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="descripcion">
-                                <i class="fas fa-align-left"></i> Descripción:
+                                   placeholder=" "
+                                   maxlength="100"
+                                   required>
+                            <label for="nombre">
+                                <i class="fas fa-tag"></i>
+                                Nombre del Producto
                             </label>
+                            <div class="char-counter">
+                                <span id="nombre-count">0</span>/100 caracteres
+                            </div>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <input type="text" 
+                                   class="form-control-modern" 
                                    id="descripcion" 
                                    name="descripcion" 
-                                   required 
-                                   placeholder="Descripción del producto"
-                                   maxlength="45">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="marca">
-                                <i class="fas fa-trademark"></i> Marca:
+                                   placeholder=" "
+                                   maxlength="200">
+                            <label for="descripcion">
+                                <i class="fas fa-align-left"></i>
+                                Descripción (Opcional)
                             </label>
-                            <input type="text" 
-                                   id="marca" 
-                                   name="marca" 
-                                   required 
-                                   placeholder="Marca del producto"
-                                   maxlength="45">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="stock">
-                                <i class="fas fa-cubes"></i> Stock:
-                            </label>
-                            <input type="number" 
-                                   id="stock" 
-                                   name="stock" 
-                                   required 
-                                   min="0"
-                                   placeholder="Cantidad en stock">
+                            <div class="char-counter">
+                                <span id="descripcion-count">0</span>/200 caracteres
+                            </div>
                         </div>
                     </div>
-                    
-                    <!-- Fechas -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-calendar"></i> Fechas</h5>
-                        
-                        <div class="form-group">
-                            <label for="fecha_entrada">
-                                <i class="fas fa-sign-in-alt"></i> Fecha de Entrada:
-                            </label>
-                            <input type="date" 
-                                   id="fecha_entrada" 
-                                   name="fecha_entrada" 
-                                   required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="fecha_fabricacion">
-                                <i class="fas fa-industry"></i> Fecha de Fabricación:
-                            </label>
-                            <input type="date" 
-                                   id="fecha_fabricacion" 
-                                   name="fecha_fabricacion" 
-                                   required>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="fecha_caducidad">
-                                <i class="fas fa-exclamation-triangle"></i> Fecha de Caducidad:
-                            </label>
-                            <input type="date" 
-                                   id="fecha_caducidad" 
-                                   name="fecha_caducidad" 
-                                   required>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <!-- Precios -->
-                    <div class="col-md-4">
-                        <h5><i class="fas fa-dollar-sign"></i> Precios</h5>
-                        
-                        <div class="form-group">
-                            <label for="precio_unitario">
-                                Precio Unitario:
-                            </label>
-                            <input type="number" 
-                                   id="precio_unitario" 
-                                   name="precio_unitario" 
-                                   required 
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="precio_por_mayor">
-                                Precio por Mayor:
-                            </label>
-                            <input type="number" 
-                                   id="precio_por_mayor" 
-                                   name="precio_por_mayor" 
-                                   required 
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="valor_unitario">
-                                Valor Unitario:
-                            </label>
-                            <input type="number" 
-                                   id="valor_unitario" 
-                                   name="valor_unitario" 
-                                   required 
-                                   step="0.01"
-                                   min="0"
-                                   placeholder="0.00">
-                        </div>
-                    </div>
-                    
-                    <!-- Categorización -->
-                    <div class="col-md-4">
-                        <h5><i class="fas fa-tags"></i> Categorización</h5>
-                        
-                        <div class="form-group">
-                            <label for="id_categoria">
-                                <i class="fas fa-folder"></i> Categoría:
-                            </label>
-                            <select id="id_categoria" name="id_categoria" required>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="categoria_id" 
+                                    name="categoria_id" 
+                                    required>
                                 <option value="">Seleccione una categoría</option>
                                 <?php if (isset($categorias) && is_array($categorias)): ?>
                                     <?php foreach ($categorias as $cat): ?>
@@ -506,123 +397,249 @@
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="id_subcategoria">
-                                <i class="fas fa-layer-group"></i> Subcategoría:
+                            <label for="categoria_id">
+                                <i class="fas fa-folder"></i>
+                                Categoría
                             </label>
-                            <select id="id_subcategoria" name="id_subcategoria" required>
-                                <option value="">Seleccione una subcategoría</option>
-                                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                                    <?php foreach ($subcategorias as $sub): ?>
-                                        <option value="<?= htmlspecialchars($sub['obj']->id_subcategoria) ?>">
-                                            <?= htmlspecialchars($sub['obj']->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="id_proveedor">
-                                <i class="fas fa-truck"></i> Proveedor <span class="optional-field">(Opcional)</span>:
-                            </label>
-                            <select id="id_proveedor" name="id_proveedor">
-                                <option value="">Seleccione un proveedor (opcional)</option>
-                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
-                                    <?php foreach ($proveedores as $prov): ?>
-                                        <option value="<?= htmlspecialchars($prov->id_proveedores) ?>">
-                                            <?= htmlspecialchars($prov->nombre_distribuidor) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
+
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="subcategoria_id" 
+                                    name="subcategoria_id">
+                                <option value="">Seleccione primero una categoría</option>
                             </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="id_usuario">
-                                <i class="fas fa-user"></i> Usuario Responsable:
+                            <label for="subcategoria_id">
+                                <i class="fas fa-layer-group"></i>
+                                Subcategoría (Opcional)
                             </label>
-                            <select id="id_usuario" name="id_usuario" required>
-                                <option value="">Seleccione un usuario</option>
-                                <?php if (isset($usuarios) && is_array($usuarios)): ?>
-                                    <?php foreach ($usuarios as $user): ?>
-                                        <option value="<?= htmlspecialchars($user->num_doc) ?>">
-                                            <?= htmlspecialchars($user->nombres . ' ' . $user->apellidos) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Botones -->
-                <div class="subcategorias-buttons">
-                    <button type="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> Guardar Producto
-                    </button>
-                    <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Cancelar
-                    </a>
+
+                <!-- Información de Inventario -->
+                <div class="form-section-card">
+                    <div class="section-title">
+                        <i class="fas fa-warehouse"></i>
+                        Inventario y Precios
+                    </div>
+                    
+                    <div class="form-row form-row-3">
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="stock" 
+                                   name="stock" 
+                                   placeholder=" "
+                                   min="0"
+                                   required>
+                            <label for="stock">
+                                <i class="fas fa-cubes"></i>
+                                Stock Inicial
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="precio_compra" 
+                                   name="precio_compra" 
+                                   placeholder=" "
+                                   step="0.01"
+                                   min="0"
+                                   required>
+                            <label for="precio_compra">
+                                <i class="fas fa-dollar-sign"></i>
+                                Precio de Compra
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="precio_venta" 
+                                   name="precio_venta" 
+                                   placeholder=" "
+                                   step="0.01"
+                                   min="0"
+                                   required>
+                            <label for="precio_venta">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Precio de Venta
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fechas y Proveedor -->
+                <div class="form-section-card">
+                    <div class="section-title">
+                        <i class="fas fa-calendar-alt"></i>
+                        Fechas y Proveedor
+                    </div>
+                    
+                    <div class="form-row form-row-3">
+                        <div class="form-floating-modern">
+                            <input type="date" 
+                                   class="form-control-modern" 
+                                   id="fecha_ingreso" 
+                                   name="fecha_ingreso" 
+                                   placeholder=" "
+                                   required>
+                            <label for="fecha_ingreso">
+                                <i class="fas fa-calendar-plus"></i>
+                                Fecha de Ingreso
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="date" 
+                                   class="form-control-modern" 
+                                   id="fecha_vencimiento" 
+                                   name="fecha_vencimiento" 
+                                   placeholder=" ">
+                            <label for="fecha_vencimiento">
+                                <i class="fas fa-calendar-times"></i>
+                                Fecha de Vencimiento
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="proveedor_id" 
+                                    name="proveedor_id">
+                                <option value="">Seleccione un proveedor</option>
+                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
+                                    <?php foreach ($proveedores as $prov): ?>
+                                        <option value="<?= htmlspecialchars($prov->id_proveedor) ?>">
+                                            <?= htmlspecialchars($prov->empresa) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <label for="proveedor_id">
+                                <i class="fas fa-truck"></i>
+                                Proveedor (Opcional)
+                            </label>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
+
+        <!-- Buttons -->
+        <div class="buttons-section">
+            <button type="submit" form="productForm" class="btn-modern btn-create">
+                <i class="fas fa-save"></i>
+                CREAR PRODUCTO
+            </button>
+            <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn-modern btn-cancel">
+                <i class="fas fa-times"></i>
+                CANCELAR
+            </a>
+        </div>
     </div>
-    
-    <!-- JavaScript para validación y carga de subcategorías -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-    document.getElementById('id_categoria').addEventListener('change', function() {
-        const categoriaId = this.value;
-        const subcategoriaSelect = document.getElementById('id_subcategoria');
-        
-        // Limpiar subcategorías
-        subcategoriaSelect.innerHTML = '<option value="">Seleccione una subcategoría</option>';
-        
-        if (categoriaId) {
-            // Aquí puedes hacer una llamada AJAX para cargar subcategorías por categoría
-            // Por ahora, mostramos todas las subcategorías disponibles
-            <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                <?php foreach ($subcategorias as $sub): ?>
-                    if (<?= $sub['obj']->id_categoria ?> == categoriaId) {
-                        subcategoriaSelect.innerHTML += '<option value="<?= htmlspecialchars($sub['obj']->id_subcategoria) ?>"><?= htmlspecialchars($sub['obj']->nombre) ?></option>';
+        // Contador de caracteres
+        function updateCharCounter(inputId, counterId, maxLength) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
+            
+            if (input && counter) {
+                input.addEventListener('input', function() {
+                    const currentLength = this.value.length;
+                    counter.textContent = currentLength;
+                    
+                    if (currentLength > maxLength * 0.8) {
+                        counter.style.color = '#ff6b6b';
+                    } else {
+                        counter.style.color = 'rgba(255, 255, 255, 0.7)';
                     }
-                <?php endforeach; ?>
-            <?php endif; ?>
-        }
-    });
-    
-    // Validación de fechas
-    document.getElementById('fecha_caducidad').addEventListener('change', function() {
-        const fechaFabricacion = document.getElementById('fecha_fabricacion').value;
-        const fechaCaducidad = this.value;
-        
-        if (fechaFabricacion && fechaCaducidad) {
-            if (fechaCaducidad <= fechaFabricacion) {
-                alert('La fecha de caducidad debe ser posterior a la fecha de fabricación');
-                this.value = '';
+                });
             }
         }
-    });
-    
-    // Validación de precios
-    document.getElementById('precio_unitario').addEventListener('change', function() {
-        const precioUnitario = parseFloat(this.value);
-        const precioMayor = parseFloat(document.getElementById('precio_por_mayor').value);
-        
-        if (precioMayor && precioUnitario && precioMayor >= precioUnitario) {
-            alert('El precio por mayor debe ser menor al precio unitario');
-            document.getElementById('precio_por_mayor').value = '';
-        }
-    });
-    
-    // Formateo de fechas por defecto
-    document.addEventListener('DOMContentLoaded', function() {
-        const hoy = new Date().toISOString().split('T')[0];
-        document.getElementById('fecha_entrada').value = hoy;
-    });
+
+        // Inicializar contadores
+        updateCharCounter('nombre', 'nombre-count', 100);
+        updateCharCounter('descripcion', 'descripcion-count', 200);
+
+        // Cargar subcategorías basado en categoría seleccionada
+        document.getElementById('categoria_id').addEventListener('change', function() {
+            const subcategoriaSelect = document.getElementById('subcategoria_id');
+            subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
+            
+            if (this.value) {
+                // Aquí se haría una llamada AJAX para cargar subcategorías
+                // Por ahora, simulamos la carga
+                setTimeout(() => {
+                    subcategoriaSelect.innerHTML = `
+                        <option value="">Seleccione una subcategoría</option>
+                        <option value="1">Subcategoría 1</option>
+                        <option value="2">Subcategoría 2</option>
+                    `;
+                }, 500);
+            } else {
+                subcategoriaSelect.innerHTML = '<option value="">Seleccione primero una categoría</option>';
+            }
+        });
+
+        // Validación del formulario
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            const nombre = document.getElementById('nombre').value.trim();
+            const stock = document.getElementById('stock').value;
+            const precioCompra = parseFloat(document.getElementById('precio_compra').value);
+            const precioVenta = parseFloat(document.getElementById('precio_venta').value);
+            
+            if (nombre.length < 3) {
+                e.preventDefault();
+                alert('El nombre del producto debe tener al menos 3 caracteres');
+                return;
+            }
+            
+            if (stock < 0) {
+                e.preventDefault();
+                alert('El stock no puede ser negativo');
+                return;
+            }
+            
+            if (precioCompra >= precioVenta) {
+                e.preventDefault();
+                alert('El precio de venta debe ser mayor al precio de compra');
+                return;
+            }
+        });
+
+        // Efectos visuales
+        document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+
+        // Manejo de labels para selects
+        document.querySelectorAll('.form-select-modern').forEach(select => {
+            select.addEventListener('change', function() {
+                const label = this.parentElement.querySelector('label');
+                if (this.value) {
+                    label.style.top = '2px';
+                    label.style.fontSize = '12px';
+                    label.style.color = '#667eea';
+                } else {
+                    label.style.top = '12px';
+                    label.style.fontSize = '14px';
+                    label.style.color = 'rgba(102, 126, 234, 0.8)';
+                }
+            });
+        });
+
+        // Establecer fecha actual por defecto
+        document.getElementById('fecha_ingreso').valueAsDate = new Date();
     </script>
 </body>
-
-
+</html>

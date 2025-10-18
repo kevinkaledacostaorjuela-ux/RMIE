@@ -4,210 +4,632 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Nueva Ruta - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .header-title {
+            color: white;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header-title i {
+            font-size: 2.8rem;
+            opacity: 0.9;
+        }
+        
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+        
+        .form-section {
+            padding: 40px 30px;
+        }
+        
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .form-row {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        .form-row-3 {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row-2, .form-row-3 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .form-floating-modern {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        
+        .form-control-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-select-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+        
+        .form-select-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-textarea-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            resize: vertical;
+            min-height: 120px;
+        }
+        
+        .form-textarea-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-floating-modern label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: rgba(102, 126, 234, 0.8);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-floating-modern label i {
+            font-size: 16px;
+        }
+        
+        .required {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .form-control-modern:focus ~ label,
+        .form-control-modern:not(:placeholder-shown) ~ label,
+        .form-select-modern:focus ~ label,
+        .form-select-modern:not([value=""]) ~ label,
+        .form-textarea-modern:focus ~ label,
+        .form-textarea-modern:not(:placeholder-shown) ~ label {
+            top: 2px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        .preview-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin-top: 20px;
+        }
+        
+        .route-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(156, 39, 176, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .route-avatar-large:hover {
+            transform: scale(1.05);
+        }
+        
+        .preview-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .preview-item:last-child {
+            border-bottom: none;
+        }
+        
+        .preview-label {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .preview-value {
+            font-weight: 500;
+            color: white;
+            max-width: 60%;
+            text-align: right;
+            word-break: break-word;
+        }
+        
+        .info-panel {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .info-panel h6 {
+            color: #ffc107;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .warning-panel {
+            background: rgba(255, 152, 0, 0.2);
+            border: 1px solid rgba(255, 152, 0, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .warning-panel h6 {
+            color: #ff9800;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .buttons-section {
+            padding: 20px 30px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modern {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #9c27b0 0%, #673ab7 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(156, 39, 176, 0.4);
+            background: linear-gradient(135deg, #8e24aa 0%, #5e35b1 100%);
+            color: white;
+        }
+        
+        .btn-create:disabled {
+            background: linear-gradient(135deg, #9e9e9e 0%, #757575 100%);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            color: white;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 193, 7, 0.4);
+            background: linear-gradient(135deg, #e0a800 0%, #dc6309 100%);
+            color: white;
+        }
+        
+        .character-count {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .form-help {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .form-help i {
+            color: #e1bee7;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 10px;
+            }
+            
+            .form-container {
+                border-radius: 20px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .section-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .buttons-section {
+                padding: 20px 20px 30px;
+                flex-direction: column;
+            }
+            
+            .btn-modern {
+                width: 100%;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="rutas-container">
-            <!-- Breadcrumb -->
-            <div class="rutas-breadcrumb">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item">
-                            <a href="/RMIE/app/views/dashboard.php">
-                                <i class="fas fa-home"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="/RMIE/app/controllers/RouteController.php?accion=index">
-                                <i class="fas fa-route"></i> Rutas
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item current">
-                            <i class="fas fa-plus"></i> Nueva Ruta
-                        </li>
-                    </ol>
-                </nav>
-            </div>
-
+    <div class="main-container">
+        <div class="form-container">
             <!-- Header -->
-            <div class="page-header">
-                <div class="header-content">
-                    <h1><i class="fas fa-plus-circle"></i> Crear Nueva Ruta</h1>
-                    <p>Registra una nueva ruta de entrega en el sistema</p>
-                </div>
+            <div class="header-section">
+                <h1 class="header-title">
+                    <i class="fas fa-route"></i>
+                    Crear Nueva Ruta
+                </h1>
+                <p class="header-subtitle">Registra una nueva ruta de entrega en el sistema RMIE</p>
             </div>
 
-            <!-- Tarjeta resumen visual superior -->
-            <div class="ruta-visual-card" style="display:flex;align-items:center;justify-content:center;margin-bottom:2rem;">
-                <div class="ruta-avatar-large" style="margin-right:2rem;">
-                    <i class="fas fa-route" style="font-size:3rem;"></i>
-                </div>
-                <div>
-                    <h2 style="margin:0;color:#fff;font-weight:700;">Nueva Ruta de Entrega</h2>
-                    <p style="color:#e0e0e0;">Completa el formulario para registrar una nueva ruta en el sistema RMIE.</p>
-                </div>
-            </div>
-
-            <!-- Separador visual -->
-            <hr style="border:0;height:2px;background:linear-gradient(90deg,#667eea,#764ba2);margin:2rem 0;">
-
-            <!-- Animación de entrada para el formulario -->
-            <style>
-                .rutas-form, .preview-card { opacity:0; transform:translateY(30px); transition:all 0.7s cubic-bezier(.4,0,.2,1); }
-                .rutas-form.visible, .preview-card.visible { opacity:1; transform:translateY(0); }
-                .preview-card .preview-item { display:flex;align-items:center;margin-bottom:1rem; }
-                .preview-card .preview-item i { font-size:1.5rem;margin-right:1rem;color:#667eea; }
-                .preview-card { box-shadow:0 8px 32px rgba(102,126,234,0.15); border-radius:18px; background:rgba(255,255,255,0.12); padding:2rem; }
-                .ruta-visual-card { background:linear-gradient(135deg,#667eea 0%,#764ba2 100%); border-radius:30px; box-shadow:0 10px 40px rgba(102,126,234,0.25); padding:2rem 3rem; }
-            </style>
-            <script>
-                document.addEventListener('DOMContentLoaded',function(){
-                    setTimeout(function(){
-                        document.querySelector('.rutas-form').classList.add('visible');
-                        document.querySelector('.preview-card').classList.add('visible');
-                    },200);
-                });
-            </script>
-
-            <!-- Información del formulario -->
-            <div class="ruta-info-panel">
-                <?php if (empty($available_clients) || empty($available_sales)): ?>
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <strong>Atención:</strong> 
-                        <?php if (empty($available_clients) && empty($available_sales)): ?>
-                            No hay clientes ni ventas disponibles. Debes crear al menos un cliente y una venta antes de poder crear rutas.
-                        <?php elseif (empty($available_clients)): ?>
-                            No hay clientes disponibles. Debes crear al menos un cliente antes de poder crear rutas.
-                        <?php else: ?>
-                            No hay ventas disponibles. Debes crear al menos una venta antes de poder crear rutas.
-                        <?php endif; ?>
+            <!-- Warning Panel -->
+            <?php if (empty($available_clients) || empty($available_sales)): ?>
+                <div class="form-section">
+                    <div class="warning-panel">
+                        <h6><i class="fas fa-exclamation-triangle"></i> Atención</h6>
+                        <p>
+                            <?php if (empty($available_clients) && empty($available_sales)): ?>
+                                No hay clientes ni ventas disponibles. Debes crear al menos un cliente y una venta antes de poder crear rutas.
+                            <?php elseif (empty($available_clients)): ?>
+                                No hay clientes disponibles. Debes crear al menos un cliente antes de poder crear rutas.
+                            <?php else: ?>
+                                No hay ventas disponibles. Debes crear al menos una venta antes de poder crear rutas.
+                            <?php endif; ?>
+                        </p>
                     </div>
-                <?php else: ?>
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i>
-                        <strong>Información:</strong> Complete todos los campos para registrar la nueva ruta. 
-                        La dirección debe ser clara y específica para facilitar las entregas.
+                </div>
+            <?php else: ?>
+                <div class="form-section">
+                    <div class="info-panel">
+                        <h6><i class="fas fa-info-circle"></i> Información</h6>
+                        <p>Complete todos los campos para registrar la nueva ruta. La dirección debe ser clara y específica para facilitar las entregas.</p>
                     </div>
-                <?php endif; ?>
-            </div>
+                </div>
+            <?php endif; ?>
 
-            <!-- Formulario -->
-            <div class="rutas-form">
+            <!-- Form -->
+            <div class="form-section">
                 <form action="/RMIE/app/controllers/RouteController.php?accion=create" method="POST" id="createRouteForm">
-                    <div class="form-row">
-                        <!-- Información de la Ruta -->
-                        <div class="form-section">
-                            <h3><i class="fas fa-map-marker-alt"></i> Información de Ubicación</h3>
+                    
+                    <div class="form-row form-row-2">
+                        <!-- Información de Ubicación -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Información de Ubicación
+                            </div>
                             
-                            <div class="form-group">
+                            <div class="form-floating-modern">
+                                <textarea class="form-textarea-modern" 
+                                          id="direccion" 
+                                          name="direccion" 
+                                          placeholder=" "
+                                          maxlength="200"
+                                          required></textarea>
                                 <label for="direccion">
-                                    <i class="fas fa-map-marker-alt"></i> Dirección Completa *
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Dirección Completa <span class="required">*</span>
                                 </label>
-                                <textarea 
-                                    name="direccion" 
-                                    id="direccion" 
-                                    required
-                                    maxlength="200"
-                                    placeholder="Ej: Calle 123 # 45-67, Barrio Centro, Bogotá"
-                                    class="form-control"
-                                    rows="3"></textarea>
-                                <small class="form-text">
+                                <div class="character-count">
+                                    <span id="direccion-count">0</span>/200
+                                </div>
+                                <div class="form-help">
                                     <i class="fas fa-info-circle"></i>
                                     Incluye calle, número, barrio y ciudad (mínimo 5 caracteres)
-                                </small>
-                                <div class="char-counter">
-                                    <span id="direccion-counter">0</span>/200 caracteres
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="nombre_local" 
+                                       name="nombre_local" 
+                                       placeholder=" "
+                                       maxlength="100"
+                                       minlength="2"
+                                       required>
+                                <label for="nombre_local">
+                                    <i class="fas fa-store"></i>
+                                    Nombre del Local <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="nombre_local-count">0</span>/100
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Nombre comercial del establecimiento de destino
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="nombre_cliente" 
+                                       name="nombre_cliente" 
+                                       placeholder=" "
+                                       maxlength="100"
+                                       minlength="2"
+                                       required>
+                                <label for="nombre_cliente">
+                                    <i class="fas fa-user"></i>
+                                    Nombre del Cliente <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="nombre_cliente-count">0</span>/100
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Persona de contacto responsable en el local
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Información del Local y Cliente -->
-                        <div class="form-section">
-                            <h3><i class="fas fa-users"></i> Información del Destino</h3>
-                            
-                            <div class="form-group">
-                                <label for="nombre_local">
-                                    <i class="fas fa-store"></i> Nombre del Local *
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="nombre_local" 
-                                    id="nombre_local" 
-                                    required
-                                    minlength="2"
-                                    maxlength="100"
-                                    placeholder="Ej: Tienda El Éxito Centro"
-                                    class="form-control">
-                                <small class="form-text">
-                                    <i class="fas fa-info-circle"></i>
-                                    Nombre comercial del establecimiento de destino
-                                </small>
+                        <!-- Referencias y Vista Previa -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-link"></i>
+                                Referencias del Sistema
                             </div>
-
-                            <div class="form-group">
-                                <label for="nombre_cliente">
-                                    <i class="fas fa-user"></i> Nombre del Cliente *
-                                </label>
-                                <input 
-                                    type="text" 
-                                    name="nombre_cliente" 
-                                    id="nombre_cliente" 
-                                    required
-                                    minlength="2"
-                                    maxlength="100"
-                                    placeholder="Ej: Juan Pérez García"
-                                    class="form-control">
-                                <small class="form-text">
-                                    <i class="fas fa-info-circle"></i>
-                                    Nombre completo de la persona de contacto
-                                </small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <!-- IDs de Referencias -->
-                        <div class="form-section">
-                            <h3><i class="fas fa-link"></i> Referencias del Sistema</h3>
                             
-                            <div class="form-group">
-                                <label for="id_clientes">
-                                    <i class="fas fa-user-tag"></i> Cliente *
-                                </label>
-                                <select 
-                                    name="id_clientes" 
-                                    id="id_clientes" 
-                                    required
-                                    class="form-control">
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" 
+                                        id="id_clientes" 
+                                        name="id_clientes" 
+                                        required>
                                     <option value="">Seleccionar cliente...</option>
                                     <?php if (!empty($available_clients)): ?>
                                         <?php foreach ($available_clients as $client): ?>
                                             <option value="<?= htmlspecialchars($client['id_clientes']) ?>">
-                                                <?= htmlspecialchars($client['nombre']) ?> (ID: <?= htmlspecialchars($client['id_clientes']) ?>)
+                                                <?= htmlspecialchars($client['nombre']) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php else: ?>
                                         <option value="" disabled>No hay clientes disponibles</option>
                                     <?php endif; ?>
                                 </select>
-                                <small class="form-text">
-                                    <i class="fas fa-info-circle"></i>
-                                    Selecciona el cliente de destino para esta ruta
-                                </small>
+                                <label for="id_clientes">
+                                    <i class="fas fa-users"></i>
+                                    Cliente del Sistema <span class="required">*</span>
+                                </label>
+                                <div class="form-help">
+                                    <i class="fas fa-database"></i>
+                                    Cliente registrado en el sistema
+                                </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="id_ventas">
-                                    <i class="fas fa-shopping-cart"></i> Venta Asociada *
-                                </label>
-                                <select 
-                                    name="id_ventas" 
-                                    id="id_ventas" 
-                                    required
-                                    class="form-control">
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" 
+                                        id="id_ventas" 
+                                        name="id_ventas" 
+                                        required>
                                     <option value="">Seleccionar venta...</option>
                                     <?php if (!empty($available_sales)): ?>
                                         <?php foreach ($available_sales as $sale): ?>
@@ -219,89 +641,98 @@
                                         <option value="" disabled>No hay ventas disponibles</option>
                                     <?php endif; ?>
                                 </select>
-                                <small class="form-text">
-                                    <i class="fas fa-info-circle"></i>
-                                    Selecciona la venta que se entregará en esta ruta
-                                </small>
-                            </div>
-                        </div>
-
-                        <!-- Vista previa -->
-                        <div class="form-section">
-                            <h3><i class="fas fa-eye"></i> Vista Previa</h3>
-                            <div class="preview-card" id="previewCard">
-                                <div class="preview-item">
-                                    <strong><i class="fas fa-map-marker-alt"></i> Dirección:</strong>
-                                    <span id="preview-direccion">No especificada</span>
-                                </div>
-                                <div class="preview-item">
-                                    <strong><i class="fas fa-store"></i> Local:</strong>
-                                    <span id="preview-local">No especificado</span>
-                                </div>
-                                <div class="preview-item">
-                                    <strong><i class="fas fa-user"></i> Cliente:</strong>
-                                    <span id="preview-cliente">No especificado</span>
-                                </div>
-                                <div class="preview-item">
-                                    <strong><i class="fas fa-hashtag"></i> Cliente ID:</strong>
-                                    <span id="preview-id-cliente">No especificado</span>
-                                </div>
-                                <div class="preview-item">
-                                    <strong><i class="fas fa-shopping-cart"></i> Venta ID:</strong>
-                                    <span id="preview-id-venta">No especificado</span>
+                                <label for="id_ventas">
+                                    <i class="fas fa-shopping-cart"></i>
+                                    Venta Asociada <span class="required">*</span>
+                                </label>
+                                <div class="form-help">
+                                    <i class="fas fa-box"></i>
+                                    Venta que se entregará en esta ruta
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <!-- Botones de acción -->
-                    <div class="form-actions">
-                        <button type="submit" class="btn-rutas" id="submitBtn" 
-                                <?php if (empty($available_clients) || empty($available_sales)): ?>disabled<?php endif; ?>>
-                            <i class="fas fa-save"></i> 
-                            <?php if (empty($available_clients) || empty($available_sales)): ?>
-                                No se puede crear ruta
-                            <?php else: ?>
-                                Crear Ruta
-                            <?php endif; ?>
-                        </button>
-                        <a href="/RMIE/app/controllers/RouteController.php?accion=index" class="btn-secondary">
-                            <i class="fas fa-times"></i> Cancelar
-                        </a>
-                        <?php if (!empty($available_clients) && !empty($available_sales)): ?>
-                            <button type="reset" class="btn-outline" id="resetBtn">
-                                <i class="fas fa-undo"></i> Limpiar Formulario
-                            </button>
-                        <?php endif; ?>
+                            <!-- Vista Previa -->
+                            <div class="preview-section">
+                                <div style="text-align: center; margin-bottom: 20px;">
+                                    <div class="route-avatar-large" id="previewAvatar">
+                                        <i class="fas fa-route"></i>
+                                    </div>
+                                    <h6 style="color: rgba(255, 255, 255, 0.9); margin: 0;">
+                                        Vista Previa de la Ruta
+                                    </h6>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Dirección:
+                                    </span>
+                                    <span class="preview-value" id="preview-direccion">No especificada</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-store"></i>
+                                        Local:
+                                    </span>
+                                    <span class="preview-value" id="preview-local">No especificado</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-user"></i>
+                                        Cliente:
+                                    </span>
+                                    <span class="preview-value" id="preview-cliente">No especificado</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-users"></i>
+                                        Cliente Sistema:
+                                    </span>
+                                    <span class="preview-value" id="preview-id-cliente">No seleccionado</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        Venta:
+                                    </span>
+                                    <span class="preview-value" id="preview-id-venta">No seleccionada</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </form>
+            </div>
 
-                
-            <!-- Panel de ayuda -->
-            <div class="ruta-info-panel">
-                <h3><i class="fas fa-question-circle"></i> Ayuda</h3>
-                <div class="help-grid">
-                    <div class="help-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <strong>Dirección:</strong> Debe ser completa y específica para facilitar la ubicación del destino.
-                    </div>
-                    <div class="help-item">
-                        <i class="fas fa-store"></i>
-                        <strong>Nombre del Local:</strong> Usa el nombre comercial oficial del establecimiento.
-                    </div>
-                    <div class="help-item">
-                        <i class="fas fa-user"></i>
-                        <strong>Cliente:</strong> Persona de contacto responsable en el local de destino.
-                    </div>
-                    <div class="help-item">
-                        <i class="fas fa-link"></i>
-                        <strong>Referencias:</strong> Los IDs deben corresponder a registros existentes en el sistema.
-                    </div>
-                </div>
+            <!-- Buttons -->
+            <div class="buttons-section">
+                <button type="submit" form="createRouteForm" class="btn-modern btn-create" id="submitBtn"
+                        <?php if (empty($available_clients) || empty($available_sales)): ?>disabled<?php endif; ?>>
+                    <i class="fas fa-save"></i>
+                    <?php if (empty($available_clients) || empty($available_sales)): ?>
+                        NO SE PUEDE CREAR RUTA
+                    <?php else: ?>
+                        CREAR RUTA
+                    <?php endif; ?>
+                </button>
+                <a href="/RMIE/app/controllers/RouteController.php?accion=index" class="btn-modern btn-cancel">
+                    <i class="fas fa-times"></i>
+                    CANCELAR
+                </a>
+                <?php if (!empty($available_clients) && !empty($available_sales)): ?>
+                    <button type="button" class="btn-modern btn-clear" id="resetBtn">
+                        <i class="fas fa-undo"></i>
+                        LIMPIAR
+                    </button>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('createRouteForm');
@@ -311,22 +742,42 @@
             const idClienteField = document.getElementById('id_clientes');
             const idVentaField = document.getElementById('id_ventas');
 
-            // Contador de caracteres para dirección
-            direccionField.addEventListener('input', function() {
-                const counter = document.getElementById('direccion-counter');
-                counter.textContent = this.value.length;
+            // Contadores de caracteres
+            function setupCharacterCount(inputId, countId, maxLength) {
+                const input = document.getElementById(inputId);
+                const counter = document.getElementById(countId);
                 
-                if (this.value.length > 180) {
-                    counter.style.color = '#dc3545';
-                } else if (this.value.length > 150) {
-                    counter.style.color = '#ffc107';
-                } else {
-                    counter.style.color = '#28a745';
+                if (input && counter) {
+                    function updateCount() {
+                        const count = input.value.length;
+                        counter.textContent = count;
+                        counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                    }
+                    
+                    input.addEventListener('input', updateCount);
+                    updateCount(); // Inicializar
                 }
-            });
+            }
+            
+            setupCharacterCount('direccion', 'direccion-count', 200);
+            setupCharacterCount('nombre_local', 'nombre_local-count', 100);
+            setupCharacterCount('nombre_cliente', 'nombre_cliente-count', 100);
 
             // Vista previa en tiempo real
             function updatePreview() {
+                // Actualizar avatar con primera letra de dirección o local
+                const avatar = document.getElementById('previewAvatar');
+                const direccion = direccionField.value;
+                const local = localField.value;
+                
+                if (direccion || local) {
+                    const firstChar = (direccion || local).charAt(0).toUpperCase();
+                    avatar.innerHTML = firstChar;
+                } else {
+                    avatar.innerHTML = '<i class="fas fa-route"></i>';
+                }
+                
+                // Actualizar vista previa
                 document.getElementById('preview-direccion').textContent = 
                     direccionField.value || 'No especificada';
                 document.getElementById('preview-local').textContent = 
@@ -334,20 +785,23 @@
                 document.getElementById('preview-cliente').textContent = 
                     clienteField.value || 'No especificado';
                 
-                // Para cliente, mostrar el texto seleccionado
+                // Para cliente del sistema
                 const clienteSelect = document.getElementById('id_clientes');
-                document.getElementById('preview-id-cliente').textContent = 
-                    clienteSelect.options[clienteSelect.selectedIndex]?.text || 'No seleccionado';
+                const selectedClienteText = clienteSelect.options[clienteSelect.selectedIndex]?.text || 'No seleccionado';
+                document.getElementById('preview-id-cliente').textContent = selectedClienteText;
                 
-                // Para venta, mostrar el texto seleccionado
+                // Para venta
                 const ventaSelect = document.getElementById('id_ventas');
-                document.getElementById('preview-id-venta').textContent = 
-                    ventaSelect.options[ventaSelect.selectedIndex]?.text || 'No seleccionado';
+                const selectedVentaText = ventaSelect.options[ventaSelect.selectedIndex]?.text || 'No seleccionada';
+                document.getElementById('preview-id-venta').textContent = selectedVentaText;
             }
 
-            // Actualizar vista previa en tiempo real
+            // Agregar listeners para vista previa
             [direccionField, localField, clienteField, idClienteField, idVentaField].forEach(field => {
-                field.addEventListener('input', updatePreview);
+                if (field) {
+                    field.addEventListener('input', updatePreview);
+                    field.addEventListener('change', updatePreview);
+                }
             });
 
             // Validación del formulario
@@ -375,7 +829,7 @@
 
                 // Validar selecciones
                 if (!idClienteField.value || idClienteField.value === '') {
-                    errors.push('Debe seleccionar un cliente');
+                    errors.push('Debe seleccionar un cliente del sistema');
                     isValid = false;
                 }
 
@@ -386,14 +840,14 @@
 
                 if (!isValid) {
                     e.preventDefault();
-                    alert('Por favor corrige los siguientes errores:\\n\\n' + errors.join('\\n'));
+                    alert('Por favor corrige los siguientes errores:\n\n' + errors.join('\n'));
                     return false;
                 }
 
                 // Confirmación antes de enviar
-                const confirmMessage = `¿Confirmas la creación de esta ruta?\\n\\n` +
-                    `Dirección: ${direccionField.value}\\n` +
-                    `Local: ${localField.value}\\n` +
+                const confirmMessage = `¿Confirmas la creación de esta ruta?\n\n` +
+                    `Dirección: ${direccionField.value}\n` +
+                    `Local: ${localField.value}\n` +
                     `Cliente: ${clienteField.value}`;
 
                 if (!confirm(confirmMessage)) {
@@ -403,13 +857,44 @@
 
                 // Mostrar estado de carga
                 const submitBtn = document.getElementById('submitBtn');
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CREANDO...';
                 submitBtn.disabled = true;
             });
 
-            // Botón reset
-            document.getElementById('resetBtn').addEventListener('click', function() {
-                setTimeout(updatePreview, 10);
+            // Botón limpiar
+            const resetBtn = document.getElementById('resetBtn');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function() {
+                    form.reset();
+                    setTimeout(updatePreview, 10);
+                });
+            }
+
+            // Efectos visuales
+            document.querySelectorAll('.form-control-modern, .form-select-modern, .form-textarea-modern').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Manejo de labels para selects
+            document.querySelectorAll('.form-select-modern').forEach(select => {
+                select.addEventListener('change', function() {
+                    const label = this.parentElement.querySelector('label');
+                    if (this.value) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    } else {
+                        label.style.top = '12px';
+                        label.style.fontSize = '14px';
+                        label.style.color = 'rgba(102, 126, 234, 0.8)';
+                    }
+                });
             });
 
             // Inicializar vista previa

@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agregar Categoría - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Crear Nueva Categoría - RMIE</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -23,12 +23,14 @@
             padding: 20px;
         }
         
-        .categorias-container {
-            max-width: 600px;
+        .main-container {
+            max-width: 700px;
             width: 100%;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: fadeInUp 0.6s ease-out;
         }
@@ -36,7 +38,7 @@
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
             to {
                 opacity: 1;
@@ -44,499 +46,336 @@
             }
         }
         
-        .categorias-container h1 {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            margin: 0;
-            font-size: 28px;
-            font-weight: 700;
+        .header-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .header-title {
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 15px;
         }
         
-        .categorias-container h1 i {
-            font-size: 32px;
+        .header-title i {
+            font-size: 2.5rem;
+            opacity: 0.9;
         }
         
-        form {
-            padding: 40px;
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 400;
         }
         
-        .form-group {
+        .form-section {
+            padding: 40px 30px;
+        }
+        
+        .form-floating-modern {
+            position: relative;
             margin-bottom: 25px;
+        }
+        
+        .form-control-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .form-control-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-floating-modern label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: rgba(102, 126, 234, 0.8);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-floating-modern label i {
+            font-size: 16px;
+        }
+        
+        .form-control-modern:focus ~ label,
+        .form-control-modern:not(:placeholder-shown) ~ label {
+            top: 2px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        .char-counter {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .buttons-section {
+            padding: 20px 30px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modern {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 160px;
+            justify-content: center;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #00d4ff 0%, #667eea 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 212, 255, 0.4);
+            background: linear-gradient(135deg, #00b8d4 0%, #5a67d8 100%);
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            color: white;
+        }
+        
+        .alert-modern {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            color: white;
+            font-weight: 500;
+        }
+        
+        .alert-success {
+            border-color: rgba(39, 174, 96, 0.5);
+            background: rgba(39, 174, 96, 0.2);
+        }
+        
+        .alert-danger {
+            border-color: rgba(231, 76, 60, 0.5);
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 20px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .buttons-section {
+                padding: 20px 20px 30px;
+                flex-direction: column;
+            }
+            
+            .btn-modern {
+                width: 100%;
+            }
+        }
+        
+        /* Animaciones adicionales */
+        .form-floating-modern {
             animation: slideIn 0.5s ease-out;
             animation-fill-mode: both;
         }
         
-        .form-group:nth-child(1) {
+        .form-floating-modern:nth-child(1) {
             animation-delay: 0.1s;
         }
         
-        .form-group:nth-child(2) {
+        .form-floating-modern:nth-child(2) {
             animation-delay: 0.2s;
         }
         
         @keyframes slideIn {
             from {
                 opacity: 0;
-                transform: translateX(-20px);
+                transform: translateX(-30px);
             }
             to {
                 opacity: 1;
                 transform: translateX(0);
             }
         }
-        
-        label {
-            display: block;
-            font-weight: 600;
-            color: #2c3e50;
-            margin-bottom: 10px;
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        label i {
-            color: #667eea;
-            font-size: 18px;
-            width: 20px;
-        }
-        
-        label::after {
-            content: "*";
-            color: #e74c3c;
-            margin-left: 5px;
-            font-weight: bold;
-        }
-        
-        input[type="text"] {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 15px;
-            transition: all 0.3s;
-            background: white;
-            font-family: inherit;
-        }
-        
-        input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        input[type="text"]:hover {
-            border-color: #764ba2;
-        }
-        
-        input[type="text"]::placeholder {
-            color: #95a5a6;
-        }
-        
-        .char-counter {
-            font-size: 12px;
-            color: #95a5a6;
-            text-align: right;
-            margin-top: 5px;
-        }
-        
-        .form-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 35px;
-            padding-top: 25px;
-            border-top: 2px solid #e0e0e0;
-            animation: slideIn 0.5s ease-out 0.3s both;
-        }
-        
-        .btn {
-            padding: 14px 35px;
-            border: none;
-            border-radius: 50px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            font-family: inherit;
-        }
-        
-        .btn i {
-            font-size: 18px;
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-        }
-        
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(17, 153, 142, 0.4);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #868f96 0%, #596164 100%);
-            color: white;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(89, 97, 100, 0.4);
-        }
-        
-        .btn-success:active,
-        .btn-primary:active {
-            transform: translateY(-1px);
-        }
-        
-        /* Validación visual */
-        input.error {
-            border-color: #e74c3c;
-            animation: shake 0.5s;
-        }
-        
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-        
-        .error-message {
-            color: #e74c3c;
-            font-size: 13px;
-            margin-top: 8px;
-            display: none;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .error-message.show {
-            display: flex;
-        }
-        
-        .success-message {
-            color: #27ae60;
-            font-size: 13px;
-            margin-top: 8px;
-            display: none;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .success-message.show {
-            display: flex;
-        }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .categorias-container {
-                margin: 10px;
-            }
-            
-            .categorias-container h1 {
-                font-size: 24px;
-                padding: 20px;
-            }
-            
-            form {
-                padding: 25px;
-            }
-            
-            .form-buttons {
-                flex-direction: column;
-            }
-            
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-        }
-        
-        /* Efecto de carga */
-        .btn-success.loading {
-            pointer-events: none;
-            opacity: 0.7;
-            position: relative;
-        }
-        
-        .btn-success.loading::after {
-            content: "";
-            position: absolute;
-            width: 16px;
-            height: 16px;
-            top: 50%;
-            left: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-            border: 2px solid white;
-            border-radius: 50%;
-            border-top-color: transparent;
-            animation: spin 0.6s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Estilos móviles */
-        @media (max-width: 768px) {
-            .categorias-container {
-                margin: 10px;
-                padding: 15px;
-                border-radius: 15px;
-            }
-            
-            .categorias-container h1 {
-                font-size: 20px;
-                padding: 20px;
-                margin-bottom: 20px;
-            }
-            
-            .categorias-container h1 i {
-                font-size: 22px;
-            }
-            
-            form {
-                padding: 20px;
-            }
-            
-            .form-group {
-                margin-bottom: 20px;
-            }
-            
-            label {
-                font-size: 14px;
-                margin-bottom: 8px;
-            }
-            
-            input[type="text"],
-            textarea {
-                font-size: 16px; /* Evita zoom en iOS */
-                padding: 12px 15px;
-            }
-            
-            textarea {
-                min-height: 100px;
-            }
-            
-            .btn-form {
-                width: 100%;
-                margin-bottom: 10px;
-                padding: 12px;
-                font-size: 16px;
-            }
-            
-            .d-flex {
-                flex-direction: column;
-            }
-            
-            .alert {
-                margin: 10px;
-                padding: 15px;
-                font-size: 14px;
-            }
-            
-            .breadcrumb {
-                margin: 10px;
-                padding: 10px;
-                font-size: 12px;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .categorias-container {
-                margin: 5px;
-                padding: 10px;
-                border-radius: 10px;
-            }
-            
-            .categorias-container h1 {
-                font-size: 18px;
-                padding: 15px;
-            }
-            
-            form {
-                padding: 15px;
-            }
-            
-            .char-count {
-                font-size: 11px;
-            }
-            
-            .btn-form {
-                font-size: 14px;
-                padding: 10px;
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="categorias-container">
-        <h1>
-            <i class="fas fa-plus-circle"></i>
-            Nueva Categoría
-        </h1>
-        
-        <form method="POST" action="/RMIE/app/controllers/CategoryController.php?accion=create" id="categoryForm">
-            <div class="form-group">
-                <label for="nombre">
-                    <i class="fas fa-tag"></i>
-                    Nombre de la Categoría
-                </label>
-                <input 
-                    type="text" 
-                    id="nombre" 
-                    name="nombre" 
-                    required 
-                    maxlength="45"
-                    placeholder="Ej: Electrónica, Ropa, Alimentos..."
-                    autocomplete="off">
-                <div class="char-counter">
-                    <span id="nombreCount">0</span> / 45 caracteres
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header-section">
+            <h1 class="header-title">
+                <i class="fas fa-plus-circle"></i>
+                Crear Nueva Categoría
+            </h1>
+            <p class="header-subtitle">Complete los datos para crear una nueva categoría del sistema</p>
+        </div>
+
+        <!-- Form -->
+        <div class="form-section">
+            <form action="/RMIE/app/controllers/CategoryController.php?accion=create" method="POST" id="categoryForm">
+                <div class="form-floating-modern">
+                    <input type="text" 
+                           class="form-control-modern" 
+                           id="nombre" 
+                           name="nombre" 
+                           placeholder=" "
+                           maxlength="45"
+                           required>
+                    <label for="nombre">
+                        <i class="fas fa-tag"></i>
+                        Nombre de la Categoría
+                    </label>
+                    <div class="char-counter">
+                        <span id="nombre-count">0</span>/45 caracteres
+                    </div>
                 </div>
-                <div class="error-message" id="nombreError">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>El nombre debe tener entre 3 y 45 caracteres</span>
+
+                <div class="form-floating-modern">
+                    <input type="text" 
+                           class="form-control-modern" 
+                           id="descripcion" 
+                           name="descripcion" 
+                           placeholder=" "
+                           maxlength="200">
+                    <label for="descripcion">
+                        <i class="fas fa-align-left"></i>
+                        Descripción (Opcional)
+                    </label>
+                    <div class="char-counter">
+                        <span id="descripcion-count">0</span>/200 caracteres
+                    </div>
                 </div>
-                <div class="success-message" id="nombreSuccess">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Nombre válido</span>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="descripcion">
-                    <i class="fas fa-align-left"></i>
-                    Descripción
-                </label>
-                <input 
-                    type="text" 
-                    id="descripcion" 
-                    name="descripcion" 
-                    required 
-                    maxlength="45"
-                    placeholder="Breve descripción de la categoría..."
-                    autocomplete="off">
-                <div class="char-counter">
-                    <span id="descripcionCount">0</span> / 45 caracteres
-                </div>
-                <div class="error-message" id="descripcionError">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <span>La descripción debe tener entre 3 y 45 caracteres</span>
-                </div>
-                <div class="success-message" id="descripcionSuccess">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Descripción válida</span>
-                </div>
-            </div>
-            
-            <div class="form-buttons">
-                <button type="submit" class="btn btn-success" id="submitBtn">
-                    <i class="fas fa-save"></i>
-                    Guardar Categoría
-                </button>
-                <a href="/RMIE/app/controllers/CategoryController.php?accion=index" class="btn btn-primary">
-                    <i class="fas fa-arrow-left"></i>
-                    Volver al Listado
-                </a>
-            </div>
-        </form>
+            </form>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons-section">
+            <button type="submit" form="categoryForm" class="btn-modern btn-create">
+                <i class="fas fa-save"></i>
+                CREAR CATEGORÍA
+            </button>
+            <a href="/RMIE/app/controllers/CategoryController.php?accion=index" class="btn-modern btn-cancel">
+                <i class="fas fa-times"></i>
+                CANCELAR
+            </a>
+        </div>
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Elementos del formulario
-        const form = document.getElementById('categoryForm');
-        const nombreInput = document.getElementById('nombre');
-        const descripcionInput = document.getElementById('descripcion');
-        const submitBtn = document.getElementById('submitBtn');
-        
-        // Función para validar un campo
-        function validateField(input, minLength = 3, maxLength = 45) {
-            const value = input.value.trim();
-            const fieldName = input.id;
-            const errorDiv = document.getElementById(fieldName + 'Error');
-            const successDiv = document.getElementById(fieldName + 'Success');
-            const counterSpan = document.getElementById(fieldName + 'Count');
+        // Contador de caracteres
+        function updateCharCounter(inputId, counterId, maxLength) {
+            const input = document.getElementById(inputId);
+            const counter = document.getElementById(counterId);
             
-            // Actualizar contador
-            if (counterSpan) {
-                counterSpan.textContent = value.length;
-            }
-            
-            // Validar longitud
-            if (value.length === 0) {
-                input.classList.remove('error');
-                errorDiv.classList.remove('show');
-                successDiv.classList.remove('show');
-                return false;
-            } else if (value.length < minLength || value.length > maxLength) {
-                input.classList.add('error');
-                errorDiv.classList.add('show');
-                successDiv.classList.remove('show');
-                return false;
-            } else {
-                input.classList.remove('error');
-                errorDiv.classList.remove('show');
-                successDiv.classList.add('show');
-                return true;
-            }
+            input.addEventListener('input', function() {
+                const currentLength = this.value.length;
+                counter.textContent = currentLength;
+                
+                if (currentLength > maxLength * 0.8) {
+                    counter.style.color = '#ff6b6b';
+                } else {
+                    counter.style.color = 'rgba(255, 255, 255, 0.7)';
+                }
+            });
         }
-        
-        // Validación en tiempo real
-        nombreInput.addEventListener('input', function() {
-            validateField(this, 3, 45);
-        });
-        
-        descripcionInput.addEventListener('input', function() {
-            validateField(this, 3, 45);
-        });
-        
-        // Validación al enviar el formulario
-        form.addEventListener('submit', function(e) {
-            const nombreValid = validateField(nombreInput, 3, 45);
-            const descripcionValid = validateField(descripcionInput, 3, 45);
+
+        // Inicializar contadores
+        updateCharCounter('nombre', 'nombre-count', 45);
+        updateCharCounter('descripcion', 'descripcion-count', 200);
+
+        // Validación del formulario
+        document.getElementById('categoryForm').addEventListener('submit', function(e) {
+            const nombre = document.getElementById('nombre').value.trim();
             
-            if (!nombreValid || !descripcionValid) {
+            if (nombre.length < 3) {
                 e.preventDefault();
-                
-                // Agregar animación de error
-                if (!nombreValid) nombreInput.classList.add('error');
-                if (!descripcionValid) descripcionInput.classList.add('error');
-                
+                alert('El nombre debe tener al menos 3 caracteres');
                 return;
             }
             
-            // Mostrar estado de carga
-            submitBtn.classList.add('loading');
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
+            if (nombre.length > 45) {
+                e.preventDefault();
+                alert('El nombre no puede exceder 45 caracteres');
+                return;
+            }
         });
-        
-        // Limpiar animación de error después de corregir
-        nombreInput.addEventListener('focus', function() {
-            this.classList.remove('error');
+
+        // Efectos visuales
+        document.querySelectorAll('.form-control-modern').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
         });
-        
-        descripcionInput.addEventListener('focus', function() {
-            this.classList.remove('error');
-        });
-        
-        // Auto-focus en el primer campo
-        nombreInput.focus();
     </script>
 </body>
 </html>

@@ -1,868 +1,882 @@
-<?php
-// ...existing code...
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Agregar Proveedor - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --success-color: #28a745;
-            --danger-color: #dc3545;
-            --warning-color: #ffc107;
-            --info-color: #17a2b8;
-            --light-color: #f8f9fa;
-            --dark-color: #343a40;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
             padding: 20px 0;
         }
-
-        .container-modern {
+        
+        .main-container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
-
-        .form-wrapper {
-            background: rgba(255, 255, 255, 0.95);
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            animation: slideUp 0.6s ease-out;
+            animation: fadeInUp 0.6s ease-out;
         }
-
-        @keyframes slideUp {
+        
+        @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px);
             }
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
-
-        .form-header {
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-            color: white;
-            padding: 30px;
+        
+        .header-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
             text-align: center;
-            position: relative;
-            overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
-
-        .form-header::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
-        }
-
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .form-header h1 {
-            margin: 0;
+        
+        .header-title {
+            color: white;
             font-size: 2.5rem;
             font-weight: 700;
-            position: relative;
-            z-index: 2;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
-
-        .form-header .subtitle {
-            margin-top: 10px;
+        
+        .header-title i {
+            font-size: 2.8rem;
             opacity: 0.9;
-            font-size: 1.1rem;
-            position: relative;
-            z-index: 2;
         }
-
-        .breadcrumb-modern {
-            background: rgba(255, 255, 255, 0.1);
-            padding: 15px 30px;
-            margin: 0;
-            border-radius: 0;
-        }
-
-        .breadcrumb-modern .breadcrumb-item a {
+        
+        .header-subtitle {
             color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            transition: all 0.3s ease;
+            font-size: 1.1rem;
+            font-weight: 400;
         }
-
-        .breadcrumb-modern .breadcrumb-item a:hover {
-            color: white;
+        
+        .form-section {
+            padding: 40px 30px;
         }
-
-        .breadcrumb-modern .breadcrumb-item.active {
-            color: white;
-        }
-
-        .form-content {
-            padding: 40px;
-        }
-
+        
         .section-card {
-            background: #fff;
-            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
             padding: 30px;
             margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-
-        .section-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-        }
-
+        
         .section-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
         }
-
+        
         .section-title {
-            color: var(--dark-color);
+            color: rgba(255, 255, 255, 0.95);
             font-size: 1.4rem;
             font-weight: 600;
             margin-bottom: 25px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
         }
-
+        
         .section-title i {
-            color: var(--primary-color);
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            opacity: 0.9;
         }
-
-        .form-group-modern {
+        
+        .form-row {
+            display: grid;
+            gap: 25px;
             margin-bottom: 25px;
+        }
+        
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .form-floating-modern {
             position: relative;
+            margin-bottom: 20px;
         }
-
-        .form-label-modern {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark-color);
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .form-label-modern i {
-            color: var(--primary-color);
-            width: 16px;
-            text-align: center;
-        }
-
+        
         .form-control-modern {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
             transition: all 0.3s ease;
-            background: #fff;
-            box-sizing: border-box;
+            backdrop-filter: blur(10px);
         }
-
+        
         .form-control-modern:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
         }
-
-        .form-control-modern:valid {
-            border-color: var(--success-color);
-        }
-
-        .form-control-modern.is-invalid {
-            border-color: var(--danger-color);
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-        }
-
+        
         .form-select-modern {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
             transition: all 0.3s ease;
-            background: #fff;
-            cursor: pointer;
+            backdrop-filter: blur(10px);
             appearance: none;
             background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 12px center;
             background-repeat: no-repeat;
             background-size: 16px;
-            box-sizing: border-box;
         }
-
+        
         .form-select-modern:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
-
+        
         .form-textarea-modern {
             width: 100%;
-            padding: 15px 20px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 1rem;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
             transition: all 0.3s ease;
-            background: #fff;
+            backdrop-filter: blur(10px);
             resize: vertical;
             min-height: 120px;
-            font-family: inherit;
-            box-sizing: border-box;
         }
-
+        
         .form-textarea-modern:focus {
             outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
-
+        
+        .form-floating-modern label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: rgba(102, 126, 234, 0.8);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-floating-modern label i {
+            font-size: 16px;
+        }
+        
+        .required {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .form-control-modern:focus ~ label,
+        .form-control-modern:not(:placeholder-shown) ~ label,
+        .form-select-modern:focus ~ label,
+        .form-select-modern:not([value=""]) ~ label,
+        .form-textarea-modern:focus ~ label,
+        .form-textarea-modern:not(:placeholder-shown) ~ label {
+            top: 2px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        .preview-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        
+        .provider-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(255, 152, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .provider-avatar-large:hover {
+            transform: scale(1.05);
+        }
+        
+        .preview-name {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .preview-email {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .preview-phone {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+        }
+        
+        .status-activo {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
+        .status-inactivo {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        
+        .status-pendiente {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
+        }
+        
+        .info-panel {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .info-panel h6 {
+            color: #ffc107;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .info-panel ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        
+        .info-panel li {
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .buttons-section {
+            padding: 20px 30px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modern {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #ff9800 0%, #ff5722 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 152, 0, 0.4);
+            background: linear-gradient(135deg, #f57c00 0%, #e64a19 100%);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            color: white;
+        }
+        
+        .alert-modern {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .character-count {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
         .form-help {
             font-size: 0.85rem;
-            color: #6c757d;
+            color: rgba(255, 255, 255, 0.7);
             margin-top: 5px;
             display: flex;
             align-items: center;
             gap: 5px;
         }
-
+        
         .form-help i {
-            color: var(--info-color);
+            color: #ffc107;
         }
-
-        .info-card {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border: none;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-
-        .info-card .alert-content {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-        }
-
-        .info-card i {
-            color: var(--info-color);
-            font-size: 1.5rem;
-            margin-top: 2px;
-        }
-
-        .info-card-text {
-            flex: 1;
-        }
-
-        .info-card-text strong {
-            color: var(--dark-color);
-            font-weight: 600;
-        }
-
-        .btn-group-modern {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 40px;
-            padding-top: 30px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .btn-modern {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 50px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            min-width: 150px;
-            justify-content: center;
-        }
-
-        .btn-success-modern {
-            background: linear-gradient(135deg, var(--success-color), #20c997);
-            color: white;
-            box-shadow: 0 10px 30px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-success-modern:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(40, 167, 69, 0.4);
-            color: white;
-        }
-
-        .btn-secondary-modern {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
-            color: white;
-            box-shadow: 0 10px 30px rgba(108, 117, 125, 0.3);
-        }
-
-        .btn-secondary-modern:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 40px rgba(108, 117, 125, 0.4);
-            color: white;
-        }
-
-        .alert-modern {
-            border: none;
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            animation: slideDown 0.5s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-danger-modern {
-            background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
-            color: #721c24;
-        }
-
-        .alert-danger-modern i {
-            color: var(--danger-color);
-            font-size: 1.2rem;
-        }
-
-        .floating-label {
-            position: relative;
-        }
-
-        .floating-label .form-control-modern:focus + .floating-label-text,
-        .floating-label .form-control-modern:not(:placeholder-shown) + .floating-label-text {
-            transform: translateY(-25px) scale(0.8);
-            color: var(--primary-color);
-        }
-
-        .floating-label-text {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: white;
-            padding: 0 5px;
-            transition: all 0.3s ease;
-            pointer-events: none;
-            color: #6c757d;
-        }
-
+        
+        /* Responsive */
         @media (max-width: 768px) {
-            .container-modern {
+            .main-container {
                 padding: 0 10px;
             }
             
-            .form-content {
-                padding: 20px;
+            .form-container {
+                border-radius: 20px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
             }
             
             .section-card {
                 padding: 20px;
+                margin-bottom: 20px;
             }
             
-            .form-header h1 {
-                font-size: 2rem;
-            }
-            
-            .btn-group-modern {
+            .buttons-section {
+                padding: 20px 20px 30px;
                 flex-direction: column;
-                align-items: center;
             }
             
             .btn-modern {
                 width: 100%;
-                max-width: 300px;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
             }
         }
     </style>
 </head>
 <body>
-    <div class="container-modern">
-        <div class="form-wrapper">
-            <!-- Header moderno con animación -->
-            <div class="form-header">
-                <nav aria-label="breadcrumb" class="breadcrumb-modern">
-                    <ol class="breadcrumb mb-0">
-                        <li class="breadcrumb-item">
-                            <a href="/RMIE/app/views/dashboard.php">
-                                <i class="fas fa-home"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item">
-                            <a href="/RMIE/app/controllers/ProviderController.php?accion=index">
-                                <i class="fas fa-truck"></i> Proveedores
-                            </a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page">
-                            <i class="fas fa-plus"></i> Nuevo Proveedor
-                        </li>
-                    </ol>
-                </nav>
-                
-                <h1><i class="fas fa-plus-circle"></i> Agregar Nuevo Proveedor</h1>
-                <p class="subtitle">Complete la información para registrar un nuevo proveedor en el sistema</p>
+    <div class="main-container">
+        <div class="form-container">
+            <!-- Header -->
+            <div class="header-section">
+                <h1 class="header-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Agregar Nuevo Proveedor
+                </h1>
+                <p class="header-subtitle">Complete la información para registrar un nuevo proveedor en el sistema</p>
             </div>
 
-            <div class="form-content">
-                <!-- Mostrar errores si existen -->
-                <?php if (isset($error)): ?>
-                    <div class="alert-modern alert-danger-modern">
+            <!-- Error Alert -->
+            <?php if (isset($error)): ?>
+                <div class="form-section">
+                    <div class="alert-modern">
                         <i class="fas fa-exclamation-triangle"></i>
                         <div>
                             <strong>Error:</strong> <?= htmlspecialchars($error) ?>
                         </div>
                     </div>
-                <?php endif; ?>
+                </div>
+            <?php endif; ?>
 
+            <!-- Form -->
+            <div class="form-section">
                 <form method="POST" action="/RMIE/app/controllers/ProviderController.php?accion=create" id="formProveedor">
-                    <div class="row">
-                        <!-- Información de la Empresa -->
-                        <div class="col-lg-6">
-                            <div class="section-card">
-                                <h3 class="section-title">
-                                    <i class="fas fa-building"></i>
-                                    Información de la Empresa
-                                </h3>
-                                
-                                <div class="form-group-modern">
-                                    <label for="nombre_distribuidor" class="form-label-modern">
-                                        <i class="fas fa-truck"></i>
-                                        Nombre del Distribuidor/Empresa
-                                    </label>
-                                    <input type="text" 
-                                           id="nombre_distribuidor" 
-                                           name="nombre_distribuidor" 
-                                           class="form-control-modern"
-                                           required 
-                                           value="<?= htmlspecialchars($_POST['nombre_distribuidor'] ?? '') ?>"
-                                           placeholder="Ingrese el nombre de la empresa"
-                                           maxlength="100">
-                                    <div class="form-help">
-                                        <i class="fas fa-info-circle"></i>
-                                        Nombre comercial o razón social de la empresa
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group-modern">
-                                    <label for="estado" class="form-label-modern">
-                                        <i class="fas fa-toggle-on"></i>
-                                        Estado del Proveedor
-                                    </label>
-                                    <select id="estado" name="estado" class="form-select-modern" required>
-                                        <option value="">Seleccione un estado</option>
-                                        <option value="activo" <?= ($_POST['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>
-                                            🟢 Activo
-                                        </option>
-                                        <option value="inactivo" <?= ($_POST['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>
-                                            🔴 Inactivo
-                                        </option>
-                                        <option value="pendiente" <?= ($_POST['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>
-                                            🟡 Pendiente
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Información de Contacto -->
-                        <div class="col-lg-6">
-                            <div class="section-card">
-                                <h3 class="section-title">
-                                    <i class="fas fa-address-book"></i>
-                                    Información de Contacto
-                                </h3>
-                                
-                                <div class="form-group-modern">
-                                    <label for="correo" class="form-label-modern">
-                                        <i class="fas fa-envelope"></i>
-                                        Correo Electrónico
-                                    </label>
-                                    <input type="email" 
-                                           id="correo" 
-                                           name="correo" 
-                                           class="form-control-modern"
-                                           required 
-                                           value="<?= htmlspecialchars($_POST['correo'] ?? '') ?>"
-                                           placeholder="ejemplo@empresa.com"
-                                           maxlength="100">
-                                    <div class="form-help">
-                                        <i class="fas fa-shield-alt"></i>
-                                        Será utilizado para comunicaciones oficiales
-                                    </div>
-                                </div>
-                                
-                                <div class="form-group-modern">
-                                    <label for="cel_proveedor" class="form-label-modern">
-                                        <i class="fas fa-phone"></i>
-                                        Número de Celular
-                                    </label>
-                                    <input type="tel" 
-                                           id="cel_proveedor" 
-                                           name="cel_proveedor" 
-                                           class="form-control-modern"
-                                           required 
-                                           value="<?= htmlspecialchars($_POST['cel_proveedor'] ?? '') ?>"
-                                           placeholder="Ej: +57 300 123 4567"
-                                           maxlength="20">
-                                    <div class="form-help">
-                                        <i class="fas fa-mobile-alt"></i>
-                                        Incluya código de país si es internacional
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                     
-                    <!-- Información Adicional -->
-                    <div class="row">
-                        <div class="col-lg-8">
-                            <div class="section-card">
-                                <h3 class="section-title">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Ubicación y Dirección
-                                </h3>
-                                
-                                <div class="form-group-modern">
-                                    <label for="ubicacion" class="form-label-modern">
-                                        <i class="fas fa-map"></i>
-                                        Dirección Completa
-                                    </label>
-                                    <textarea id="ubicacion" 
-                                              name="ubicacion" 
-                                              class="form-textarea-modern"
-                                              placeholder="Ingrese la dirección completa del proveedor (ciudad, estado, dirección específica, referencias)"
-                                              maxlength="255"><?= htmlspecialchars($_POST['ubicacion'] ?? '') ?></textarea>
-                                    <div class="form-help">
-                                        <i class="fas fa-info-circle"></i>
-                                        Campo opcional pero recomendado para facilitar entregas y visitas
-                                    </div>
+                    <div class="form-row form-row-2">
+                        <!-- Información de la Empresa -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-building"></i>
+                                Información de la Empresa
+                            </div>
+                            
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="nombre_distribuidor" 
+                                       name="nombre_distribuidor" 
+                                       placeholder=" "
+                                       maxlength="100"
+                                       required
+                                       value="<?= htmlspecialchars($_POST['nombre_distribuidor'] ?? '') ?>">
+                                <label for="nombre_distribuidor">
+                                    <i class="fas fa-truck"></i>
+                                    Nombre del Distribuidor/Empresa <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="nombre-count">0</span>/100
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Nombre comercial o razón social de la empresa
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="col-lg-4">
-                            <div class="info-card">
-                                <div class="alert-content">
-                                    <i class="fas fa-lightbulb"></i>
-                                    <div class="info-card-text">
-                                        <strong>💡 Consejos Importantes:</strong>
-                                        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-                                            <li>Verifique que el correo sea válido</li>
-                                            <li>El teléfono será usado para contacto directo</li>
-                                            <li>La dirección facilita las entregas</li>
-                                            <li>Revise toda la información antes de guardar</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Botones de Acción -->
-                    <div class="btn-group-modern">
-                        <button type="submit" class="btn-modern btn-success-modern" id="btnGuardar">
-                            <i class="fas fa-save"></i> 
-                            Guardar Proveedor
-                        </button>
-                        <a href="/RMIE/app/controllers/ProviderController.php?accion=index" 
-                           class="btn-modern btn-secondary-modern">
-                            <i class="fas fa-arrow-left"></i> 
-                            Cancelar
-                        </a>
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" 
+                                        id="estado" 
+                                        name="estado" 
+                                        required>
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="activo" <?= ($_POST['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>🟢 Activo</option>
+                                    <option value="inactivo" <?= ($_POST['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>🔴 Inactivo</option>
+                                    <option value="pendiente" <?= ($_POST['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>🟡 Pendiente</option>
+                                </select>
+                                <label for="estado">
+                                    <i class="fas fa-toggle-on"></i>
+                                    Estado del Proveedor <span class="required">*</span>
+                                </label>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <textarea class="form-textarea-modern" 
+                                          id="ubicacion" 
+                                          name="ubicacion" 
+                                          placeholder=" "
+                                          maxlength="255"><?= htmlspecialchars($_POST['ubicacion'] ?? '') ?></textarea>
+                                <label for="ubicacion">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Dirección Completa (Opcional)
+                                </label>
+                                <div class="character-count">
+                                    <span id="ubicacion-count">0</span>/255
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Campo opcional pero recomendado para facilitar entregas y visitas
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Información de Contacto y Vista Previa -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-address-book"></i>
+                                Contacto y Vista Previa
+                            </div>
+                            
+                            <div class="form-floating-modern">
+                                <input type="email" 
+                                       class="form-control-modern" 
+                                       id="correo" 
+                                       name="correo" 
+                                       placeholder=" "
+                                       maxlength="100"
+                                       required
+                                       value="<?= htmlspecialchars($_POST['correo'] ?? '') ?>">
+                                <label for="correo">
+                                    <i class="fas fa-envelope"></i>
+                                    Correo Electrónico <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="correo-count">0</span>/100
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-shield-alt"></i>
+                                    Será utilizado para comunicaciones oficiales
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <input type="tel" 
+                                       class="form-control-modern" 
+                                       id="cel_proveedor" 
+                                       name="cel_proveedor" 
+                                       placeholder=" "
+                                       maxlength="20"
+                                       required
+                                       value="<?= htmlspecialchars($_POST['cel_proveedor'] ?? '') ?>">
+                                <label for="cel_proveedor">
+                                    <i class="fas fa-phone"></i>
+                                    Número de Celular <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="cel_proveedor-count">0</span>/20
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    Incluya código de país si es internacional
+                                </div>
+                            </div>
+
+                            <!-- Vista Previa -->
+                            <div class="preview-section">
+                                <h6 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="fas fa-eye"></i> Vista Previa del Proveedor
+                                </h6>
+                                
+                                <div class="provider-avatar-large" id="previewAvatar">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                
+                                <div class="preview-name" id="previewName">Nombre del Proveedor</div>
+                                
+                                <div class="preview-email" id="previewEmail">
+                                    <i class="fas fa-envelope"></i>
+                                    <span>proveedor@empresa.com</span>
+                                </div>
+                                
+                                <div class="preview-phone" id="previewPhone">
+                                    <i class="fas fa-phone"></i>
+                                    <span id="previewPhoneText">+57 300 123 4567</span>
+                                </div>
+                                
+                                <div class="preview-status" id="previewStatus">
+                                    <span class="status-badge status-activo">
+                                        <i class="fas fa-check-circle"></i> Activo
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-panel">
+                                <h6><i class="fas fa-lightbulb"></i> Consejos Útiles</h6>
+                                <ul>
+                                    <li>Use un nombre claro y descriptivo para la empresa</li>
+                                    <li>Verifique el correo electrónico antes de guardar</li>
+                                    <li>El estado "Pendiente" es útil para proveedores en evaluación</li>
+                                    <li>La dirección completa facilita las entregas</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
+
+            <!-- Buttons -->
+            <div class="buttons-section">
+                <button type="submit" form="formProveedor" class="btn-modern btn-create">
+                    <i class="fas fa-save"></i>
+                    REGISTRAR PROVEEDOR
+                </button>
+                <a href="/RMIE/app/controllers/ProviderController.php?accion=index" class="btn-modern btn-cancel">
+                    <i class="fas fa-times"></i>
+                    CANCELAR
+                </a>
+            </div>
         </div>
     </div>
-    
-    <!-- Bootstrap JS -->
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- JavaScript mejorado para validación y UX -->
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('formProveedor');
-        const correoInput = document.getElementById('correo');
-        const telefonoInput = document.getElementById('cel_proveedor');
-        const nombreInput = document.getElementById('nombre_distribuidor');
-        const estadoSelect = document.getElementById('estado');
-        const btnGuardar = document.getElementById('btnGuardar');
-        
-        // Animación de entrada para las tarjetas
-        const cards = document.querySelectorAll('.section-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                card.style.transition = 'all 0.6s ease';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 200);
-        });
-        
-        // Validación en tiempo real del email
-        correoInput.addEventListener('input', function() {
-            const email = this.value;
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formProveedor');
             
-            if (email && !emailRegex.test(email)) {
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else if (email) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            } else {
-                this.classList.remove('is-invalid', 'is-valid');
-            }
-        });
-        
-        // Formateo automático de teléfono
-        telefonoInput.addEventListener('input', function() {
-            let value = this.value.replace(/[^\d+\s()-]/g, '');
-            
-            // Si comienza con +57, formatear estilo colombiano
-            if (value.startsWith('+57')) {
-                value = value.replace(/(\+57)\s?(\d{3})\s?(\d{3})\s?(\d{4})/, '$1 $2 $3 $4');
-            } else if (value.length >= 10 && !value.startsWith('+')) {
-                // Formatear número nacional
-                value = value.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
-            }
-            
-            this.value = value;
-            
-            // Validación visual
-            if (value.length >= 10) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            } else if (value.length > 0) {
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else {
-                this.classList.remove('is-invalid', 'is-valid');
-            }
-        });
-        
-        // Validación del nombre de empresa
-        nombreInput.addEventListener('input', function() {
-            // Eliminar espacios al inicio
-            this.value = this.value.replace(/^\s+/, '');
-            
-            // Capitalizar primera letra de cada palabra
-            this.value = this.value.replace(/\b\w/g, l => l.toUpperCase());
-            
-            // Validación visual
-            if (this.value.trim().length >= 2) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            } else if (this.value.length > 0) {
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            } else {
-                this.classList.remove('is-invalid', 'is-valid');
-            }
-        });
-        
-        // Validación del estado
-        estadoSelect.addEventListener('change', function() {
-            if (this.value) {
-                this.classList.remove('is-invalid');
-                this.classList.add('is-valid');
-            } else {
-                this.classList.add('is-invalid');
-                this.classList.remove('is-valid');
-            }
-        });
-        
-        // Efecto hover en botones
-        const buttons = document.querySelectorAll('.btn-modern');
-        buttons.forEach(btn => {
-            btn.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-2px)';
-            });
-            
-            btn.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
-            });
-        });
-        
-        // Validación completa antes del envío
-        form.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const nombre = nombreInput.value.trim();
-            const correo = correoInput.value.trim();
-            const telefono = telefonoInput.value.trim();
-            const estado = estadoSelect.value;
-            
-            let errors = [];
-            
-            // Validar nombre
-            if (!nombre || nombre.length < 2) {
-                errors.push('• El nombre del distribuidor debe tener al menos 2 caracteres');
-                nombreInput.classList.add('is-invalid');
-            }
-            
-            // Validar email
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!correo || !emailRegex.test(correo)) {
-                errors.push('• Ingrese un correo electrónico válido');
-                correoInput.classList.add('is-invalid');
-            }
-            
-            // Validar teléfono
-            const telefonoLimpio = telefono.replace(/[^\d]/g, '');
-            if (!telefono || telefonoLimpio.length < 7) {
-                errors.push('• El número de teléfono debe tener al menos 7 dígitos');
-                telefonoInput.classList.add('is-invalid');
-            }
-            
-            // Validar estado
-            if (!estado) {
-                errors.push('• Seleccione un estado para el proveedor');
-                estadoSelect.classList.add('is-invalid');
-            }
-            
-            if (errors.length > 0) {
-                // Mostrar errores con animación
-                showErrorAlert(errors);
-                return false;
-            }
-            
-            // Si todo está válido, mostrar loading y enviar
-            showLoadingState();
-            
-            // Simular delay para mostrar el loading
-            setTimeout(() => {
-                form.submit();
-            }, 500);
-        });
-        
-        function showErrorAlert(errors) {
-            // Remover alerta anterior si existe
-            const existingAlert = document.querySelector('.alert-validation');
-            if (existingAlert) {
-                existingAlert.remove();
-            }
-            
-            const alertHtml = `
-                <div class="alert-modern alert-danger-modern alert-validation" style="margin-bottom: 20px;">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <div>
-                        <strong>Por favor corrija los siguientes errores:</strong>
-                        <ul style="margin: 10px 0 0 0; padding-left: 20px;">
-                            ${errors.map(error => `<li>${error}</li>`).join('')}
-                        </ul>
-                    </div>
-                </div>
-            `;
-            
-            form.insertAdjacentHTML('afterbegin', alertHtml);
-            
-            // Scroll al inicio del formulario
-            form.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            // Auto-remover después de 8 segundos
-            setTimeout(() => {
-                const alert = document.querySelector('.alert-validation');
-                if (alert) {
-                    alert.style.transition = 'all 0.5s ease';
-                    alert.style.opacity = '0';
-                    alert.style.transform = 'translateY(-20px)';
-                    setTimeout(() => alert.remove(), 500);
+            // Contadores de caracteres
+            function setupCharacterCount(inputId, countId, maxLength) {
+                const input = document.getElementById(inputId);
+                const counter = document.getElementById(countId);
+                
+                if (input && counter) {
+                    function updateCount() {
+                        const count = input.value.length;
+                        counter.textContent = count;
+                        counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                    }
+                    
+                    input.addEventListener('input', updateCount);
+                    updateCount(); // Inicializar
                 }
-            }, 8000);
-        }
-        
-        function showLoadingState() {
-            btnGuardar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Guardando...';
-            btnGuardar.disabled = true;
-            btnGuardar.style.opacity = '0.7';
+            }
             
-            // Deshabilitar todos los campos
-            [nombreInput, correoInput, telefonoInput, estadoSelect].forEach(field => {
-                field.disabled = true;
-            });
-        }
-        
-        // Auto-ocultar alertas existentes después de 6 segundos
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert-modern');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'all 0.5s ease';
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 6000);
-        
-        // Agregar efecto de focus mejorado
-        const inputs = document.querySelectorAll('.form-control-modern, .form-select-modern, .form-textarea-modern');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentNode.style.transform = 'translateY(-2px)';
+            setupCharacterCount('nombre_distribuidor', 'nombre-count', 100);
+            setupCharacterCount('correo', 'correo-count', 100);
+            setupCharacterCount('cel_proveedor', 'cel_proveedor-count', 20);
+            setupCharacterCount('ubicacion', 'ubicacion-count', 255);
+            
+            // Vista previa en tiempo real
+            function actualizarVistaPrevia() {
+                const nombre = document.getElementById('nombre_distribuidor').value;
+                const correo = document.getElementById('correo').value;
+                const telefono = document.getElementById('cel_proveedor').value;
+                const estado = document.getElementById('estado').value;
+                
+                // Actualizar avatar
+                const avatar = document.getElementById('previewAvatar');
+                if (nombre) {
+                    avatar.innerHTML = nombre.charAt(0).toUpperCase();
+                } else {
+                    avatar.innerHTML = '<i class="fas fa-truck"></i>';
+                }
+                
+                // Actualizar nombre
+                document.getElementById('previewName').textContent = nombre || 'Nombre del Proveedor';
+                
+                // Actualizar correo
+                const emailSpan = document.querySelector('#previewEmail span');
+                emailSpan.textContent = correo || 'proveedor@empresa.com';
+                
+                // Actualizar teléfono
+                const phoneText = document.getElementById('previewPhoneText');
+                phoneText.textContent = telefono || '+57 300 123 4567';
+                
+                // Actualizar estado
+                const statusDiv = document.getElementById('previewStatus');
+                let statusHtml = '';
+                
+                switch(estado) {
+                    case 'activo':
+                        statusHtml = `<span class="status-badge status-activo">
+                            <i class="fas fa-check-circle"></i> Activo
+                        </span>`;
+                        break;
+                    case 'inactivo':
+                        statusHtml = `<span class="status-badge status-inactivo">
+                            <i class="fas fa-times-circle"></i> Inactivo
+                        </span>`;
+                        break;
+                    case 'pendiente':
+                        statusHtml = `<span class="status-badge status-pendiente">
+                            <i class="fas fa-clock"></i> Pendiente
+                        </span>`;
+                        break;
+                    default:
+                        statusHtml = `<span class="status-badge status-activo">
+                            <i class="fas fa-check-circle"></i> Activo
+                        </span>`;
+                }
+                
+                statusDiv.innerHTML = statusHtml;
+            }
+            
+            // Agregar listeners para vista previa
+            ['nombre_distribuidor', 'correo', 'cel_proveedor', 'estado'].forEach(function(fieldId) {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', actualizarVistaPrevia);
+                    field.addEventListener('change', actualizarVistaPrevia);
+                }
             });
             
-            input.addEventListener('blur', function() {
-                this.parentNode.style.transform = 'translateY(0)';
+            // Validación del formulario
+            form.addEventListener('submit', function(e) {
+                const nombre = document.getElementById('nombre_distribuidor').value;
+                const correo = document.getElementById('correo').value;
+                const telefono = document.getElementById('cel_proveedor').value;
+                const estado = document.getElementById('estado').value;
+                
+                const errors = [];
+                
+                // Validar nombre
+                if (nombre.trim().length < 2) {
+                    errors.push('El nombre del proveedor debe tener al menos 2 caracteres');
+                }
+                
+                // Validar correo
+                const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailPattern.test(correo)) {
+                    errors.push('Por favor ingrese un correo electrónico válido');
+                }
+                
+                // Validar teléfono
+                if (telefono.trim().length < 7) {
+                    errors.push('El número de teléfono debe tener al menos 7 caracteres');
+                }
+                
+                // Validar estado
+                if (!estado) {
+                    errors.push('Por favor seleccione un estado para el proveedor');
+                }
+                
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    showValidationErrors(errors);
+                }
             });
+            
+            function showValidationErrors(errors) {
+                // Remover alertas previas
+                const existingAlert = document.querySelector('.alert-validation');
+                if (existingAlert) {
+                    existingAlert.remove();
+                }
+                
+                const alertHtml = `
+                    <div class="alert-modern alert-validation" style="margin-bottom: 20px;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Por favor corrija los siguientes errores:</strong>
+                            <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                                ${errors.map(error => `<li>${error}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `;
+                
+                form.insertAdjacentHTML('afterbegin', alertHtml);
+                
+                // Scroll al inicio del formulario
+                form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                
+                // Auto-remover después de 8 segundos
+                setTimeout(() => {
+                    const alert = document.querySelector('.alert-validation');
+                    if (alert) {
+                        alert.style.transition = 'all 0.5s ease';
+                        alert.style.opacity = '0';
+                        alert.style.transform = 'translateY(-20px)';
+                        setTimeout(() => alert.remove(), 500);
+                    }
+                }, 8000);
+            }
+            
+            // Efectos visuales
+            document.querySelectorAll('.form-control-modern, .form-select-modern, .form-textarea-modern').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Manejo de labels para selects
+            document.querySelectorAll('.form-select-modern').forEach(select => {
+                select.addEventListener('change', function() {
+                    const label = this.parentElement.querySelector('label');
+                    if (this.value) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    } else {
+                        label.style.top = '12px';
+                        label.style.fontSize = '14px';
+                        label.style.color = 'rgba(102, 126, 234, 0.8)';
+                    }
+                });
+            });
+            
+            // Inicializar vista previa
+            actualizarVistaPrevia();
         });
-        
-        console.log('✅ Formulario de proveedores cargado con todas las mejoras UX');
-    });
     </script>
 </body>
 </html>

@@ -26,430 +26,864 @@ $local = [
     <title>Crear Local - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../../../public/css/styles.css" rel="stylesheet">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px 0;
         }
-
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
         .form-container {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 20px auto;
-            max-width: 800px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
         }
-
-        .page-title {
-            color: #fff;
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 40px 30px;
             text-align: center;
-            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        
+        .header-title {
+            color: white;
             font-size: 2.5rem;
             font-weight: 700;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
-
-        .form-label {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 8px;
+        
+        .header-title i {
+            font-size: 2.8rem;
+            opacity: 0.9;
         }
-
-        .form-control-modern {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
+        
+        .header-subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+            font-weight: 400;
         }
-
-        .form-control-modern::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+        
+        .form-section {
+            padding: 40px 30px;
         }
-
-        .form-control-modern:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #4facfe;
-            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
-            color: #fff;
-            outline: none;
-        }
-
-        .btn-modern {
-            padding: 12px 25px;
-            border-radius: 25px;
-            border: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-success-modern {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
-        }
-
-        .btn-secondary-modern {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .alert-modern {
-            border-radius: 15px;
-            border: none;
+        
+        .section-card {
+            background: rgba(255, 255, 255, 0.05);
             backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .section-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        }
+        
+        .section-title {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .section-title i {
+            font-size: 1.5rem;
+            opacity: 0.9;
+        }
+        
+        .form-row {
+            display: grid;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+        
+        .form-row-2 {
+            grid-template-columns: 1fr 1fr;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row-2 {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+        }
+        
+        .form-floating-modern {
+            position: relative;
             margin-bottom: 20px;
         }
-
-        .alert-success-modern {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-        }
-
-        .alert-danger-modern {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-        }
-
-        .preview-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+        
+        .form-control-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
-
-        .preview-title {
-            color: #fff;
-            font-size: 1.2rem;
+        
+        .form-control-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-select-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+        }
+        
+        .form-select-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .form-floating-modern label {
+            position: absolute;
+            top: 12px;
+            left: 15px;
+            color: rgba(102, 126, 234, 0.8);
             font-weight: 600;
-            margin-bottom: 15px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .form-floating-modern label i {
+            font-size: 16px;
+        }
+        
+        .required {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .form-control-modern:focus ~ label,
+        .form-control-modern:not(:placeholder-shown) ~ label,
+        .form-select-modern:focus ~ label,
+        .form-select-modern:not([value=""]) ~ label {
+            top: 2px;
+            font-size: 12px;
+            color: #667eea;
+        }
+        
+        .preview-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
             text-align: center;
         }
-
+        
+        .local-avatar-large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+            box-shadow: 0 10px 30px rgba(0, 188, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .local-avatar-large:hover {
+            transform: scale(1.05);
+        }
+        
         .preview-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            justify-content: space-between;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
+            color: rgba(255, 255, 255, 0.9);
         }
-
+        
         .preview-item:last-child {
             border-bottom: none;
         }
-
+        
         .preview-label {
             font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             color: rgba(255, 255, 255, 0.8);
         }
-
+        
         .preview-value {
             font-weight: 500;
+            color: white;
+            max-width: 60%;
+            text-align: right;
+            word-break: break-word;
         }
-
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex;
-            justify-content: center;
+        
+        .status-badge {
+            display: inline-flex;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .loading-content {
-            text-align: center;
+            gap: 8px;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8rem;
             color: white;
         }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        
+        .status-activo {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3);
         }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        
+        .status-inactivo {
+            background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3);
         }
-
-        .form-floating-modern {
-            position: relative;
+        
+        .info-panel {
+            background: rgba(0, 188, 212, 0.2);
+            border: 1px solid rgba(0, 188, 212, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            color: rgba(255, 255, 255, 0.9);
         }
-
-        .form-floating-modern .form-control-modern {
-            padding-top: 1.625rem;
-            padding-bottom: 0.625rem;
+        
+        .info-panel h6 {
+            color: #00bcd4;
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-
-        .form-floating-modern > label {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            padding: 1rem 0.75rem;
-            overflow: hidden;
-            text-align: start;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            pointer-events: none;
-            border: 1px solid transparent;
-            transform-origin: 0 0;
-            transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+        
+        .info-panel ul {
+            margin: 0;
+            padding-left: 20px;
         }
-
-        .form-floating-modern > .form-control-modern:focus ~ label,
-        .form-floating-modern > .form-control-modern:not(:placeholder-shown) ~ label {
-            opacity: 0.65;
-            transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+        
+        .info-panel li {
+            margin-bottom: 5px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .buttons-section {
+            padding: 20px 30px 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn-modern {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .btn-create {
+            background: linear-gradient(135deg, #00bcd4 0%, #2196f3 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-create:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 188, 212, 0.4);
+            background: linear-gradient(135deg, #00acc1 0%, #1e88e5 100%);
+            color: white;
+        }
+        
+        .btn-cancel {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .btn-cancel:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            color: white;
+        }
+        
+        .alert-modern {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.4);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .alert-success-modern {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+        
+        .character-count {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 5px;
+        }
+        
+        .form-help {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .form-help i {
+            color: #00bcd4;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 10px;
+            }
+            
+            .form-container {
+                border-radius: 20px;
+            }
+            
+            .header-section {
+                padding: 30px 20px;
+            }
+            
+            .header-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .form-section {
+                padding: 30px 20px;
+            }
+            
+            .section-card {
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            
+            .buttons-section {
+                padding: 20px 20px 30px;
+                flex-direction: column;
+            }
+            
+            .btn-modern {
+                width: 100%;
+            }
+        }
+        
+        /* Animaciones */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>Cargando Formulario...</h3>
-            <p>Preparando la creación de local</p>
-        </div>
-    </div>
-
-    <div class="container">
+    <div class="main-container">
         <div class="form-container">
-            <h1 class="page-title">
-                <i class="fas fa-plus-circle"></i> Crear Nuevo Local
-            </h1>
+            <!-- Header -->
+            <div class="header-section">
+                <h1 class="header-title">
+                    <i class="fas fa-plus-circle"></i>
+                    Crear Nuevo Local
+                </h1>
+                <p class="header-subtitle">Complete la información para registrar un nuevo local en el sistema</p>
+            </div>
 
+            <!-- Alerts -->
             <?php if ($success_message): ?>
-                <div class="alert alert-modern alert-success-modern">
-                    <i class="fas fa-check-circle"></i> <?php echo $success_message; ?>
+                <div class="form-section">
+                    <div class="alert-success-modern">
+                        <i class="fas fa-check-circle"></i>
+                        <div>
+                            <strong>¡Éxito!</strong> <?php echo $success_message; ?>
+                        </div>
+                    </div>
                 </div>
             <?php endif; ?>
 
             <?php if ($error_message): ?>
-                <div class="alert alert-modern alert-danger-modern">
-                    <i class="fas fa-exclamation-circle"></i> <?php echo $error_message; ?>
-                </div>
-            <?php endif; ?>
-
-            <div class="row">
-                <div class="col-md-8">
-                    <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=store" id="localForm">
-                        <div class="mb-3">
-                            <div class="form-floating-modern">
-                                <input type="text" 
-                                       class="form-control form-control-modern" 
-                                       id="nombre" 
-                                       name="nombre" 
-                                       value="<?php echo htmlspecialchars($local['nombre_local']); ?>"
-                                       placeholder="Nombre del local"
-                                       required>
-                                <label for="nombre">
-                                    <i class="fas fa-building"></i> Nombre del Local
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <div class="form-floating-modern">
-                                <input type="text" 
-                                       class="form-control form-control-modern" 
-                                       id="direccion" 
-                                       name="direccion" 
-                                       value="<?php echo htmlspecialchars($local['direccion']); ?>"
-                                       placeholder="Dirección completa"
-                                       required>
-                                <label for="direccion">
-                                    <i class="fas fa-map-marker-alt"></i> Dirección
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <input type="tel" 
-                                           class="form-control form-control-modern" 
-                                           id="telefono" 
-                                           name="telefono" 
-                                           value="<?php echo htmlspecialchars($local['cel_local']); ?>"
-                                           placeholder="Número de teléfono"
-                                           required>
-                                    <label for="telefono">
-                                        <i class="fas fa-phone"></i> Teléfono
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <select class="form-control form-control-modern" 
-                                            id="estado" 
-                                            name="estado"
-                                            required>
-                                        <option value="activo" <?php echo $local['estado'] === 'activo' ? 'selected' : ''; ?>>Activo</option>
-                                        <option value="inactivo" <?php echo $local['estado'] === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
-                                    </select>
-                                    <label for="estado">
-                                        <i class="fas fa-toggle-on"></i> Estado
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <input type="text" 
-                                           class="form-control form-control-modern" 
-                                           id="localidad" 
-                                           name="localidad" 
-                                           value="<?php echo htmlspecialchars($local['localidad']); ?>"
-                                           placeholder="Localidad"
-                                           required>
-                                    <label for="localidad">
-                                        <i class="fas fa-city"></i> Localidad
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <div class="form-floating-modern">
-                                    <input type="text" 
-                                           class="form-control form-control-modern" 
-                                           id="barrio" 
-                                           name="barrio" 
-                                           value="<?php echo htmlspecialchars($local['barrio']); ?>"
-                                           placeholder="Barrio"
-                                           required>
-                                    <label for="barrio">
-                                        <i class="fas fa-map-marked-alt"></i> Barrio
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
-                               class="btn btn-modern btn-secondary-modern me-md-2">
-                                <i class="fas fa-arrow-left"></i> Cancelar
-                            </a>
-                            <button type="submit" class="btn btn-modern btn-success-modern">
-                                <i class="fas fa-save"></i> Crear Local
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="preview-card">
-                        <div class="preview-title">
-                            <i class="fas fa-eye"></i> Vista Previa
-                        </div>
-                        <div id="preview-content">
-                            <div class="preview-item">
-                                <span class="preview-label">Nombre:</span>
-                                <span class="preview-value" id="preview-nombre">-</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Dirección:</span>
-                                <span class="preview-value" id="preview-direccion">-</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Teléfono:</span>
-                                <span class="preview-value" id="preview-telefono">-</span>
-                            </div>
-                            <div class="preview-item">
-                                <span class="preview-label">Estado:</span>
-                                <span class="preview-value" id="preview-estado">Activo</span>
-                            </div>
+                <div class="form-section">
+                    <div class="alert-modern">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <div>
+                            <strong>Error:</strong> <?php echo $error_message; ?>
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
+
+            <!-- Form -->
+            <div class="form-section">
+                <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=store" id="localForm">
+                    
+                    <div class="form-row form-row-2">
+                        <!-- Información Básica -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-building"></i>
+                                Información Básica
+                            </div>
+                            
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="nombre" 
+                                       name="nombre" 
+                                       placeholder=" "
+                                       maxlength="100"
+                                       required
+                                       value="<?php echo htmlspecialchars($local['nombre_local']); ?>">
+                                <label for="nombre">
+                                    <i class="fas fa-building"></i>
+                                    Nombre del Local <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="nombre-count">0</span>/100
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Nombre comercial del establecimiento
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="direccion" 
+                                       name="direccion" 
+                                       placeholder=" "
+                                       maxlength="200"
+                                       required
+                                       value="<?php echo htmlspecialchars($local['direccion']); ?>">
+                                <label for="direccion">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Dirección Completa <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="direccion-count">0</span>/200
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-map"></i>
+                                    Dirección completa del local
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <input type="tel" 
+                                       class="form-control-modern" 
+                                       id="telefono" 
+                                       name="telefono" 
+                                       placeholder=" "
+                                       maxlength="20"
+                                       required
+                                       value="<?php echo htmlspecialchars($local['cel_local']); ?>">
+                                <label for="telefono">
+                                    <i class="fas fa-phone"></i>
+                                    Teléfono <span class="required">*</span>
+                                </label>
+                                <div class="character-count">
+                                    <span id="telefono-count">0</span>/20
+                                </div>
+                                <div class="form-help">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    Número de contacto del local
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ubicación y Vista Previa -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-map-marked-alt"></i>
+                                Ubicación y Estado
+                            </div>
+                            
+                            <div class="form-row form-row-2">
+                                <div class="form-floating-modern">
+                                    <input type="text" 
+                                           class="form-control-modern" 
+                                           id="localidad" 
+                                           name="localidad" 
+                                           placeholder=" "
+                                           maxlength="50"
+                                           required
+                                           value="<?php echo htmlspecialchars($local['localidad']); ?>">
+                                    <label for="localidad">
+                                        <i class="fas fa-city"></i>
+                                        Localidad <span class="required">*</span>
+                                    </label>
+                                    <div class="character-count">
+                                        <span id="localidad-count">0</span>/50
+                                    </div>
+                                </div>
+
+                                <div class="form-floating-modern">
+                                    <input type="text" 
+                                           class="form-control-modern" 
+                                           id="barrio" 
+                                           name="barrio" 
+                                           placeholder=" "
+                                           maxlength="50"
+                                           required
+                                           value="<?php echo htmlspecialchars($local['barrio']); ?>">
+                                    <label for="barrio">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                        Barrio <span class="required">*</span>
+                                    </label>
+                                    <div class="character-count">
+                                        <span id="barrio-count">0</span>/50
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" 
+                                        id="estado" 
+                                        name="estado"
+                                        required>
+                                    <option value="activo" <?php echo $local['estado'] === 'activo' ? 'selected' : ''; ?>>Activo</option>
+                                    <option value="inactivo" <?php echo $local['estado'] === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                                </select>
+                                <label for="estado">
+                                    <i class="fas fa-toggle-on"></i>
+                                    Estado del Local <span class="required">*</span>
+                                </label>
+                            </div>
+
+                            <!-- Vista Previa -->
+                            <div class="preview-section">
+                                <div style="margin-bottom: 20px;">
+                                    <div class="local-avatar-large" id="previewAvatar">
+                                        <i class="fas fa-store"></i>
+                                    </div>
+                                    <h6 style="color: rgba(255, 255, 255, 0.9); margin: 0;">
+                                        Vista Previa del Local
+                                    </h6>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-building"></i>
+                                        Nombre:
+                                    </span>
+                                    <span class="preview-value" id="preview-nombre">-</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        Dirección:
+                                    </span>
+                                    <span class="preview-value" id="preview-direccion">-</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-phone"></i>
+                                        Teléfono:
+                                    </span>
+                                    <span class="preview-value" id="preview-telefono">-</span>
+                                </div>
+                                
+                                <div class="preview-item">
+                                    <span class="preview-label">
+                                        <i class="fas fa-map-marked-alt"></i>
+                                        Ubicación:
+                                    </span>
+                                    <span class="preview-value" id="preview-ubicacion">-</span>
+                                </div>
+                                
+                                <div class="preview-item" style="justify-content: center; border-bottom: none;">
+                                    <span id="preview-estado-badge">
+                                        <span class="status-badge status-activo">
+                                            <i class="fas fa-check-circle"></i> Activo
+                                        </span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="info-panel">
+                                <h6><i class="fas fa-lightbulb"></i> Consejos Útiles</h6>
+                                <ul>
+                                    <li>Use un nombre claro y descriptivo para el local</li>
+                                    <li>Incluya la dirección completa para facilitar entregas</li>
+                                    <li>Verifique el número de teléfono antes de guardar</li>
+                                    <li>La localidad y barrio ayudan a organizar mejor los locales</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Buttons -->
+            <div class="buttons-section">
+                <button type="submit" form="localForm" class="btn-modern btn-create">
+                    <i class="fas fa-save"></i>
+                    CREAR LOCAL
+                </button>
+                <a href="/RMIE/app/controllers/LocalController.php?accion=index" class="btn-modern btn-cancel">
+                    <i class="fas fa-times"></i>
+                    CANCELAR
+                </a>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Loading screen
-        window.addEventListener('load', function() {
-            setTimeout(function() {
-                document.getElementById('loadingScreen').style.opacity = '0';
-                setTimeout(function() {
-                    document.getElementById('loadingScreen').style.display = 'none';
-                }, 500);
-            }, 800);
-        });
+        document.addEventListener('DOMContentLoaded', function() {
+            // Contadores de caracteres
+            function setupCharacterCount(inputId, countId, maxLength) {
+                const input = document.getElementById(inputId);
+                const counter = document.getElementById(countId);
+                
+                if (input && counter) {
+                    function updateCount() {
+                        const count = input.value.length;
+                        counter.textContent = count;
+                        counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                    }
+                    
+                    input.addEventListener('input', updateCount);
+                    updateCount(); // Inicializar
+                }
+            }
+            
+            setupCharacterCount('nombre', 'nombre-count', 100);
+            setupCharacterCount('direccion', 'direccion-count', 200);
+            setupCharacterCount('telefono', 'telefono-count', 20);
+            setupCharacterCount('localidad', 'localidad-count', 50);
+            setupCharacterCount('barrio', 'barrio-count', 50);
 
-        // Real-time preview
-        function updatePreview() {
-            const nombre = document.getElementById('nombre').value || '-';
-            const direccion = document.getElementById('direccion').value || '-';
-            const telefono = document.getElementById('telefono').value || '-';
-            const estado = document.getElementById('estado').value || 'Activo';
-
-            document.getElementById('preview-nombre').textContent = nombre;
-            document.getElementById('preview-direccion').textContent = direccion;
-            document.getElementById('preview-telefono').textContent = telefono;
-            document.getElementById('preview-estado').textContent = estado.charAt(0).toUpperCase() + estado.slice(1);
-        }
-
-        // Event listeners for real-time preview
-        document.getElementById('nombre').addEventListener('input', updatePreview);
-        document.getElementById('direccion').addEventListener('input', updatePreview);
-        document.getElementById('telefono').addEventListener('input', updatePreview);
-        document.getElementById('estado').addEventListener('change', updatePreview);
-
-        // Form validation
-        document.getElementById('localForm').addEventListener('submit', function(e) {
-            const nombre = document.getElementById('nombre').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
-
-            if (!nombre) {
-                e.preventDefault();
-                alert('El nombre del local es obligatorio');
-                document.getElementById('nombre').focus();
-                return;
+            // Vista previa en tiempo real
+            function updatePreview() {
+                const nombre = document.getElementById('nombre').value;
+                const direccion = document.getElementById('direccion').value;
+                const telefono = document.getElementById('telefono').value;
+                const localidad = document.getElementById('localidad').value;
+                const barrio = document.getElementById('barrio').value;
+                const estado = document.getElementById('estado').value;
+                
+                // Actualizar avatar
+                const avatar = document.getElementById('previewAvatar');
+                if (nombre) {
+                    avatar.innerHTML = nombre.charAt(0).toUpperCase();
+                } else {
+                    avatar.innerHTML = '<i class="fas fa-store"></i>';
+                }
+                
+                // Actualizar campos
+                document.getElementById('preview-nombre').textContent = nombre || '-';
+                document.getElementById('preview-direccion').textContent = direccion || '-';
+                document.getElementById('preview-telefono').textContent = telefono || '-';
+                
+                // Ubicación combinada
+                let ubicacion = '';
+                if (barrio && localidad) {
+                    ubicacion = `${barrio}, ${localidad}`;
+                } else if (barrio) {
+                    ubicacion = barrio;
+                } else if (localidad) {
+                    ubicacion = localidad;
+                } else {
+                    ubicacion = '-';
+                }
+                document.getElementById('preview-ubicacion').textContent = ubicacion;
+                
+                // Estado
+                const estadoBadge = document.getElementById('preview-estado-badge');
+                if (estado === 'activo') {
+                    estadoBadge.innerHTML = `<span class="status-badge status-activo">
+                        <i class="fas fa-check-circle"></i> Activo
+                    </span>`;
+                } else {
+                    estadoBadge.innerHTML = `<span class="status-badge status-inactivo">
+                        <i class="fas fa-times-circle"></i> Inactivo
+                    </span>`;
+                }
             }
 
-            if (!direccion) {
-                e.preventDefault();
-                alert('La dirección es obligatoria');
-                document.getElementById('direccion').focus();
-                return;
-            }
-        });
+            // Agregar listeners para vista previa
+            ['nombre', 'direccion', 'telefono', 'localidad', 'barrio', 'estado'].forEach(function(fieldId) {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('input', updatePreview);
+                    field.addEventListener('change', updatePreview);
+                }
+            });
 
-        // Initialize preview
-        updatePreview();
+            // Validación del formulario
+            document.getElementById('localForm').addEventListener('submit', function(e) {
+                const nombre = document.getElementById('nombre').value.trim();
+                const direccion = document.getElementById('direccion').value.trim();
+                const telefono = document.getElementById('telefono').value.trim();
+                const localidad = document.getElementById('localidad').value.trim();
+                const barrio = document.getElementById('barrio').value.trim();
+
+                const errors = [];
+
+                if (!nombre) {
+                    errors.push('El nombre del local es obligatorio');
+                }
+
+                if (!direccion) {
+                    errors.push('La dirección es obligatoria');
+                }
+
+                if (!telefono) {
+                    errors.push('El teléfono es obligatorio');
+                }
+
+                if (!localidad) {
+                    errors.push('La localidad es obligatoria');
+                }
+
+                if (!barrio) {
+                    errors.push('El barrio es obligatorio');
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert('Por favor corrige los siguientes errores:\n\n' + errors.join('\n'));
+                    return;
+                }
+            });
+
+            // Efectos visuales
+            document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.style.transform = 'scale(1.02)';
+                });
+                
+                input.addEventListener('blur', function() {
+                    this.parentElement.style.transform = 'scale(1)';
+                });
+            });
+
+            // Manejo de labels para selects
+            document.querySelectorAll('.form-select-modern').forEach(select => {
+                select.addEventListener('change', function() {
+                    const label = this.parentElement.querySelector('label');
+                    if (this.value) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    } else {
+                        label.style.top = '12px';
+                        label.style.fontSize = '14px';
+                        label.style.color = 'rgba(102, 126, 234, 0.8)';
+                    }
+                });
+            });
+
+            // Inicializar vista previa
+            updatePreview();
+        });
     </script>
 </body>
 </html>
