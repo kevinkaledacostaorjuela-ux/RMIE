@@ -1,9 +1,81 @@
 <?php
 class Route {
-    public static function getAll($conn) {
-        $sql = "SELECT * FROM rutas";
+    // Método mejorado con filtros
+    public static function getAll($conn, $filtros = []) {
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Definir reglas de validación para filtros
+        $filterRules = [
+            'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+            'venta' => ['type' => 'int', 'options' => ['min' => 1]],
+            'reporte' => ['type' => 'int', 'options' => ['min' => 1]],
+            'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
+            'nombre_local' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+        ];
+        
+        // Procesar filtros
+        $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+        
+        // Mapeo de campos a columnas SQL
+        $mapping = [
+            'cliente' => ['column' => 'r.id_clientes', 'operator' => '=', 'type' => 'i'],
+            'venta' => ['column' => 'r.id_ventas', 'operator' => '=', 'type' => 'i'],
+            'reporte' => ['column' => 'r.id_reportes', 'operator' => '=', 'type' => 'i'],
+            'direccion' => ['column' => 'r.direccion', 'operator' => 'LIKE', 'type' => 's'],
+            'nombre_local' => ['column' => 'r.nombre_local', 'operator' => 'LIKE', 'type' => 's'],
+            'nombre_cliente' => ['column' => 'r.nombre_cliente', 'operator' => 'LIKE', 'type' => 's'],
+            'buscar' => [
+                'columns' => ['r.direccion', 'r.nombre_local', 'r.nombre_cliente'],
+                'operator' => 'MULTIPLE_LIKE'
+            ]
+        ];
+        
+        // Construir consulta base con JOINs para obtener información relacionada
+        $sql = "SELECT r.*, 
+                       c.nombre as cliente_real_nombre,
+                       v.nombre as venta_nombre,
+                       rep.nombre as reporte_nombre
+                FROM rutas r 
+                LEFT JOIN clientes c ON r.id_clientes = c.id_clientes
+                LEFT JOIN ventas v ON r.id_ventas = v.id_ventas
+                LEFT JOIN reportes rep ON r.id_reportes = rep.id_reportes
+                WHERE 1=1";
+        
+        // Construir WHERE con filtros
+        $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
+        
+        if (!empty($whereData['where'])) {
+            $sql .= " AND " . implode(" AND ", $whereData['where']);
+        }
+        
+        $sql .= " ORDER BY r.id_ruta DESC";
+        
+        $stmt = $conn->prepare($sql);
+        if (!empty($whereData['params'])) {
+            $stmt->bind_param($whereData['types'], ...$whereData['params']);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Método original sin filtros para retrocompatibilidad
+    public static function getAllSimple($conn) {
+        $sql = "SELECT * FROM rutas ORDER BY fecha_creacion DESC";
         $result = $conn->query($sql);
         return $result->fetch_all(MYSQLI_ASSOC);
+    }
+    
+    // Método específico para obtener rutas filtradas (retrocompatibilidad)
+    public static function getFiltered($conn, $filtroVenta = '') {
+        $filtros = [];
+        if (!empty($filtroVenta)) {
+            $filtros['venta'] = $filtroVenta;
+        }
+        return self::getAll($conn, $filtros);
     }
 
     public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas) {
@@ -110,26 +182,6 @@ class Route {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
-    }
-
-    public static function getFiltered($conn, $venta = '') {
-        $sql = "SELECT * FROM rutas WHERE 1=1";
-        $params = [];
-        $types = '';
-
-        if (!empty($venta)) {
-            $sql .= " AND id_ventas = ?";
-            $params[] = $venta;
-            $types .= 'i';
-        }
-
-        $stmt = $conn->prepare($sql);
-        if (!empty($params)) {
-            $stmt->bind_param($types, ...$params);
-        }
-        $stmt->execute();
-        $result = $stmt->get_result();
-        return $result->fetch_all(MYSQLI_ASSOC);
     }
 
     // Métodos para obtener datos relacionados

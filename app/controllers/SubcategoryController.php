@@ -7,8 +7,33 @@ require_once __DIR__ . '/../../config/db.php';
 class SubcategoryController {
     public function index() {
         global $conn;
-        // Usar la versión simple que no requiere fecha_creacion
-        $subcategorias = SubcategorySimple::getAllSimple($conn);
+        
+        try {
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
+            // Definir reglas de filtro
+            $filterRules = [
+                'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'descripcion' => ['type' => 'text', 'options' => ['max_length' => 255]],
+                'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            ];
+            
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Obtener subcategorías con filtros
+            $subcategorias = SubcategorySimple::getAllSimple($conn, $filtros);
+            
+            // Obtener categorías para los filtros
+            $categorias = Category::getAll($conn);
+            
+        } catch (Exception $e) {
+            error_log("Error en SubcategoryController::index: " . $e->getMessage());
+            $subcategorias = SubcategorySimple::getAllSimple($conn); // Fallback sin filtros
+            $categorias = Category::getAll($conn);
+        }
+        
         include __DIR__ . '/../views/subcategorias/index.php';
     }
 

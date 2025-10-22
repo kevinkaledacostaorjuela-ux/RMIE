@@ -19,9 +19,28 @@ class RouteController {
         // Limpiar mensajes de sesión después de capturarlos
         unset($_SESSION['success'], $_SESSION['error']);
         
-        $filtro_venta = isset($_GET['venta']) ? $_GET['venta'] : '';
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Definir reglas de filtro
+        $filterRules = [
+            'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+            'venta' => ['type' => 'int', 'options' => ['min' => 1]],
+            'reporte' => ['type' => 'int', 'options' => ['min' => 1]],
+            'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
+            'nombre_local' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+        ];
+        
+        // Procesar filtros del GET
+        $filtros = FilterHelper::processFilters($_GET, $filterRules);
+        
+        // Obtener datos para selectores
         $ventas = Sale::getFiltered($conn);
-        $rutas = Route::getFiltered($conn, $filtro_venta);
+        $clientes = Route::getAvailableClients($conn);
+        
+        // Obtener rutas con filtros
+        $rutas = Route::getAll($conn, $filtros);
 
         // Asegurarse de que $rutas sea un array válido
         if (!is_array($rutas)) {

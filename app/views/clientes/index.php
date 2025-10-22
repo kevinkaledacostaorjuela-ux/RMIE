@@ -663,6 +663,12 @@ $stats = $statsQuery->fetch_assoc();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+// Capturar promesas rechazadas
+window.addEventListener('unhandledrejection', function(e) { console.log('Promise Error:', e.reason); e.preventDefault(); });
+
+// Debug mode - capturar errores JavaScript
+window.addEventListener('error', function(e) { console.log('JS Error:', e.message, 'at', e.filename + ':' + e.lineno); });
+
         function limpiarFiltros() {
             document.getElementById('filterForm').reset();
             window.location.href = '/RMIE/app/controllers/ClientController.php?accion=index';

@@ -15,7 +15,7 @@ $rol = $_SESSION['rol'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard RMIE</title>
-    <link href="../../public/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../public/css/styles.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -737,64 +737,85 @@ $rol = $_SESSION['rol'];
 </div>
 
 <script>
+// Capturar promesas rechazadas
+window.addEventListener('unhandledrejection', function(e) { console.log('Promise Error:', e.reason); e.preventDefault(); });
+
+// Debug mode - capturar errores JavaScript
+window.addEventListener('error', function(e) { console.log('JS Error:', e.message, 'at', e.filename + ':' + e.lineno); });
+
 // Actualizar fecha y hora en tiempo real
 function updateDateTime() {
-    const now = new Date();
-    const options = { 
-        year: 'numeric', 
-        month: 'long', 
-        day: 'numeric', 
-        hour: '2-digit', 
-        minute: '2-digit',
-        second: '2-digit'
-    };
-    document.getElementById('currentDateTime').textContent = now.toLocaleDateString('es-ES', options);
+    const dateTimeElement = document.getElementById('currentDateTime');
+    if (dateTimeElement) {
+        const now = new Date();
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        };
+        dateTimeElement.textContent = now.toLocaleDateString('es-ES', options);
+    }
 }
-updateDateTime();
-setInterval(updateDateTime, 1000);
 
 // JavaScript para menú móvil
 document.addEventListener('DOMContentLoaded', function() {
+    try {
+    // Inicializar fecha y hora
+    updateDateTime();
+    setInterval(updateDateTime, 1000);
+    
     const mobileToggle = document.getElementById('mobileToggle');
     const sidebar = document.getElementById('sidebar');
     const sidebarOverlay = document.getElementById('sidebarOverlay');
     
-    // Abrir menú móvil
-    mobileToggle.addEventListener('click', function() {
-        sidebar.classList.add('show');
-        sidebarOverlay.classList.add('show');
-        mobileToggle.innerHTML = '<i class="fas fa-times"></i>';
-    });
-    
-    // Cerrar menú móvil
-    sidebarOverlay.addEventListener('click', function() {
-        sidebar.classList.remove('show');
-        sidebarOverlay.classList.remove('show');
-        mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
-    });
-    
-    // Cerrar menú al hacer clic en un enlace
-    const navLinks = document.querySelectorAll('.nav-link-modern');
-    navLinks.forEach(link => {
-        link.addEventListener('click', function() {
-            if (window.innerWidth <= 768) {
+    // Verificar que los elementos existen antes de agregar event listeners
+    if (mobileToggle && sidebar && sidebarOverlay) {
+        // Abrir menú móvil
+        mobileToggle.addEventListener('click', function() {
+            sidebar.classList.add('show');
+            sidebarOverlay.classList.add('show');
+            mobileToggle.innerHTML = '<i class="fas fa-times"></i>';
+        });
+        
+        // Cerrar menú móvil
+        sidebarOverlay.addEventListener('click', function() {
+            sidebar.classList.remove('show');
+            sidebarOverlay.classList.remove('show');
+            mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+        });
+        
+        // Cerrar menú al hacer clic en un enlace
+        const navLinks = document.querySelectorAll('.nav-link-modern');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    sidebar.classList.remove('show');
+                    sidebarOverlay.classList.remove('show');
+                    mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
+                }
+            });
+        });
+        
+        // Manejar cambio de orientación/tamaño
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
                 sidebar.classList.remove('show');
                 sidebarOverlay.classList.remove('show');
                 mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
             }
         });
-    });
-    
-    // Manejar cambio de orientación/tamaño
-    window.addEventListener('resize', function() {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('show');
-            sidebarOverlay.classList.remove('show');
-            mobileToggle.innerHTML = '<i class="fas fa-bars"></i>';
-        }
-    });
+    }
+    } catch (error) {
+        console.log('DOMContentLoaded error:', error);
+    }
 });
 </script>
+
+<!-- Bootstrap JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <!-- Footer con moto animada -->
 <footer class="mt-5 p-0" style="position: relative; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">

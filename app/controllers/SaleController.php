@@ -12,54 +12,70 @@ class SaleController {
         try {
             global $conn;
             
-            // Filtros
-            $filtroProducto = $_GET['filtro_producto'] ?? '';
-            $filtroCliente = $_GET['filtro_cliente'] ?? '';
-            $filtroFecha = $_GET['filtro_fecha'] ?? '';
-            $filtroEstado = $_GET['filtro_estado'] ?? '';
+            require_once __DIR__ . '/../utils/FilterHelper.php';
             
-            // Obtener todas las ventas
-            $ventas = Sale::getAll($conn);
+            // Definir reglas de filtro
+            $filterRules = [
+                'filtro_producto' => ['type' => 'int', 'options' => ['min' => 1]],
+                'filtro_cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+                'filtro_usuario' => ['type' => 'text'],
+                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'en_proceso']]],
+                'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
+                'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
+                'cantidad_min' => ['type' => 'int', 'options' => ['min' => 1]],
+                'cantidad_max' => ['type' => 'int', 'options' => ['min' => 1]],
+                'fecha_desde' => ['type' => 'date'],
+                'fecha_hasta' => ['type' => 'date'],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            ];
             
-            // Aplicar filtros si existen
-            if (!empty($filtroProducto) || !empty($filtroCliente) || !empty($filtroFecha) || !empty($filtroEstado)) {
-                $ventasFiltradas = [];
-                foreach ($ventas as $venta) {
-                    $cumpleFiltro = true;
-                    
-                    if (!empty($filtroProducto) && stripos($venta->producto_nombre ?? '', $filtroProducto) === false) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if (!empty($filtroCliente) && stripos($venta->cliente_nombre ?? '', $filtroCliente) === false) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if (!empty($filtroFecha) && strpos($venta->fecha_venta ?? '', $filtroFecha) === false) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if (!empty($filtroEstado) && $venta->estado !== $filtroEstado) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if ($cumpleFiltro) {
-                        $ventasFiltradas[] = $venta;
-                    }
-                }
-                $ventas = $ventasFiltradas;
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Mapear filtros para el modelo
+            $filtrosModelo = [
+                'producto' => $filtros['filtro_producto'] ?? '',
+                'cliente' => $filtros['filtro_cliente'] ?? '',
+                'usuario' => $filtros['filtro_usuario'] ?? '',
+                'estado' => $filtros['filtro_estado'] ?? '',
+                'precio_min' => $filtros['precio_min'] ?? '',
+                'precio_max' => $filtros['precio_max'] ?? '',
+                'cantidad_min' => $filtros['cantidad_min'] ?? '',
+                'cantidad_max' => $filtros['cantidad_max'] ?? '',
+                'fecha_desde' => $filtros['fecha_desde'] ?? '',
+                'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
+                'buscar' => $filtros['buscar'] ?? ''
+            ];
+            
+            // Validar rangos
+            if (!empty($filtrosModelo['fecha_desde']) && !empty($filtrosModelo['fecha_hasta'])) {
+                $dateRange = FilterHelper::validateDateRange($filtrosModelo['fecha_desde'], $filtrosModelo['fecha_hasta']);
+                $filtrosModelo = array_merge($filtrosModelo, $dateRange);
             }
             
-            // Obtener datos para los filtros
+            if (!empty($filtrosModelo['precio_min']) && !empty($filtrosModelo['precio_max']) && $filtrosModelo['precio_min'] > $filtrosModelo['precio_max']) {
+                // Intercambiar si están al revés
+                $temp = $filtrosModelo['precio_min'];
+                $filtrosModelo['precio_min'] = $filtrosModelo['precio_max'];
+                $filtrosModelo['precio_max'] = $temp;
+            }
+            
+            // Obtener ventas con filtros
+            $ventas = Sale::getFiltered($conn, $filtrosModelo);
+            
+            // Obtener datos para selectores
             $productos = Product::getAll($conn);
             $clientes = Client::getAll($conn);
+            $usuarios = User::getAll($conn);
             
             include __DIR__ . '/../views/ventas/index.php';
         } catch (Exception $e) {
             error_log("Error en SaleController::index: " . $e->getMessage());
             echo "Error: " . htmlspecialchars($e->getMessage());
         }
-    }    public function create() {
+    }
+    
+    public function create() {
         try {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos

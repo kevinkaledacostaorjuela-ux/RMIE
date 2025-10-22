@@ -47,20 +47,31 @@ class ClientController {
                 $_SESSION['success'] = $_GET['success'];
             }
             
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
+            // Definir reglas de filtro
+            $filterRules = [
+                'local' => ['type' => 'int', 'options' => ['min' => 1]],
+                'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'pendiente']]],
+                'busqueda' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'fecha_desde' => ['type' => 'date'],
+                'fecha_hasta' => ['type' => 'date']
+            ];
+            
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Validar rango de fechas si ambas están presentes
+            if (!empty($filtros['fecha_desde']) && !empty($filtros['fecha_hasta'])) {
+                $dateRange = FilterHelper::validateDateRange($filtros['fecha_desde'], $filtros['fecha_hasta']);
+                $filtros = array_merge($filtros, $dateRange);
+            }
+            
             // Obtener estadísticas
             $stats = Client::getStats($conn);
             
             // Obtener locales para filtros
             $locales = Local::getAll($conn);
-            
-            // Procesar filtros
-            $filtros = [
-                'local' => $_GET['local'] ?? '',
-                'estado' => $_GET['estado'] ?? '',
-                'busqueda' => $_GET['busqueda'] ?? '',
-                'fecha_desde' => $_GET['fecha_desde'] ?? '',
-                'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
-            ];
             
             // Obtener clientes con filtros aplicados
             $clientes = Client::getAll($conn, $filtros);

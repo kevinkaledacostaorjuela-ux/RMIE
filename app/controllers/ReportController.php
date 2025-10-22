@@ -50,16 +50,46 @@ class ReportController {
     public function index() {
         global $conn;
         
-        $filtros = [
-            'buscar' => $_GET['buscar'] ?? '',
-            'estado' => $_GET['estado'] ?? '',
-            'fecha_inicio' => $_GET['fecha_inicio'] ?? '',
-            'fecha_fin' => $_GET['fecha_fin'] ?? '',
-            'tipo' => $_GET['tipo'] ?? ''
-        ];
-        
-        $reportes = Report::getAll($conn, $filtros);
-        $stats = Report::getStats($conn);
+        try {
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
+            // Definir reglas de filtro
+            $filterRules = [
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'pendiente', 'completado', 'cancelado']]],
+                'fecha_inicio' => ['type' => 'date'],
+                'fecha_fin' => ['type' => 'date'],
+                'tipo' => ['type' => 'select', 'options' => ['allowed_values' => ['venta', 'inventario', 'cliente', 'proveedor', 'financiero']]]
+            ];
+            
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Validar rango de fechas
+            if (!empty($filtros['fecha_inicio']) && !empty($filtros['fecha_fin'])) {
+                $dateRange = FilterHelper::validateDateRange($filtros['fecha_inicio'], $filtros['fecha_fin']);
+                if (!empty($dateRange)) {
+                    $filtros['fecha_inicio'] = $dateRange['fecha_inicio'] ?? $filtros['fecha_inicio'];
+                    $filtros['fecha_fin'] = $dateRange['fecha_fin'] ?? $filtros['fecha_fin'];
+                }
+            }
+            
+            $reportes = Report::getAll($conn, $filtros);
+            $stats = Report::getStats($conn);
+            
+        } catch (Exception $e) {
+            error_log("Error en ReportController::index: " . $e->getMessage());
+            // Fallback con filtros básicos sin validación
+            $filtros = [
+                'buscar' => $_GET['buscar'] ?? '',
+                'estado' => $_GET['estado'] ?? '',
+                'fecha_inicio' => $_GET['fecha_inicio'] ?? '',
+                'fecha_fin' => $_GET['fecha_fin'] ?? '',
+                'tipo' => $_GET['tipo'] ?? ''
+            ];
+            $reportes = Report::getAll($conn, $filtros);
+            $stats = Report::getStats($conn);
+        }
         
         include __DIR__ . '/../views/reportes/index.php';
     }

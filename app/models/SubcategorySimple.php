@@ -53,21 +53,80 @@ class SubcategorySimple {
         return $result;
     }
 
-    // Obtener todas las subcategorías sin fecha_creacion
-    public static function getAllSimple($conn) {
-        $sql = "SELECT s.*, c.nombre AS categoria_nombre FROM subcategorias s JOIN categorias c ON s.id_categoria = c.id_categoria";
-        $result = $conn->query($sql);
+    // Obtener todas las subcategorías con filtros
+    public static function getAllSimple($conn, $filtros = []) {
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Si no hay filtros, usar método simple
+        if (empty($filtros)) {
+            $sql = "SELECT s.*, c.nombre AS categoria_nombre FROM subcategorias s JOIN categorias c ON s.id_categoria = c.id_categoria ORDER BY s.nombre";
+            $result = $conn->query($sql);
+            $subcategorias = [];
+            
+            if ($result === false) {
+                echo '<pre>Error en la consulta: ' . $conn->error . '</pre>';
+                return $subcategorias;
+            }
+            
+            if ($result->num_rows === 0) {
+                echo '<pre>No hay subcategorías en la base de datos.</pre>';
+                return $subcategorias;
+            }
+            
+            while ($row = $result->fetch_assoc()) {
+                $subcategorias[] = [
+                    'obj' => new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria']),
+                    'categoria_nombre' => $row['categoria_nombre']
+                ];
+            }
+            return $subcategorias;
+        }
+        
+        // Definir reglas de validación para filtros
+        $filterRules = [
+            'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'descripcion' => ['type' => 'text', 'options' => ['max_length' => 255]],
+            'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+        ];
+        
+        // Procesar filtros
+        $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+        
+        // Mapeo de campos a columnas SQL
+        $mapping = [
+            'nombre' => ['column' => 's.nombre', 'operator' => 'LIKE', 'type' => 's'],
+            'descripcion' => ['column' => 's.descripcion', 'operator' => 'LIKE', 'type' => 's'],
+            'categoria' => ['column' => 's.id_categoria', 'operator' => '=', 'type' => 'i'],
+            'buscar' => [
+                'columns' => ['s.nombre', 's.descripcion', 'c.nombre'],
+                'operator' => 'MULTIPLE_LIKE'
+            ]
+        ];
+        
+        // Construir consulta base
+        $sql = "SELECT s.*, c.nombre AS categoria_nombre 
+                FROM subcategorias s 
+                JOIN categorias c ON s.id_categoria = c.id_categoria 
+                WHERE 1=1";
+        
+        // Construir WHERE con filtros
+        $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
+        
+        if (!empty($whereData['where'])) {
+            $sql .= " AND " . implode(" AND ", $whereData['where']);
+        }
+        
+        $sql .= " ORDER BY s.nombre";
+        
+        $stmt = $conn->prepare($sql);
+        if (!empty($whereData['params'])) {
+            $stmt->bind_param($whereData['types'], ...$whereData['params']);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         $subcategorias = [];
-        
-        if ($result === false) {
-            echo '<pre>Error en la consulta: ' . $conn->error . '</pre>';
-            return $subcategorias;
-        }
-        
-        if ($result->num_rows === 0) {
-            echo '<pre>No hay subcategorías en la base de datos.</pre>';
-            return $subcategorias;
-        }
         
         while ($row = $result->fetch_assoc()) {
             $subcategorias[] = [

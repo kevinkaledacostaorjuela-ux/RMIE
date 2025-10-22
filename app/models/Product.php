@@ -43,38 +43,90 @@ class Product {
         $this->num_doc = $num_doc;
     }
 
+    // Método mejorado con filtros avanzados
     public static function getFiltered($conn, $categoria = '', $subcategoria = '', $proveedor = '', $usuario = '') {
-        $sql = "SELECT p.*, s.nombre AS subcategoria_nombre, c.nombre AS categoria_nombre, pr.nombre_distribuidor AS proveedor_nombre, u.nombres AS usuario_nombre FROM productos p JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria JOIN categorias c ON p.id_categoria = c.id_categoria LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores JOIN usuarios u ON p.num_doc = u.num_doc";
-        $params = [];
-        $types = '';
-        $where = [];
-        if ($categoria) {
-            $where[] = "p.id_categoria = ?";
-            $params[] = $categoria;
-            $types .= 'i';
+        // Si el primer parámetro es un array, usar nueva implementación
+        if (is_array($categoria)) {
+            $filtros = $categoria;
+        } else {
+            // Retrocompatibilidad: parámetros por separado
+            $filtros = [
+                'categoria' => $categoria,
+                'subcategoria' => $subcategoria,
+                'proveedor' => $proveedor,
+                'usuario' => $usuario
+            ];
         }
-        if ($subcategoria) {
-            $where[] = "p.id_subcategoria = ?";
-            $params[] = $subcategoria;
-            $types .= 'i';
+        
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Definir reglas de validación para filtros
+        $filterRules = [
+            'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
+            'subcategoria' => ['type' => 'int', 'options' => ['min' => 1]],
+            'proveedor' => ['type' => 'int', 'options' => ['min' => 1]],
+            'usuario' => ['type' => 'text'],
+            'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'marca' => ['type' => 'text', 'options' => ['max_length' => 50]],
+            'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
+            'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
+            'stock_min' => ['type' => 'int', 'options' => ['min' => 0]],
+            'stock_max' => ['type' => 'int', 'options' => ['min' => 0]],
+            'fecha_entrada_desde' => ['type' => 'date'],
+            'fecha_entrada_hasta' => ['type' => 'date'],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+        ];
+        
+        // Procesar filtros
+        $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+        
+        // Mapeo de campos a columnas SQL
+        $mapping = [
+            'categoria' => ['column' => 'p.id_categoria', 'operator' => '=', 'type' => 'i'],
+            'subcategoria' => ['column' => 'p.id_subcategoria', 'operator' => '=', 'type' => 'i'],
+            'proveedor' => ['column' => 'p.id_proveedores', 'operator' => '=', 'type' => 'i'],
+            'usuario' => ['column' => 'p.num_doc', 'operator' => '=', 'type' => 's'],
+            'nombre' => ['column' => 'p.nombre', 'operator' => 'LIKE', 'type' => 's'],
+            'marca' => ['column' => 'p.marca', 'operator' => 'LIKE', 'type' => 's'],
+            'precio_min' => ['column' => 'p.precio_unitario', 'operator' => '>=', 'type' => 'd'],
+            'precio_max' => ['column' => 'p.precio_unitario', 'operator' => '<=', 'type' => 'd'],
+            'stock_min' => ['column' => 'p.stock', 'operator' => '>=', 'type' => 'i'],
+            'stock_max' => ['column' => 'p.stock', 'operator' => '<=', 'type' => 'i'],
+            'fecha_entrada_desde' => ['column' => 'DATE(p.fecha_entrada)', 'operator' => '>=', 'type' => 's'],
+            'fecha_entrada_hasta' => ['column' => 'DATE(p.fecha_entrada)', 'operator' => '<=', 'type' => 's'],
+            'buscar' => [
+                'columns' => ['p.nombre', 'p.descripcion', 'p.marca'],
+                'operator' => 'MULTIPLE_LIKE'
+            ]
+        ];
+        
+        // Construir consulta base
+        $sql = "SELECT p.*, 
+                       s.nombre AS subcategoria_nombre, 
+                       c.nombre AS categoria_nombre, 
+                       pr.nombre_distribuidor AS proveedor_nombre, 
+                       u.nombres AS usuario_nombre 
+                FROM productos p 
+                JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
+                JOIN categorias c ON p.id_categoria = c.id_categoria 
+                LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores 
+                JOIN usuarios u ON p.num_doc = u.num_doc 
+                WHERE 1=1";
+        
+        // Construir WHERE con filtros
+        $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
+        
+        if (!empty($whereData['where'])) {
+            $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
-        if ($proveedor) {
-            $where[] = "p.id_proveedores = ?";
-            $params[] = $proveedor;
-            $types .= 'i';
-        }
-        if ($usuario) {
-            $where[] = "p.num_doc = ?";
-            $params[] = $usuario;
-            $types .= 'i';
-        }
-        if ($where) {
-            $sql .= " WHERE " . implode(" AND ", $where);
-        }
+        
+        $sql .= " ORDER BY p.nombre, p.fecha_entrada DESC";
+        
         $stmt = $conn->prepare($sql);
-        if ($params) {
-            $stmt->bind_param($types, ...$params);
+        if (!empty($whereData['params'])) {
+            $stmt->bind_param($whereData['types'], ...$whereData['params']);
         }
+        
         $stmt->execute();
         $result = $stmt->get_result();
         $productos = [];

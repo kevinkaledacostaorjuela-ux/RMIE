@@ -9,7 +9,36 @@ require_once __DIR__ . '/../../config/db.php';
 class CategoryController {
 	public function index() {
 		global $conn;
-		$categorias = Category::getAll($conn);
+		
+		try {
+			require_once __DIR__ . '/../utils/FilterHelper.php';
+			
+			// Definir reglas de filtro
+			$filterRules = [
+				'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+				'descripcion' => ['type' => 'text', 'options' => ['max_length' => 255]],
+				'fecha_desde' => ['type' => 'date'],
+				'fecha_hasta' => ['type' => 'date'],
+				'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+			];
+			
+			// Procesar filtros del GET
+			$filtros = FilterHelper::processFilters($_GET, $filterRules);
+			
+			// Validar rango de fechas
+			if (!empty($filtros['fecha_desde']) && !empty($filtros['fecha_hasta'])) {
+				$dateRange = FilterHelper::validateDateRange($filtros['fecha_desde'], $filtros['fecha_hasta']);
+				$filtros = array_merge($filtros, $dateRange);
+			}
+			
+			// Obtener categorías con filtros
+			$categorias = Category::getAll($conn, $filtros);
+			
+		} catch (Exception $e) {
+			error_log("Error en CategoryController::index: " . $e->getMessage());
+			$categorias = Category::getAll($conn); // Fallback sin filtros
+		}
+		
 		include __DIR__ . '/../views/categorias/index.php';
 	}
 

@@ -136,37 +136,80 @@ class Sale {
         return $stmt->execute();
     }
 
+    // Método mejorado con filtros avanzados
     public static function getFiltered($conn, $producto = '', $cliente = '') {
-        $sql = "SELECT v.*, p.nombre AS producto_nombre, c.nombre AS cliente_nombre, u.nombres AS usuario_nombre 
+        // Si el primer parámetro es un array, usar nueva implementación
+        if (is_array($producto)) {
+            $filtros = $producto;
+        } else {
+            // Retrocompatibilidad: parámetros por separado
+            $filtros = [
+                'producto' => $producto,
+                'cliente' => $cliente
+            ];
+        }
+        
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Definir reglas de validación para filtros
+        $filterRules = [
+            'producto' => ['type' => 'int', 'options' => ['min' => 1]],
+            'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+            'usuario' => ['type' => 'text'],
+            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'en_proceso']]],
+            'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
+            'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
+            'cantidad_min' => ['type' => 'int', 'options' => ['min' => 1]],
+            'cantidad_max' => ['type' => 'int', 'options' => ['min' => 1]],
+            'fecha_desde' => ['type' => 'date'],
+            'fecha_hasta' => ['type' => 'date'],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+        ];
+        
+        // Procesar filtros
+        $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+        
+        // Mapeo de campos a columnas SQL
+        $mapping = [
+            'producto' => ['column' => 'v.id_productos', 'operator' => '=', 'type' => 'i'],
+            'cliente' => ['column' => 'v.id_clientes', 'operator' => '=', 'type' => 'i'],
+            'usuario' => ['column' => 'v.num_doc', 'operator' => '=', 'type' => 's'],
+            'estado' => ['column' => 'v.estado', 'operator' => '=', 'type' => 's'],
+            'precio_min' => ['column' => 'v.total', 'operator' => '>=', 'type' => 'd'],
+            'precio_max' => ['column' => 'v.total', 'operator' => '<=', 'type' => 'd'],
+            'cantidad_min' => ['column' => 'v.cantidad', 'operator' => '>=', 'type' => 'i'],
+            'cantidad_max' => ['column' => 'v.cantidad', 'operator' => '<=', 'type' => 'i'],
+            'fecha_desde' => ['column' => 'DATE(v.fecha_venta)', 'operator' => '>=', 'type' => 's'],
+            'fecha_hasta' => ['column' => 'DATE(v.fecha_venta)', 'operator' => '<=', 'type' => 's'],
+            'buscar' => [
+                'columns' => ['v.nombre', 'p.nombre', 'c.nombre'],
+                'operator' => 'MULTIPLE_LIKE'
+            ]
+        ];
+        
+        // Construir consulta base
+        $sql = "SELECT v.*, 
+                       p.nombre AS producto_nombre, 
+                       c.nombre AS cliente_nombre, 
+                       u.nombres AS usuario_nombre 
                 FROM ventas v 
                 LEFT JOIN productos p ON v.id_productos = p.id_productos 
                 LEFT JOIN clientes c ON v.id_clientes = c.id_clientes 
-                LEFT JOIN usuarios u ON v.num_doc = u.num_doc";
+                LEFT JOIN usuarios u ON v.num_doc = u.num_doc 
+                WHERE 1=1";
         
-        $params = [];
-        $types = '';
-        $where = [];
+        // Construir WHERE con filtros
+        $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
         
-        if ($producto) {
-            $where[] = "v.id_productos = ?";
-            $params[] = $producto;
-            $types .= 'i';
-        }
-        if ($cliente) {
-            $where[] = "v.id_clientes = ?";
-            $params[] = $cliente;
-            $types .= 'i';
-        }
-        
-        if ($where) {
-            $sql .= " WHERE " . implode(" AND ", $where);
+        if (!empty($whereData['where'])) {
+            $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
         
         $sql .= " ORDER BY v.fecha_venta DESC";
         
         $stmt = $conn->prepare($sql);
-        if ($params) {
-            $stmt->bind_param($types, ...$params);
+        if (!empty($whereData['params'])) {
+            $stmt->bind_param($whereData['types'], ...$whereData['params']);
         }
         $stmt->execute();
         $result = $stmt->get_result();

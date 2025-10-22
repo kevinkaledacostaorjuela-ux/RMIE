@@ -12,9 +12,11 @@ class Category {
         $this->fecha_creacion = $fecha_creacion;
     }
 
-    // Método para obtener todas las categorías
-    public static function getAll($conn) {
+    // Método mejorado para obtener todas las categorías con filtros
+    public static function getAll($conn, $filtros = []) {
         try {
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
             // Verificar qué columnas existen
             $columns_query = "SHOW COLUMNS FROM categorias";
             $columns_result = $conn->query($columns_query);
@@ -29,17 +31,82 @@ class Category {
                 }
             }
             
-            $sql = $has_fecha_creacion 
-                ? "SELECT id_categoria, nombre, descripcion, fecha_creacion FROM categorias ORDER BY nombre ASC"
-                : "SELECT id_categoria, nombre, descripcion FROM categorias ORDER BY nombre ASC";
+            // Si no hay filtros, usar método simple
+            if (empty($filtros)) {
+                $sql = $has_fecha_creacion 
+                    ? "SELECT id_categoria, nombre, descripcion, fecha_creacion FROM categorias ORDER BY nombre ASC"
+                    : "SELECT id_categoria, nombre, descripcion FROM categorias ORDER BY nombre ASC";
+                    
+                $result = $conn->query($sql);
+                $categorias = [];
                 
-            $result = $conn->query($sql);
-            $categorias = [];
-            
-            if ($result === false) {
-                error_log('[Category::getAll] SQL Error: ' . $conn->error);
-                return $categorias; // Devolver array vacío en caso de error
+                if ($result === false) {
+                    error_log('[Category::getAll] SQL Error: ' . $conn->error);
+                    return $categorias; // Devolver array vacío en caso de error
+                }
+                
+                while ($row = $result->fetch_assoc()) {
+                    $fecha_creacion = $has_fecha_creacion ? ($row['fecha_creacion'] ?? null) : null;
+                    $categorias[] = new Category(
+                        $row['id_categoria'], 
+                        $row['nombre'], 
+                        $row['descripcion'], 
+                        $fecha_creacion
+                    );
+                }
+                return $categorias;
             }
+            
+            // Definir reglas de validación para filtros
+            $filterRules = [
+                'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'descripcion' => ['type' => 'text', 'options' => ['max_length' => 255]],
+                'fecha_desde' => ['type' => 'date'],
+                'fecha_hasta' => ['type' => 'date'],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            ];
+            
+            // Procesar filtros
+            $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+            
+            // Mapeo de campos a columnas SQL
+            $mapping = [
+                'nombre' => ['column' => 'nombre', 'operator' => 'LIKE', 'type' => 's'],
+                'descripcion' => ['column' => 'descripcion', 'operator' => 'LIKE', 'type' => 's'],
+                'buscar' => [
+                    'columns' => ['nombre', 'descripcion'],
+                    'operator' => 'MULTIPLE_LIKE'
+                ]
+            ];
+            
+            // Solo agregar filtros de fecha si la columna existe
+            if ($has_fecha_creacion) {
+                $mapping['fecha_desde'] = ['column' => 'DATE(fecha_creacion)', 'operator' => '>=', 'type' => 's'];
+                $mapping['fecha_hasta'] = ['column' => 'DATE(fecha_creacion)', 'operator' => '<=', 'type' => 's'];
+            }
+            
+            // Construir consulta base
+            $sql = $has_fecha_creacion 
+                ? "SELECT id_categoria, nombre, descripcion, fecha_creacion FROM categorias WHERE 1=1"
+                : "SELECT id_categoria, nombre, descripcion FROM categorias WHERE 1=1";
+            
+            // Construir WHERE con filtros
+            $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
+            
+            if (!empty($whereData['where'])) {
+                $sql .= " AND " . implode(" AND ", $whereData['where']);
+            }
+            
+            $sql .= " ORDER BY nombre ASC";
+            
+            $stmt = $conn->prepare($sql);
+            if (!empty($whereData['params'])) {
+                $stmt->bind_param($whereData['types'], ...$whereData['params']);
+            }
+            
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $categorias = [];
             
             while ($row = $result->fetch_assoc()) {
                 $fecha_creacion = $has_fecha_creacion ? ($row['fecha_creacion'] ?? null) : null;

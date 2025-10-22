@@ -8,13 +8,35 @@ class UserController {
         global $conn;
         
         try {
-            // Obtener parámetros de filtrado
-            $filtro_rol = $_GET['filtro_rol'] ?? '';
-            $filtro_tipo_doc = $_GET['filtro_tipo_doc'] ?? '';
-            $buscar = $_GET['buscar'] ?? '';
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
+            // Definir reglas de filtro
+            $filterRules = [
+                'filtro_rol' => ['type' => 'select', 'options' => ['allowed_values' => ['administrador', 'empleado', 'vendedor']]],
+                'filtro_tipo_doc' => ['type' => 'select', 'options' => ['allowed_values' => ['CC', 'CE', 'TI', 'PP']]],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
+                'fecha_desde' => ['type' => 'date'],
+                'fecha_hasta' => ['type' => 'date'],
+                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo']]]
+            ];
+            
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Mapear para compatibilidad con el modelo
+            $filtrosModelo = [
+                'rol' => $filtros['filtro_rol'] ?? '',
+                'tipo_doc' => $filtros['filtro_tipo_doc'] ?? '',
+                'buscar' => $filtros['buscar'] ?? '',
+                'num_cel' => $filtros['filtro_celular'] ?? '',
+                'fecha_desde' => $filtros['fecha_desde'] ?? '',
+                'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
+                'estado' => $filtros['filtro_estado'] ?? ''
+            ];
             
             // Obtener usuarios con filtros
-            $usuarios = User::getAll($conn, $filtro_rol, $filtro_tipo_doc, $buscar);
+            $usuarios = User::getAll($conn, $filtrosModelo);
             
             // Obtener estadísticas
             $stats = User::getStats($conn);

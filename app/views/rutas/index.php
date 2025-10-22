@@ -1639,6 +1639,9 @@ if (isset($rutas) && is_array($rutas)) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+// Capturar promesas rechazadas
+window.addEventListener('unhandledrejection', function(e) { console.log('Promise Error:', e.reason); e.preventDefault(); });
+
         // Función mejorada para limpiar filtros con animación
         function limpiarFiltros() {
             const form = document.getElementById('filterForm');
@@ -2041,31 +2044,41 @@ if (isset($rutas) && is_array($rutas)) {
                 });
             }, 5000);
             
-            // Inicializar gráfico de dona
-            inicializarGrafico();
+            // Inicializar gráfico de dona (con manejo de errores)
+            try {
+                inicializarGrafico();
+            } catch (error) {
+                console.log('Gráfico no disponible:', error);
+            }
         });
         
         // Función para crear gráfico de distribución
         function inicializarGrafico() {
-            const ctx = document.getElementById('estadoChart');
-            if (ctx) {
-                // Datos simulados - en producción vendrían del backend
-                const data = {
-                    labels: ['Activas', 'Pendientes', 'Completadas', 'Inactivas'],
-                    datasets: [{
-                        data: [<?= $rutasActivas ?>, <?= $rutasPendientes ?>, <?= $rutasCompletadas ?>, <?= $rutasInactivas ?>],
-                        backgroundColor: [
-                            '#4facfe',
-                            '#ff9a9e', 
-                            '#a8edea',
-                            '#ff6b6b'
-                        ],
-                        borderWidth: 0
-                    }]
-                };
-                
-                // Crear gráfico con Canvas (implementación simple)
-                dibujarGraficoDona(ctx, data);
+            try {
+                const ctx = document.getElementById('estadoChart');
+                if (ctx) {
+                    // Datos simulados - en producción vendrían del backend
+                    const data = {
+                        labels: ['Activas', 'Pendientes', 'Completadas', 'Inactivas'],
+                        datasets: [{
+                            data: [<?= $rutasActivas ?>, <?= $rutasPendientes ?>, <?= $rutasCompletadas ?>, <?= $rutasInactivas ?>],
+                            backgroundColor: [
+                                '#4facfe',
+                                '#ff9a9e', 
+                                '#a8edea',
+                                '#ff6b6b'
+                            ],
+                            borderWidth: 0
+                        }]
+                    };
+                    
+                    // Crear gráfico con Canvas (implementación simple)
+                    dibujarGraficoDona(ctx, data);
+                } else {
+                    console.log('Elemento estadoChart no encontrado - gráfico omitido');
+                }
+            } catch (error) {
+                console.log('Error al inicializar gráfico:', error);
             }
         }
         

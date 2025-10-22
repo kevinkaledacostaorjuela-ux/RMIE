@@ -14,6 +14,9 @@ class ProductController {
     public function index() {
         global $conn;
         try {
+            require_once __DIR__ . '/../utils/FilterHelper.php';
+            
+            // Obtener datos para selectores
             $categorias = Category::getAll($conn);
             $subcategorias = SubcategorySimple::getAllSimple($conn);
             require_once __DIR__ . '/../models/Provider.php';
@@ -21,12 +24,42 @@ class ProductController {
             require_once __DIR__ . '/../models/User.php';
             $usuarios = User::getAll($conn);
             
-            $filtro_categoria = isset($_GET['categoria']) ? $_GET['categoria'] : '';
-            $filtro_subcategoria = isset($_GET['subcategoria']) ? $_GET['subcategoria'] : '';
-            $filtro_proveedor = isset($_GET['proveedor']) ? $_GET['proveedor'] : '';
-            $filtro_usuario = isset($_GET['usuario']) ? $_GET['usuario'] : '';
+            // Definir reglas de filtro
+            $filterRules = [
+                'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
+                'subcategoria' => ['type' => 'int', 'options' => ['min' => 1]],
+                'proveedor' => ['type' => 'int', 'options' => ['min' => 1]],
+                'usuario' => ['type' => 'text'],
+                'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'marca' => ['type' => 'text', 'options' => ['max_length' => 50]],
+                'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
+                'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
+                'stock_min' => ['type' => 'int', 'options' => ['min' => 0]],
+                'stock_max' => ['type' => 'int', 'options' => ['min' => 0]],
+                'fecha_entrada_desde' => ['type' => 'date'],
+                'fecha_entrada_hasta' => ['type' => 'date'],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            ];
             
-            $productos = Product::getFiltered($conn, $filtro_categoria, $filtro_subcategoria, $filtro_proveedor, $filtro_usuario);
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Validar rangos de fechas y precios
+            if (!empty($filtros['fecha_entrada_desde']) && !empty($filtros['fecha_entrada_hasta'])) {
+                $dateRange = FilterHelper::validateDateRange($filtros['fecha_entrada_desde'], $filtros['fecha_entrada_hasta']);
+                $filtros = array_merge($filtros, $dateRange);
+            }
+            
+            if (!empty($filtros['precio_min']) && !empty($filtros['precio_max']) && $filtros['precio_min'] > $filtros['precio_max']) {
+                // Intercambiar si están al revés
+                $temp = $filtros['precio_min'];
+                $filtros['precio_min'] = $filtros['precio_max'];
+                $filtros['precio_max'] = $temp;
+            }
+            
+            // Obtener productos con filtros
+            $productos = Product::getFiltered($conn, $filtros);
+            
             include __DIR__ . '/../views/productos/index.php';
         } catch (Exception $e) {
             echo '<pre>Error en index: ' . $e->getMessage() . '</pre>';

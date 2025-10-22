@@ -24,38 +24,63 @@ class User {
 
     // Obtener todos los usuarios con filtros opcionales
     public static function getAll($conn, $filtro_rol = '', $filtro_tipo_doc = '', $buscar = '') {
+        // Si el primer parámetro es un array, usar nueva implementación
+        if (is_array($filtro_rol)) {
+            $filtros = $filtro_rol;
+        } else {
+            // Retrocompatibilidad: parámetros por separado
+            $filtros = [
+                'rol' => $filtro_rol,
+                'tipo_doc' => $filtro_tipo_doc,
+                'buscar' => $buscar
+            ];
+        }
+        
+        require_once __DIR__ . '/../utils/FilterHelper.php';
+        
+        // Definir reglas de validación para filtros
+        $filterRules = [
+            'rol' => ['type' => 'select', 'options' => ['allowed_values' => ['administrador', 'empleado', 'vendedor']]],
+            'tipo_doc' => ['type' => 'select', 'options' => ['allowed_values' => ['CC', 'CE', 'TI', 'PP']]],
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'num_cel' => ['type' => 'text', 'options' => ['max_length' => 20]],
+            'fecha_desde' => ['type' => 'date'],
+            'fecha_hasta' => ['type' => 'date'],
+            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo']]]
+        ];
+        
+        // Procesar filtros
+        $filtrosProcesados = FilterHelper::processFilters($filtros, $filterRules);
+        
+        // Mapeo de campos a columnas SQL
+        $mapping = [
+            'rol' => ['column' => 'rol', 'operator' => '=', 'type' => 's'],
+            'tipo_doc' => ['column' => 'tipo_doc', 'operator' => '=', 'type' => 's'],
+            'estado' => ['column' => 'estado', 'operator' => '=', 'type' => 's'],
+            'num_cel' => ['column' => 'num_cel', 'operator' => 'LIKE', 'type' => 's'],
+            'fecha_desde' => ['column' => 'DATE(fecha_creacion)', 'operator' => '>=', 'type' => 's'],
+            'fecha_hasta' => ['column' => 'DATE(fecha_creacion)', 'operator' => '<=', 'type' => 's'],
+            'buscar' => [
+                'columns' => ['nombres', 'apellidos', 'correo', 'num_doc'],
+                'operator' => 'MULTIPLE_LIKE'
+            ]
+        ];
+        
+        // Construir consulta base
         $sql = "SELECT * FROM usuarios WHERE 1=1";
-        $params = [];
-        $types = "";
-
-        // Aplicar filtros
-        if (!empty($filtro_rol)) {
-            $sql .= " AND rol = ?";
-            $params[] = $filtro_rol;
-            $types .= "s";
+        
+        // Construir WHERE con filtros
+        $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
+        
+        if (!empty($whereData['where'])) {
+            $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
-
-        if (!empty($filtro_tipo_doc)) {
-            $sql .= " AND tipo_doc = ?";
-            $params[] = $filtro_tipo_doc;
-            $types .= "s";
-        }
-
-        if (!empty($buscar)) {
-            $sql .= " AND (nombres LIKE ? OR apellidos LIKE ? OR correo LIKE ? OR num_doc LIKE ?)";
-            $buscarParam = "%$buscar%";
-            $params[] = $buscarParam;
-            $params[] = $buscarParam;
-            $params[] = $buscarParam;
-            $params[] = $buscarParam;
-            $types .= "ssss";
-        }
-
+        
         $sql .= " ORDER BY nombres, apellidos";
 
         $stmt = $conn->prepare($sql);
-        if (!empty($params)) {
-            $stmt->bind_param($types, ...$params);
+        if (!empty($whereData['params'])) {
+            $stmt->bind_param($whereData['types'], ...$whereData['params']);
         }
         
         $stmt->execute();

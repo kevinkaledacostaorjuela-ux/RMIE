@@ -8,36 +8,44 @@ class ProviderController {
     public function index() {
         try {
             global $conn;
-            $proveedores = Provider::getAll($conn);
             
-            // Filtros
-            $filtroNombre = $_GET['filtro_nombre'] ?? '';
-            $filtroEstado = $_GET['filtro_estado'] ?? '';
-            $filtroEmail = $_GET['filtro_email'] ?? '';
+            require_once __DIR__ . '/../utils/FilterHelper.php';
             
-            if (!empty($filtroNombre) || !empty($filtroEstado) || !empty($filtroEmail)) {
-                $proveedoresFiltrados = [];
-                foreach ($proveedores as $proveedor) {
-                    $cumpleFiltro = true;
-                    
-                    if (!empty($filtroNombre) && stripos($proveedor->nombre_distribuidor, $filtroNombre) === false) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if (!empty($filtroEstado) && $proveedor->estado !== $filtroEstado) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if (!empty($filtroEmail) && stripos($proveedor->correo, $filtroEmail) === false) {
-                        $cumpleFiltro = false;
-                    }
-                    
-                    if ($cumpleFiltro) {
-                        $proveedoresFiltrados[] = $proveedor;
-                    }
-                }
-                $proveedores = $proveedoresFiltrados;
+            // Definir reglas de filtro
+            $filterRules = [
+                'filtro_nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'bloqueado']]],
+                'filtro_email' => ['type' => 'email'],
+                'filtro_ubicacion' => ['type' => 'text', 'options' => ['max_length' => 200]],
+                'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
+                'fecha_desde' => ['type' => 'date'],
+                'fecha_hasta' => ['type' => 'date'],
+                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            ];
+            
+            // Procesar filtros del GET
+            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            
+            // Mapear filtros para el modelo
+            $filtrosModelo = [
+                'nombre' => $filtros['filtro_nombre'] ?? '',
+                'estado' => $filtros['filtro_estado'] ?? '',
+                'email' => $filtros['filtro_email'] ?? '',
+                'ubicacion' => $filtros['filtro_ubicacion'] ?? '',
+                'celular' => $filtros['filtro_celular'] ?? '',
+                'fecha_desde' => $filtros['fecha_desde'] ?? '',
+                'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
+                'buscar' => $filtros['buscar'] ?? ''
+            ];
+            
+            // Validar rango de fechas
+            if (!empty($filtrosModelo['fecha_desde']) && !empty($filtrosModelo['fecha_hasta'])) {
+                $dateRange = FilterHelper::validateDateRange($filtrosModelo['fecha_desde'], $filtrosModelo['fecha_hasta']);
+                $filtrosModelo = array_merge($filtrosModelo, $dateRange);
             }
+            
+            // Obtener proveedores con filtros
+            $proveedores = Provider::getAll($conn, $filtrosModelo);
             
             include __DIR__ . '/../views/proveedores/index.php';
         } catch (Exception $e) {
