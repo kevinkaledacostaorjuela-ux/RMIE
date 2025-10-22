@@ -711,12 +711,14 @@ if (isset($ventas) && is_array($ventas)) {
                                            title="Editar venta">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar venta"
                                            onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

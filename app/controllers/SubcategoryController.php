@@ -57,6 +57,23 @@ class SubcategoryController {
     }
 
     public function delete($id) {
+        // Verificar sesión activa
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Verificar si el usuario está logueado
+        if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
+            echo '<script>alert("Debe iniciar sesión para realizar esta acción."); window.location.href = "/RMIE/index.php";</script>';
+            exit();
+        }
+        
+        // Verificar si el rol es coordinador y restringir eliminación
+        if ($_SESSION['rol'] === 'coordinador') {
+            echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+            exit();
+        }
+        
         global $conn;
         
         // Verificar si es eliminación forzada

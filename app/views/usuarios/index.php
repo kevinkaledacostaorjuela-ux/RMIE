@@ -718,7 +718,7 @@ if (isset($usuarios) && is_array($usuarios)) {
                                            title="Editar usuario">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <?php if (strtolower($usuario->rol ?? '') !== 'admin' || ($_SESSION['rol'] ?? '') === 'admin'): ?>
+                                        <?php if ((strtolower($usuario->rol ?? '') !== 'admin' || ($_SESSION['rol'] ?? '') === 'admin') && $_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->num_doc) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar usuario"

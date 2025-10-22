@@ -468,11 +468,13 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar categoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <a href="/RMIE/app/views/categorias/delete.php?id=<?= urlencode($cat->id_categoria) ?>" 
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar categoría">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -559,11 +561,13 @@ $stats = $statsQuery->fetch_assoc();
                                                title="Editar categoría">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <a href="/RMIE/app/views/categorias/delete.php?id=<?= urlencode($cat->id_categoria) ?>" 
+                                            <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria) ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                title="Eliminar categoría">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>

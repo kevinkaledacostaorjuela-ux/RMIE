@@ -1594,7 +1594,7 @@ if (isset($rutas) && is_array($rutas)) {
                                            title="Editar ruta">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <?php if ($rol_usuario !== 'coordinador'): ?>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar ruta"

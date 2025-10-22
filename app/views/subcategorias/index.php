@@ -586,11 +586,13 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar subcategoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar subcategoría">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -688,11 +690,13 @@ $stats = $statsQuery->fetch_assoc();
                                                title="Editar subcategoría">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                             <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria) ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                title="Eliminar subcategoría">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>

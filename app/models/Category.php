@@ -14,49 +14,56 @@ class Category {
 
     // Método para obtener todas las categorías
     public static function getAll($conn) {
-        // Verificar qué columnas existen
-        $columns_query = "SHOW COLUMNS FROM categorias";
-        $columns_result = $conn->query($columns_query);
-        $has_fecha_creacion = false;
-        
-        while ($column = $columns_result->fetch_assoc()) {
-            if ($column['Field'] == 'fecha_creacion') {
-                $has_fecha_creacion = true;
-                break;
-            }
-        }
-        
-        $sql = $has_fecha_creacion 
-            ? "SELECT id_categoria, nombre, descripcion, fecha_creacion FROM categorias ORDER BY nombre ASC"
-            : "SELECT id_categoria, nombre, descripcion FROM categorias ORDER BY nombre ASC";
+        try {
+            // Verificar qué columnas existen
+            $columns_query = "SHOW COLUMNS FROM categorias";
+            $columns_result = $conn->query($columns_query);
+            $has_fecha_creacion = false;
             
-        $result = $conn->query($sql);
-        $categorias = [];
-        
-        if ($result === false) {
-            echo '<pre>Error en la consulta: ' . $conn->error . '</pre>';
-            return $categorias; // Devolver array vacío en caso de error
+            if ($columns_result) {
+                while ($column = $columns_result->fetch_assoc()) {
+                    if ($column['Field'] == 'fecha_creacion') {
+                        $has_fecha_creacion = true;
+                        break;
+                    }
+                }
+            }
+            
+            $sql = $has_fecha_creacion 
+                ? "SELECT id_categoria, nombre, descripcion, fecha_creacion FROM categorias ORDER BY nombre ASC"
+                : "SELECT id_categoria, nombre, descripcion FROM categorias ORDER BY nombre ASC";
+                
+            $result = $conn->query($sql);
+            $categorias = [];
+            
+            if ($result === false) {
+                error_log('[Category::getAll] SQL Error: ' . $conn->error);
+                return $categorias; // Devolver array vacío en caso de error
+            }
+            
+            while ($row = $result->fetch_assoc()) {
+                $fecha_creacion = $has_fecha_creacion ? ($row['fecha_creacion'] ?? null) : null;
+                $categorias[] = new Category(
+                    $row['id_categoria'], 
+                    $row['nombre'], 
+                    $row['descripcion'], 
+                    $fecha_creacion
+                );
+            }
+            return $categorias;
+        } catch (Exception $e) {
+            error_log('[Category::getAll] Exception: ' . $e->getMessage());
+            return [];
         }
-        
-        if ($result->num_rows === 0) {
-            echo '<pre>No hay categorías en la base de datos.</pre>';
-            return $categorias; // Devolver array vacío si no hay registros
-        }
-        
-        while ($row = $result->fetch_assoc()) {
-            $fecha_creacion = $has_fecha_creacion ? ($row['fecha_creacion'] ?? null) : null;
-            $categorias[] = new Category(
-                $row['id_categoria'], 
-                $row['nombre'], 
-                $row['descripcion'], 
-                $fecha_creacion
-            );
-        }
-        return $categorias;
     }
 
     // Método para crear una nueva categoría
     public static function create($conn, $nombre, $descripcion) {
+        // Validar entrada
+        if (empty(trim($nombre))) {
+            return false;
+        }
+        
         // Intentar primero con fecha_creacion
         try {
             $sql = "INSERT INTO categorias (nombre, descripcion, fecha_creacion) VALUES (?, ?, NOW())";
@@ -66,10 +73,7 @@ class Category {
             }
             $stmt->bind_param("ss", $nombre, $descripcion);
             $result = $stmt->execute();
-            if (!$result) {
-                throw new Exception($stmt->error);
-            }
-            echo '<pre>Categoría creada correctamente.</pre>';
+            $stmt->close();
             return $result;
         } catch (Exception $e) {
             // Si falla, intentar sin fecha_creacion
@@ -77,19 +81,18 @@ class Category {
                 $sql = "INSERT INTO categorias (nombre, descripcion) VALUES (?, ?)";
                 $stmt = $conn->prepare($sql);
                 if (!$stmt) {
-                    echo '<pre>Error al preparar el statement: ' . $conn->error . '</pre>';
+                    error_log('[Category::create] Prepare error: ' . $conn->error);
                     return false;
                 }
                 $stmt->bind_param("ss", $nombre, $descripcion);
                 $result = $stmt->execute();
                 if (!$result) {
-                    echo '<pre>Error al ejecutar el statement: ' . $stmt->error . '</pre>';
-                } else {
-                    echo '<pre>Categoría creada correctamente (sin fecha).</pre>';
+                    error_log('[Category::create] Execute error: ' . $stmt->error);
                 }
+                $stmt->close();
                 return $result;
             } catch (Exception $e2) {
-                echo '<pre>Error al crear categoría: ' . $e2->getMessage() . '</pre>';
+                error_log('[Category::create] Exception: ' . $e2->getMessage());
                 return false;
             }
         }

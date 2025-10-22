@@ -546,12 +546,14 @@ unset($_SESSION['success'], $_SESSION['error']);
                                            title="Editar alerta">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/AlertController.php?accion=delete&id=<?= $alerta['id_alertas'] ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar alerta"
                                            onclick="return confirm('¿Está seguro de eliminar esta alerta del producto \'<?= addslashes($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

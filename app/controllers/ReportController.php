@@ -154,6 +154,25 @@ class ReportController {
     }
     
     public function delete() {
+        // Verificar sesión activa
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        // Verificar si el usuario está logueado
+        if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
+            $_SESSION['error'] = 'Debe iniciar sesión para realizar esta acción';
+            header('Location: /RMIE/index.php');
+            exit();
+        }
+        
+        // Verificar si el rol es coordinador y restringir eliminación
+        if ($_SESSION['rol'] === 'coordinador') {
+            $_SESSION['error'] = 'El rol de coordinador no tiene permisos para eliminar reportes por políticas de seguridad';
+            header('Location: ReportController.php?action=index');
+            exit();
+        }
+        
         global $conn;
         
         $id = $_GET['id'] ?? $_POST['id'] ?? 0;

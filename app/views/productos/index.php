@@ -614,11 +614,13 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar producto">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar producto">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

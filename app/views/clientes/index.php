@@ -625,12 +625,14 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar cliente">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar cliente"
                                            onclick="return confirm('¿Está seguro de eliminar el cliente \'<?= addslashes($cliente->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

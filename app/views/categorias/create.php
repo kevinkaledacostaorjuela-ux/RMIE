@@ -277,6 +277,12 @@
 
         <!-- Form -->
         <div class="form-section">
+            <?php if (isset($errorMsg) && !empty($errorMsg)): ?>
+                <div class="alert-modern alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <?php echo htmlspecialchars($errorMsg); ?>
+                </div>
+            <?php endif; ?>
             <form action="/RMIE/app/controllers/CategoryController.php?accion=create" method="POST" id="categoryForm">
                 <div class="form-floating-modern">
                     <input type="text" 

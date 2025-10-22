@@ -834,12 +834,14 @@ $stats = $statsQuery->fetch_assoc();
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar local"
                                            onclick="return confirm('¿Estás seguro de eliminar el local \'<?php echo addslashes($local->nombre_local); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>

@@ -710,12 +710,14 @@ if (isset($proveedores) && is_array($proveedores)) {
                                            title="Editar proveedor">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar proveedor"
                                            onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </td>
                             </tr>
@@ -855,12 +857,14 @@ if (isset($proveedores) && is_array($proveedores)) {
                                                title="Editar proveedor">
                                                 <i class="fas fa-edit"></i>
                                             </a>
+                                            <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                             <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                title="Eliminar proveedor"
                                                onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                                 <i class="fas fa-trash"></i>
                                             </a>
+                                            <?php endif; ?>
                                         </div>
                                     </td>
                                 </tr>

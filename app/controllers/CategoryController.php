@@ -14,24 +14,27 @@ class CategoryController {
 	}
 
 	public function create() {
+		global $conn;
+		$errorMsg = null;
 		if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-			global $conn;
-			echo '<pre>POST: ' . print_r($_POST, true) . '</pre>';
-			$nombre = $_POST['nombre'] ?? null;
-			$descripcion = $_POST['descripcion'] ?? null;
+			$nombre = isset($_POST['nombre']) ? trim($_POST['nombre']) : '';
+			$descripcion = isset($_POST['descripcion']) ? trim($_POST['descripcion']) : '';
 			$result = Category::create($conn, $nombre, $descripcion);
 			if (!$result) {
-				if (isset($conn->error)) {
-					echo '<pre>Error SQL: ' . $conn->error . '</pre>';
+				// Registrar el error en el log y preparar mensaje para la vista
+				if (!empty($conn->error)) {
+					error_log('[CategoryController] SQL error: ' . $conn->error);
+					$errorMsg = 'Error al guardar la categoría: ' . $conn->error;
 				} else {
-					echo '<pre>Error al guardar la categoría.</pre>';
+					$errorMsg = 'Error al guardar la categoría.';
 				}
 			} else {
-				echo '<pre>Categoría guardada correctamente.</pre>';
+				// Redirigir a la lista (usar ruta absoluta)
 				header('Location: /RMIE/app/controllers/CategoryController.php?accion=index');
 				exit();
 			}
 		}
+		// La vista podrá leer $errorMsg si existe
 		include __DIR__ . '/../views/categorias/create.php';
 	}
 
@@ -49,6 +52,23 @@ class CategoryController {
 	}
 
 	public function delete($id) {
+		// Verificar sesión activa
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+		
+		// Verificar si el usuario está logueado
+		if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
+			echo '<script>alert("Debe iniciar sesión para realizar esta acción."); window.location.href = "/RMIE/index.php";</script>';
+			exit();
+		}
+		
+		// Verificar si el rol es coordinador y restringir eliminación
+		if ($_SESSION['rol'] === 'coordinador') {
+			echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		}
+		
 		global $conn;
 		
 		// Verificar si es eliminación forzada
@@ -86,22 +106,18 @@ class CategoryController {
 						echo '<script>alert("' . $message . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
 					}
 					exit();
-					break;
 					
 				case 'has_sales':
 					echo '<script>alert("No se puede eliminar la categoría porque tiene ventas asociadas. Las ventas no pueden ser eliminadas automáticamente por seguridad."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
 					exit();
-					break;
 					
 				case 'delete_failed':
 					echo '<script>alert("Error al eliminar la categoría."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
 					exit();
-					break;
 					
 				case 'exception':
 					echo '<script>alert("Error de base de datos: ' . addslashes($result['message']) . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
 					exit();
-					break;
 			}
 		} else if (isset($result['success'])) {
 			$successMessage = $force ? "Categoría eliminada exitosamente junto con sus dependencias." : "Categoría eliminada exitosamente.";
