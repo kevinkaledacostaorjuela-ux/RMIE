@@ -80,6 +80,36 @@ class SubcategoryController {
         }
         include __DIR__ . '/../views/subcategorias/edit.php';
     }
+    
+    public function getByCategory() {
+        global $conn;
+        header('Content-Type: application/json');
+        
+        $categoria_id = $_GET['categoria_id'] ?? null;
+        
+        if (!$categoria_id) {
+            echo json_encode([]);
+            return;
+        }
+        
+        try {
+            $sql = "SELECT id_subcategoria, nombre FROM subcategorias WHERE id_categoria = ? ORDER BY nombre ASC";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $categoria_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            $subcategorias = [];
+            while ($row = $result->fetch_assoc()) {
+                $subcategorias[] = $row;
+            }
+            
+            echo json_encode($subcategorias);
+        } catch (Exception $e) {
+            error_log("Error en getByCategory: " . $e->getMessage());
+            echo json_encode([]);
+        }
+    }
 
     public function delete($id) {
         // Verificar sesión activa
@@ -174,6 +204,9 @@ if (isset($_GET['accion'])) {
             if (isset($_GET['id'])) {
                 $controller->delete($_GET['id']);
             }
+            break;
+        case 'getByCategory':
+            $controller->getByCategory();
             break;
         default:
             $controller->index();

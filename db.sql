@@ -11,7 +11,7 @@ CREATE TABLE usuarios (
     correo VARCHAR(45),
     contrasena VARCHAR(255),
     num_cel VARCHAR(45),
-    rol ENUM('admin','coordinador') NOT NULL
+    rol ENUM('admin','coordinador','auxiliar') NOT NULL
 );
 
 -- Tabla de categorías

@@ -200,9 +200,14 @@ class ClientController {
             exit();
         }
         
-        // Verificar si el rol es coordinador y restringir eliminación
+        // Verificar si el rol es coordinador o auxiliar y restringir eliminación
         if ($_SESSION['rol'] === 'coordinador') {
             echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/ClientController.php?accion=index";</script>';
+            exit();
+        }
+        
+        if ($_SESSION['rol'] === 'auxiliar') {
+            echo '<script>alert("El rol de auxiliar no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/ClientController.php?accion=index";</script>';
             exit();
         }
         

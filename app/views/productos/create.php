@@ -421,7 +421,7 @@
                 <div class="form-section-card">
                     <div class="section-title">
                         <i class="fas fa-warehouse"></i>
-                        Inventario y Precios
+                        Inventario y Datos Básicos
                     </div>
                     
                     <div class="form-row form-row-3">
@@ -440,86 +440,179 @@
                         </div>
 
                         <div class="form-floating-modern">
+                            <input type="text" 
+                                   class="form-control-modern" 
+                                   id="marca" 
+                                   name="marca" 
+                                   placeholder=" "
+                                   maxlength="50">
+                            <label for="marca">
+                                <i class="fas fa-trademark"></i>
+                                Marca
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="valor_unitario" 
+                                   name="valor_unitario" 
+                                   placeholder=" "
+                                   step="0.01"
+                                   min="0">
+                            <label for="valor_unitario">
+                                <i class="fas fa-tag"></i>
+                                Valor Unitario
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información de Precios -->
+                <div class="form-section-card">
+                    <div class="section-title">
+                        <i class="fas fa-dollar-sign"></i>
+                        Precios
+                    </div>
+                    
+                    <div class="form-row form-row-3">
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="precio_unitario" 
+                                   name="precio_unitario" 
+                                   placeholder=" "
+                                   step="0.01"
+                                   min="0"
+                                   required>
+                            <label for="precio_unitario">
+                                <i class="fas fa-money-bill"></i>
+                                Precio Unitario
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="precio_por_mayor" 
+                                   name="precio_por_mayor" 
+                                   placeholder=" "
+                                   step="0.01"
+                                   min="0">
+                            <label for="precio_por_mayor">
+                                <i class="fas fa-coins"></i>
+                                Precio por Mayor
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <input type="number" 
                                    class="form-control-modern" 
                                    id="precio_compra" 
                                    name="precio_compra" 
                                    placeholder=" "
                                    step="0.01"
-                                   min="0"
-                                   required>
+                                   min="0">
                             <label for="precio_compra">
-                                <i class="fas fa-dollar-sign"></i>
+                                <i class="fas fa-shopping-cart"></i>
                                 Precio de Compra
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
-                            <input type="number" 
-                                   class="form-control-modern" 
-                                   id="precio_venta" 
-                                   name="precio_venta" 
-                                   placeholder=" "
-                                   step="0.01"
-                                   min="0"
-                                   required>
-                            <label for="precio_venta">
-                                <i class="fas fa-money-bill-wave"></i>
-                                Precio de Venta
                             </label>
                         </div>
                     </div>
                 </div>
 
-                <!-- Fechas y Proveedor -->
+                <!-- Fechas -->
                 <div class="form-section-card">
                     <div class="section-title">
                         <i class="fas fa-calendar-alt"></i>
-                        Fechas y Proveedor
+                        Fechas
                     </div>
                     
                     <div class="form-row form-row-3">
                         <div class="form-floating-modern">
                             <input type="date" 
                                    class="form-control-modern" 
-                                   id="fecha_ingreso" 
-                                   name="fecha_ingreso" 
+                                   id="fecha_entrada" 
+                                   name="fecha_entrada" 
                                    placeholder=" "
                                    required>
-                            <label for="fecha_ingreso">
+                            <label for="fecha_entrada">
                                 <i class="fas fa-calendar-plus"></i>
-                                Fecha de Ingreso
+                                Fecha de Entrada
                             </label>
                         </div>
 
                         <div class="form-floating-modern">
                             <input type="date" 
                                    class="form-control-modern" 
-                                   id="fecha_vencimiento" 
-                                   name="fecha_vencimiento" 
+                                   id="fecha_fabricacion" 
+                                   name="fecha_fabricacion" 
                                    placeholder=" ">
-                            <label for="fecha_vencimiento">
+                            <label for="fecha_fabricacion">
+                                <i class="fas fa-industry"></i>
+                                Fecha de Fabricación
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <input type="date" 
+                                   class="form-control-modern" 
+                                   id="fecha_caducidad" 
+                                   name="fecha_caducidad" 
+                                   placeholder=" ">
+                            <label for="fecha_caducidad">
                                 <i class="fas fa-calendar-times"></i>
                                 Fecha de Vencimiento
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Proveedor y Usuario -->
+                <div class="form-section-card">
+                    <div class="section-title">
+                        <i class="fas fa-users"></i>
+                        Proveedor y Usuario Responsable
+                    </div>
+                    
+                    <div class="form-row form-row-2">
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="id_proveedor" 
+                                    name="id_proveedor">
+                                <option value="">Seleccione un proveedor</option>
+                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
+                                    <?php foreach ($proveedores as $prov): ?>
+                                        <option value="<?= htmlspecialchars($prov->id_proveedores ?? '') ?>">
+                                            <?= htmlspecialchars($prov->nombre_distribuidor ?? 'Sin nombre') ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <label for="id_proveedor">
+                                <i class="fas fa-truck"></i>
+                                Proveedor (Opcional)
                             </label>
                         </div>
 
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
-                                    id="proveedor_id" 
-                                    name="proveedor_id">
-                                <option value="">Seleccione un proveedor</option>
-                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
-                                    <?php foreach ($proveedores as $prov): ?>
-                                        <option value="<?= htmlspecialchars($prov->id_proveedor) ?>">
-                                            <?= htmlspecialchars($prov->empresa) ?>
+                                    id="id_usuario" 
+                                    name="id_usuario"
+                                    required>
+                                <option value="">Seleccione un usuario responsable</option>
+                                <?php if (isset($usuarios) && is_array($usuarios)): ?>
+                                    <?php foreach ($usuarios as $user): ?>
+                                        <option value="<?= htmlspecialchars($user->num_doc ?? '') ?>">
+                                            <?= htmlspecialchars($user->nombre ?? 'Sin nombre') ?> 
+                                            (<?= htmlspecialchars($user->rol ?? 'Sin rol') ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="proveedor_id">
-                                <i class="fas fa-truck"></i>
-                                Proveedor (Opcional)
+                            <label for="id_usuario">
+                                <i class="fas fa-user"></i>
+                                Usuario Responsable *
                             </label>
                         </div>
                     </div>
@@ -571,15 +664,22 @@
             subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
             
             if (this.value) {
-                // Aquí se haría una llamada AJAX para cargar subcategorías
-                // Por ahora, simulamos la carga
-                setTimeout(() => {
-                    subcategoriaSelect.innerHTML = `
-                        <option value="">Seleccione una subcategoría</option>
-                        <option value="1">Subcategoría 1</option>
-                        <option value="2">Subcategoría 2</option>
-                    `;
-                }, 500);
+                // Llamada AJAX para cargar subcategorías reales
+                fetch('/RMIE/app/controllers/SubcategoryController.php?accion=getByCategory&categoria_id=' + this.value)
+                    .then(response => response.json())
+                    .then(data => {
+                        let options = '<option value="">Seleccione una subcategoría</option>';
+                        if (data && data.length > 0) {
+                            data.forEach(subcategoria => {
+                                options += `<option value="${subcategoria.id_subcategoria}">${subcategoria.nombre}</option>`;
+                            });
+                        }
+                        subcategoriaSelect.innerHTML = options;
+                    })
+                    .catch(error => {
+                        console.error('Error cargando subcategorías:', error);
+                        subcategoriaSelect.innerHTML = '<option value="">Error cargando subcategorías</option>';
+                    });
             } else {
                 subcategoriaSelect.innerHTML = '<option value="">Seleccione primero una categoría</option>';
             }

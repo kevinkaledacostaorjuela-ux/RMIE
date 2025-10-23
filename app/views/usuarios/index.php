@@ -560,7 +560,8 @@ if (isset($usuarios) && is_array($usuarios)) {
                         <select name="rol" class="form-control form-control-modern">
                             <option value="">Todos los roles</option>
                             <option value="admin" <?= ($_GET['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
-                            <option value="empleado" <?= ($_GET['rol'] ?? '') === 'empleado' ? 'selected' : '' ?>>Empleado</option>
+                            <option value="coordinador" <?= ($_GET['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
+                            <option value="auxiliar" <?= ($_GET['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                         </select>
                     </div>
                     

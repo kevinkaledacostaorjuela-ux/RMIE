@@ -148,9 +148,24 @@ class Product {
             $id_proveedores = self::getOrCreateGenericProvider($conn);
         }
         
+        // Convertir subcategoría vacía a NULL y validar que existe
+        if ($id_subcategoria === '' || $id_subcategoria === '0') {
+            $id_subcategoria = null;
+        } elseif ($id_subcategoria !== null) {
+            // Verificar que la subcategoría existe
+            $check_subcat = $conn->prepare("SELECT id_subcategoria FROM subcategorias WHERE id_subcategoria = ?");
+            $check_subcat->bind_param("i", $id_subcategoria);
+            $check_subcat->execute();
+            $result = $check_subcat->get_result();
+            if ($result->num_rows == 0) {
+                $id_subcategoria = null; // Si no existe, usar NULL
+            }
+            $check_subcat->close();
+        }
+        
         $sql = "INSERT INTO productos (nombre, descripcion, fecha_entrada, fecha_fabricacion, fecha_caducidad, stock, precio_unitario, precio_por_mayor, valor_unitario, marca, id_subcategoria, id_categoria, id_proveedores, num_doc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssssssiiii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
+        $stmt->bind_param("sssssdddssiiis", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
         return $stmt->execute();
     }
 
@@ -222,11 +237,48 @@ class Product {
     public static function update($conn, $id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc) {
         echo '<pre>DEBUG Model: Actualizando producto ID: ' . $id_productos . '</pre>';
         echo '<pre>DEBUG Model: Datos recibidos: nombre=' . $nombre . ', descripcion=' . $descripcion . ', stock=' . $stock . '</pre>';
+        echo '<pre>DEBUG Model: Subcategoría original: ' . var_export($id_subcategoria, true) . '</pre>';
+        echo '<pre>DEBUG Model: Categoría original: ' . var_export($id_categoria, true) . '</pre>';
         
         // Si no se proporciona proveedor, usar proveedor genérico
         if ($id_proveedores === null || $id_proveedores === '') {
             $id_proveedores = self::getOrCreateGenericProvider($conn);
         }
+        
+        // Convertir subcategoría vacía a NULL y validar que existe
+        if ($id_subcategoria === '' || $id_subcategoria === '0') {
+            $id_subcategoria = null;
+        } elseif ($id_subcategoria !== null) {
+            // Verificar que la subcategoría existe
+            $check_subcat = $conn->prepare("SELECT id_subcategoria FROM subcategorias WHERE id_subcategoria = ?");
+            $check_subcat->bind_param("i", $id_subcategoria);
+            $check_subcat->execute();
+            $result = $check_subcat->get_result();
+            if ($result->num_rows == 0) {
+                $id_subcategoria = null; // Si no existe, usar NULL
+            }
+            $check_subcat->close();
+        }
+        
+        // Validar que la categoría existe (requerida)
+        if ($id_categoria === '' || $id_categoria === '0' || $id_categoria === null) {
+            echo '<pre>ERROR: La categoría es obligatoria</pre>';
+            return false;
+        } else {
+            // Verificar que la categoría existe
+            $check_cat = $conn->prepare("SELECT id_categoria FROM categorias WHERE id_categoria = ?");
+            $check_cat->bind_param("i", $id_categoria);
+            $check_cat->execute();
+            $result = $check_cat->get_result();
+            if ($result->num_rows == 0) {
+                echo '<pre>ERROR: La categoría seleccionada no existe</pre>';
+                return false;
+            }
+            $check_cat->close();
+        }
+        
+        echo '<pre>DEBUG Model: Subcategoría final: ' . var_export($id_subcategoria, true) . '</pre>';
+        echo '<pre>DEBUG Model: Categoría final: ' . var_export($id_categoria, true) . '</pre>';
         
         $sql = "UPDATE productos SET nombre = ?, descripcion = ?, fecha_entrada = ?, fecha_fabricacion = ?, fecha_caducidad = ?, stock = ?, precio_unitario = ?, precio_por_mayor = ?, valor_unitario = ?, marca = ?, id_subcategoria = ?, id_categoria = ?, id_proveedores = ?, num_doc = ? WHERE id_productos = ?";
         
@@ -236,7 +288,7 @@ class Product {
             return false;
         }
         
-        $stmt->bind_param("ssssssssssiiiii", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc, $id_productos);
+        $stmt->bind_param("sssssdddssiiisi", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc, $id_productos);
         
         $result = $stmt->execute();
         

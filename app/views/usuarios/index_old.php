@@ -111,6 +111,7 @@
                             <option value="">Todos los roles</option>
                             <option value="admin" <?= ($_GET['filtro_rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
                             <option value="coordinador" <?= ($_GET['filtro_rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
+                            <option value="auxiliar" <?= ($_GET['filtro_rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                         </select>
                     </div>
                     

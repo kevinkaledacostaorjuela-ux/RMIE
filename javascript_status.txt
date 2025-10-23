@@ -1,3 +1,0 @@
-Estado: CON_ERRORES
-Fecha: 2025-10-22 03:24:17
-Errores: 9

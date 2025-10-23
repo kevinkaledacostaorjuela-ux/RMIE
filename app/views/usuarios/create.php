@@ -291,6 +291,11 @@
             box-shadow: 0 5px 15px rgba(79, 172, 254, 0.3);
         }
         
+        .role-auxiliar {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
+        }
+        
         .info-panel {
             background: rgba(255, 193, 7, 0.2);
             border: 1px solid rgba(255, 193, 7, 0.4);
@@ -638,6 +643,7 @@
                                 <option value="">Seleccione el rol</option>
                                 <option value="coordinador" <?= ($_POST['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="admin" <?= ($_POST['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
+                                <option value="auxiliar" <?= ($_POST['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                             <label for="rol">
                                 <i class="fas fa-user-tag"></i>
@@ -809,16 +815,35 @@
                 // Actualizar rol
                 const roleElement = document.getElementById('previewRole');
                 if (rol) {
-                    const roleClass = rol === 'admin' ? 'role-admin' : 'role-coordinador';
-                    const roleIcon = rol === 'admin' ? 'fas fa-user-shield' : 'fas fa-user-tie';
-                    const roleText = rol === 'admin' ? 'Administrador' : 'Coordinador';
+                    let roleClass, roleIcon, roleText;
+                    switch(rol) {
+                        case 'admin':
+                            roleClass = 'role-admin';
+                            roleIcon = 'fas fa-user-shield';
+                            roleText = 'Administrador';
+                            break;
+                        case 'coordinador':
+                            roleClass = 'role-coordinador';
+                            roleIcon = 'fas fa-user-tie';
+                            roleText = 'Coordinador';
+                            break;
+                        case 'auxiliar':
+                            roleClass = 'role-auxiliar';
+                            roleIcon = 'fas fa-user';
+                            roleText = 'Auxiliar';
+                            break;
+                        default:
+                            roleClass = 'role-coordinador';
+                            roleIcon = 'fas fa-user';
+                            roleText = 'Usuario';
+                    }
                     
                     roleElement.innerHTML = `<span class="role-badge ${roleClass}">
                         <i class="${roleIcon}"></i> ${roleText}
                     </span>`;
                 } else {
-                    roleElement.innerHTML = `<span class="role-badge role-coordinador">
-                        <i class="fas fa-user-tie"></i> Rol
+                    roleElement.innerHTML = `<span class="role-badge role-auxiliar">
+                        <i class="fas fa-user"></i> Seleccionar Rol
                     </span>`;
                 }
             }

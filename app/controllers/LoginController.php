@@ -13,7 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($usuario && password_verify($password, $usuario['contrasena'])) {
         $_SESSION['user'] = $usuario['correo'];
         $_SESSION['rol'] = $usuario['rol'];
-        header('Location: ../views/dashboard.php');
+        $_SESSION['nombres'] = $usuario['nombres'];
+        $_SESSION['apellidos'] = $usuario['apellidos'];
+        
+        // Redirigir según el rol
+        switch($usuario['rol']) {
+            case 'auxiliar':
+                header('Location: /RMIE/app/controllers/AuxiliarController.php?accion=dashboard');
+                break;
+            case 'admin':
+            case 'coordinador':
+            default:
+                header('Location: ../views/dashboard.php');
+                break;
+        }
         exit();
     } else {
         echo '<script>alert("Usuario o contraseña incorrectos");window.location="../../index.php";</script>';

@@ -519,9 +519,11 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Botones de acción -->
         <div class="mb-4 text-center">
+            <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
             <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                 <i class="fas fa-plus"></i> Nuevo Cliente
             </a>
+            <?php endif; ?>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
@@ -620,12 +622,20 @@ $stats = $statsQuery->fetch_assoc();
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
+                                        <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes) ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar cliente">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                        <?php else: ?>
+                                        <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes) ?>" 
+                                           class="btn btn-sm btn-modern btn-primary-modern" 
+                                           title="Ver detalles del cliente">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <?php endif; ?>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar cliente"

@@ -88,9 +88,9 @@ class ProductController {
             $precio_por_mayor = $_POST['precio_por_mayor'] ?? null;
             $valor_unitario = $_POST['valor_unitario'] ?? null;
             $marca = $_POST['marca'] ?? null;
-            $id_subcategoria = $_POST['id_subcategoria'] ?? null;
-            $id_categoria = $_POST['id_categoria'] ?? null;
-            $id_proveedores = !empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null;
+            $id_subcategoria = $_POST['subcategoria_id'] ?? null;
+            $id_categoria = $_POST['categoria_id'] ?? null;
+            $id_proveedores = !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
             
             // Validar campos requeridos
@@ -145,9 +145,9 @@ class ProductController {
             $precio_por_mayor = $_POST['precio_por_mayor'] ?? null;
             $valor_unitario = $_POST['valor_unitario'] ?? null;
             $marca = $_POST['marca'] ?? null;
-            $id_subcategoria = $_POST['id_subcategoria'] ?? null;
-            $id_categoria = $_POST['id_categoria'] ?? null;
-            $id_proveedores = !empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null;
+            $id_subcategoria = $_POST['subcategoria_id'] ?? $_POST['id_subcategoria'] ?? null;
+            $id_categoria = $_POST['categoria_id'] ?? $_POST['id_categoria'] ?? null;
+            $id_proveedores = !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : (!empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null);
             $num_doc = $_POST['id_usuario'] ?? null;
             
             // Validación de datos requeridos

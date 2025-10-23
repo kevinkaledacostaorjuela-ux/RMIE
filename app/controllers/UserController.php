@@ -12,7 +12,7 @@ class UserController {
             
             // Definir reglas de filtro
             $filterRules = [
-                'filtro_rol' => ['type' => 'select', 'options' => ['allowed_values' => ['administrador', 'empleado', 'vendedor']]],
+                'filtro_rol' => ['type' => 'select', 'options' => ['allowed_values' => ['admin', 'coordinador', 'auxiliar']]],
                 'filtro_tipo_doc' => ['type' => 'select', 'options' => ['allowed_values' => ['CC', 'CE', 'TI', 'PP']]],
                 'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
                 'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
@@ -82,6 +82,8 @@ class UserController {
                 
                 if (empty($_POST['rol'])) {
                     $errores[] = "El rol es requerido";
+                } elseif (!in_array($_POST['rol'], ['admin', 'coordinador', 'auxiliar'])) {
+                    $errores[] = "El rol seleccionado no es válido";
                 }
                 
                 // Verificar si ya existe un usuario con ese documento
@@ -210,9 +212,14 @@ class UserController {
             exit();
         }
         
-        // Verificar si el rol es coordinador y restringir eliminación
+        // Verificar si el rol es coordinador o auxiliar y restringir eliminación
         if ($_SESSION['rol'] === 'coordinador') {
             echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/UserController.php?accion=index";</script>';
+            exit();
+        }
+        
+        if ($_SESSION['rol'] === 'auxiliar') {
+            echo '<script>alert("El rol de auxiliar no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/UserController.php?accion=index";</script>';
             exit();
         }
         

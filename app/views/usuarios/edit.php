@@ -153,6 +153,7 @@
                                 <option value="">Seleccione el rol</option>
                                 <option value="coordinador" <?= $usuario->rol === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="admin" <?= $usuario->rol === 'admin' ? 'selected' : '' ?>>Administrador</option>
+                                <option value="auxiliar" <?= $usuario->rol === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                         </div>
                         
