@@ -8,6 +8,12 @@ if (!isset($_SESSION['user'])) {
     exit();
 }
 $rol = $_SESSION['rol'];
+// Cargar configuración de permisos si es necesario
+require_once __DIR__ . '/../utils/PermissionsConfig.php';
+$allowedAux = [];
+if ($rol === 'auxiliar') {
+    $allowedAux = array_keys(PermissionsConfig::getAuxiliarModules());
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -380,6 +386,7 @@ $rol = $_SESSION['rol'];
             </h4>
         </div>
         <ul class="sidebar-nav">
+            <?php if ($rol !== 'auxiliar' || in_array('categorias', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="../controllers/CategoryController.php?accion=index">
                     <i class="nav-icon fas fa-tags"></i>
@@ -387,6 +394,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('subcategorias', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="../controllers/SubcategoryController.php?accion=index">
                     <i class="nav-icon fas fa-layer-group"></i>
@@ -394,6 +403,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('productos', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="../controllers/ProductController.php?accion=index">
                     <i class="nav-icon fas fa-box"></i>
@@ -401,6 +412,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('ventas', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/SaleController.php?accion=index">
                     <i class="nav-icon fas fa-shopping-cart"></i>
@@ -408,6 +421,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('reportes', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/ReportController.php?action=index">
                     <i class="nav-icon fas fa-chart-bar"></i>
@@ -415,6 +430,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('alertas', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/AlertController.php?accion=index">
                     <i class="nav-icon fas fa-exclamation-triangle"></i>
@@ -422,6 +439,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('proveedores', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/ProviderController.php?accion=index">
                     <i class="nav-icon fas fa-truck"></i>
@@ -429,6 +448,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('usuarios', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/UserController.php?accion=index">
                     <i class="nav-icon fas fa-users"></i>
@@ -436,6 +457,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('clientes', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/ClientController.php?accion=index">
                     <i class="nav-icon fas fa-user-tie"></i>
@@ -443,6 +466,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('locales', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/LocalController.php?action=index">
                     <i class="nav-icon fas fa-building"></i>
@@ -450,6 +475,8 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
+            <?php if ($rol !== 'auxiliar' || in_array('rutas', $allowedAux)): ?>
             <li class="nav-item-modern">
                 <a class="nav-link-modern" href="/RMIE/app/controllers/RouteController.php?accion=index">
                     <i class="nav-icon fas fa-route"></i>
@@ -457,6 +484,7 @@ $rol = $_SESSION['rol'];
                     <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
             </li>
+            <?php endif; ?>
         </ul>
         <div class="sidebar-divider"></div>
         <div class="logout-section">
@@ -507,6 +535,7 @@ $rol = $_SESSION['rol'];
                         <i class="fas fa-boxes me-2"></i>Gestión de Inventario
                     </h4>
                 </div>
+            <?php if ($rol !== 'auxiliar' || in_array('categorias', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -525,7 +554,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('subcategorias', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -544,7 +575,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('productos', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -563,7 +596,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('proveedores', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #ff7e79 0%, #40e0d0 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(255, 126, 121, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -582,6 +617,7 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
             </div>
 
             <!-- SECCIÓN 2: VENTAS Y REPORTES -->
@@ -591,6 +627,7 @@ $rol = $_SESSION['rol'];
                         <i class="fas fa-chart-line me-2"></i>Ventas y Reportes
                     </h4>
                 </div>
+            <?php if ($rol !== 'auxiliar' || in_array('ventas', $allowedAux)): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(250, 112, 154, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -609,7 +646,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('reportes', $allowedAux)): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -628,7 +667,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('alertas', $allowedAux)): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -647,6 +688,7 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
             </div>
 
             <!-- SECCIÓN 3: GESTIÓN DE USUARIOS Y LOCALES -->
@@ -656,6 +698,7 @@ $rol = $_SESSION['rol'];
                         <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios y Locales
                     </h4>
                 </div>
+            <?php if ($rol !== 'auxiliar' || in_array('usuarios', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #96fbc4 0%, #f9f586 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(150, 251, 196, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -674,7 +717,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('clientes', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -693,7 +738,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('locales', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(161, 196, 253, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -712,7 +759,9 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
 
+            <?php if ($rol !== 'auxiliar' || in_array('rutas', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -731,6 +780,7 @@ $rol = $_SESSION['rol'];
                         </div>
                     </div>
                 </div>
+            <?php endif; ?>
             </div>
         </div>
     </main>

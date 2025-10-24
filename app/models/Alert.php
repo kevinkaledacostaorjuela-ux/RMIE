@@ -16,15 +16,33 @@ class Alert {
         $this->fecha_caducidad = $fecha_caducidad;
     }
 
-    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes) {
-        $sql = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_clientes) VALUES (?, ?, ?, ?)";
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            throw new Exception('Error en prepare(): ' . $conn->error);
+    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes, $tipo_alerta = 'stock_bajo') {
+        // Verificar si la columna tipo_alerta existe
+        $check_column = $conn->query("SHOW COLUMNS FROM alertas LIKE 'tipo_alerta'");
+        $column_exists = $check_column && $check_column->num_rows > 0;
+        
+        if ($column_exists) {
+            // Si la columna existe, incluirla en el INSERT
+            $sql = "INSERT INTO alertas (tipo_alerta, id_productos, cantidad_minima, fecha_caducidad, id_clientes) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception('Error en prepare(): ' . $conn->error);
+            }
+            if (!$stmt->bind_param('siisi', $tipo_alerta, $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes)) {
+                throw new Exception('Error en bind_param(): ' . $stmt->error);
+            }
+        } else {
+            // Si no existe, usar el INSERT original sin tipo_alerta
+            $sql = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_clientes) VALUES (?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception('Error en prepare(): ' . $conn->error);
+            }
+            if (!$stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes)) {
+                throw new Exception('Error en bind_param(): ' . $stmt->error);
+            }
         }
-        if (!$stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes)) {
-            throw new Exception('Error en bind_param(): ' . $stmt->error);
-        }
+        
         if (!$stmt->execute()) {
             throw new Exception('Error al ejecutar INSERT de alerta: ' . $stmt->error);
         }

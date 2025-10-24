@@ -1,3 +1,8 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -374,9 +379,22 @@
             <p class="header-subtitle">Configure alertas automáticas para mantener control del inventario</p>
         </div>
 
+        <!-- Mensajes -->
+        <?php if (isset($_SESSION['error'])): ?>
+            <div style="margin: 20px; padding: 15px; background: rgba(231, 76, 60, 0.2); border: 1px solid rgba(231, 76, 60, 0.4); border-radius: 10px; color: white;">
+                <i class="fas fa-exclamation-circle"></i> <?= $_SESSION['error']; unset($_SESSION['error']); ?>
+            </div>
+        <?php endif; ?>
+        
+        <?php if (isset($_SESSION['success'])): ?>
+            <div style="margin: 20px; padding: 15px; background: rgba(46, 204, 113, 0.2); border: 1px solid rgba(46, 204, 113, 0.4); border-radius: 10px; color: white;">
+                <i class="fas fa-check-circle"></i> <?= $_SESSION['success']; unset($_SESSION['success']); ?>
+            </div>
+        <?php endif; ?>
+
         <!-- Form -->
         <div class="form-section">
-            <form action="/RMIE/app/controllers/AlertController.php?action=create" method="POST" id="alertForm">
+            <form action="/RMIE/app/controllers/AlertController.php?accion=create" method="POST" id="alertForm">
                 
                 <!-- Tipos de Alerta -->
                 <div class="alert-types">
@@ -442,29 +460,44 @@
                         </div>
                     </div>
 
-                    <div class="form-floating-modern">
-                        <select class="form-select-modern" 
-                                id="cliente_stock" 
-                                name="id_clientes" 
-                                required>
-                            <option value="">Seleccione un cliente</option>
-                            <?php if (isset($clientes) && !empty($clientes)): ?>
-                                <?php foreach ($clientes as $cli): ?>
-                                    <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
-                                        <?= htmlspecialchars($cli->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                        <label for="cliente_stock">
-                            <i class="fas fa-user"></i>
-                            Cliente Responsable
-                        </label>
+                    <div class="form-row form-row-2">
+                        <div class="form-floating-modern">
+                            <input type="date" 
+                                   class="form-control-modern" 
+                                   id="fecha_caducidad_stock" 
+                                   name="fecha_caducidad" 
+                                   placeholder=" "
+                                   required>
+                            <label for="fecha_caducidad_stock">
+                                <i class="fas fa-calendar-times"></i>
+                                Fecha de Caducidad
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="cliente_stock" 
+                                    name="id_clientes" 
+                                    required>
+                                <option value="">Seleccione un cliente</option>
+                                <?php if (isset($clientes) && !empty($clientes)): ?>
+                                    <?php foreach ($clientes as $cli): ?>
+                                        <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
+                                            <?= htmlspecialchars($cli->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <label for="cliente_stock">
+                                <i class="fas fa-user"></i>
+                                Cliente Responsable
+                            </label>
+                        </div>
                     </div>
 
                     <div class="info-panel">
                         <h6><i class="fas fa-info-circle"></i> Información</h6>
-                        <p>Esta alerta se activará automáticamente cuando el stock del producto seleccionado sea igual o menor a la cantidad mínima especificada. El cliente responsable recibirá notificaciones.</p>
+                        <p>Esta alerta se activará automáticamente cuando el stock del producto seleccionado sea igual o menor a la cantidad mínima especificada, o cuando se acerque la fecha de caducidad. El cliente responsable recibirá notificaciones.</p>
                     </div>
                 </div>
 
@@ -497,6 +530,23 @@
                         </div>
 
                         <div class="form-floating-modern">
+                            <input type="number" 
+                                   class="form-control-modern" 
+                                   id="cantidad_minima_exp" 
+                                   name="cantidad_minima" 
+                                   placeholder=" "
+                                   min="1"
+                                   value="1"
+                                   required>
+                            <label for="cantidad_minima_exp">
+                                <i class="fas fa-sort-numeric-down"></i>
+                                Cantidad Mínima
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-row form-row-2">
+                        <div class="form-floating-modern">
                             <input type="date" 
                                    class="form-control-modern" 
                                    id="fecha_caducidad" 
@@ -508,26 +558,26 @@
                                 Fecha de Caducidad
                             </label>
                         </div>
-                    </div>
 
-                    <div class="form-floating-modern">
-                        <select class="form-select-modern" 
-                                id="cliente_expiration" 
-                                name="id_clientes" 
-                                required>
-                            <option value="">Seleccione un cliente</option>
-                            <?php if (isset($clientes) && !empty($clientes)): ?>
-                                <?php foreach ($clientes as $cli): ?>
-                                    <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
-                                        <?= htmlspecialchars($cli->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                        <label for="cliente_expiration">
-                            <i class="fas fa-user"></i>
-                            Cliente Responsable
-                        </label>
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="cliente_expiration" 
+                                    name="id_clientes" 
+                                    required>
+                                <option value="">Seleccione un cliente</option>
+                                <?php if (isset($clientes) && !empty($clientes)): ?>
+                                    <?php foreach ($clientes as $cli): ?>
+                                        <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
+                                            <?= htmlspecialchars($cli->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <label for="cliente_expiration">
+                                <i class="fas fa-user"></i>
+                                Cliente Responsable
+                            </label>
+                        </div>
                     </div>
 
                     <div class="info-panel">
@@ -570,22 +620,42 @@
                     document.getElementById('stock-form').classList.add('active');
                     // Deshabilitar campos del otro formulario
                     document.getElementById('producto_expiration').removeAttribute('required');
+                    document.getElementById('producto_expiration').disabled = true;
+                    document.getElementById('cantidad_minima_exp').removeAttribute('required');
+                    document.getElementById('cantidad_minima_exp').disabled = true;
                     document.getElementById('fecha_caducidad').removeAttribute('required');
+                    document.getElementById('fecha_caducidad').disabled = true;
                     document.getElementById('cliente_expiration').removeAttribute('required');
+                    document.getElementById('cliente_expiration').disabled = true;
                     // Habilitar campos de este formulario
                     document.getElementById('producto_stock').setAttribute('required', '');
+                    document.getElementById('producto_stock').disabled = false;
                     document.getElementById('cantidad_minima').setAttribute('required', '');
+                    document.getElementById('cantidad_minima').disabled = false;
+                    document.getElementById('fecha_caducidad_stock').setAttribute('required', '');
+                    document.getElementById('fecha_caducidad_stock').disabled = false;
                     document.getElementById('cliente_stock').setAttribute('required', '');
+                    document.getElementById('cliente_stock').disabled = false;
                 } else if (type === 'expiration') {
                     document.getElementById('expiration-form').classList.add('active');
                     // Deshabilitar campos del otro formulario
                     document.getElementById('producto_stock').removeAttribute('required');
+                    document.getElementById('producto_stock').disabled = true;
                     document.getElementById('cantidad_minima').removeAttribute('required');
+                    document.getElementById('cantidad_minima').disabled = true;
+                    document.getElementById('fecha_caducidad_stock').removeAttribute('required');
+                    document.getElementById('fecha_caducidad_stock').disabled = true;
                     document.getElementById('cliente_stock').removeAttribute('required');
+                    document.getElementById('cliente_stock').disabled = true;
                     // Habilitar campos de este formulario
                     document.getElementById('producto_expiration').setAttribute('required', '');
+                    document.getElementById('producto_expiration').disabled = false;
+                    document.getElementById('cantidad_minima_exp').setAttribute('required', '');
+                    document.getElementById('cantidad_minima_exp').disabled = false;
                     document.getElementById('fecha_caducidad').setAttribute('required', '');
+                    document.getElementById('fecha_caducidad').disabled = false;
                     document.getElementById('cliente_expiration').setAttribute('required', '');
+                    document.getElementById('cliente_expiration').disabled = false;
                 }
             });
         });

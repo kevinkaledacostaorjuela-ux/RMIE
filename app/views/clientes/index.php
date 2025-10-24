@@ -34,7 +34,7 @@ $stats = $statsQuery->fetch_assoc();
     <title>Gestión de Clientes - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../../../public/css/styles.css" rel="stylesheet">
+    <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -46,8 +46,10 @@ $stats = $statsQuery->fetch_assoc();
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border-radius: 20px;
-            padding: 30px;
-            margin: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1400px;
+            width: calc(100% - 40px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }

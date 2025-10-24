@@ -56,56 +56,200 @@ if (isset($proveedores) && is_array($proveedores)) {
     <title>Gestión de Proveedores - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../../../public/css/styles.css" rel="stylesheet">
+    <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
+        /* Advanced Glassmorphism Design */
+        @keyframes floatContainer {
+            0%, 100% { transform: translateY(0px) rotateX(0deg); }
+            50% { transform: translateY(-10px) rotateX(2deg); }
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(255,255,255,0.5), 0 0 40px rgba(76,175,80,0.3); }
+            50% { text-shadow: 0 0 30px rgba(255,255,255,0.8), 0 0 60px rgba(76,175,80,0.5); }
+        }
+
+        @keyframes rotatingBorder {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(-45deg, #4caf50, #8bc34a, #00bcd4, #009688);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 25% 25%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                radial-gradient(circle at 75% 75%, rgba(76,175,80,0.2) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 1;
         }
 
         .dashboard-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(25px);
+            border-radius: 30px;
+            padding: 50px;
+            margin: 30px auto;
+            max-width: 1400px;
+            width: calc(100% - 60px);
+            box-shadow: 
+                0 25px 80px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            position: relative;
+            z-index: 2;
+            animation: floatContainer 6s ease-in-out infinite;
         }
 
         .page-title {
             color: #fff;
             text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #4caf50 50%, #00bcd4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite;
+            position: relative;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, #4caf50, #00bcd4);
+            border-radius: 2px;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
         }
 
         .filters-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 25px;
+            padding: 35px;
+            margin-bottom: 35px;
+            border: 2px solid transparent;
+            position: relative;
+            animation: fadeInUp 0.6s ease-out 0.1s both;
+        }
+
+        .filters-container::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(45deg, #4caf50, #00bcd4, #4caf50);
+            border-radius: 27px;
+            z-index: -1;
+            animation: rotatingBorder 4s linear infinite;
         }
 
         .filter-title {
             color: #fff;
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 25px;
             text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Mejorar visibilidad de formularios */
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.15) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            color: #2c3e50 !important;
+            font-weight: 600 !important;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.25) !important;
+            border-color: #4caf50 !important;
+            color: #2c3e50 !important;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25) !important;
+        }
+
+        .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500 !important;
+        }
+
+        .form-label {
+            color: #fff !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .table-modern td {
+            color: #fff !important;
+            font-weight: 600 !important;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .table-modern th {
+            color: #fff !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        }
+
+        .btn-modern {
+            color: #fff !important;
+            font-weight: 700 !important;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
         .form-control-modern {
-            background: rgba(255, 255, 255, 0.9);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            color: #000;
-            padding: 10px 15px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            color: #2c3e50;
+            font-weight: 600;
+            padding: 15px 20px;
         }
 
         .form-control-modern::placeholder {

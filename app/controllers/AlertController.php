@@ -48,34 +48,47 @@ class AlertController {
     }
 
     public function create() {
+        // Iniciar sesión si no está activa
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         global $conn;
         $productos = Product::getAll($conn);
         $clientes = Client::getAll($conn);
         $mensaje = '';
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $id_producto = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
             $cantidad_minima = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $fecha_caducidad = $_POST['fecha_caducidad'] ?? '';
             $id_cliente = isset($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : 0;
+            $tipo_alerta = $_POST['alert_type'] ?? 'stock'; // 'stock' o 'expiration'
 
             if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_cliente) {
                 // Validar existencia en BD
                 $prod = Product::getById($conn, $id_producto);
                 $cli = Client::getById($conn, $id_cliente);
                 if (!$prod) {
-                    $mensaje = 'Producto no válido.';
+                    $_SESSION['error'] = 'Producto no válido.';
                 } elseif (!$cli) {
-                    $mensaje = 'Cliente no válido.';
+                    $_SESSION['error'] = 'Cliente no válido.';
                 } else {
                     try {
-                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente);
-                        $mensaje = $resultado ? '¡Alerta creada exitosamente!' : 'Error al crear la alerta.';
+                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente, $tipo_alerta);
+                        if ($resultado) {
+                            $_SESSION['success'] = '¡Alerta creada exitosamente!';
+                            header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                            exit();
+                        } else {
+                            $_SESSION['error'] = 'Error al crear la alerta.';
+                        }
                     } catch (Throwable $e) {
-                        $mensaje = 'Error al crear la alerta: ' . $e->getMessage();
+                        $_SESSION['error'] = 'Error al crear la alerta: ' . $e->getMessage();
                     }
                 }
             } else {
-                $mensaje = 'Por favor, completa todos los campos.';
+                $_SESSION['error'] = 'Por favor, completa todos los campos.';
             }
         }
         include __DIR__ . '/../views/alertas/create.php';

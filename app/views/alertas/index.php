@@ -20,7 +20,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <title>Gestión de Alertas - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="../../../public/css/styles.css" rel="stylesheet">
+    <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -32,8 +32,10 @@ unset($_SESSION['success'], $_SESSION['error']);
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border-radius: 20px;
-            padding: 30px;
-            margin: 20px;
+            padding: 40px;
+            margin: 20px auto;
+            max-width: 1400px;
+            width: calc(100% - 40px);
             box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
@@ -91,6 +93,16 @@ unset($_SESSION['success'], $_SESSION['error']);
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-modern:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.3);
         }
 
         .btn-primary-modern {
@@ -103,19 +115,76 @@ unset($_SESSION['success'], $_SESSION['error']);
             color: white;
         }
 
-        .btn-warning-modern {
-            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+        .btn-secondary-modern {
+            background: linear-gradient(135deg, #89a7b1 0%, #b4c5cc 100%);
             color: white;
+            border: none;
+        }
+
+        .btn-secondary-modern:hover {
+            background: linear-gradient(135deg, #b4c5cc 0%, #89a7b1 100%);
+        }
+
+        .btn-warning-modern {
+            background: linear-gradient(135deg, #fbc2eb 0%, #a6c1ee 100%);
+            color: white;
+            border: none;
+        }
+
+        .btn-warning-modern:hover {
+            background: linear-gradient(135deg, #a6c1ee 0%, #fbc2eb 100%);
         }
 
         .btn-danger-modern {
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
             color: white;
+            border: none;
+        }
+
+        .btn-danger-modern:hover {
+            background: linear-gradient(45deg, #ee5a52, #ff6b6b);
         }
 
         .btn-modern:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .btn-group .btn {
+            flex: 0 0 auto;
+            min-width: 42px;
+            max-width: 42px;
+            height: 42px;
+            padding: 0 !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            border-radius: 0;
+        }
+
+        .btn-group .btn:first-child {
+            border-radius: 10px 0 0 10px;
+        }
+
+        .btn-group .btn:last-child {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .btn-sm {
+            font-size: 14px;
+        }
+
+        .btn-sm i {
+            font-size: 16px;
+            margin: 0;
         }
 
         .stats-grid {
@@ -198,6 +267,32 @@ unset($_SESSION['success'], $_SESSION['error']);
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
         }
 
+        .badge-stock-bajo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .badge-vencimiento {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
+        }
+
         .alert-modern {
             border-radius: 15px;
             border: none;
@@ -252,9 +347,9 @@ unset($_SESSION['success'], $_SESSION['error']);
             }
             
             .table-modern {
-                min-width: 1050px !important; /* Ancho mínimo para 7 columnas */
+                min-width: 1220px !important; /* Ancho mínimo para 8 columnas */
                 margin-bottom: 0;
-                width: 1050px;
+                width: 1220px;
             }
             
             .table-modern th,
@@ -265,27 +360,30 @@ unset($_SESSION['success'], $_SESSION['error']);
                 min-width: 120px;
             }
             
-            /* Anchos específicos para alertas (7 columnas) */
+            /* Anchos específicos para alertas (8 columnas) */
             .table-modern th:nth-child(1),
             .table-modern td:nth-child(1) { min-width: 70px; }
             
             .table-modern th:nth-child(2),
-            .table-modern td:nth-child(2) { min-width: 180px; }
+            .table-modern td:nth-child(2) { min-width: 170px; }
             
             .table-modern th:nth-child(3),
-            .table-modern td:nth-child(3) { min-width: 150px; }
+            .table-modern td:nth-child(3) { min-width: 180px; }
             
             .table-modern th:nth-child(4),
-            .table-modern td:nth-child(4) { min-width: 130px; }
+            .table-modern td:nth-child(4) { min-width: 150px; }
             
             .table-modern th:nth-child(5),
-            .table-modern td:nth-child(5) { min-width: 180px; }
+            .table-modern td:nth-child(5) { min-width: 130px; }
             
             .table-modern th:nth-child(6),
-            .table-modern td:nth-child(6) { min-width: 120px; }
+            .table-modern td:nth-child(6) { min-width: 180px; }
             
             .table-modern th:nth-child(7),
             .table-modern td:nth-child(7) { min-width: 120px; }
+            
+            .table-modern th:nth-child(8),
+            .table-modern td:nth-child(8) { min-width: 120px; }
             
             /* Scroll indicator */
             .scroll-hint {
@@ -353,10 +451,11 @@ unset($_SESSION['success'], $_SESSION['error']);
             <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm">
                 <input type="hidden" name="accion" value="index" />
                 
-                <div class="row">
-                    <div class="col-md-3 mb-3">
+                <div class="row g-3">
+                    <!-- Fila 1: Búsqueda de productos -->
+                    <div class="col-md-4">
                         <label class="form-label text-white">
-                            <i class="fas fa-box"></i> Producto
+                            <i class="fas fa-box"></i> Seleccionar Producto
                         </label>
                         <select name="producto" class="form-control form-control-modern">
                             <option value="">Todos los productos</option>
@@ -368,42 +467,43 @@ unset($_SESSION['success'], $_SESSION['error']);
                         </select>
                     </div>
                     
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4">
                         <label class="form-label text-white">
-                            <i class="fas fa-search"></i> Nombre Producto
+                            <i class="fas fa-search"></i> Buscar por Nombre
                         </label>
                         <input type="text" 
                                name="nombre_producto" 
                                class="form-control form-control-modern" 
-                               placeholder="Buscar por nombre..."
+                               placeholder="Ej: tpscoo, producto..."
                                value="<?= htmlspecialchars($filtros['nombre_producto']) ?>">
                     </div>
                     
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4">
                         <label class="form-label text-white">
-                            <i class="fas fa-sort-numeric-up"></i> Cantidad Min.
+                            <i class="fas fa-sort-numeric-up"></i> Rango de Cantidad
                         </label>
-                        <input type="number" 
-                               name="cantidad_min" 
-                               class="form-control form-control-modern" 
-                               placeholder="Cantidad mínima"
-                               value="<?= htmlspecialchars($filtros['cantidad_min']) ?>">
-                    </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-sort-numeric-down"></i> Cantidad Max.
-                        </label>
-                        <input type="number" 
-                               name="cantidad_max" 
-                               class="form-control form-control-modern" 
-                               placeholder="Cantidad máxima"
-                               value="<?= htmlspecialchars($filtros['cantidad_max']) ?>">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="number" 
+                                       name="cantidad_min" 
+                                       class="form-control form-control-modern" 
+                                       placeholder="Mín"
+                                       value="<?= htmlspecialchars($filtros['cantidad_min']) ?>">
+                            </div>
+                            <div class="col-6">
+                                <input type="number" 
+                                       name="cantidad_max" 
+                                       class="form-control form-control-modern" 
+                                       placeholder="Máx"
+                                       value="<?= htmlspecialchars($filtros['cantidad_max']) ?>">
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
+                <div class="row g-3 mt-2">
+                    <!-- Fila 2: Fechas y botones -->
+                    <div class="col-md-4">
                         <label class="form-label text-white">
                             <i class="fas fa-calendar-alt"></i> Fecha Desde
                         </label>
@@ -413,7 +513,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
                     </div>
                     
-                    <div class="col-md-4 mb-3">
+                    <div class="col-md-4">
                         <label class="form-label text-white">
                             <i class="fas fa-calendar-alt"></i> Fecha Hasta
                         </label>
@@ -423,15 +523,13 @@ unset($_SESSION['success'], $_SESSION['error']);
                                value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
                     </div>
                     
-                    <div class="col-md-4 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="btn btn-modern btn-primary-modern me-2">
-                                <i class="fas fa-search"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-modern btn-warning-modern" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+                    <div class="col-md-4 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-modern btn-primary-modern flex-fill">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn btn-modern btn-secondary-modern flex-fill" onclick="limpiarFiltros()">
+                            <i class="fas fa-eraser"></i> LIMPIAR
+                        </button>
                     </div>
                 </div>
             </form>
@@ -454,6 +552,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                     <thead>
                         <tr>
                             <th><i class="fas fa-hashtag"></i> ID</th>
+                            <th><i class="fas fa-bell"></i> Tipo</th>
                             <th><i class="fas fa-box"></i> Producto</th>
                             <th><i class="fas fa-user"></i> Cliente</th>
                             <th><i class="fas fa-sort-numeric-up"></i> Cantidad Mín.</th>
@@ -491,6 +590,21 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <tr>
                                 <td>
                                     <strong>#<?= htmlspecialchars($alerta['id_alertas']) ?></strong>
+                                </td>
+                                <td class="text-center">
+                                    <?php 
+                                        // Determinar tipo de alerta desde la BD
+                                        $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
+                                        if ($tipo === 'stock' || $tipo === 'stock_bajo'): 
+                                    ?>
+                                        <span class="badge badge-stock-bajo">
+                                            <i class="fas fa-boxes"></i> Stock Bajo
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge badge-vencimiento">
+                                            <i class="fas fa-calendar-times"></i> Vencimiento
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -547,12 +661,12 @@ unset($_SESSION['success'], $_SESSION['error']);
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/AlertController.php?accion=delete&id=<?= $alerta['id_alertas'] ?>" 
+                                        <button type="button"
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar alerta"
-                                           onclick="return confirm('¿Está seguro de eliminar esta alerta del producto \'<?= addslashes($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="confirmarEliminacion(<?= $alerta['id_alertas'] ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos'], ENT_QUOTES) ?>')">
                                             <i class="fas fa-trash"></i>
-                                        </a>
+                                        </button>
                                         <?php endif; ?>
                                     </div>
                                 </td>
@@ -560,7 +674,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <?php endforeach; ?>
                         <?php else: ?>
                             <tr>
-                                <td colspan="7" class="text-center py-4">
+                                <td colspan="8" class="text-center py-4">
                                     <div class="text-muted">
                                         <i class="fas fa-inbox fa-3x mb-3"></i>
                                         <h5>No hay alertas disponibles</h5>
@@ -599,16 +713,24 @@ unset($_SESSION['success'], $_SESSION['error']);
             });
         }, 5000);
 
-        // Confirmar eliminación con más detalles
-        document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const productoNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
-                if (confirm(`¿Está seguro de eliminar la alerta del producto "${productoNombre}"?\n\nEsta acción no se puede deshacer.`)) {
-                    window.location.href = this.href;
-                }
-            });
-        });
+        // Función para confirmar eliminación de alertas
+        function confirmarEliminacion(idAlerta, nombreProducto) {
+            if (confirm('¿Está seguro de eliminar esta alerta del producto "' + nombreProducto + '"?\n\nEsta acción no se puede deshacer.')) {
+                // Crear formulario dinámico para enviar POST
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = '/RMIE/app/controllers/AlertController.php?accion=delete&id=' + idAlerta;
+                
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'confirmar_eliminar';
+                input.value = '1';
+                
+                form.appendChild(input);
+                document.body.appendChild(form);
+                form.submit();
+            }
+        }
     </script>
 </body>
 </html>

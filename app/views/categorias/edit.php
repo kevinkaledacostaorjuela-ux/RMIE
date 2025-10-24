@@ -5,6 +5,30 @@ if (!isset($categoria)) {
     exit();
 }
 ?>
+<?php
+// Asegurar sesión y usuario (evita accesos directos sin login)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION['user'])) {
+    header('Location: /RMIE/index.php');
+    exit();
+}
+// Preparar datos seguros
+$categoria_id_safe = htmlspecialchars($categoria->id_categoria ?? '', ENT_QUOTES, 'UTF-8');
+$categoria_nombre_safe = htmlspecialchars($categoria->nombre ?? '', ENT_QUOTES, 'UTF-8');
+$fecha_creacion_raw = $categoria->fecha_creacion ?? null;
+$fecha_creacion_formatted = $fecha_creacion_raw ? date('d/m/Y H:i', strtotime($fecha_creacion_raw)) : 'N/D';
+// Preparar array con los valores originales para inyectar en JS (json_encode más abajo)
+$original_js_values = [
+    'nombre' => $categoria->nombre ?? '',
+    'descripcion' => $categoria->descripcion ?? ''
+];
+if (isset($categoria->telefono)) { $original_js_values['telefono'] = $categoria->telefono; }
+if (isset($categoria->estado)) { $original_js_values['estado'] = $categoria->estado; }
+if (isset($categoria->localidad)) { $original_js_values['localidad'] = $categoria->localidad; }
+if (isset($categoria->barrio)) { $original_js_values['barrio'] = $categoria->barrio; }
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -440,7 +464,7 @@ if (!isset($categoria)) {
             <div class="header-section">
                 <h1 class="header-title">
                     <i class="fas fa-edit"></i>
-                    Editar Categoría #<?= $categoria->id_categoria ?>
+                    Editar Categoría #<?= $categoria_id_safe ?>
                 </h1>
                 <p class="header-subtitle">Modifique la información de la categoría seleccionada</p>
             </div>
@@ -450,9 +474,9 @@ if (!isset($categoria)) {
                 <div class="alert-warning-modern">
                     <i class="fas fa-info-circle"></i>
                     <div>
-                        <strong>Editando:</strong> <?= htmlspecialchars($categoria->nombre) ?>
+                        <strong>Editando:</strong> <?= $categoria_nombre_safe ?>
                         <small style="display: block; margin-top: 5px; opacity: 0.8;">
-                            Creado el: <?= isset($categoria->fecha_creacion) ? date('d/m/Y H:i', strtotime($categoria->fecha_creacion)) : '17/10/2025 20:35' ?>
+                            Creado el: <?= $fecha_creacion_formatted ?>
                         </small>
                     </div>
                 </div>
@@ -460,7 +484,7 @@ if (!isset($categoria)) {
 
             <!-- Form -->
             <div class="form-section">
-                <form method="POST" action="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= $categoria->id_categoria ?>" id="categoriaForm">
+                <form method="POST" action="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($categoria_id_safe) ?>" id="categoriaForm">
                     
                     <div class="form-row form-row-2">
                         <!-- Información Básica -->
@@ -705,15 +729,9 @@ if (!isset($categoria)) {
         </div>
     </div>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {            // Valores originales para comparación
-            const originalValues = {
-                nombre: '<?= addslashes($categoria->nombre ?? '') ?>',
-                descripcion: '<?= addslashes($categoria->descripcion ?? '') ?>'<?php if (isset($categoria->telefono)): ?>,
-                telefono: '<?= addslashes($categoria->telefono ?? '') ?>'<?php endif; ?><?php if (isset($categoria->estado)): ?>,
-                estado: '<?= addslashes($categoria->estado ?? '') ?>'<?php endif; ?><?php if (isset($categoria->localidad)): ?>,
-                localidad: '<?= addslashes($categoria->localidad ?? '') ?>'<?php endif; ?><?php if (isset($categoria->barrio)): ?>,
-                barrio: '<?= addslashes($categoria->barrio ?? '') ?>'<?php endif; ?>
-            };
+        document.addEventListener('DOMContentLoaded', function() {
+            // Valores originales para comparación (inyectados desde PHP como JSON para evitar problemas de sintaxis)
+            const originalValues = <?= json_encode($original_js_values, JSON_UNESCAPED_UNICODE) ?>;
 
             // Contadores de caracteres
             function setupCharacterCount(inputId, countId, maxLength) {
