@@ -4,256 +4,689 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Venta - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6.0.0 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Breadcrumb moderno */
+        .modern-breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: none;
+        }
+
+        .breadcrumb-item a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb-item a:hover {
+            color: #f0f0f0;
+        }
+
+        .breadcrumb-item.active {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .form-header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+        }
+
+        .ventas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group label i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(77, 85, 108, 0.6);
+        }
+
+        .form-control:read-only {
+            background: rgba(200, 200, 200, 0.3);
+            cursor: not-allowed;
+        }
+
+        /* Resumen de venta */
+        .ventas-summary {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .ventas-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--success-gradient);
+            border-radius: 2px;
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-header h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 1rem -1rem -1rem -1rem;
+            padding: 1rem 2rem;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Botones */
+        .btn {
+            border-radius: 12px;
+            padding: 14px 35px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: none;
+            transition: var(--transition);
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+        }
+
+        .ventas-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Info histórica */
+        .info-alert {
+            background: rgba(23, 162, 184, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            border-radius: 12px;
+            border-left: 4px solid #17a2b8;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-alert i {
+            color: #17a2b8;
+            margin-right: 0.7rem;
+        }
+
+        .alert {
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-warning {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+            border-left: 4px solid #ffc107;
+        }
+
+        /* Badge de estado */
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-pendiente {
+            background: rgba(255, 193, 7, 0.2);
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            color: #856404;
+        }
+
+        .status-procesando {
+            background: rgba(23, 162, 184, 0.2);
+            border: 1px solid rgba(23, 162, 184, 0.5);
+            color: #0c5460;
+        }
+
+        .status-completada {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #155724;
+        }
+
+        .status-cancelada {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #721c24;
+        }
+
+        .current-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+        }
+
+        .current-status .label {
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .ventas-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ventas-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="ventas-container">
+    <div class="glass-container">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
+        <nav aria-label="breadcrumb" class="modern-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
                 <li class="breadcrumb-item"><a href="/RMIE/app/controllers/SaleController.php?accion=index">Ventas</a></li>
-                <li class="breadcrumb-item active" aria-current="page">Editar</li>
+                <li class="breadcrumb-item active" aria-current="page">Editar Venta</li>
             </ol>
         </nav>
 
-        <h1><i class="fas fa-edit"></i> Editar Venta #<?= htmlspecialchars($venta->id_ventas) ?></h1>
-        
-        <!-- Mostrar errores si existen -->
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        
-        <!-- Mostrar éxito si existe -->
-        <?php if (isset($success)): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        
-        <div class="ventas-form">
-            <form method="POST" action="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= $venta->id_ventas ?>" id="formVenta">
-                <div class="row">
-                    <!-- Información del cliente -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-user"></i> Información del Cliente</h5>
-                        
-                        <div class="form-group">
-                            <label for="id_clientes">
-                                <i class="fas fa-users"></i> Cliente:
-                            </label>
-                            <select id="id_clientes" name="id_clientes" required>
-                                <option value="">Seleccione un cliente</option>
-                                <?php if (isset($clientes) && is_array($clientes)): ?>
-                                    <?php foreach ($clientes as $cliente): ?>
-                                        <option value="<?= htmlspecialchars($cliente->id_clientes) ?>" 
-                                                <?= $venta->id_clientes == $cliente->id_clientes ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($cliente->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="nombre">
-                                <i class="fas fa-tag"></i> Nombre de la venta:
-                            </label>
-                            <input type="text" 
-                                   id="nombre" 
-                                   name="nombre" 
-                                   value="<?= htmlspecialchars($venta->nombre) ?>"
-                                   placeholder="Descripción de la venta"
-                                   maxlength="45">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="direccion">
-                                <i class="fas fa-map-marker-alt"></i> Dirección de entrega:
-                            </label>
-                            <input type="text" 
-                                   id="direccion" 
-                                   name="direccion" 
-                                   value="<?= htmlspecialchars($venta->direccion) ?>"
-                                   placeholder="Dirección de entrega"
-                                   maxlength="45">
-                        </div>
-                        
-                        <!-- Información histórica -->
-                        <div class="historical-info">
-                            <h6><i class="fas fa-history"></i> Información Histórica</h6>
-                            <div class="info-item">
-                                <span class="label">Fecha de creación:</span>
-                                <span class="value"><?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_creacion))) ?></span>
-                            </div>
-                            <div class="info-item">
-                                <span class="label">ID de la venta:</span>
-                                <span class="value">#<?= htmlspecialchars($venta->id_ventas) ?></span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Información del producto -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-box"></i> Información del Producto</h5>
-                        
-                        <div class="form-group">
-                            <label for="id_productos">
-                                <i class="fas fa-cubes"></i> Producto:
-                            </label>
-                            <select id="id_productos" name="id_productos" required>
-                                <option value="">Seleccione un producto</option>
-                                <?php if (isset($productos) && is_array($productos)): ?>
-                                    <?php foreach ($productos as $producto): ?>
-                                        <option value="<?= htmlspecialchars($producto->id_productos) ?>" 
-                                                data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
-                                                data-stock="<?= htmlspecialchars($producto->stock) ?>"
-                                                <?= $venta->id_productos == $producto->id_productos ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($producto->nombre) ?> 
-                                            (Stock: <?= htmlspecialchars($producto->stock) ?>)
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cantidad">
-                                <i class="fas fa-sort-numeric-up"></i> Cantidad:
-                            </label>
-                            <input type="number" 
-                                   id="cantidad" 
-                                   name="cantidad" 
-                                   required 
-                                   min="1"
-                                   value="<?= htmlspecialchars($venta->cantidad) ?>"
-                                   placeholder="Cantidad a vender">
-                            <small class="form-text text-muted">Cantidad original: <?= htmlspecialchars($venta->cantidad) ?></small>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="fecha_venta">
-                                <i class="fas fa-calendar"></i> Fecha de venta:
-                            </label>
-                            <input type="date" 
-                                   id="fecha_venta" 
-                                   name="fecha_venta" 
-                                   required
-                                   value="<?= htmlspecialchars($venta->fecha_venta) ?>">
-                        </div>
-                    </div>
+        <!-- Header -->
+        <div class="form-header">
+            <h1><i class="fas fa-edit"></i> Editar Venta #<?= htmlspecialchars($venta->id_ventas) ?></h1>
+            <p>Modifica los datos de la venta</p>
+        </div>
+
+        <!-- Form Content -->
+        <div class="form-content">
+            <!-- Alertas -->
+            <?php if (isset($error)): ?>
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
                 </div>
-                
-                <div class="row">
-                    <!-- Precios y cálculos -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-calculator"></i> Cálculos</h5>
-                        
-                        <div class="form-group">
-                            <label for="precio_unitario">
-                                <i class="fas fa-dollar-sign"></i> Precio unitario:
-                            </label>
-                            <input type="number" 
-                                   id="precio_unitario" 
-                                   name="precio_unitario" 
-                                   required 
-                                   step="0.01"
-                                   min="0"
-                                   value="<?= htmlspecialchars($venta->precio_unitario) ?>"
-                                   placeholder="0.00">
-                            <small class="form-text text-muted">Precio original: $<?= number_format($venta->precio_unitario, 2) ?></small>
+            <?php endif; ?>
+            
+            <?php if (isset($success)): ?>
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> <?= htmlspecialchars($success) ?>
+                </div>
+            <?php endif; ?>
+
+            <form method="POST" action="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= $venta->id_ventas ?>" id="formVenta">
+                <!-- Grid Principal -->
+                <div class="ventas-grid">
+                    <!-- Columna Izquierda: Formulario -->
+                    <div>
+                        <!-- Sección Cliente -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-user"></i> Información del Cliente
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_clientes">
+                                    <i class="fas fa-users"></i> Cliente
+                                </label>
+                                <select class="form-select" id="id_clientes" name="id_clientes" required>
+                                    <option value="">Seleccione un cliente</option>
+                                    <?php if (isset($clientes) && is_array($clientes)): ?>
+                                        <?php foreach ($clientes as $cliente): ?>
+                                            <option value="<?= htmlspecialchars($cliente->id_clientes) ?>" 
+                                                    <?= $venta->id_clientes == $cliente->id_clientes ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cliente->nombre) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nombre">
+                                    <i class="fas fa-tag"></i> Nombre de la venta
+                                </label>
+                                <input type="text" 
+                                       class="form-control"
+                                       id="nombre" 
+                                       name="nombre" 
+                                       value="<?= htmlspecialchars($venta->nombre) ?>"
+                                       placeholder="Descripción de la venta"
+                                       maxlength="45">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="direccion">
+                                    <i class="fas fa-map-marker-alt"></i> Dirección de entrega
+                                </label>
+                                <input type="text" 
+                                       class="form-control"
+                                       id="direccion" 
+                                       name="direccion" 
+                                       value="<?= htmlspecialchars($venta->direccion) ?>"
+                                       placeholder="Dirección de entrega"
+                                       maxlength="45">
+                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="total">
-                                <i class="fas fa-money-bill"></i> Total:
-                            </label>
-                            <input type="number" 
-                                   id="total" 
-                                   name="total" 
-                                   required 
-                                   step="0.01"
-                                   min="0"
-                                   value="<?= htmlspecialchars($venta->total) ?>"
-                                   placeholder="0.00"
-                                   readonly>
-                            <small class="form-text text-muted">Total original: $<?= number_format($venta->total, 2) ?></small>
+
+                        <!-- Sección Producto -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-box"></i> Información del Producto
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_productos">
+                                    <i class="fas fa-cubes"></i> Producto
+                                </label>
+                                <select class="form-select" id="id_productos" name="id_productos" required>
+                                    <option value="">Seleccione un producto</option>
+                                    <?php if (isset($productos) && is_array($productos)): ?>
+                                        <?php foreach ($productos as $producto): ?>
+                                            <option value="<?= htmlspecialchars($producto->id_productos) ?>" 
+                                                    data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
+                                                    data-stock="<?= htmlspecialchars($producto->stock) ?>"
+                                                    <?= $venta->id_productos == $producto->id_productos ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($producto->nombre) ?> (Stock: <?= htmlspecialchars($producto->stock) ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="cantidad">
+                                    <i class="fas fa-sort-numeric-up"></i> Cantidad
+                                </label>
+                                <input type="number" 
+                                       class="form-control"
+                                       id="cantidad" 
+                                       name="cantidad" 
+                                       required 
+                                       min="1"
+                                       value="<?= htmlspecialchars($venta->cantidad) ?>"
+                                       placeholder="Cantidad">
+                                <small class="text-muted">Original: <?= htmlspecialchars($venta->cantidad) ?></small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="fecha_venta">
+                                    <i class="fas fa-calendar"></i> Fecha de venta
+                                </label>
+                                <input type="date" 
+                                       class="form-control"
+                                       id="fecha_venta" 
+                                       name="fecha_venta" 
+                                       required
+                                       value="<?= htmlspecialchars($venta->fecha_venta) ?>">
+                            </div>
                         </div>
-                        
-                        <!-- Resumen de cálculo -->
-                        <div class="calculation-summary">
-                            <div class="summary-item">
-                                <span>Producto seleccionado:</span>
-                                <span id="producto-nombre">-</span>
+
+                        <!-- Sección Cálculos -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-calculator"></i> Cálculos y Estado
                             </div>
-                            <div class="summary-item">
-                                <span>Stock disponible:</span>
-                                <span id="stock-disponible">-</span>
+                            
+                            <div class="form-group">
+                                <label for="precio_unitario">
+                                    <i class="fas fa-dollar-sign"></i> Precio unitario
+                                </label>
+                                <input type="number" 
+                                       class="form-control"
+                                       id="precio_unitario" 
+                                       name="precio_unitario" 
+                                       required 
+                                       step="0.01"
+                                       min="0"
+                                       value="<?= htmlspecialchars($venta->precio_unitario) ?>">
+                                <small class="text-muted">Original: $<?= number_format($venta->precio_unitario, 2) ?></small>
                             </div>
-                            <div class="summary-item">
-                                <span>Precio unitario:</span>
-                                <span id="precio-mostrar">$0.00</span>
+                            
+                            <div class="form-group">
+                                <label for="total">
+                                    <i class="fas fa-money-bill"></i> Total
+                                </label>
+                                <input type="number" 
+                                       class="form-control"
+                                       id="total" 
+                                       name="total" 
+                                       required 
+                                       step="0.01"
+                                       value="<?= htmlspecialchars($venta->total) ?>"
+                                       readonly>
+                                <small class="text-muted">Original: $<?= number_format($venta->total, 2) ?></small>
                             </div>
-                            <div class="summary-item">
-                                <span>Cantidad:</span>
-                                <span id="cantidad-mostrar">0</span>
+                            
+                            <div class="form-group">
+                                <label for="estado">
+                                    <i class="fas fa-info-circle"></i> Estado
+                                </label>
+                                <select class="form-select" id="estado" name="estado" required>
+                                    <option value="pendiente" <?= $venta->estado === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                                    <option value="procesando" <?= $venta->estado === 'procesando' ? 'selected' : '' ?>>Procesando</option>
+                                    <option value="completada" <?= $venta->estado === 'completada' ? 'selected' : '' ?>>Completada</option>
+                                    <option value="cancelada" <?= $venta->estado === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
+                                </select>
                             </div>
-                            <div class="summary-item summary-total">
-                                <span>Total a pagar:</span>
-                                <span id="total-mostrar">$0.00</span>
+                            
+                            <div class="form-group">
+                                <label for="num_doc">
+                                    <i class="fas fa-user-tie"></i> Usuario responsable
+                                </label>
+                                <select class="form-select" id="num_doc" name="num_doc" required>
+                                    <option value="">Seleccione un usuario</option>
+                                    <?php if (isset($usuarios) && is_array($usuarios)): ?>
+                                        <?php foreach ($usuarios as $usuario): ?>
+                                            <option value="<?= htmlspecialchars($usuario->num_doc) ?>" 
+                                                    <?= $venta->num_doc == $usuario->num_doc ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($usuario->nombres . ' ' . $usuario->apellidos) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
                             </div>
                         </div>
                     </div>
-                    
-                    <!-- Estado y usuario -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-cog"></i> Configuración</h5>
-                        
-                        <div class="form-group">
-                            <label for="estado">
-                                <i class="fas fa-info-circle"></i> Estado de la venta:
-                            </label>
-                            <select id="estado" name="estado" required>
-                                <option value="pendiente" <?= $venta->estado === 'pendiente' ? 'selected' : '' ?>>
-                                    Pendiente
-                                </option>
-                                <option value="procesando" <?= $venta->estado === 'procesando' ? 'selected' : '' ?>>
-                                    Procesando
-                                </option>
-                                <option value="completada" <?= $venta->estado === 'completada' ? 'selected' : '' ?>>
-                                    Completada
-                                </option>
-                                <option value="cancelada" <?= $venta->estado === 'cancelada' ? 'selected' : '' ?>>
-                                    Cancelada
-                                </option>
-                            </select>
+
+                    <!-- Columna Derecha: Resumen -->
+                    <div>
+                        <div class="ventas-summary">
+                            <div class="summary-header">
+                                <h5><i class="fas fa-chart-line"></i> Resumen de la Venta</h5>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Producto:</span>
+                                <span class="summary-value" id="producto-nombre">-</span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Stock disponible:</span>
+                                <span class="summary-value" id="stock-disponible">-</span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Precio unitario:</span>
+                                <span class="summary-value" id="precio-mostrar">$0.00</span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Cantidad:</span>
+                                <span class="summary-value" id="cantidad-mostrar">0</span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label">Total a pagar:</span>
+                                <span class="summary-value" id="total-mostrar">$0.00</span>
+                            </div>
                         </div>
-                        
-                        <div class="form-group">
-                            <label for="num_doc">
-                                <i class="fas fa-user-tie"></i> Usuario responsable:
-                            </label>
-                            <select id="num_doc" name="num_doc" required>
-                                <option value="">Seleccione un usuario</option>
-                                <?php if (isset($usuarios) && is_array($usuarios)): ?>
-                                    <?php foreach ($usuarios as $usuario): ?>
-                                        <option value="<?= htmlspecialchars($usuario->num_doc) ?>" 
-                                                <?= $venta->num_doc == $usuario->num_doc ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($usuario->nombres . ' ' . $usuario->apellidos) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-                        
-                        <!-- Estado visual -->
-                        <div class="status-display">
+
+                        <!-- Estado Actual -->
+                        <div class="info-alert">
                             <div class="current-status">
                                 <span class="label">Estado actual:</span>
                                 <span class="badge-status status-<?= strtolower($venta->estado) ?>">
@@ -270,20 +703,27 @@
                                     <?= $estadoInfo['text'] ?>
                                 </span>
                             </div>
+                            <div style="margin-top: 1rem;">
+                                <strong><i class="fas fa-history"></i> Información Histórica:</strong>
+                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                    <li>Creada: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_creacion))) ?></li>
+                                    <li>ID: #<?= htmlspecialchars($venta->id_ventas) ?></li>
+                                </ul>
+                            </div>
                         </div>
-                        
+
                         <div class="alert alert-warning">
                             <i class="fas fa-exclamation-triangle"></i>
                             <strong>Importante:</strong>
-                            <ul class="mb-0 mt-2">
-                                <li>Los cambios en cantidad pueden afectar el inventario</li>
-                                <li>Verifique el stock antes de aumentar la cantidad</li>
-                                <li>El cambio de estado puede ser irreversible</li>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Los cambios pueden afectar el inventario</li>
+                                <li>Verifique el stock antes de modificar</li>
+                                <li>Los cambios de estado pueden ser irreversibles</li>
                             </ul>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Botones -->
                 <div class="ventas-buttons">
                     <button type="submit" class="btn btn-primary">
@@ -292,18 +732,15 @@
                     <a href="/RMIE/app/controllers/SaleController.php?accion=index" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Cancelar
                     </a>
-                    <button type="button" class="btn btn-info" onclick="window.print()" title="Imprimir venta">
+                    <button type="button" class="btn btn-info" onclick="window.print()">
                         <i class="fas fa-print"></i> Imprimir
                     </button>
                 </div>
             </form>
         </div>
     </div>
-    
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- JavaScript para validación y cálculos -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const productoSelect = document.getElementById('id_productos');
@@ -311,11 +748,8 @@
         const precioInput = document.getElementById('precio_unitario');
         const totalInput = document.getElementById('total');
         const form = document.getElementById('formVenta');
-        
-        // Cantidad original para validación de stock
         const cantidadOriginal = <?= $venta->cantidad ?>;
         
-        // Actualizar información del producto
         function actualizarProducto() {
             const selectedOption = productoSelect.options[productoSelect.selectedIndex];
             
@@ -324,30 +758,20 @@
                 const stock = parseInt(selectedOption.dataset.stock || 0);
                 const nombreProducto = selectedOption.text.split(' (Stock:')[0];
                 
-                // En edición, no actualizamos automáticamente el precio
-                // pero sí mostramos la información
-                
-                // Actualizar resumen
                 document.getElementById('producto-nombre').textContent = nombreProducto;
                 document.getElementById('stock-disponible').textContent = stock + ' unidades';
                 
-                // Solo actualizar precio si está vacío
                 if (!precioInput.value || precioInput.value == '0') {
                     precioInput.value = precio.toFixed(2);
                 }
                 
                 actualizarResumen();
             } else {
-                // Limpiar resumen
                 document.getElementById('producto-nombre').textContent = '-';
                 document.getElementById('stock-disponible').textContent = '-';
-                document.getElementById('precio-mostrar').textContent = '$0.00';
-                document.getElementById('cantidad-mostrar').textContent = '0';
-                document.getElementById('total-mostrar').textContent = '$0.00';
             }
         }
         
-        // Actualizar resumen visual
         function actualizarResumen() {
             const cantidad = parseInt(cantidadInput.value || 0);
             const precio = parseFloat(precioInput.value || 0);
@@ -357,35 +781,28 @@
             document.getElementById('total-mostrar').textContent = '$' + (cantidad * precio).toFixed(2);
         }
         
-        // Calcular total
         function calcularTotal() {
             const cantidad = parseInt(cantidadInput.value || 0);
             const precio = parseFloat(precioInput.value || 0);
-            const total = cantidad * precio;
-            
-            totalInput.value = total.toFixed(2);
+            totalInput.value = (cantidad * precio).toFixed(2);
             actualizarResumen();
         }
         
-        // Validar stock considerando la cantidad original
         function validarStock() {
             const selectedOption = productoSelect.options[productoSelect.selectedIndex];
             if (selectedOption.value) {
                 const stockActual = parseInt(selectedOption.dataset.stock || 0);
                 const cantidadNueva = parseInt(cantidadInput.value || 0);
-                
-                // El stock disponible incluye la cantidad original de esta venta
                 const stockDisponible = stockActual + cantidadOriginal;
                 
                 if (cantidadNueva > stockDisponible) {
-                    alert(`La cantidad solicitada (${cantidadNueva}) excede el stock disponible (${stockDisponible})`);
+                    alert(`La cantidad (${cantidadNueva}) excede el stock disponible (${stockDisponible})`);
                     cantidadInput.value = stockDisponible;
                     calcularTotal();
                 }
             }
         }
         
-        // Event listeners
         productoSelect.addEventListener('change', actualizarProducto);
         cantidadInput.addEventListener('input', function() {
             calcularTotal();
@@ -393,88 +810,45 @@
         });
         precioInput.addEventListener('input', calcularTotal);
         
-        // Validación del formulario
         form.addEventListener('submit', function(e) {
-            const cliente = document.getElementById('id_clientes').value;
-            const producto = productoSelect.value;
-            const cantidad = parseInt(cantidadInput.value || 0);
-            const usuario = document.getElementById('num_doc').value;
-            const precio = parseFloat(precioInput.value || 0);
-            
-            if (!cliente) {
+            if (!document.getElementById('id_clientes').value) {
                 e.preventDefault();
                 alert('Debe seleccionar un cliente');
                 return;
             }
             
-            if (!producto) {
+            if (!productoSelect.value) {
                 e.preventDefault();
                 alert('Debe seleccionar un producto');
                 return;
             }
             
+            const cantidad = parseInt(cantidadInput.value || 0);
             if (cantidad <= 0) {
                 e.preventDefault();
                 alert('La cantidad debe ser mayor a 0');
                 return;
             }
             
-            if (precio <= 0) {
-                e.preventDefault();
-                alert('El precio debe ser mayor a 0');
-                return;
-            }
-            
-            if (!usuario) {
-                e.preventDefault();
-                alert('Debe seleccionar un usuario responsable');
-                return;
-            }
-            
-            // Validar stock final
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            const stockActual = parseInt(selectedOption.dataset.stock || 0);
-            const stockDisponible = stockActual + cantidadOriginal;
-            if (cantidad > stockDisponible) {
-                e.preventDefault();
-                alert(`No hay suficiente stock. Disponible: ${stockDisponible}, Solicitado: ${cantidad}`);
-                return;
-            }
-            
-            // Confirmar cambios importantes
             if (cantidad !== cantidadOriginal) {
-                if (!confirm(`¿Está seguro de cambiar la cantidad de ${cantidadOriginal} a ${cantidad}?`)) {
+                if (!confirm(`¿Cambiar cantidad de ${cantidadOriginal} a ${cantidad}?`)) {
                     e.preventDefault();
                     return;
                 }
             }
         });
         
-        // Inicializar
         actualizarProducto();
         
-        // Auto-ocultar alertas después de 5 segundos
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-danger, .alert-success');
-            alerts.forEach(function(alert) {
-                if (alert.classList.contains('show')) {
-                    alert.classList.remove('show');
-                    alert.classList.add('fade');
-                    setTimeout(() => alert.remove(), 150);
-                }
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
     });
     </script>
-    
-    <!-- Estilos para impresión -->
-    <style media="print">
-        .ventas-buttons { display: none; }
-        .alert { display: none; }
-        nav { display: none; }
-        .btn { display: none; }
-        body { margin: 0; }
-        .ventas-container { margin: 0; padding: 20px; }
-    </style>
 </body>
 </html>

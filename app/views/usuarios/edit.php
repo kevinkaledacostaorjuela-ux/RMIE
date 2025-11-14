@@ -4,22 +4,512 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Usuario - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Breadcrumb moderno */
+        .modern-breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: none;
+        }
+
+        .breadcrumb-item a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb-item a:hover {
+            color: #f0f0f0;
+            transform: translateX(2px);
+        }
+
+        .breadcrumb-item.active {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .form-header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+        }
+
+        .ventas-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group label i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .form-control::placeholder {
+            color: rgba(77, 85, 108, 0.6);
+        }
+
+        /* Resumen de venta mejorado (usado para la vista previa) */
+        .ventas-summary {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .ventas-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--success-gradient);
+            border-radius: 2px;
+        }
+
+        .summary-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-header h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+            margin: 1rem -1rem -1rem -1rem;
+            padding: 1rem 2rem;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .summary-item:hover:not(:last-child) {
+            transform: translateX(5px);
+            padding-left: 10px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .summary-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Botones mejorados */
+        .btn {
+            border-radius: 12px;
+            padding: 14px 35px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: none;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            min-width: 180px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 12px 30px rgba(79, 172, 254, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 12px 30px rgba(108, 117, 125, 0.6);
+        }
+
+        .ventas-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Alerta informativa */
+        .info-alert {
+            background: rgba(23, 162, 184, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            border-radius: 12px;
+            border-left: 4px solid #17a2b8;
+            color: var(--text-primary);
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .info-alert:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.2);
+        }
+
+        .info-alert i {
+            color: #17a2b8;
+            margin-right: 0.7rem;
+            font-size: 1.1rem;
+        }
+
+        .info-alert strong {
+            color: var(--text-primary);
+        }
+
+        .info-alert ul {
+            margin-left: 1.5rem;
+            margin-top: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .info-alert li {
+            margin-bottom: 0.5rem;
+        }
+
+        /* Alertas de error */
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 12px;
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-danger i {
+            color: #dc3545;
+            margin-right: 0.5rem;
+        }
+
+        /* Animaciones */
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .ventas-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .form-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .form-content {
+                padding: 1rem;
+            }
+            
+            .form-section {
+                padding: 1.5rem;
+            }
+            
+            .ventas-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                margin-bottom: 0.5rem;
+                min-width: unset;
+            }
+        }
+
+        /* Scrollbar personalizado */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-gradient);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-gradient);
+        }
+    </style>
 </head>
 <body>
-    <div class="usuarios-container">
+    <div class="glass-container animate-fade-in">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
+        <nav aria-label="breadcrumb" class="modern-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
                 <li class="breadcrumb-item"><a href="/RMIE/app/controllers/UserController.php?accion=index">Usuarios</a></li>
                 <li class="breadcrumb-item active" aria-current="page">Editar</li>
             </ol>
         </nav>
+        <div class="form-header">
+            <h1><i class="fas fa-user-edit"></i> Editar Usuario: <?= htmlspecialchars($usuario->nombres . ' ' . $usuario->apellidos) ?></h1>
+            <p>Actualice los datos del usuario en el sistema</p>
+        </div>
 
-        <h1><i class="fas fa-user-edit"></i> Editar Usuario: <?= htmlspecialchars($usuario->nombres . ' ' . $usuario->apellidos) ?></h1>
+        <div class="form-content">
         
         <!-- Mostrar mensajes -->
         <?php if (isset($error)): ?>
@@ -38,9 +528,9 @@
         
         <div class="usuarios-form">
             <form method="POST" action="/RMIE/app/controllers/UserController.php?accion=edit&id=<?= $usuario->num_doc ?>" id="formUsuario">
-                <div class="row">
+                <div class="ventas-grid">
                     <!-- Información personal -->
-                    <div class="col-md-6">
+                    <div>
                         <h5><i class="fas fa-user"></i> Información Personal</h5>
                         
                         <div class="form-group">
@@ -48,12 +538,12 @@
                                 <i class="fas fa-hashtag"></i> Número de documento:
                             </label>
                             <input type="number" 
-                                   id="num_doc" 
-                                   name="num_doc" 
-                                   value="<?= htmlspecialchars($usuario->num_doc) ?>"
-                                   readonly
-                                   class="form-control-plaintext"
-                                   style="background-color: #f8f9fa; cursor: not-allowed;">
+                                id="num_doc" 
+                                name="num_doc" 
+                                value="<?= htmlspecialchars($usuario->num_doc) ?>"
+                                readonly
+                                class="form-control-plaintext"
+                                style="background-color: #f8f9fa; cursor: not-allowed;">
                             <small class="form-text text-muted">El número de documento no puede modificarse</small>
                         </div>
                         
@@ -61,7 +551,7 @@
                             <label for="tipo_doc">
                                 <i class="fas fa-id-card"></i> Tipo de documento:
                             </label>
-                            <select id="tipo_doc" name="tipo_doc" required>
+                            <select id="tipo_doc" name="tipo_doc" required class="form-select">
                                 <option value="">Seleccione el tipo</option>
                                 <option value="CC" <?= $usuario->tipo_doc === 'CC' ? 'selected' : '' ?>>Cédula de Ciudadanía</option>
                                 <option value="TI" <?= $usuario->tipo_doc === 'TI' ? 'selected' : '' ?>>Tarjeta de Identidad</option>
@@ -75,12 +565,12 @@
                                 <i class="fas fa-user"></i> Nombres:
                             </label>
                             <input type="text" 
-                                   id="nombres" 
-                                   name="nombres" 
-                                   required 
-                                   maxlength="45"
-                                   value="<?= htmlspecialchars($usuario->nombres) ?>"
-                                   placeholder="Nombres completos">
+                                id="nombres" 
+                                name="nombres" 
+                                required 
+                                maxlength="45"
+                                value="<?= htmlspecialchars($usuario->nombres) ?>"
+                                placeholder="Nombres completos" class="form-control">
                         </div>
                         
                         <div class="form-group">
@@ -88,12 +578,12 @@
                                 <i class="fas fa-user"></i> Apellidos:
                             </label>
                             <input type="text" 
-                                   id="apellidos" 
-                                   name="apellidos" 
-                                   required 
-                                   maxlength="45"
-                                   value="<?= htmlspecialchars($usuario->apellidos) ?>"
-                                   placeholder="Apellidos completos">
+                                id="apellidos" 
+                                name="apellidos" 
+                                required 
+                                maxlength="45"
+                                value="<?= htmlspecialchars($usuario->apellidos) ?>"
+                                placeholder="Apellidos completos" class="form-control">
                         </div>
                         
                         <!-- Información histórica -->
@@ -117,7 +607,7 @@
                     </div>
                     
                     <!-- Información de contacto -->
-                    <div class="col-md-6">
+                    <div>
                         <h5><i class="fas fa-address-book"></i> Información de Contacto</h5>
                         
                         <div class="form-group">
@@ -125,12 +615,12 @@
                                 <i class="fas fa-envelope"></i> Correo electrónico:
                             </label>
                             <input type="email" 
-                                   id="correo" 
-                                   name="correo" 
-                                   required 
-                                   maxlength="45"
-                                   value="<?= htmlspecialchars($usuario->correo) ?>"
-                                   placeholder="ejemplo@correo.com">
+                                id="correo" 
+                                name="correo" 
+                                required 
+                                maxlength="45"
+                                value="<?= htmlspecialchars($usuario->correo) ?>"
+                                placeholder="ejemplo@correo.com" class="form-control">
                         </div>
                         
                         <div class="form-group">
@@ -138,18 +628,18 @@
                                 <i class="fas fa-phone"></i> Número de celular:
                             </label>
                             <input type="tel" 
-                                   id="num_cel" 
-                                   name="num_cel" 
-                                   maxlength="45"
-                                   value="<?= htmlspecialchars($usuario->num_cel) ?>"
-                                   placeholder="Número de teléfono móvil">
+                                id="num_cel" 
+                                name="num_cel" 
+                                maxlength="45"
+                                value="<?= htmlspecialchars($usuario->num_cel) ?>"
+                                placeholder="Número de teléfono móvil" class="form-control">
                         </div>
                         
                         <div class="form-group">
                             <label for="rol">
                                 <i class="fas fa-user-tag"></i> Rol del usuario:
                             </label>
-                            <select id="rol" name="rol" required>
+                            <select id="rol" name="rol" required class="form-select">
                                 <option value="">Seleccione el rol</option>
                                 <option value="coordinador" <?= $usuario->rol === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="admin" <?= $usuario->rol === 'admin' ? 'selected' : '' ?>>Administrador</option>
@@ -185,7 +675,7 @@
                 
                 <div class="row">
                     <!-- Configuración de seguridad -->
-                    <div class="col-md-6">
+                    <div>
                         <h5><i class="fas fa-lock"></i> Configuración de Seguridad</h5>
                         
                         <div class="alert alert-warning">
@@ -198,10 +688,10 @@
                                 <i class="fas fa-key"></i> Nueva contraseña:
                             </label>
                             <input type="password" 
-                                   id="contrasena" 
-                                   name="contrasena" 
-                                   minlength="6"
-                                   placeholder="Nueva contraseña (opcional)">
+                                id="contrasena" 
+                                name="contrasena" 
+                                minlength="6"
+                                placeholder="Nueva contraseña (opcional)" class="form-control">
                         </div>
                         
                         <div class="form-group">
@@ -209,10 +699,10 @@
                                 <i class="fas fa-key"></i> Confirmar nueva contraseña:
                             </label>
                             <input type="password" 
-                                   id="confirmar_contrasena" 
-                                   name="confirmar_contrasena" 
-                                   minlength="6"
-                                   placeholder="Confirmar nueva contraseña">
+                                id="confirmar_contrasena" 
+                                name="confirmar_contrasena" 
+                                minlength="6"
+                                placeholder="Confirmar nueva contraseña" class="form-control">
                         </div>
                         
                         <!-- Requisitos de contraseña -->
@@ -227,10 +717,10 @@
                     </div>
                     
                     <!-- Vista previa del usuario -->
-                    <div class="col-md-6">
+                    <div>
                         <h5><i class="fas fa-eye"></i> Vista Previa</h5>
                         
-                        <div class="user-preview">
+                        <div class="ventas-summary user-preview">
                             <div class="preview-card">
                                 <div class="user-avatar-large" id="previewAvatar">
                                     <?= strtoupper(substr($usuario->nombres, 0, 1)) ?>
@@ -263,25 +753,26 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Botones -->
-                <div class="usuarios-buttons">
-                    <button type="submit" class="btn btn-primary">
+                <div class="ventas-buttons usuarios-buttons">
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Actualizar Usuario
                     </button>
                     <a href="/RMIE/app/controllers/UserController.php?accion=index" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Cancelar
                     </a>
-                    <button type="button" class="btn btn-info" onclick="window.print()" title="Imprimir información del usuario">
+                    <button type="button" class="btn btn-secondary" onclick="window.print()" title="Imprimir información del usuario">
                         <i class="fas fa-print"></i> Imprimir
                     </button>
                 </div>
             </form>
         </div>
-    </div>
+        </div> <!-- .form-content -->
+    </div> <!-- .glass-container -->
     
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript para validación y vista previa -->
     <script>

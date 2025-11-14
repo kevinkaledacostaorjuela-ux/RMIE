@@ -232,5 +232,4 @@ if (isset($_GET['accion'])) {
     $controller = new ProviderController();
     $controller->index();
 }
-?>
-?>
+ 

@@ -1,20 +1,291 @@
-<?php
-// ...existing code...
-?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Proveedor - RMIE</title>
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap 5.3.0 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .modern-breadcrumb {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .breadcrumb {
+            margin: 0;
+            background: none;
+        }
+
+        .breadcrumb-item a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .breadcrumb-item a:hover {
+            color: #f0f0f0;
+            transform: translateX(2px);
+        }
+
+        .breadcrumb-item.active {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.2rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .form-header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.3rem;
+        }
+
+        .form-header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 1.05rem;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1.8rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.12);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.2rem;
+        }
+
+        .ventas-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-group { margin-bottom: 1.2rem; }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.98rem;
+        }
+
+        .form-group label i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.97);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.07);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .form-control::placeholder { color: rgba(77, 85, 108, 0.55); }
+
+        .ventas-summary {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 12px;
+            padding: 1.4rem;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+        }
+
+        .ventas-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--secondary-gradient);
+            border-radius: 2px;
+        }
+
+        .summary-header { text-align: center; margin-bottom: 1rem; }
+
+        .summary-header h5 { color: var(--text-primary); font-weight: 700; font-size: 1.05rem; margin-bottom: 0.4rem; }
+
+        .summary-item { display:flex; justify-content:space-between; align-items:center; padding:0.7rem 0; border-bottom:1px solid rgba(255,255,255,0.06); }
+
+        .summary-item:last-child { border-bottom:none; font-weight:700; font-size:1.05rem; color:var(--text-primary); background: rgba(255,255,255,0.06); margin-top:0.8rem; padding:0.8rem; border-radius:8px; }
+
+        .summary-label { color: var(--text-secondary); font-weight:600; display:flex; align-items:center; gap:0.5rem; }
+        .summary-value { color: var(--text-primary); font-weight:700; }
+
+        .btn { border-radius: 12px; padding: 12px 28px; font-weight:700; }
+        .btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); transition: var(--transition); }
+        .btn:hover::before { left:100%; }
+        .btn-success { background: var(--success-gradient); color: white; box-shadow: 0 6px 20px rgba(79,172,254,0.15); }
+        .btn-secondary { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; }
+
+        .ventas-buttons { display:flex; justify-content:center; gap:1.2rem; margin-top:1.8rem; padding-top:1.2rem; border-top:1px solid rgba(255,255,255,0.12); }
+
+        .info-alert { background: rgba(23,162,184,0.08); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border:1px solid rgba(23,162,184,0.12); border-radius:12px; color:var(--text-primary); padding:1rem; }
+
+        .alert-danger { background: rgba(220,53,69,0.08); border-left:4px solid #dc3545; }
+
+        .animate-fade-in { animation: fadeIn 0.5s ease-out; }
+
+        @keyframes fadeIn { from { opacity:0; transform:translateY(12px);} to { opacity:1; transform:none; } }
+
+        @media (max-width: 992px) { .ventas-grid { grid-template-columns: 1fr; } }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .form-header h1 { font-size: 1.6rem; }
+            .form-content { padding: 1rem; }
+            .btn { width: 100%; }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: var(--secondary-gradient); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary-gradient); }
+    </style>
 </head>
 <body>
-    <div class="proveedores-container">
+    <div class="glass-container animate-fade-in">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
+        <nav aria-label="breadcrumb" class="modern-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
                 <li class="breadcrumb-item"><a href="/RMIE/app/controllers/ProviderController.php?accion=index">Proveedores</a></li>
@@ -22,173 +293,116 @@
             </ol>
         </nav>
 
-        <h1><i class="fas fa-edit"></i> Editar Proveedor: <?= htmlspecialchars($proveedor->nombre_distribuidor ?? 'Sin nombre') ?></h1>
-        
-        <!-- Mostrar errores si existen -->
-        <?php if (isset($error)): ?>
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-        
-        <div class="proveedores-form">
+        <!-- Header -->
+        <div class="form-header">
+            <h1><i class="fas fa-edit"></i> Editar Proveedor: <?= htmlspecialchars($proveedor->nombre_distribuidor ?? 'Sin nombre') ?></h1>
+            <p>Actualice la información del proveedor en el sistema</p>
+        </div>
+
+        <div class="form-content">
+            <!-- Mostrar errores si existen -->
+            <?php if (isset($error)): ?>
+                <div class="alert-danger alert-dismissible fade show" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> <?= htmlspecialchars($error) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif; ?>
+
             <form method="POST" action="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= $proveedor->id_proveedores ?>" id="formEditarProveedor">
-                <div class="row">
-                    <!-- Información de la empresa -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-building"></i> Información de la Empresa</h5>
-                        
-                        <div class="form-group">
-                            <label for="nombre_distribuidor">
-                                <i class="fas fa-truck"></i> Nombre del Distribuidor/Empresa:
-                            </label>
-                            <input type="text" 
-                                   id="nombre_distribuidor" 
-                                   name="nombre_distribuidor" 
-                                   required 
-                                   value="<?= htmlspecialchars($proveedor->nombre_distribuidor ?? '') ?>"
-                                   placeholder="Ingrese el nombre de la empresa"
-                                   maxlength="100">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="estado">
-                                <i class="fas fa-info-circle"></i> Estado del Proveedor:
-                            </label>
-                            <select id="estado" name="estado" required>
-                                <option value="">Seleccione un estado</option>
-                                <option value="activo" <?= ($proveedor->estado ?? '') === 'activo' ? 'selected' : '' ?>>
-                                    Activo
-                                </option>
-                                <option value="inactivo" <?= ($proveedor->estado ?? '') === 'inactivo' ? 'selected' : '' ?>>
-                                    Inactivo
-                                </option>
-                                <option value="pendiente" <?= ($proveedor->estado ?? '') === 'pendiente' ? 'selected' : '' ?>>
-                                    Pendiente
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <!-- Información de contacto -->
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-address-book"></i> Información de Contacto</h5>
-                        
-                        <div class="form-group">
-                            <label for="correo">
-                                <i class="fas fa-envelope"></i> Correo Electrónico:
-                            </label>
-                            <input type="email" 
-                                   id="correo" 
-                                   name="correo" 
-                                   required 
-                                   value="<?= htmlspecialchars($proveedor->correo ?? '') ?>"
-                                   placeholder="ejemplo@empresa.com"
-                                   maxlength="100">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="cel_proveedor">
-                                <i class="fas fa-phone"></i> Número de Celular:
-                            </label>
-                            <input type="tel" 
-                                   id="cel_proveedor" 
-                                   name="cel_proveedor" 
-                                   required 
-                                   value="<?= htmlspecialchars($proveedor->cel_proveedor ?? '') ?>"
-                                   placeholder="Ej: +57 300 123 4567"
-                                   maxlength="20"
-                                   pattern="[\+]?[0-9\s\-\(\)]+">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Campo de ubicación -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-map-marker-alt"></i> Ubicación</h5>
-                        
-                        <div class="form-group">
-                            <label for="ubicacion">
-                                <i class="fas fa-map-marker-alt"></i> Ubicación/Dirección:
-                            </label>
-                            <textarea id="ubicacion" 
-                                      name="ubicacion" 
-                                      rows="3"
-                                      placeholder="Ingrese la dirección completa del proveedor (ciudad, estado, dirección específica)"
-                                      maxlength="255"><?= htmlspecialchars($proveedor->ubicacion ?? '') ?></textarea>
-                            <small class="form-text text-muted">
-                                <i class="fas fa-info-circle"></i> Este campo es opcional pero recomendado para ubicar al proveedor
-                            </small>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <!-- Espacio para información adicional si es necesario -->
-                    </div>
-                </div>
-                
-                <!-- Información del estado actual -->
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-chart-line"></i> Estado Actual del Proveedor</h5>
-                        
-                        <div class="alert alert-info">
-                            <div class="d-flex align-items-center mb-2">
-                                <strong><i class="fas fa-id-badge"></i> ID del Proveedor:</strong>
-                                <span class="badge bg-secondary ms-2">#<?= htmlspecialchars($proveedor->id_proveedores ?? 'N/A') ?></span>
+                <div class="form-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="section-title"><i class="fas fa-building"></i> Información de la Empresa</h5>
+                            <div class="form-group">
+                                <label for="nombre_distribuidor"><i class="fas fa-truck"></i> Nombre del Distribuidor/Empresa:</label>
+                                <input type="text" id="nombre_distribuidor" name="nombre_distribuidor" required 
+                                       value="<?= htmlspecialchars($proveedor->nombre_distribuidor ?? '') ?>" placeholder="Ingrese el nombre de la empresa" maxlength="100" class="form-control">
                             </div>
-                            
-                            <div class="d-flex align-items-center mb-2">
-                                <strong><i class="fas fa-info-circle"></i> Estado Actual:</strong>
-                                <?php
-                                $estado = strtolower($proveedor->estado ?? 'pendiente');
-                                $claseEstado = '';
-                                $iconoEstado = '';
-                                
-                                switch ($estado) {
-                                    case 'activo':
-                                        $claseEstado = 'estado-activo';
-                                        $iconoEstado = 'fas fa-check-circle';
-                                        break;
-                                    case 'inactivo':
-                                        $claseEstado = 'estado-inactivo';
-                                        $iconoEstado = 'fas fa-times-circle';
-                                        break;
-                                    case 'pendiente':
-                                        $claseEstado = 'estado-pendiente';
-                                        $iconoEstado = 'fas fa-clock';
-                                        break;
-                                    default:
-                                        $claseEstado = 'estado-pendiente';
-                                        $iconoEstado = 'fas fa-question-circle';
-                                }
-                                ?>
-                                <span class="estado-badge <?= $claseEstado ?> ms-2">
-                                    <i class="<?= $iconoEstado ?>"></i> <?= ucfirst($estado) ?>
-                                </span>
+
+                            <div class="form-group">
+                                <label for="estado"><i class="fas fa-info-circle"></i> Estado del Proveedor:</label>
+                                <select id="estado" name="estado" required class="form-select">
+                                    <option value="">Seleccione un estado</option>
+                                    <option value="activo" <?= ($proveedor->estado ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                                    <option value="inactivo" <?= ($proveedor->estado ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                                    <option value="pendiente" <?= ($proveedor->estado ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="section-title"><i class="fas fa-address-book"></i> Información de Contacto</h5>
+                            <div class="form-group">
+                                <label for="correo"><i class="fas fa-envelope"></i> Correo Electrónico:</label>
+                                <input type="email" id="correo" name="correo" required value="<?= htmlspecialchars($proveedor->correo ?? '') ?>" placeholder="ejemplo@empresa.com" maxlength="100" class="form-control">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="cel_proveedor"><i class="fas fa-phone"></i> Número de Celular:</label>
+                                <input type="tel" id="cel_proveedor" name="cel_proveedor" required value="<?= htmlspecialchars($proveedor->cel_proveedor ?? '') ?>" placeholder="Ej: +57 300 123 4567" maxlength="20" pattern="[\+]?[0-9\s\-\(\)]+" class="form-control">
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="col-md-6">
-                        <h5><i class="fas fa-clipboard-list"></i> Información Adicional</h5>
-                        
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Importante:</strong> 
-                            <ul class="mb-0 mt-2">
-                                <li>Verifique que los datos de contacto estén actualizados</li>
-                                <li>Cambiar el estado puede afectar las operaciones comerciales</li>
-                                <li>Los cambios se aplicarán inmediatamente</li>
-                            </ul>
+                </div>
+
+                <div class="form-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="section-title"><i class="fas fa-map-marker-alt"></i> Ubicación</h5>
+                            <div class="form-group">
+                                <label for="ubicacion"><i class="fas fa-map-marker-alt"></i> Ubicación/Dirección:</label>
+                                <textarea id="ubicacion" name="ubicacion" rows="3" placeholder="Ingrese la dirección completa del proveedor (ciudad, estado, dirección específica)" maxlength="255" class="form-control"><?= htmlspecialchars($proveedor->ubicacion ?? '') ?></textarea>
+                                <small class="form-text text-muted"><i class="fas fa-info-circle"></i> Este campo es opcional pero recomendado para ubicar al proveedor</small>
+                            </div>
+                        </div>
+                        <div class="col-md-6"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="section-title"><i class="fas fa-chart-line"></i> Estado Actual del Proveedor</h5>
+                            <div class="alert alert-info">
+                                <div class="d-flex align-items-center mb-2">
+                                    <strong><i class="fas fa-id-badge"></i> ID del Proveedor:</strong>
+                                    <span class="badge bg-secondary ms-2">#<?= htmlspecialchars($proveedor->id_proveedores ?? 'N/A') ?></span>
+                                </div>
+                                <div class="d-flex align-items-center mb-2">
+                                    <strong><i class="fas fa-info-circle"></i> Estado Actual:</strong>
+                                    <?php
+                                    $estado = strtolower($proveedor->estado ?? 'pendiente');
+                                    $claseEstado = '';
+                                    $iconoEstado = '';
+                                    switch ($estado) {
+                                        case 'activo': $claseEstado = 'estado-activo'; $iconoEstado = 'fas fa-check-circle'; break;
+                                        case 'inactivo': $claseEstado = 'estado-inactivo'; $iconoEstado = 'fas fa-times-circle'; break;
+                                        case 'pendiente': $claseEstado = 'estado-pendiente'; $iconoEstado = 'fas fa-clock'; break;
+                                        default: $claseEstado = 'estado-pendiente'; $iconoEstado = 'fas fa-question-circle';
+                                    }
+                                    ?>
+                                    <span class="estado-badge <?= $claseEstado ?> ms-2"><i class="<?= $iconoEstado ?>"></i> <?= ucfirst($estado) ?></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5 class="section-title"><i class="fas fa-clipboard-list"></i> Información Adicional</h5>
+                            <div class="info-alert">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <strong>Importante:</strong>
+                                <ul class="mb-0 mt-2">
+                                    <li>Verifique que los datos de contacto estén actualizados</li>
+                                    <li>Cambiar el estado puede afectar las operaciones comerciales</li>
+                                    <li>Los cambios se aplicarán inmediatamente</li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-                
-                <!-- Botones -->
+
                 <div class="proveedores-buttons">
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-success">
                         <i class="fas fa-save"></i> Actualizar Proveedor
                     </button>
                     <a href="/RMIE/app/controllers/ProviderController.php?accion=index" class="btn btn-secondary">
@@ -200,7 +414,7 @@
     </div>
     
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <!-- JavaScript para validación -->
     <script>

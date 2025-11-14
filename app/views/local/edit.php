@@ -1,280 +1,479 @@
 <?php
-// La vista asume que ya se ha verificado la sesión y que $local está disponible
-// Todas las validaciones se manejan en el controlador
 $errors = $_SESSION['error'] ?? '';
 $success = $_SESSION['success'] ?? '';
-
-// Limpiar mensajes de sesión
 unset($_SESSION['error'], $_SESSION['success']);
-
-// El procesamiento del formulario se maneja en el controlador
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Local - RMIE</title>
+    <!-- Bootstrap 5.3.0 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome 6.0.0 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
         }
 
-        .form-container {
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        /* Breadcrumb moderno */
+        .modern-breadcrumb {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 20px auto;
-            max-width: 900px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
         }
 
-        .page-title {
-            color: #fff;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        .breadcrumb {
+            margin: 0;
+            background: none;
         }
 
-        .form-label {
-            color: #fff;
-            font-weight: 600;
-            margin-bottom: 8px;
+        .breadcrumb-item a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
         }
 
-        .form-control-modern {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            color: #fff;
-            padding: 12px 15px;
-            transition: all 0.3s ease;
+        .breadcrumb-item a:hover {
+            color: #f0f0f0;
         }
 
-        .form-control-modern::placeholder {
+        .breadcrumb-item.active {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .breadcrumb-item + .breadcrumb-item::before {
             color: rgba(255, 255, 255, 0.6);
         }
 
-        .form-control-modern:focus {
-            background: rgba(255, 255, 255, 0.2);
-            border-color: #4facfe;
-            box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
-            color: #fff;
+        .form-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
+        .form-header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
+        }
+
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+        }
+
+        .locales-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-group label i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
             outline: none;
         }
 
-        .form-control-modern.changed {
-            border-color: #ffd700;
-            box-shadow: 0 0 0 0.1rem rgba(255, 215, 0, 0.3);
+        .form-control::placeholder {
+            color: rgba(77, 85, 108, 0.6);
         }
 
-        .btn-modern {
-            padding: 12px 25px;
-            border-radius: 25px;
-            border: none;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        /* Resumen del local */
+        .locales-summary {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
         }
 
-        .btn-success-modern {
-            background: linear-gradient(45deg, #4facfe, #00f2fe);
-            color: white;
+        .locales-summary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--success-gradient);
+            border-radius: 2px;
         }
 
-        .btn-secondary-modern {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-        }
-
-        .btn-warning-modern {
-            background: linear-gradient(45deg, #ff9a9e, #fecfef);
-            color: white;
-        }
-
-        .btn-modern:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .alert-modern {
-            border-radius: 15px;
-            border: none;
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-        }
-
-        .alert-success-modern {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-            border: 1px solid #2ecc71;
-        }
-
-        .alert-danger-modern {
-            background: rgba(231, 76, 60, 0.2);
-            color: #e74c3c;
-            border: 1px solid #e74c3c;
-        }
-
-        .alert-warning-modern {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-            border: 1px solid #ffc107;
-        }
-
-        .comparison-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .comparison-title {
-            color: #fff;
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 15px;
+        .summary-header {
             text-align: center;
+            margin-bottom: 1.5rem;
         }
 
-        .comparison-item {
+        .summary-header h5 {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .summary-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 8px 0;
+            padding: 1rem 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: #fff;
         }
 
-        .comparison-item:last-child {
+        .summary-item:last-child {
             border-bottom: none;
         }
 
-        .comparison-label {
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.8);
-            flex: 1;
-        }
-
-        .comparison-values {
-            flex: 2;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .comparison-original {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 0.9rem;
-        }
-
-        .comparison-new {
-            font-weight: 600;
-            color: #ffd700;
-        }
-
-        .comparison-arrow {
-            margin: 0 10px;
-            color: #4facfe;
-        }
-
-        .unchanged {
-            color: rgba(255, 255, 255, 0.8) !important;
-        }
-
-        .info-card {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-left: 4px solid #4facfe;
-        }
-
-        .info-card .info-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-
-        .info-card .info-value {
-            color: #fff;
+        .summary-label {
+            color: var(--text-secondary);
             font-weight: 600;
         }
 
-        .loading-screen {
-            position: fixed;
+        .summary-value {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        /* Botones */
+        .btn {
+            border-radius: 12px;
+            padding: 14px 35px;
+            font-weight: 700;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            border: none;
+            transition: var(--transition);
+            cursor: pointer;
+            min-width: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: var(--transition);
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-success {
+            background: var(--success-gradient);
+            color: white;
+            box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+            box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+        }
+
+        .locales-buttons {
             display: flex;
             justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Alerta informativa */
+        .info-alert {
+            background: rgba(23, 162, 184, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(23, 162, 184, 0.3);
+            border-radius: 12px;
+            border-left: 4px solid #17a2b8;
+            padding: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-alert i {
+            color: #17a2b8;
+            margin-right: 0.7rem;
+        }
+
+        .alert {
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .alert-danger {
+            background: rgba(220, 53, 69, 0.1);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-danger i, .alert-success i {
+            margin-right: 0.5rem;
+        }
+
+        /* Status badge */
+        .status-badge {
+            display: inline-flex;
             align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
         }
 
-        .loading-content {
-            text-align: center;
-            color: white;
+        .status-activo {
+            background: rgba(40, 167, 69, 0.2);
+            border: 1px solid rgba(40, 167, 69, 0.5);
+            color: #155724;
         }
 
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+        .status-inactivo {
+            background: rgba(220, 53, 69, 0.2);
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            color: #721c24;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @media (max-width: 768px) {
+            .locales-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .locales-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3>Cargando Editor...</h3>
-            <p>Preparando la edición del local</p>
+    <div class="glass-container animate-fade-in">
+        <!-- Breadcrumb -->
+        <nav aria-label="breadcrumb" class="modern-breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/RMIE/app/views/dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
+                <li class="breadcrumb-item"><a href="/RMIE/app/controllers/LocalController.php?accion=index">Locales</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Editar Local</li>
+            </ol>
+        </nav>
+
+        <!-- Header -->
+        <div class="form-header">
+            <h1><i class="fas fa-edit"></i> Editar Local #<?php echo $local->id_locales; ?></h1>
+            <p>Modifica la información del local</p>
         </div>
-    </div>
 
-    <div class="container">
-        <div class="form-container">
-            <h1 class="page-title">
-                <i class="fas fa-edit"></i> Editar Local #<?php echo $local->id_locales; ?>
-            </h1>
-
+        <!-- Form Content -->
+        <div class="form-content">
+            <!-- Alertas -->
             <?php if ($success): ?>
-                <div class="alert alert-modern alert-success-modern">
+                <div class="alert alert-success">
                     <i class="fas fa-check-circle"></i> <?php echo $success; ?>
                 </div>
             <?php endif; ?>
-
+            
             <?php if (!empty($errors)): ?>
-                <div class="alert alert-modern alert-danger-modern">
-                    <i class="fas fa-exclamation-circle"></i>
-                    <ul class="mb-0">
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <strong>Se encontraron los siguientes errores:</strong>
+                    <ul style="margin-left: 1.5rem; margin-top: 0.5rem; margin-bottom: 0;">
                         <?php foreach ($errors as $error): ?>
                             <li><?php echo $error; ?></li>
                         <?php endforeach; ?>
@@ -282,240 +481,269 @@ unset($_SESSION['error'], $_SESSION['success']);
                 </div>
             <?php endif; ?>
 
-            <div class="row">
-                <div class="col-md-8">
-                    <!-- Información del local -->
-                    <div class="info-card">
-                        <div class="info-label">Creado el:</div>
-                        <div class="info-value">
-                            <i class="fas fa-calendar"></i>
-                            <?php echo isset($local->fecha_creacion) ? date('d/m/Y H:i', strtotime($local->fecha_creacion)) : 'No disponible'; ?>
-                        </div>
-                    </div>
-
-                    <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=update&id=<?php echo $local->id_locales; ?>" id="localForm">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="nombre" class="form-label">
-                                    <i class="fas fa-building"></i> Nombre del Local
+            <form method="POST" action="/RMIE/app/controllers/LocalController.php?accion=update&id=<?php echo $local->id_locales; ?>" id="formLocal">
+                <!-- Grid Principal -->
+                <div class="locales-grid">
+                    <!-- Columna Izquierda: Formulario -->
+                    <div>
+                        <!-- Sección Información Básica -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-building"></i> Información Básica
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="nombre">
+                                    <i class="fas fa-store"></i> Nombre del Local
                                 </label>
                                 <input type="text" 
-                                       class="form-control form-control-modern" 
+                                       class="form-control"
                                        id="nombre" 
                                        name="nombre" 
                                        value="<?php echo htmlspecialchars($local->nombre_local); ?>"
+                                       placeholder="Ingrese el nombre del local"
                                        required>
                             </div>
-
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="direccion" class="form-label">
-                                <i class="fas fa-map-marker-alt"></i> Dirección
-                            </label>
-                            <input type="text" 
-                                   class="form-control form-control-modern" 
-                                   id="direccion" 
-                                   name="direccion" 
-                                   value="<?php echo htmlspecialchars($local->direccion); ?>"
-                                   required>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="telefono" class="form-label">
+                            
+                            <div class="form-group">
+                                <label for="direccion">
+                                    <i class="fas fa-map-marker-alt"></i> Dirección
+                                </label>
+                                <input type="text" 
+                                       class="form-control"
+                                       id="direccion" 
+                                       name="direccion" 
+                                       value="<?php echo htmlspecialchars($local->direccion); ?>"
+                                       placeholder="Dirección completa del local"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="telefono">
                                     <i class="fas fa-phone"></i> Teléfono
                                 </label>
                                 <input type="tel" 
-                                       class="form-control form-control-modern" 
+                                       class="form-control"
                                        id="telefono" 
                                        name="telefono" 
                                        value="<?php echo htmlspecialchars($local->cel_local); ?>"
+                                       placeholder="Número de contacto"
                                        required>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="estado" class="form-label">
+                        </div>
+
+                        <!-- Sección Ubicación -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-map"></i> Ubicación
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="localidad">
+                                    <i class="fas fa-city"></i> Localidad
+                                </label>
+                                <input type="text" 
+                                       class="form-control"
+                                       id="localidad" 
+                                       name="localidad" 
+                                       value="<?php echo htmlspecialchars($local->localidad ?? ''); ?>"
+                                       placeholder="Ciudad o localidad"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="barrio">
+                                    <i class="fas fa-map-marked-alt"></i> Barrio
+                                </label>
+                                <input type="text" 
+                                       class="form-control"
+                                       id="barrio" 
+                                       name="barrio" 
+                                       value="<?php echo htmlspecialchars($local->barrio ?? ''); ?>"
+                                       placeholder="Barrio o sector"
+                                       required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="estado">
                                     <i class="fas fa-toggle-on"></i> Estado
                                 </label>
-                                <select class="form-control form-control-modern" 
-                                        id="estado" 
-                                        name="estado"
-                                        required>
+                                <select class="form-select" id="estado" name="estado" required>
                                     <option value="activo" <?php echo $local->estado === 'activo' ? 'selected' : ''; ?>>Activo</option>
                                     <option value="inactivo" <?php echo $local->estado === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
                                 </select>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="localidad" class="form-label">
-                                    <i class="fas fa-city"></i> Localidad
-                                </label>
-                                <input type="text" 
-                                       class="form-control form-control-modern" 
-                                       id="localidad" 
-                                       name="localidad" 
-                                       value="<?php echo htmlspecialchars($local->localidad ?? ''); ?>"
-                                       required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label for="barrio" class="form-label">
-                                    <i class="fas fa-map-marked-alt"></i> Barrio
-                                </label>
-                                <input type="text" 
-                                       class="form-control form-control-modern" 
-                                       id="barrio" 
-                                       name="barrio" 
-                                       value="<?php echo htmlspecialchars($local->barrio ?? ''); ?>"
-                                       required>
-                            </div>
-                        </div>
-
-
-
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
-                               class="btn btn-modern btn-secondary-modern me-md-2">
-                                <i class="fas fa-arrow-left"></i> Cancelar
-                            </a>
-                            <button type="button" 
-                                    class="btn btn-modern btn-warning-modern me-md-2"
-                                    onclick="resetForm()">
-                                <i class="fas fa-undo"></i> Resetear
-                            </button>
-                            <button type="submit" class="btn btn-modern btn-success-modern" id="submitBtn">
-                                <i class="fas fa-save"></i> Guardar Cambios
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="comparison-card">
-                        <div class="comparison-title">
-                            <i class="fas fa-exchange-alt"></i> Comparación de Cambios
-                        </div>
-                        <div id="changes-content">
-                            <div class="text-center text-white-50 py-3">
-                                <i class="fas fa-info-circle"></i><br>
-                                Los cambios aparecerán aquí
-                            </div>
-                        </div>
                     </div>
 
-                    <div class="alert alert-modern alert-warning-modern mt-3">
-                        <i class="fas fa-lightbulb"></i>
-                        <strong>Consejo:</strong> Los campos modificados se resaltan en dorado
+                    <!-- Columna Derecha: Resumen -->
+                    <div>
+                        <div class="locales-summary">
+                            <div class="summary-header">
+                                <h5><i class="fas fa-info-circle"></i> Información del Local</h5>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-hashtag"></i> ID:</span>
+                                <span class="summary-value">#<?php echo $local->id_locales; ?></span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-store"></i> Nombre:</span>
+                                <span class="summary-value" id="nombre-mostrar"><?php echo htmlspecialchars($local->nombre_local); ?></span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-map-marker-alt"></i> Dirección:</span>
+                                <span class="summary-value" id="direccion-mostrar"><?php echo htmlspecialchars($local->direccion); ?></span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-phone"></i> Teléfono:</span>
+                                <span class="summary-value" id="telefono-mostrar"><?php echo htmlspecialchars($local->cel_local); ?></span>
+                            </div>
+                            
+                            <div class="summary-item">
+                                <span class="summary-label"><i class="fas fa-toggle-on"></i> Estado:</span>
+                                <span class="summary-value">
+                                    <span class="status-badge status-<?php echo strtolower($local->estado); ?>" id="estado-mostrar">
+                                        <i class="fas fa-<?php echo $local->estado === 'activo' ? 'check-circle' : 'times-circle'; ?>"></i>
+                                        <?php echo ucfirst($local->estado); ?>
+                                    </span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Info del local -->
+                        <div class="info-alert">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Información histórica:</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Creado: <?php echo isset($local->fecha_creacion) ? date('d/m/Y H:i', strtotime($local->fecha_creacion)) : 'No disponible'; ?></li>
+                                <li>Los cambios se aplicarán inmediatamente</li>
+                                <li>Verifica la información antes de guardar</li>
+                            </ul>
+                        </div>
+
+                        <div class="info-alert" style="margin-top: 1rem; border-left-color: #ffc107; background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3);">
+                            <i class="fas fa-exclamation-triangle" style="color: #ffc107;"></i>
+                            <strong>Importante:</strong>
+                            <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                                <li>Desactivar un local puede afectar operaciones</li>
+                                <li>Verifica que los datos sean correctos</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
+
+                <!-- Botones -->
+                <div class="locales-buttons">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar Cambios
+                    </button>
+                    <a href="/RMIE/app/controllers/LocalController.php?accion=index" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Cancelar
+                    </a>
+                    <button type="button" class="btn btn-warning" onclick="resetForm()">
+                        <i class="fas fa-undo"></i> Resetear
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        window.addEventListener('load', function() {
-            document.getElementById('loadingScreen').style.opacity = '0';
-            setTimeout(function() {
-                document.getElementById('loadingScreen').style.display = 'none';
-            }, 500);
-        });
-
-        // Original values for comparison
+    document.addEventListener('DOMContentLoaded', function() {
+        const nombreInput = document.getElementById('nombre');
+        const direccionInput = document.getElementById('direccion');
+        const telefonoInput = document.getElementById('telefono');
+        const estadoSelect = document.getElementById('estado');
+        const form = document.getElementById('formLocal');
+        
+        // Valores originales
         const originalValues = {
-            nombre: document.getElementById('nombre').dataset.original,
-            tipo: document.getElementById('tipo').dataset.original,
-            direccion: document.getElementById('direccion').dataset.original,
-            telefono: document.getElementById('telefono').dataset.original,
-            estado: document.getElementById('estado').dataset.original,
-            descripcion: document.getElementById('descripcion').dataset.original
+            nombre: nombreInput.value,
+            direccion: direccionInput.value,
+            telefono: telefonoInput.value,
+            estado: estadoSelect.value
         };
-
-        // Check for changes and update UI
-        function checkChanges() {
-            const fields = ['nombre', 'tipo', 'direccion', 'telefono', 'estado', 'descripcion'];
-            let hasChanges = false;
-            let changesHtml = '';
-
-            fields.forEach(field => {
-                const input = document.getElementById(field);
-                const currentValue = input.value;
-                const originalValue = originalValues[field];
-                
-                if (currentValue !== originalValue) {
-                    hasChanges = true;
-                    input.classList.add('changed');
-                    
-                    const fieldName = input.previousElementSibling.textContent.replace(/[^\w\s]/gi, '').trim();
-                    changesHtml += `
-                        <div class="comparison-item">
-                            <div class="comparison-label">${fieldName}:</div>
-                            <div class="comparison-values">
-                                <span class="comparison-original">${originalValue || '-'}</span>
-                                <i class="fas fa-arrow-right comparison-arrow"></i>
-                                <span class="comparison-new">${currentValue || '-'}</span>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    input.classList.remove('changed');
-                }
-            });
-
-            const changesContent = document.getElementById('changes-content');
-            if (hasChanges) {
-                changesContent.innerHTML = changesHtml;
-                document.getElementById('submitBtn').disabled = false;
-            } else {
-                changesContent.innerHTML = `
-                    <div class="text-center text-white-50 py-3">
-                        <i class="fas fa-check-circle"></i><br>
-                        Sin cambios detectados
-                    </div>
-                `;
-                document.getElementById('submitBtn').disabled = true;
-            }
+        
+        function actualizarNombre() {
+            document.getElementById('nombre-mostrar').textContent = nombreInput.value || '-';
         }
-
-        // Reset form to original values
+        
+        function actualizarDireccion() {
+            document.getElementById('direccion-mostrar').textContent = direccionInput.value || '-';
+        }
+        
+        function actualizarTelefono() {
+            document.getElementById('telefono-mostrar').textContent = telefonoInput.value || '-';
+        }
+        
+        function actualizarEstado() {
+            const estado = estadoSelect.value;
+            const badge = document.getElementById('estado-mostrar');
+            badge.className = 'status-badge status-' + estado;
+            badge.innerHTML = '<i class="fas fa-' + (estado === 'activo' ? 'check-circle' : 'times-circle') + '"></i> ' + 
+                              estado.charAt(0).toUpperCase() + estado.slice(1);
+        }
+        
         function resetForm() {
-            Object.keys(originalValues).forEach(field => {
-                document.getElementById(field).value = originalValues[field];
-            });
-            checkChanges();
+            nombreInput.value = originalValues.nombre;
+            direccionInput.value = originalValues.direccion;
+            telefonoInput.value = originalValues.telefono;
+            estadoSelect.value = originalValues.estado;
+            
+            actualizarNombre();
+            actualizarDireccion();
+            actualizarTelefono();
+            actualizarEstado();
         }
-
-        // Event listeners for all form fields
-        document.getElementById('nombre').addEventListener('input', checkChanges);
-        document.getElementById('tipo').addEventListener('change', checkChanges);
-        document.getElementById('direccion').addEventListener('input', checkChanges);
-        document.getElementById('telefono').addEventListener('input', checkChanges);
-        document.getElementById('estado').addEventListener('change', checkChanges);
-        document.getElementById('descripcion').addEventListener('input', checkChanges);
-
-        // Form validation
-        document.getElementById('localForm').addEventListener('submit', function(e) {
-            const nombre = document.getElementById('nombre').value.trim();
-            const direccion = document.getElementById('direccion').value.trim();
-
-            if (!nombre) {
+        
+        // Event listeners
+        nombreInput.addEventListener('input', actualizarNombre);
+        direccionInput.addEventListener('input', actualizarDireccion);
+        telefonoInput.addEventListener('input', actualizarTelefono);
+        estadoSelect.addEventListener('change', actualizarEstado);
+        
+        // Validación del formulario
+        form.addEventListener('submit', function(e) {
+            if (!nombreInput.value.trim()) {
                 e.preventDefault();
                 alert('El nombre del local es obligatorio');
-                document.getElementById('nombre').focus();
+                nombreInput.focus();
                 return;
             }
-
-            if (!direccion) {
+            
+            if (!direccionInput.value.trim()) {
                 e.preventDefault();
                 alert('La dirección es obligatoria');
-                document.getElementById('direccion').focus();
+                direccionInput.focus();
+                return;
+            }
+            
+            if (!telefonoInput.value.trim()) {
+                e.preventDefault();
+                alert('El teléfono es obligatorio');
+                telefonoInput.focus();
                 return;
             }
         });
-
-        // Initialize change detection
-        checkChanges();
+        
+        // Auto-ocultar alertas después de 5 segundos
+        setTimeout(function() {
+            const alerts = document.querySelectorAll('.alert-danger, .alert-success');
+            alerts.forEach(alert => {
+                alert.style.transition = 'opacity 0.5s';
+                alert.style.opacity = '0';
+                setTimeout(() => alert.remove(), 500);
+            });
+        }, 5000);
+        
+        // Hacer resetForm global
+        window.resetForm = resetForm;
+    });
     </script>
 </body>
 </html>

@@ -12,75 +12,218 @@ if (!isset($cliente)) {
     <title>Editar Cliente - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/RMIE/public/css/styles.css">
     <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --danger-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --glass-bg: rgba(255, 255, 255, 0.25);
+            --glass-border: rgba(255, 255, 255, 0.18);
+            --text-primary: #2d3748;
+            --text-secondary: #4a5568;
+            --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .clientes-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
 
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--shadow-medium);
+            transition: var(--transition);
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .glass-container:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
         /* Breadcrumb moderno */
-        .subcategorias-breadcrumb {
+        .modern-breadcrumb {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 15px 25px;
-            margin-bottom: 25px;
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 2rem;
         }
 
         .breadcrumb {
             margin: 0;
-            background: transparent;
+            background: none;
         }
 
         .breadcrumb-item a {
-            color: #fff;
+            color: white;
             text-decoration: none;
-            transition: all 0.3s ease;
+            transition: var(--transition);
         }
 
         .breadcrumb-item a:hover {
-            color: #ffd700;
-            transform: translateY(-1px);
+            color: #f0f0f0;
+            transform: translateX(2px);
         }
 
         .breadcrumb-item.active {
-            color: #ffd700;
-            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
         }
 
-        /* Título principal */
-        h1 {
-            color: #fff;
-            font-weight: 700;
-            margin-bottom: 30px;
+        .form-header {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 2.5rem;
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
             text-align: center;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            overflow: hidden;
         }
 
-        h1 i {
-            margin-right: 15px;
-            color: #ffd700;
+        .form-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
         }
 
-        /* Formulario moderno */
-        .clientes-form {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        .form-header h1 {
+            position: relative;
+            z-index: 1;
+            font-weight: 700;
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            position: relative;
+            z-index: 1;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .form-content {
+            padding: 2rem;
+        }
+
+        .form-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: var(--transition);
         }
 
+        .form-section:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+        }
+
+        .section-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.4rem;
+        }
+
+        .ventas-grid {
+            display: grid;
+            grid-template-columns: 1fr 360px;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .form-control, .form-select {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 1rem;
+            transition: var(--transition);
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .ventas-summary {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 16px;
+            padding: 1.4rem;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+        }
         /* Títulos de sección */
         h5 {
             color: #667eea;
@@ -452,9 +595,9 @@ if (!isset($cliente)) {
     </style>
 </head>
 <body>
-    <div class="clientes-container">
+    <div class="glass-container animate-fade-in">
         <!-- Breadcrumb -->
-        <nav aria-label="breadcrumb" class="subcategorias-breadcrumb">
+        <nav aria-label="breadcrumb" class="modern-breadcrumb">
             <ol class="breadcrumb">
                 <li class="breadcrumb-item"><a href="../dashboard.php"><i class="fas fa-home"></i> Inicio</a></li>
                 <li class="breadcrumb-item"><a href="/RMIE/app/controllers/ClientController.php?accion=index">Clientes</a></li>
@@ -462,8 +605,12 @@ if (!isset($cliente)) {
             </ol>
         </nav>
 
-        <h1><i class="fas fa-user-edit"></i> Editar Cliente: <?= htmlspecialchars($cliente->nombre) ?></h1>
-        
+        <div class="form-header">
+            <h1><i class="fas fa-user-edit"></i> Editar Cliente: <?= htmlspecialchars($cliente->nombre) ?></h1>
+            <p>Actualizar datos del cliente y opciones de contacto</p>
+        </div>
+
+        <div class="form-content">
         <!-- Mostrar mensajes -->
         <?php if (isset($error)): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -478,7 +625,7 @@ if (!isset($cliente)) {
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         <?php endif; ?>
-        
+
         <div class="clientes-form">
             <form method="POST" action="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= $cliente->id_clientes ?>" id="formCliente">
                 <div class="row">
@@ -505,12 +652,13 @@ if (!isset($cliente)) {
                                 <span class="required">*</span>
                             </label>
                             <input type="text" 
-                                   id="nombre" 
-                                   name="nombre" 
-                                   required 
-                                   maxlength="100"
-                                   value="<?= htmlspecialchars($cliente->nombre ?? '') ?>"
-                                   placeholder="Nombre completo del cliente">
+                                id="nombre" 
+                                name="nombre" 
+                                required 
+                                maxlength="100"
+                                value="<?= htmlspecialchars($cliente->nombre ?? '') ?>"
+                                placeholder="Nombre completo del cliente"
+                                class="form-control">
                         </div>
                         
                         <div class="form-group">
@@ -521,7 +669,8 @@ if (!isset($cliente)) {
                                       name="descripcion" 
                                       rows="3"
                                       maxlength="255"
-                                      placeholder="Información adicional sobre el cliente (opcional)"><?= htmlspecialchars($cliente->descripcion ?? '') ?></textarea>
+                                      placeholder="Información adicional sobre el cliente (opcional)"
+                                      class="form-control"><?= htmlspecialchars($cliente->descripcion ?? '') ?></textarea>
                             <small class="form-text text-muted">Información adicional, empresa, cargo, etc.</small>
                         </div>
                         
@@ -530,7 +679,7 @@ if (!isset($cliente)) {
                                 <i class="fas fa-store"></i> Local asignado:
                                 <span class="required">*</span>
                             </label>
-                            <select id="id_locales" name="id_locales" required>
+                            <select id="id_locales" name="id_locales" required class="form-select">
                                 <option value="">Seleccione un local</option>
                                 <?php if (isset($locales) && is_array($locales)): ?>
                                     <?php foreach ($locales as $local): ?>
@@ -550,7 +699,7 @@ if (!isset($cliente)) {
                             <label for="estado">
                                 <i class="fas fa-toggle-on"></i> Estado:
                             </label>
-                            <select id="estado" name="estado">
+                            <select id="estado" name="estado" class="form-select">
                                 <option value="activo" <?= ($cliente->estado ?? 'activo') === 'activo' ? 'selected' : '' ?>>Activo</option>
                                 <option value="inactivo" <?= ($cliente->estado ?? 'activo') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                             </select>
@@ -586,12 +735,13 @@ if (!isset($cliente)) {
                                 <span class="required">*</span>
                             </label>
                             <input type="email" 
-                                   id="correo" 
-                                   name="correo" 
-                                   required 
-                                   maxlength="100"
-                                   value="<?= htmlspecialchars($cliente->correo ?? '') ?>"
-                                   placeholder="ejemplo@correo.com">
+                                id="correo" 
+                                name="correo" 
+                                required 
+                                maxlength="100"
+                                value="<?= htmlspecialchars($cliente->correo ?? '') ?>"
+                                placeholder="ejemplo@correo.com"
+                                class="form-control">
                             <small class="form-text text-muted">Correo único para identificar al cliente</small>
                         </div>
                         
@@ -600,11 +750,12 @@ if (!isset($cliente)) {
                                 <i class="fas fa-phone"></i> Teléfono/Celular:
                             </label>
                             <input type="tel" 
-                                   id="cel_cliente" 
-                                   name="cel_cliente" 
-                                   maxlength="20"
-                                   value="<?= htmlspecialchars($cliente->cel_cliente ?? '') ?>"
-                                   placeholder="Número de teléfono móvil">
+                                id="cel_cliente" 
+                                name="cel_cliente" 
+                                maxlength="20"
+                                value="<?= htmlspecialchars($cliente->cel_cliente ?? '') ?>"
+                                placeholder="Número de teléfono móvil"
+                                class="form-control">
                         </div>
                         
                         <!-- Campos adicionales -->
@@ -613,11 +764,12 @@ if (!isset($cliente)) {
                                 <i class="fas fa-map-marker-alt"></i> Dirección:
                             </label>
                             <input type="text" 
-                                   id="direccion" 
-                                   name="direccion" 
-                                   maxlength="200"
-                                   value="<?= htmlspecialchars($cliente->direccion ?? '') ?>"
-                                   placeholder="Dirección completa del cliente">
+                                id="direccion" 
+                                name="direccion" 
+                                maxlength="200"
+                                value="<?= htmlspecialchars($cliente->direccion ?? '') ?>"
+                                placeholder="Dirección completa del cliente"
+                                class="form-control">
                             <small class="form-text text-muted">Dirección de residencia o trabajo</small>
                         </div>
                         
@@ -632,7 +784,8 @@ if (!isset($cliente)) {
                                            name="ciudad" 
                                            maxlength="100"
                                            value="<?= htmlspecialchars($cliente->ciudad ?? '') ?>"
-                                           placeholder="Ciudad">
+                                           placeholder="Ciudad"
+                                           class="form-control">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -644,7 +797,8 @@ if (!isset($cliente)) {
                                            id="fecha_nacimiento" 
                                            name="fecha_nacimiento" 
                                            value="<?= htmlspecialchars($cliente->fecha_nacimiento ?? '') ?>"
-                                           max="<?= date('Y-m-d') ?>">
+                                           max="<?= date('Y-m-d') ?>"
+                                           class="form-control">
                                 </div>
                             </div>
                         </div>
@@ -657,7 +811,8 @@ if (!isset($cliente)) {
                                       name="preferencias" 
                                       rows="2"
                                       maxlength="500"
-                                      placeholder="Preferencias de productos, observaciones especiales, etc."><?= htmlspecialchars($cliente->preferencias ?? '') ?></textarea>
+                                      placeholder="Preferencias de productos, observaciones especiales, etc."
+                                      class="form-control"><?= htmlspecialchars($cliente->preferencias ?? '') ?></textarea>
                             <small class="form-text text-muted">Información sobre gustos, alergias, preferencias especiales</small>
                         </div>
                         
@@ -731,6 +886,7 @@ if (!isset($cliente)) {
                     </button>
                 </div>
             </form>
+        </div>
         </div>
     </div>
     
