@@ -78,42 +78,6 @@ class AuthUtils {
     }
     
     /**
-     * Verifica si el usuario actual es auxiliar
-     * @return bool true si es auxiliar, false si no
-     */
-    public static function isAuxiliar() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        return isset($_SESSION['user']) && isset($_SESSION['rol']) && $_SESSION['rol'] === 'auxiliar';
-    }
-    
-    /**
-     * Verifica si el usuario actual es admin
-     * @return bool true si es admin, false si no
-     */
-    public static function isAdmin() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        return isset($_SESSION['user']) && isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin';
-    }
-    
-    /**
-     * Verifica si el usuario actual es coordinador
-     * @return bool true si es coordinador, false si no
-     */
-    public static function isCoordinador() {
-        if (session_status() == PHP_SESSION_NONE) {
-            session_start();
-        }
-        
-        return isset($_SESSION['user']) && isset($_SESSION['rol']) && $_SESSION['rol'] === 'coordinador';
-    }
-    
-    /**
      * Verifica si el usuario actual es administrador
      * @return bool true si es admin, false si no
      */

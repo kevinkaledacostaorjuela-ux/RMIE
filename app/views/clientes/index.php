@@ -229,6 +229,17 @@ $stats = $statsQuery->fetch_assoc();
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
+        /* Estilos para los option del select */
+        .form-control-modern option {
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .form-control-modern option:hover {
+            background: #34495e;
+        }
+
         .alert-modern {
             border-radius: 15px;
             border: none;

@@ -60,7 +60,7 @@ class ProductController {
             // Obtener productos con filtros
             $productos = Product::getFiltered($conn, $filtros);
             
-            include __DIR__ . '/../views/local/productos/index.php';
+            include __DIR__ . '/../views/productos/index.php';
         } catch (Exception $e) {
             echo '<pre>Error en index: ' . $e->getMessage() . '</pre>';
         }
@@ -118,7 +118,7 @@ class ProductController {
         $proveedores = Provider::getAll($conn);
         $usuarios = User::getAll($conn);
         
-        include __DIR__ . '/../views/local/productos/create.php';
+        include __DIR__ . '/../views/productos/create.php';
     }
 
     public function edit($id) {
@@ -166,7 +166,7 @@ class ProductController {
                 }
             }
         }
-        include __DIR__ . '/../views/local/productos/edit.php';
+        include __DIR__ . '/../views/productos/edit.php';
     }
 
     public function delete($id) {

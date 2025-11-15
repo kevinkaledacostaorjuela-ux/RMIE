@@ -215,6 +215,17 @@ if (isset($proveedores) && is_array($proveedores)) {
             transform: scale(1.02);
         }
 
+        /* Estilos para los option del select */
+        .form-control-modern option {
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .form-control-modern option:hover {
+            background: #34495e;
+        }
+
         .btn-modern {
             padding: 8px 16px;
             border-radius: 25px;

@@ -215,6 +215,17 @@ if (isset($rutas) && is_array($rutas)) {
             color: #fff;
         }
 
+        /* Estilos para los option del select */
+        .form-control-modern option {
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .form-control-modern option:hover {
+            background: #34495e;
+        }
+
         /* Contenedor principal de estadísticas */
         .main-stats-container {
             background: rgba(255, 255, 255, 0.05);
@@ -1305,25 +1316,9 @@ if (isset($rutas) && is_array($rutas)) {
                     <i class="fas fa-plus-circle"></i>
                     <span>Nueva Ruta</span>
                 </button>
-                <button class="quick-action-btn" onclick="importarRutas()">
-                    <i class="fas fa-upload"></i>
-                    <span>Importar</span>
-                </button>
-                <button class="quick-action-btn" onclick="exportarTodo()">
-                    <i class="fas fa-download"></i>
-                    <span>Exportar Todo</span>
-                </button>
-                <button class="quick-action-btn" onclick="optimizarRutas()">
-                    <i class="fas fa-route"></i>
-                    <span>Optimizar</span>
-                </button>
                 <button class="quick-action-btn" onclick="verMapa()">
                     <i class="fas fa-map"></i>
                     <span>Ver Mapa</span>
-                </button>
-                <button class="quick-action-btn" onclick="reporteRapido()">
-                    <i class="fas fa-chart-line"></i>
-                    <span>Reporte</span>
                 </button>
             </div>
         </div>
@@ -1336,17 +1331,6 @@ if (isset($rutas) && is_array($rutas)) {
             <form method="GET" action="" id="filterForm">
                 <!-- Filtros principales en una sola fila más compacta -->
                 <div class="row">
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-search"></i> Dirección
-                        </label>
-                        <input type="text" 
-                               name="direccion" 
-                               class="rutas-filter-input" 
-                               placeholder="Buscar dirección..."
-                               value="<?= htmlspecialchars($_GET['direccion'] ?? '') ?>">
-                    </div>
-                    
                     <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
                         <label class="rutas-filter-label">
                             <i class="fas fa-tags"></i> Estado
@@ -1370,63 +1354,8 @@ if (isset($rutas) && is_array($rutas)) {
                                placeholder="Nombre del local..."
                                value="<?= htmlspecialchars($_GET['local'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-user"></i> Cliente
-                        </label>
-                        <input type="text" 
-                               name="cliente" 
-                               class="rutas-filter-input" 
-                               placeholder="Nombre del cliente..."
-                               value="<?= htmlspecialchars($_GET['cliente'] ?? '') ?>">
-                    </div>
-
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-list"></i> Mostrar
-                        </label>
-                        <select name="limite" class="rutas-filter-input">
-                            <option value="10" <?= ($_GET['limite'] ?? '10') === '10' ? 'selected' : '' ?>>10 por página</option>
-                            <option value="25" <?= ($_GET['limite'] ?? '') === '25' ? 'selected' : '' ?>>25 por página</option>
-                            <option value="50" <?= ($_GET['limite'] ?? '') === '50' ? 'selected' : '' ?>>50 por página</option>
-                        </select>
-                    </div>
-                    
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="rutas-btn rutas-btn-primary w-100 mb-1">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                            <button type="button" class="rutas-btn rutas-btn-warning w-100" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
-                    </div>
                 </div>
-                
-                <!-- Filtros adicionales compactos -->
-                <div class="row mt-2">
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-calendar-alt"></i> Desde
-                        </label>
-                        <input type="date" 
-                               name="fecha_desde" 
-                               class="rutas-filter-input" 
-                               value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
-                    </div>
-                    
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-2">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-calendar-alt"></i> Hasta
-                        </label>
-                        <input type="date" 
-                               name="fecha_hasta" 
-                               class="rutas-filter-input" 
-                               value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
-                    </div>
-                    
+                  
                     <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
                         <label class="rutas-filter-label">
                             <i class="fas fa-sort"></i> Ordenar por
@@ -1438,11 +1367,16 @@ if (isset($rutas) && is_array($rutas)) {
                             <option value="estado_asc" <?= ($_GET['orden'] ?? '') === 'estado_asc' ? 'selected' : '' ?>>Estado A-Z</option>
                         </select>
                     </div>
-                    
-                    <div class="col-lg-2 col-md-6 col-sm-6 mb-2 d-flex align-items-end">
-                        <button type="button" class="rutas-btn rutas-btn-success w-100" onclick="exportarRutas()">
-                            <i class="fas fa-download"></i> Exportar
-                        </button>
+
+                       <div class="col-lg-2 col-md-4 col-sm-6 mb-3 d-flex align-items-end">
+                        <div class="w-100">
+                            <button type="submit" class="rutas-btn rutas-btn-primary w-100 mb-1">
+                                <i class="fas fa-search"></i> Buscar
+                            </button>
+                            <button type="button" class="rutas-btn rutas-btn-warning w-100" onclick="limpiarFiltros()">
+                                <i class="fas fa-times"></i> Limpiar
+                            </button>
+                        </div>
                     </div>
 
                     <div class="col-lg-3 col-md-6 col-sm-12 mb-2 d-flex align-items-end">
@@ -1463,20 +1397,11 @@ if (isset($rutas) && is_array($rutas)) {
                     <a href="/RMIE/app/controllers/RouteController.php?accion=create" class="btn btn-modern btn-success-modern btn-lg">
                         <i class="fas fa-plus"></i> Nueva Ruta
                     </a>
-                    <button class="btn btn-modern btn-info-modern btn-lg" onclick="verVistaAvanzada()">
-                        <i class="fas fa-eye"></i> Vista Avanzada
-                    </button>
                 </div>
                 <div class="secondary-actions">
                     <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                         <i class="fas fa-arrow-left"></i> Dashboard
                     </a>
-                    <button class="btn btn-modern btn-warning-modern" onclick="configurarAlertas()">
-                        <i class="fas fa-bell"></i> Alertas
-                    </button>
-                    <button class="btn btn-modern btn-secondary-modern" onclick="ayudaContextual()">
-                        <i class="fas fa-question-circle"></i> Ayuda
-                    </button>
                 </div>
             </div>
         </div>

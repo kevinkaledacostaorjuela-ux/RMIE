@@ -248,6 +248,17 @@ unset($_SESSION['success'], $_SESSION['error']);
             vertical-align: middle;
         }
 
+        /* Estilos para los option del select */
+        .form-control-modern option {
+            background: #2c3e50;
+            color: #fff;
+            padding: 10px;
+        }
+
+        .form-control-modern option:hover {
+            background: #34495e;
+        }
+
         .badge-modern {
             padding: 6px 12px;
             border-radius: 15px;
