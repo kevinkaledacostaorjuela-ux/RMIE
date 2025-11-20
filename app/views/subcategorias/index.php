@@ -856,6 +856,29 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Tabla de Subcategorías (Desktop) -->
         <div class="table-container d-none d-md-block">
+            <?php include __DIR__ . '/../partials/card_mode.php'; ?>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="card-toggle">
+                    <button id="toggleSubcategorias">Ver como tarjetas</button>
+                </div>
+            </div>
+            <div id="cardsSubcategorias" class="card-container">
+                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+                    <?php foreach ($subcategorias as $subcatData): ?>
+                        <?php $subcat = $subcatData['obj'] ?? $subcatData; $categoria_nombre = $subcatData['categoria_nombre'] ?? '';?>
+                        <div class="card-item">
+                            <div class="card-title"><?= htmlspecialchars($subcat->nombre ?? '') ?></div>
+                            <div class="card-subtitle"><?= htmlspecialchars($categoria_nombre) ?></div>
+                            <div class="card-actions">
+                                <a class="btn-edit" href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>">Editar</a>
+                                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
+                                <a class="btn-delete" href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </div>
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>

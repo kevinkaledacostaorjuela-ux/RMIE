@@ -11,6 +11,56 @@ require_once __DIR__ . '/../../models/Product.php';
 
 $productos = Product::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $productos = array_filter($productos, function($p) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            if (stripos($p->nombre ?? '', $filtros['nombre']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por categoría
+        if (!empty($filtros['categoria'])) {
+            if (stripos($p->categoria_nombre ?? '', $filtros['categoria']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($p->estado ?? 'activo') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por stock mínimo
+        if (!empty($filtros['stock_min']) && ($p->stock ?? 0) < (int)$filtros['stock_min']) {
+            return false;
+        }
+        
+        // Filtro por stock máximo
+        if (!empty($filtros['stock_max']) && ($p->stock ?? 0) > (int)$filtros['stock_max']) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($p->fecha_registro)) {
+            if (strtotime($p->fecha_registro) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($p->fecha_registro)) {
+            if (strtotime($p->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalProductos = count($productos);
 $productosActivos = count(array_filter($productos, fn($p) => strtolower($p->estado ?? 'activo') === 'activo'));
 $productosInactivos = $totalProductos - $productosActivos;
@@ -105,6 +155,50 @@ $totalStock = array_sum(array_map(fn($p) => $p->stock ?? 0, $productos));
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(250, 112, 154, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(250, 112, 154, 0.3);
+        }
+        .filter-box h4 {
+            color: #fa709a;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(250, 112, 154, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #fa709a;
+            box-shadow: 0 0 0 0.2rem rgba(250, 112, 154, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +237,56 @@ $totalStock = array_sum(array_map(fn($p) => $p->stock ?? 0, $productos));
                     <div class="stat-label">Stock Total</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="productos">
+                <div class="row">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-box"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-tag"></i> Categoría</label>
+                        <input type="text" name="categoria" class="form-control" placeholder="Categoría..." value="<?= htmlspecialchars($filtros['categoria'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-1 mb-3">
+                        <label class="form-label"><i class="fas fa-cubes"></i> Stock Mín</label>
+                        <input type="number" name="stock_min" class="form-control" placeholder="0" value="<?= htmlspecialchars($filtros['stock_min'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3">
+                        <label class="form-label"><i class="fas fa-cubes"></i> Stock Máx</label>
+                        <input type="number" name="stock_max" class="form-control" placeholder="999" value="<?= htmlspecialchars($filtros['stock_max'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=productos" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

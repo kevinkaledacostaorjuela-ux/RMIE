@@ -454,6 +454,74 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
         </div>
 
+        <!-- Vista selector: Tarjetas / Tabla -->
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
+            <button id="viewCardsBtnAlertas" class="btn btn-modern btn-primary-modern">Tarjetas</button>
+            <button id="viewTableBtnAlertas" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        </div>
+
+        <!-- Cards container for alertas -->
+        <div id="cardsContainerAlertas" style="display:none; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+                <?php if (!empty($alertas) && is_array($alertas)): ?>
+                    <?php foreach ($alertas as $alerta): ?>
+                        <?php
+                            $fecha_actual = date('Y-m-d');
+                            $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
+                            $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
+                            if ($dias_restantes !== null) {
+                                if ($dias_restantes < 0) {
+                                    $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
+                                } elseif ($dias_restantes <= 7) {
+                                    $estado = 'Crítica'; $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
+                                } elseif ($dias_restantes <= 30) {
+                                    $estado = 'Próxima'; $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
+                                } else {
+                                    $estado = 'Normal'; $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
+                                }
+                            } else {
+                                $estado = 'N/A'; $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
+                            }
+                        ?>
+                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong style="color:#fff;">Alerta #<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></strong>
+                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Producto: <?= htmlspecialchars($alerta['producto_nombre'] ?? 'N/A') ?></div>
+                                </div>
+                                <div style="font-size:1.4rem; color:rgba(255,255,255,0.8);"><i class="fas fa-exclamation-triangle"></i></div>
+                            </div>
+                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div><strong>Tipo:</strong> <?= htmlspecialchars($alerta['tipo_alerta'] ?? 'N/A') ?></div>
+                                    <div><strong>Cantidad mínima:</strong> <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?></div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div class="text-muted"><?= $fecha_caducidad ? date('d/m/Y', strtotime($fecha_caducidad)) : 'N/A' ?></div>
+                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.8);"><?= $dias_restantes !== null ? ($dias_restantes < 0 ? 'Vencida hace ' . abs(round($dias_restantes)) . ' días' : round($dias_restantes) . ' días restantes') : '' ?></div>
+                                </div>
+                            </div>
+                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <span class="badge badge-modern <?= $badge_class ?>">
+                                        <i class="<?= $icono ?>"></i> <?= $estado ?>
+                                    </span>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <button type="button" class="btn btn-sm btn-modern btn-danger-modern" onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')"><i class="fas fa-trash"></i></button>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div>No hay alertas disponibles</div>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <!-- Filtros Avanzados -->
         <div class="filters-container">
             <div class="filter-title">
@@ -710,6 +778,32 @@ unset($_SESSION['success'], $_SESSION['error']);
                 form.submit();
             }
         }
+
+        // View toggle: Tarjetas / Tabla (alertas)
+        (function(){
+            const cardsBtn = document.getElementById('viewCardsBtnAlertas');
+            const tableBtn = document.getElementById('viewTableBtnAlertas');
+            const cardsContainer = document.getElementById('cardsContainerAlertas');
+            const tableContainer = document.querySelector('.table-container');
+
+            function setView(view){
+                if (view === 'cards'){
+                    if (cardsContainer) cardsContainer.style.display = '';
+                    if (tableContainer) tableContainer.style.display = 'none';
+                } else {
+                    if (cardsContainer) cardsContainer.style.display = 'none';
+                    if (tableContainer) tableContainer.style.display = '';
+                }
+                try{ localStorage.setItem('alertas_view', view); }catch(e){}
+            }
+
+            if (cardsBtn && tableBtn){
+                cardsBtn.addEventListener('click', ()=>setView('cards'));
+                tableBtn.addEventListener('click', ()=>setView('table'));
+                const pref = (function(){ try{ return localStorage.getItem('alertas_view'); }catch(e){return null;} })();
+                setView(pref === 'cards' ? 'cards' : 'table');
+            }
+        })();
     </script>
 </body>
 </html>

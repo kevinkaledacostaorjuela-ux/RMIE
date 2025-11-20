@@ -11,6 +11,46 @@ require_once __DIR__ . '/../../models/Provider.php';
 
 $proveedores = Provider::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $proveedores = array_filter($proveedores, function($p) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            if (stripos($p->nombre_distribuidor ?? '', $filtros['nombre']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por ubicación
+        if (!empty($filtros['ubicacion'])) {
+            if (stripos($p->ubicacion ?? '', $filtros['ubicacion']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($p->estado ?? 'activo') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($p->fecha_registro)) {
+            if (strtotime($p->fecha_registro) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($p->fecha_registro)) {
+            if (strtotime($p->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalProveedores = count($proveedores);
 $proveedoresActivos = count(array_filter($proveedores, fn($p) => strtolower($p->estado ?? 'activo') === 'activo'));
 $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
@@ -104,6 +144,50 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(240, 147, 251, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(240, 147, 251, 0.3);
+        }
+        .filter-box h4 {
+            color: #f093fb;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(240, 147, 251, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #f093fb;
+            box-shadow: 0 0 0 0.2rem rgba(240, 147, 251, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +220,46 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
                     <div class="stat-label">Inactivos</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="proveedores">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-truck"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Ubicación</label>
+                        <input type="text" name="ubicacion" class="form-control" placeholder="Filtrar por ubicación..." value="<?= htmlspecialchars($filtros['ubicacion'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Filtrar</button>
+                        <a href="/RMIE/app/controllers/ReportController.php?action=proveedores" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

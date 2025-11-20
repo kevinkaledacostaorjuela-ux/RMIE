@@ -476,6 +476,52 @@ $stats = $statsQuery->fetch_assoc();
             </div>
         </div>
 
+        <!-- Vista selector: Tarjetas / Tabla -->
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
+            <button id="viewCardsBtnClientes" class="btn btn-modern btn-primary-modern">Tarjetas</button>
+            <button id="viewTableBtnClientes" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        </div>
+
+        <!-- Cards container for clientes -->
+        <div id="cardsContainerClientes" style="display:none; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+                <?php if (isset($clientes) && is_array($clientes) && !empty($clientes)): ?>
+                    <?php foreach ($clientes as $cliente): ?>
+                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
+                            <div style="display:flex; gap:12px; align-items:center;">
+                                <div class="client-icon" style="flex-shrink:0;"><i class="fas fa-user"></i></div>
+                                <div style="flex:1;">
+                                    <strong style="color:#fff;"><?= htmlspecialchars($cliente->nombre ?? 'Sin nombre') ?></strong>
+                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Documento: <?= htmlspecialchars($cliente->documento ?? 'N/A') ?></div>
+                                </div>
+                            </div>
+                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div><i class="fas fa-envelope"></i> <?= htmlspecialchars($cliente->correo ?? 'Sin email') ?></div>
+                                    <div><i class="fas fa-phone"></i> <?= htmlspecialchars($cliente->cel_cliente ?? 'Sin teléfono') ?></div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <?php if (($cliente->estado ?? '') === 'activo'): ?>
+                                        <span class="badge badge-modern badge-success">Activo</span>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-danger">Inactivo</span>
+                                    <?php endif; ?>
+                                    <div style="margin-top:8px; display:flex; gap:6px; justify-content:flex-end;">
+                                        <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
+                                        <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
+                                        <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Está seguro de eliminar el cliente \"<?= addslashes($cliente->nombre ?? '') ?>\"?')"><i class="fas fa-trash"></i></a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div>No hay clientes disponibles</div>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <!-- Filtros -->
         <div class="filters-container">
             <div class="filter-title">
@@ -709,6 +755,32 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                 }
             });
         });
+
+        // View toggle: Tarjetas / Tabla (clientes)
+        (function(){
+            const cardsBtn = document.getElementById('viewCardsBtnClientes');
+            const tableBtn = document.getElementById('viewTableBtnClientes');
+            const cardsContainer = document.getElementById('cardsContainerClientes');
+            const tableContainer = document.querySelector('.table-container');
+
+            function setView(view){
+                if (view === 'cards'){
+                    if (cardsContainer) cardsContainer.style.display = '';
+                    if (tableContainer) tableContainer.style.display = 'none';
+                } else {
+                    if (cardsContainer) cardsContainer.style.display = 'none';
+                    if (tableContainer) tableContainer.style.display = '';
+                }
+                try{ localStorage.setItem('clientes_view', view); }catch(e){}
+            }
+
+            if (cardsBtn && tableBtn){
+                cardsBtn.addEventListener('click', ()=>setView('cards'));
+                tableBtn.addEventListener('click', ()=>setView('table'));
+                const pref = (function(){ try{ return localStorage.getItem('clientes_view'); }catch(e){return null;} })();
+                setView(pref === 'cards' ? 'cards' : 'table');
+            }
+        })();
     </script>
 </body>
 </html>

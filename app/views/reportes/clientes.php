@@ -11,6 +11,46 @@ require_once __DIR__ . '/../../models/Client.php';
 
 $clientes = Client::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $clientes = array_filter($clientes, function($c) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            if (stripos($c->nombre ?? '', $filtros['nombre']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por ciudad/local
+        if (!empty($filtros['ciudad'])) {
+            if (stripos($c->local_nombre ?? '', $filtros['ciudad']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($c->estado ?? 'activo') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($c->fecha_registro)) {
+            if (strtotime($c->fecha_registro) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($c->fecha_registro)) {
+            if (strtotime($c->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalClientes = count($clientes);
 $clientesActivos = count(array_filter($clientes, fn($c) => strtolower($c->estado ?? 'activo') === 'activo'));
 $clientesInactivos = $totalClientes - $clientesActivos;
@@ -104,6 +144,50 @@ $clientesInactivos = $totalClientes - $clientesActivos;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: #333;
         }
+        .filter-box {
+            background: rgba(168, 237, 234, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(168, 237, 234, 0.3);
+        }
+        .filter-box h4 {
+            color: #13547a;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(168, 237, 234, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #a8edea;
+            box-shadow: 0 0 0 0.2rem rgba(168, 237, 234, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +220,46 @@ $clientesInactivos = $totalClientes - $clientesActivos;
                     <div class="stat-label" style="opacity: 0.9;">Inactivos</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="clientes">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-user-tie"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-city"></i> Ciudad/Local</label>
+                        <input type="text" name="ciudad" class="form-control" placeholder="Filtrar por ciudad..." value="<?= htmlspecialchars($filtros['ciudad'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Filtrar</button>
+                        <a href="/RMIE/app/controllers/ReportController.php?action=clientes" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

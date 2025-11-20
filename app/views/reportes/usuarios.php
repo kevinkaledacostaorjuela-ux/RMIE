@@ -9,7 +9,46 @@ if (!isset($_SESSION['user'])) {
 
 require_once __DIR__ . '/../../models/User.php';
 
-$usuarios = User::getAll($conn);
+$usuarios = User::getAll($conn, $filtros ?? []);
+
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $usuarios = array_filter($usuarios, function($u) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            $nombreCompleto = strtolower($u->nombres . ' ' . $u->apellidos);
+            if (strpos($nombreCompleto, strtolower($filtros['nombre'])) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por rol
+        if (!empty($filtros['rol']) && strtolower($u->rol ?? '') !== strtolower($filtros['rol'])) {
+            return false;
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($u->estado ?? 'activo') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($u->fecha_creacion)) {
+            if (strtotime($u->fecha_creacion) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($u->fecha_creacion)) {
+            if (strtotime($u->fecha_creacion) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
 
 $totalUsuarios = count($usuarios);
 $usuariosActivos = count(array_filter($usuarios, fn($u) => strtolower($u->estado ?? 'activo') === 'activo'));
@@ -105,6 +144,50 @@ $administradores = count(array_filter($usuarios, fn($u) => strtolower($u->rol ??
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        .filter-box h4 {
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -143,6 +226,54 @@ $administradores = count(array_filter($usuarios, fn($u) => strtolower($u->rol ??
                     <div class="stat-label">Administradores</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="usuarios">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-user"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-user-tag"></i> Rol</label>
+                        <select name="rol" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="administrador" <?= ($filtros['rol'] ?? '') === 'administrador' ? 'selected' : '' ?>>Administrador</option>
+                            <option value="gerente" <?= ($filtros['rol'] ?? '') === 'gerente' ? 'selected' : '' ?>>Gerente</option>
+                            <option value="coordinador" <?= ($filtros['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
+                            <option value="vendedor" <?= ($filtros['rol'] ?? '') === 'vendedor' ? 'selected' : '' ?>>Vendedor</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=usuarios" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

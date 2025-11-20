@@ -699,6 +699,59 @@ $stats = $statsQuery->fetch_assoc();
             </div>
         </div>
 
+        <!-- Vista selector: Tarjetas / Tabla -->
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
+            <button id="viewCardsBtnLocales" class="btn btn-modern btn-primary-modern">Tarjetas</button>
+            <button id="viewTableBtnLocales" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        </div>
+
+        <!-- Cards container for locales -->
+        <div id="cardsContainerLocales" style="display:none; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
+                <?php if (!empty($locales) && is_array($locales)): ?>
+                    <?php foreach ($locales as $local): ?>
+                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
+                                <div style="display:flex; gap:12px; align-items:center;">
+                                    <div class="local-icon"><i class="fas fa-building"></i></div>
+                                    <div>
+                                        <strong style="color:#fff;"><?= htmlspecialchars($local->nombre_local ?? 'Sin nombre') ?></strong>
+                                        <div style="font-size:0.9rem; color:rgba(255,255,255,0.7);"><?= htmlspecialchars($local->direccion ?? 'Sin dirección') ?></div>
+                                    </div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <?php if (!empty($local->total_clientes) && $local->total_clientes > 0): ?>
+                                        <span class="badge" style="background: linear-gradient(45deg, #11998e, #38ef7d); color: white; font-size: 1rem; padding: 8px 12px;">
+                                            <i class="fas fa-users"></i> <?= $local->total_clientes ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6);">0</span>
+                                    <?php endif; ?>
+                                    <div style="margin-top:8px;">
+                                        <span class="badge badge-status badge-<?= htmlspecialchars($local->estado ?? 'inactivo') ?>"><?= ucfirst($local->estado ?? 'Inactivo') ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div><i class="fas fa-city"></i> <?= htmlspecialchars($local->localidad ?? 'N/A') ?></div>
+                                    <div><i class="fas fa-map-marked-alt"></i> <?= htmlspecialchars($local->barrio ?? 'N/A') ?></div>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?= urlencode($local->id_locales ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?= urlencode($local->id_locales ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Estás seguro de eliminar el local \"<?= addslashes($local->nombre_local ?? '') ?>\"?')"><i class="fas fa-trash"></i></a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div>No hay locales disponibles</div>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <!-- Tabla de Locales -->
         <div class="table-container">
             <?php if (empty($locales)): ?>
@@ -911,6 +964,32 @@ $stats = $statsQuery->fetch_assoc();
                 this.style.background = 'transparent';
             });
         });
+
+        // View toggle: Tarjetas / Tabla (locales)
+        (function(){
+            const cardsBtn = document.getElementById('viewCardsBtnLocales');
+            const tableBtn = document.getElementById('viewTableBtnLocales');
+            const cardsContainer = document.getElementById('cardsContainerLocales');
+            const tableContainer = document.querySelector('.table-container');
+
+            function setView(view){
+                if (view === 'cards'){
+                    if (cardsContainer) cardsContainer.style.display = '';
+                    if (tableContainer) tableContainer.style.display = 'none';
+                } else {
+                    if (cardsContainer) cardsContainer.style.display = 'none';
+                    if (tableContainer) tableContainer.style.display = '';
+                }
+                try{ localStorage.setItem('locales_view', view); }catch(e){}
+            }
+
+            if (cardsBtn && tableBtn){
+                cardsBtn.addEventListener('click', ()=>setView('cards'));
+                tableBtn.addEventListener('click', ()=>setView('table'));
+                const pref = (function(){ try{ return localStorage.getItem('locales_view'); }catch(e){return null;} })();
+                setView(pref === 'cards' ? 'cards' : 'table');
+            }
+        })();
     </script>
 </body>
 </html>

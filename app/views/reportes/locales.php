@@ -11,6 +11,47 @@ require_once __DIR__ . '/../../models/Local.php';
 
 $locales = Local::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $locales = array_filter($locales, function($l) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            if (stripos($l->nombre_local ?? '', $filtros['nombre']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por ubicación/dirección
+        if (!empty($filtros['ubicacion'])) {
+            if (stripos($l->direccion ?? '', $filtros['ubicacion']) === false && 
+                stripos($l->localidad ?? '', $filtros['ubicacion']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($l->estado ?? 'activo') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($l->fecha_registro)) {
+            if (strtotime($l->fecha_registro) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($l->fecha_registro)) {
+            if (strtotime($l->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalLocales = count($locales);
 $localesActivos = count(array_filter($locales, fn($l) => strtolower($l->estado ?? 'activo') === 'activo'));
 $localesInactivos = $totalLocales - $localesActivos;
@@ -104,6 +145,50 @@ $localesInactivos = $totalLocales - $localesActivos;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(48, 207, 208, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(48, 207, 208, 0.3);
+        }
+        .filter-box h4 {
+            color: #330867;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(48, 207, 208, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #30cfd0;
+            box-shadow: 0 0 0 0.2rem rgba(48, 207, 208, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +221,46 @@ $localesInactivos = $totalLocales - $localesActivos;
                     <div class="stat-label">Inactivos</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="locales">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-store"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Ubicación</label>
+                        <input type="text" name="ubicacion" class="form-control" placeholder="Filtrar por ubicación..." value="<?= htmlspecialchars($filtros['ubicacion'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-filter"><i class="fas fa-search"></i> Filtrar</button>
+                        <a href="/RMIE/app/controllers/ReportController.php?action=locales" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

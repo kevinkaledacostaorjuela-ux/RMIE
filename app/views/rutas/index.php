@@ -1390,8 +1390,81 @@ if (isset($rutas) && is_array($rutas)) {
             </div>
         </div>
 
-        <!-- Tabla de Rutas -->
-        <div class="table-container">
+            <!-- Selector de vista: Tabla / Tarjetas -->
+            <div class="mb-3 d-flex justify-content-end align-items-center">
+                <div class="btn-group me-2" role="group" aria-label="View toggle">
+                    <button id="rutasTableBtn" class="btn btn-sm btn-modern btn-primary-modern">Tabla</button>
+                    <button id="rutasCardsBtn" class="btn btn-sm btn-modern btn-secondary-modern">Tarjetas</button>
+                </div>
+            </div>
+
+            <!-- Contenedor de Tarjetas (oculto por defecto, se muestra según preferencia) -->
+            <div id="cardsContainer" class="row g-3 mb-3" style="display:none;">
+                <?php if (isset($rutas) && is_array($rutas) && !empty($rutas)): ?>
+                    <?php foreach ($rutas as $ruta): ?>
+                        <div class="col-12 col-md-6 col-lg-4">
+                            <div class="info-widget p-3">
+                                <div class="d-flex align-items-start gap-3">
+                                    <div class="route-icon"><i class="fas fa-route"></i></div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1 text-white"><?= htmlspecialchars($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></h5>
+                                        <p class="mb-1 text-muted"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?></p>
+                                        <p class="mb-1"><span class="badge badge-modern badge-secondary"><i class="fas fa-user"></i> <?= htmlspecialchars($ruta['nombre_cliente'] ?? 'Sin cliente') ?></span></p>
+                                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small class="text-white-50">Venta: <?= $ruta['id_ventas'] ?? 'N/A' ?></small>
+                                                <?php if (!empty($ruta['id_reportes'])): ?>
+                                                    <br><small class="text-white-50">Reporte: <?= $ruta['id_reportes'] ?></small>
+                                                <?php endif; ?>
+                                            </div>
+                                            <div class="btn-group">
+                                                <a href="/RMIE/app/controllers/RouteController.php?accion=view&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-info-modern" title="Ver ruta"><i class="fas fa-eye"></i></a>
+                                                <a href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern" title="Editar ruta"><i class="fas fa-edit"></i></a>
+                                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                                <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" title="Eliminar ruta" onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')"><i class="fas fa-trash"></i></a>
+                                                <?php endif; ?>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12">
+                        <div class="text-center text-muted">
+                            <i class="fas fa-route fa-3x mb-3"></i>
+                            <h5>No hay rutas disponibles</h5>
+                            <p>No se encontraron rutas que coincidan con los filtros aplicados.</p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Tabla de Rutas -->
+            <div class="table-container">
+                <?php include __DIR__ . '/../partials/card_mode.php'; ?>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="card-toggle">
+                        <button id="toggleRutas">Ver como tarjetas</button>
+                    </div>
+                </div>
+                <div id="cardsRutas" class="card-container">
+                    <?php if (isset($rutas) && is_array($rutas)): ?>
+                        <?php foreach ($rutas as $ruta): ?>
+                            <div class="card-item">
+                                <div class="card-title"><?= htmlspecialchars($ruta['nombre_local'] ?? ('Ruta #' . ($ruta['id_ruta'] ?? ''))) ?></div>
+                                <div class="card-subtitle"><?= htmlspecialchars($ruta['direccion'] ?? '') ?></div>
+                                <div class="card-actions">
+                                    <a class="btn-edit" href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>">Editar</a>
+                                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a class="btn-delete" href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -1557,6 +1630,41 @@ if (isset($rutas) && is_array($rutas)) {
     <script>
 // Capturar promesas rechazadas
 window.addEventListener('unhandledrejection', function(e) { console.log('Promise Error:', e.reason); e.preventDefault(); });
+
+        // Toggle de vista Tabla / Tarjetas para Rutas
+        function initRutasViewToggle() {
+            try {
+                const key = 'rutas_view';
+                const tableContainer = document.querySelector('.table-container');
+                const cardsContainer = document.getElementById('cardsContainer');
+                const btnTable = document.getElementById('rutasTableBtn');
+                const btnCards = document.getElementById('rutasCardsBtn');
+
+                if (!tableContainer || !cardsContainer || !btnTable || !btnCards) return;
+
+                function apply(view) {
+                    if (view === 'cards') {
+                        cardsContainer.style.display = 'flex';
+                        tableContainer.style.display = 'none';
+                        btnCards.classList.add('btn-primary-modern');
+                        btnTable.classList.remove('btn-primary-modern');
+                    } else {
+                        cardsContainer.style.display = 'none';
+                        tableContainer.style.display = 'block';
+                        btnTable.classList.add('btn-primary-modern');
+                        btnCards.classList.remove('btn-primary-modern');
+                    }
+                }
+
+                const stored = localStorage.getItem(key) || 'table';
+                apply(stored);
+
+                btnTable.addEventListener('click', function() { localStorage.setItem(key, 'table'); apply('table'); });
+                btnCards.addEventListener('click', function() { localStorage.setItem(key, 'cards'); apply('cards'); });
+            } catch (err) {
+                console.log('initRutasViewToggle error', err);
+            }
+        }
 
         // Función mejorada para limpiar filtros con animación
         function limpiarFiltros() {
@@ -1959,6 +2067,8 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                     setTimeout(() => alert.remove(), 500);
                 });
             }, 5000);
+            // Inicializar selector de vista (Tabla / Tarjetas)
+            try { initRutasViewToggle(); } catch (e) { console.log('initRutasViewToggle init failed', e); }
             
             // Inicializar gráfico de dona (con manejo de errores)
             try {

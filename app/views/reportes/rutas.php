@@ -11,9 +11,45 @@ require_once __DIR__ . '/../../models/Route.php';
 
 $rutas = Route::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $rutas = array_filter($rutas, function($r) use ($filtros) {
+        // Filtro por nombre
+        if (!empty($filtros['nombre'])) {
+            if (stripos($r['nombre_local'] ?? '', $filtros['nombre']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado (siempre activo en este modelo, pero incluimos por consistencia)
+        if (!empty($filtros['estado'])) {
+            // Por defecto todas las rutas están activas
+            if (strtolower($filtros['estado']) !== 'activo') {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($r['fecha_creacion'])) {
+            if (strtotime($r['fecha_creacion']) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($r['fecha_creacion'])) {
+            if (strtotime($r['fecha_creacion']) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalRutas = count($rutas);
-$rutasActivas = count(array_filter($rutas, fn($r) => strtolower($r->estado ?? 'activo') === 'activo'));
-$rutasInactivas = $totalRutas - $rutasActivas;
+$rutasActivas = count(array_filter($rutas, fn($r) => true)); // Todas activas por defecto
+$rutasInactivas = 0;
 ?>
 
 <!DOCTYPE html>
@@ -104,6 +140,50 @@ $rutasInactivas = $totalRutas - $rutasActivas;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(19, 84, 122, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(19, 84, 122, 0.3);
+        }
+        .filter-box h4 {
+            color: #13547a;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(19, 84, 122, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #13547a;
+            box-shadow: 0 0 0 0.2rem rgba(19, 84, 122, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #13547a 0%, #80d0c7 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -136,6 +216,44 @@ $rutasInactivas = $totalRutas - $rutasActivas;
                     <div class="stat-label">Inactivas</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="rutas">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label"><i class="fas fa-route"></i> Nombre</label>
+                        <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i> Filtrar</button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=rutas" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

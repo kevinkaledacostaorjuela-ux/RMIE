@@ -88,7 +88,10 @@ class Provider {
         $sql = "INSERT INTO proveedores (nombre_distribuidor, correo, cel_proveedor, estado, ubicacion) VALUES (?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssss", $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
-        return $stmt->execute();
+        if ($stmt->execute()) {
+            return $conn->insert_id; // retornar id del proveedor creado
+        }
+        return false;
     }
 
     public static function getById($conn, $id_proveedores) {

@@ -46,7 +46,17 @@ class ProviderController {
             
             // Obtener proveedores con filtros
             $proveedores = Provider::getAll($conn, $filtrosModelo);
-            
+
+            // Cargar productos asociados para cada proveedor (si los hay)
+            require_once __DIR__ . '/../models/Product.php';
+            $productosPorProveedor = [];
+            if (is_array($proveedores)) {
+                foreach ($proveedores as $prov) {
+                    $productos = Product::getFiltered($conn, ['proveedor' => $prov->id_proveedores]);
+                    $productosPorProveedor[$prov->id_proveedores] = $productos;
+                }
+            }
+
             include __DIR__ . '/../views/proveedores/index.php';
         } catch (Exception $e) {
             error_log("Error en ProviderController::index: " . $e->getMessage());
@@ -81,19 +91,41 @@ class ProviderController {
                 }
                 
                 global $conn;
-                $resultado = Provider::create($conn, $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
-                
-                if ($resultado) {
+                // Crear proveedor y obtener su id
+                $newProveedorId = Provider::create($conn, $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
+
+                if ($newProveedorId !== false && is_numeric($newProveedorId)) {
+                    // Si se enviaron productos seleccionados, asignarlos al nuevo proveedor
+                    if (!empty($_POST['productos']) && is_array($_POST['productos'])) {
+                        require_once __DIR__ . '/../models/Product.php';
+                        foreach ($_POST['productos'] as $prodId) {
+                            $prodId = intval($prodId);
+                            if ($prodId > 0) {
+                                Product::assignToProvider($conn, $prodId, intval($newProveedorId));
+                            }
+                        }
+                    }
+
                     header('Location: ' . $this->baseUrl . '?accion=index&success=created');
                 } else {
                     throw new Exception("Error al crear el proveedor");
                 }
                 exit();
             }
+            // Para mostrar el formulario necesitamos la lista de productos disponibles
+            global $conn;
+            require_once __DIR__ . '/../models/Product.php';
+            $productos = Product::getAll($conn);
             include __DIR__ . '/../views/proveedores/create.php';
         } catch (Exception $e) {
             error_log("Error en ProviderController::create: " . $e->getMessage());
             $error = $e->getMessage();
+            // Intentar pasar productos si es posible
+            if (!isset($productos)) {
+                global $conn;
+                require_once __DIR__ . '/../models/Product.php';
+                $productos = Product::getAll($conn);
+            }
             include __DIR__ . '/../views/proveedores/create.php';
         }
     }

@@ -618,6 +618,56 @@ if (isset($ventas) && is_array($ventas)) {
             </div>
         </div>
 
+        <!-- Vista selector: Tarjetas / Tabla -->
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
+            <button id="viewCardsBtn" class="btn btn-modern btn-primary-modern">Tarjetas</button>
+            <button id="viewTableBtn" class="btn btn-modern btn-secondary" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        </div>
+
+        <!-- Cards container for ventas -->
+        <div id="cardsContainer" style="display:none; margin-bottom:20px;">
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
+                <?php if (isset($ventas) && is_array($ventas) && !empty($ventas)): ?>
+                    <?php foreach ($ventas as $venta): ?>
+                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
+                            <div style="display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <strong style="color:#fff;">Venta #<?= htmlspecialchars($venta->id_ventas) ?></strong>
+                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Cliente: <?= htmlspecialchars($venta->cliente_nombre ?? 'N/A') ?></div>
+                                </div>
+                                <div class="sale-icon" style="width:48px; height:48px; font-size:1.2rem;"><i class="fas fa-shopping-cart"></i></div>
+                            </div>
+                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <div><strong>Producto:</strong> <?= htmlspecialchars($venta->producto_nombre ?? 'N/A') ?></div>
+                                    <div><strong>Cant:</strong> <?= htmlspecialchars($venta->cantidad ?? 0) ?></div>
+                                </div>
+                                <div style="text-align:right;">
+                                    <div class="money-amount">$<?= number_format(floatval($venta->total ?? 0), 2) ?></div>
+                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.8);"><?= date('d/m/Y H:i', strtotime($venta->fecha_venta ?? 'now')) ?></div>
+                                </div>
+                            </div>
+                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
+                                <div>
+                                    <span class="badge badge-modern <?php $e = strtolower($venta->estado ?? 'pendiente'); echo $e === 'completada' ? 'badge-success' : ($e === 'cancelada' ? 'badge-danger' : ($e === 'procesando' ? 'badge-info' : 'badge-warning')); ?>">
+                                        <?= ucfirst($venta->estado ?? 'Pendiente') ?>
+                                    </span>
+                                </div>
+                                <div style="display:flex; gap:8px;">
+                                    <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?')"><i class="fas fa-trash"></i></a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div>No hay ventas disponibles</div>
+                <?php endif; ?>
+            </div>
+        </div>
+
         <!-- Filtros -->
         <div class="filters-container">
             <div class="filter-title">
@@ -860,6 +910,32 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                 }
             });
         });
+
+        // View toggle: Tarjetas / Tabla (ventas)
+        (function(){
+            const cardsBtn = document.getElementById('viewCardsBtn');
+            const tableBtn = document.getElementById('viewTableBtn');
+            const cardsContainer = document.getElementById('cardsContainer');
+            const tableContainer = document.querySelector('.table-container');
+
+            function setView(view){
+                if (view === 'cards'){
+                    cardsContainer.style.display = '';
+                    tableContainer.style.display = 'none';
+                } else {
+                    cardsContainer.style.display = 'none';
+                    tableContainer.style.display = '';
+                }
+                try{ localStorage.setItem('ventas_view', view); }catch(e){}
+            }
+
+            if (cardsBtn && tableBtn){
+                cardsBtn.addEventListener('click', ()=>setView('cards'));
+                tableBtn.addEventListener('click', ()=>setView('table'));
+                const pref = (function(){ try{ return localStorage.getItem('ventas_view'); }catch(e){return null;} })();
+                setView(pref === 'cards' ? 'cards' : 'table');
+            }
+        })();
     </script>
 </body>
 </html>

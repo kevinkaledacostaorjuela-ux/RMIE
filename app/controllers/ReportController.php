@@ -342,51 +342,152 @@ class ReportController {
     // Métodos para reportes individuales de los 11 módulos
     public function reporteUsuarios() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'rol' => $_GET['rol'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/usuarios.php';
     }
     
     public function reporteCategorias() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/categorias.php';
     }
     
     public function reporteSubcategorias() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'categoria' => $_GET['categoria'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/subcategorias.php';
     }
     
     public function reporteProductos() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'categoria' => $_GET['categoria'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'stock_min' => $_GET['stock_min'] ?? '',
+            'stock_max' => $_GET['stock_max'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/productos.php';
     }
     
     public function reporteProveedores() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'ubicacion' => $_GET['ubicacion'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/proveedores.php';
     }
     
     public function reporteClientes() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'ciudad' => $_GET['ciudad'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/clientes.php';
     }
     
     public function reporteVentas() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'cliente' => $_GET['cliente'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'monto_min' => $_GET['monto_min'] ?? '',
+            'monto_max' => $_GET['monto_max'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/ventas.php';
     }
     
     public function reporteRutas() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/rutas.php';
     }
     
     public function reporteLocales() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'nombre' => $_GET['nombre'] ?? '',
+            'ubicacion' => $_GET['ubicacion'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/locales.php';
     }
     
     public function reporteAlertas() {
         global $conn;
+        
+        // Obtener filtros
+        $filtros = [
+            'tipo' => $_GET['tipo'] ?? '',
+            'prioridad' => $_GET['prioridad'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha_desde' => $_GET['fecha_desde'] ?? '',
+            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+        ];
+        
         include __DIR__ . '/../views/reportes/alertas.php';
     }
 }

@@ -656,6 +656,7 @@ $stats = $statsQuery->fetch_assoc();
                             <th><i class="fas fa-hashtag"></i> ID</th>
                             <th><i class="fas fa-box"></i> Producto</th>
                             <th><i class="fas fa-tags"></i> Categoría</th>
+                            <th><i class="fas fa-layer-group"></i> Subcategoría</th>
                             <th><i class="fas fa-dollar-sign"></i> Precio</th>
                             <th><i class="fas fa-warehouse"></i> Stock</th>
                             <th><i class="fas fa-calendar-alt"></i> Fecha</th>
@@ -690,12 +691,11 @@ $stats = $statsQuery->fetch_assoc();
                                     <span class="badge badge-modern badge-info">
                                         <?= htmlspecialchars($categoria_nombre ?? 'Sin categoría') ?>
                                     </span>
-                                    <br>
-                                    <small>
-                                        <span class="badge badge-modern badge-secondary mt-1">
-                                            <?= htmlspecialchars($subcategoria_nombre ?? 'Sin subcategoría') ?>
-                                        </span>
-                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge badge-modern badge-secondary">
+                                        <?= htmlspecialchars(!empty($subcategoria_nombre) ? $subcategoria_nombre : 'Sin subcategoría') ?>
+                                    </span>
                                 </td>
                                 <td>
                                     <strong style="color: #4facfe;">

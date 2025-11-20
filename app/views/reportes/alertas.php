@@ -11,10 +11,57 @@ require_once __DIR__ . '/../../models/Alert.php';
 
 $alertas = Alert::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $alertas = array_filter($alertas, function($a) use ($filtros) {
+        // Filtro por tipo (usando el campo cliente_no_disponible como referencia)
+        if (!empty($filtros['tipo'])) {
+            if (stripos($a['cliente_no_disponible'] ?? '', $filtros['tipo']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por prioridad (usando cantidad_minima como referencia de prioridad)
+        if (!empty($filtros['prioridad'])) {
+            $cantidad = (int)($a['cantidad_minima'] ?? 0);
+            if ($filtros['prioridad'] === 'alta' && $cantidad > 10) {
+                return false;
+            }
+            if ($filtros['prioridad'] === 'media' && ($cantidad <= 5 || $cantidad > 10)) {
+                return false;
+            }
+            if ($filtros['prioridad'] === 'baja' && $cantidad > 5) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado (todas activas por defecto)
+        if (!empty($filtros['estado']) && strtolower($filtros['estado']) !== 'activo') {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($a['fecha_caducidad'])) {
+            if (strtotime($a['fecha_caducidad']) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($a['fecha_caducidad'])) {
+            if (strtotime($a['fecha_caducidad']) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalAlertas = count($alertas);
-$alertasActivas = count(array_filter($alertas, fn($a) => strtolower($a->estado ?? 'activo') === 'activo'));
-$alertasCriticas = count(array_filter($alertas, fn($a) => strtolower($a->prioridad ?? '') === 'alta'));
-$alertasResueltas = count(array_filter($alertas, fn($a) => strtolower($a->estado ?? '') === 'resuelta'));
+$alertasActivas = count(array_filter($alertas, fn($a) => true)); // Todas activas por defecto
+$alertasCriticas = count(array_filter($alertas, fn($a) => ((int)($a['cantidad_minima'] ?? 0)) <= 5));
+$alertasResueltas = 0;
 ?>
 
 <!DOCTYPE html>
@@ -121,6 +168,50 @@ $alertasResueltas = count(array_filter($alertas, fn($a) => strtolower($a->estado
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(235, 51, 73, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(235, 51, 73, 0.3);
+        }
+        .filter-box h4 {
+            color: #eb3349;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(235, 51, 73, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #eb3349;
+            box-shadow: 0 0 0 0.2rem rgba(235, 51, 73, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -159,6 +250,53 @@ $alertasResueltas = count(array_filter($alertas, fn($a) => strtolower($a->estado
                     <div class="stat-label">Resueltas</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="alertas">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-bell"></i> Tipo</label>
+                        <input type="text" name="tipo" class="form-control" placeholder="Buscar por tipo..." value="<?= htmlspecialchars($filtros['tipo'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-exclamation-triangle"></i> Prioridad</label>
+                        <select name="prioridad" class="form-select">
+                            <option value="">Todas</option>
+                            <option value="alta" <?= ($filtros['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
+                            <option value="media" <?= ($filtros['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
+                            <option value="baja" <?= ($filtros['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="resuelta" <?= ($filtros['estado'] ?? '') === 'resuelta' ? 'selected' : '' ?>>Resuelta</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=alertas" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

@@ -627,6 +627,27 @@
                                 </div>
                             </div>
 
+                            <div class="form-floating-modern">
+                                <label for="productos" style="left:15px; top:12px;"> 
+                                    <i class="fas fa-boxes"></i>
+                                    Productos a asociar (opcional)
+                                </label>
+                                <select class="form-select-modern" id="productos" name="productos[]" multiple size="6">
+                                    <?php if (!empty($productos) && is_array($productos)): ?>
+                                        <?php foreach ($productos as $prod): ?>
+                                            <?php $selected = (isset($_POST['productos']) && is_array($_POST['productos']) && in_array($prod->id_productos, array_map('intval', $_POST['productos']))) ? 'selected' : ''; ?>
+                                            <option value="<?= htmlspecialchars($prod->id_productos) ?>" <?= $selected ?>><?= htmlspecialchars($prod->nombre) ?> (ID: <?= htmlspecialchars($prod->id_productos) ?>)</option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="">No hay productos disponibles</option>
+                                    <?php endif; ?>
+                                </select>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Seleccione uno o varios productos para vincularlos a este proveedor.
+                                </div>
+                            </div>
+
                             <!-- Vista Previa -->
                             <div class="preview-section">
                                 <h6 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">

@@ -614,6 +614,51 @@ if (isset($usuarios) && is_array($usuarios)) {
             </a>
         </div>
 
+        <!-- Selector de vista: Tabla / Tarjetas -->
+        <div class="mb-3 d-flex justify-content-end align-items-center">
+            <div class="btn-group me-2" role="group" aria-label="View toggle">
+                <button id="usuariosTableBtn" class="btn btn-sm btn-modern btn-primary-modern">Tabla</button>
+                <button id="usuariosCardsBtn" class="btn btn-sm btn-modern btn-secondary-modern">Tarjetas</button>
+            </div>
+        </div>
+
+        <!-- Contenedor de Tarjetas (oculto por defecto) -->
+        <div id="cardsContainer" class="row g-3 mb-3" style="display:none;">
+            <?php if (isset($usuarios) && is_array($usuarios) && !empty($usuarios)): ?>
+                <?php foreach ($usuarios as $usuario): ?>
+                    <div class="col-12 col-md-6 col-lg-4">
+                        <div class="info-widget p-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="user-icon"><?= strtoupper(substr($usuario->nombres ?? 'U', 0, 1)) ?></div>
+                                <div class="flex-grow-1">
+                                    <h5 class="mb-1 text-white"><?= htmlspecialchars($usuario->nombres ?? 'Sin nombre') ?></h5>
+                                    <p class="mb-1 text-muted"><i class="fas fa-envelope"></i> <?= htmlspecialchars($usuario->email ?? 'Sin email') ?></p>
+                                    <p class="mb-1">
+                                        <?php $rol = strtolower($usuario->rol ?? 'empleado'); $roleClass = $rol === 'admin' ? 'role-admin' : 'role-empleado'; $roleIcon = $rol === 'admin' ? 'fas fa-user-shield' : 'fas fa-user-tie'; ?>
+                                        <span class="role-badge <?= $roleClass ?>"><i class="<?= $roleIcon ?>"></i> <?= ucfirst($rol) ?></span>
+                                    </p>
+                                    <div class="mt-2 d-flex justify-content-between align-items-center">
+                                        <div class="contact-info">Doc: <?= htmlspecialchars($usuario->num_doc ?? '') ?></div>
+                                        <div class="btn-group">
+                                            <a href="/RMIE/app/controllers/UserController.php?accion=edit&id=<?= urlencode($usuario->num_doc) ?>" class="btn btn-sm btn-modern btn-warning-modern" title="Editar usuario"><i class="fas fa-edit"></i></a>
+                                            <?php if ((strtolower($usuario->rol ?? '') !== 'admin' || ($_SESSION['rol'] ?? '') === 'admin') && $_SESSION['rol'] !== 'coordinador'): ?>
+                                            <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->num_doc) ?>" class="btn btn-sm btn-modern btn-danger-modern" title="Eliminar usuario" onclick="return confirm('¿Está seguro de eliminar el usuario \'<?= addslashes($usuario->nombres ?? 'Usuario') ?>\'?\n\nEsta acción no se puede deshacer.')"><i class="fas fa-trash"></i></a>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center text-muted">
+                    <i class="fas fa-users fa-3x mb-3"></i>
+                    <h5>No hay usuarios disponibles</h5>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <!-- Tabla de Usuarios -->
         <div class="table-container">
             <div class="table-responsive">
@@ -780,6 +825,45 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
+
+        // Inicializar selector de vista Usuarios
+        try { initUsuariosViewToggle(); } catch (e) { console.log('initUsuariosViewToggle init failed', e); }
+
+        // Toggle de vista Tabla / Tarjetas para Usuarios
+        function initUsuariosViewToggle() {
+            try {
+                const key = 'usuarios_view';
+                const tableContainer = document.querySelector('.table-container');
+                const cardsContainer = document.getElementById('cardsContainer');
+                const btnTable = document.getElementById('usuariosTableBtn');
+                const btnCards = document.getElementById('usuariosCardsBtn');
+
+                if (!tableContainer || !cardsContainer || !btnTable || !btnCards) return;
+
+                function apply(view) {
+                    if (view === 'cards') {
+                        cardsContainer.style.display = 'flex';
+                        tableContainer.style.display = 'none';
+                        btnCards.classList.add('btn-primary-modern');
+                        btnTable.classList.remove('btn-primary-modern');
+                    } else {
+                        cardsContainer.style.display = 'none';
+                        tableContainer.style.display = 'block';
+                        btnTable.classList.add('btn-primary-modern');
+                        btnCards.classList.remove('btn-primary-modern');
+                    }
+                }
+
+                const stored = localStorage.getItem(key) || 'table';
+                apply(stored);
+
+                btnTable.addEventListener('click', function() { localStorage.setItem(key, 'table'); apply('table'); });
+                btnCards.addEventListener('click', function() { localStorage.setItem(key, 'cards'); apply('cards'); });
+            } catch (err) {
+                console.log('initUsuariosViewToggle error', err);
+            }
+        }
+
 
         // Efectos adicionales para la tabla
         document.querySelectorAll('.table-modern tbody tr').forEach(function(row) {

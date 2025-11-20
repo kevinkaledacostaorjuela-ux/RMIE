@@ -511,6 +511,28 @@ if (isset($conn)) {
         <!-- Vista de Tabla Móvil -->
         <div class="d-block d-md-none">
             <div class="table-container">
+                <?php include __DIR__ . '/../partials/card_mode.php'; ?>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="card-toggle">
+                        <button id="toggleCategorias">Ver como tarjetas</button>
+                    </div>
+                </div>
+                <div id="cardsCategorias" class="card-container">
+                    <?php if (isset($categorias) && is_array($categorias)): ?>
+                        <?php foreach ($categorias as $cat): ?>
+                            <div class="card-item">
+                                <div class="card-title"><?= htmlspecialchars($cat->nombre ?? $cat['nombre'] ?? 'Sin nombre') ?></div>
+                                <div class="card-subtitle"><?= htmlspecialchars($cat->descripcion ?? $cat['descripcion'] ?? '') ?></div>
+                                <div class="card-actions">
+                                    <a class="btn-edit" href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>">Editar</a>
+                                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a class="btn-delete" href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-modern table-hover">
                         <thead>

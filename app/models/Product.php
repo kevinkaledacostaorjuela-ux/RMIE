@@ -105,16 +105,16 @@ class Product {
         
         // Construir consulta base
         $sql = "SELECT p.*, 
-                       s.nombre AS subcategoria_nombre, 
-                       c.nombre AS categoria_nombre, 
-                       pr.nombre_distribuidor AS proveedor_nombre, 
-                       u.nombres AS usuario_nombre 
-                FROM productos p 
-                JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
-                JOIN categorias c ON p.id_categoria = c.id_categoria 
-                LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores 
-                JOIN usuarios u ON p.num_doc = u.num_doc 
-                WHERE 1=1";
+                   COALESCE(s.nombre, '') AS subcategoria_nombre, 
+                   c.nombre AS categoria_nombre, 
+                   pr.nombre_distribuidor AS proveedor_nombre, 
+                   u.nombres AS usuario_nombre 
+            FROM productos p 
+            LEFT JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria 
+            LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores 
+            LEFT JOIN usuarios u ON p.num_doc = u.num_doc 
+            WHERE 1=1";
         
         // Construir WHERE con filtros
         $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
@@ -170,6 +170,19 @@ class Product {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("sssssdddssiiis", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
         return $stmt->execute();
+    }
+
+    // Asignar un producto a un proveedor (actualiza solo id_proveedores)
+    public static function assignToProvider($conn, $id_productos, $id_proveedores) {
+        try {
+            $sql = "UPDATE productos SET id_proveedores = ? WHERE id_productos = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $id_proveedores, $id_productos);
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            error_log('Product::assignToProvider error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     private static function getOrCreateGenericProvider($conn) {

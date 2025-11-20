@@ -11,6 +11,49 @@ require_once __DIR__ . '/../../models/Sale.php';
 
 $ventas = Sale::getAll($conn);
 
+// Aplicar filtros adicionales en PHP
+if (!empty($filtros)) {
+    $ventas = array_filter($ventas, function($v) use ($filtros) {
+        // Filtro por cliente
+        if (!empty($filtros['cliente'])) {
+            if (stripos($v->cliente_nombre ?? '', $filtros['cliente']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por estado
+        if (!empty($filtros['estado']) && strtolower($v->estado ?? '') !== strtolower($filtros['estado'])) {
+            return false;
+        }
+        
+        // Filtro por monto mínimo
+        if (!empty($filtros['monto_min']) && ($v->total ?? 0) < (float)$filtros['monto_min']) {
+            return false;
+        }
+        
+        // Filtro por monto máximo
+        if (!empty($filtros['monto_max']) && ($v->total ?? 0) > (float)$filtros['monto_max']) {
+            return false;
+        }
+        
+        // Filtro por fecha desde
+        if (!empty($filtros['fecha_desde']) && !empty($v->fecha_venta)) {
+            if (strtotime($v->fecha_venta) < strtotime($filtros['fecha_desde'])) {
+                return false;
+            }
+        }
+        
+        // Filtro por fecha hasta
+        if (!empty($filtros['fecha_hasta']) && !empty($v->fecha_venta)) {
+            if (strtotime($v->fecha_venta) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+}
+
 $totalVentas = count($ventas);
 $ventasCompletadas = count(array_filter($ventas, fn($v) => strtolower($v->estado ?? '') === 'completada'));
 $ventasPendientes = count(array_filter($ventas, fn($v) => strtolower($v->estado ?? '') === 'pendiente'));
@@ -109,6 +152,50 @@ $totalIngresos = array_sum(array_map(fn($v) => $v->total ?? 0, $ventas));
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
             color: white;
         }
+        .filter-box {
+            background: rgba(255, 154, 158, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 2px solid rgba(255, 154, 158, 0.3);
+        }
+        .filter-box h4 {
+            color: #ff9a9e;
+            margin-bottom: 20px;
+        }
+        .filter-box .form-control, .filter-box .form-select {
+            border-radius: 10px;
+            border: 2px solid rgba(255, 154, 158, 0.3);
+        }
+        .filter-box .form-control:focus, .filter-box .form-select:focus {
+            border-color: #ff9a9e;
+            box-shadow: 0 0 0 0.2rem rgba(255, 154, 158, 0.25);
+        }
+        .btn-filter {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            color: white;
+        }
+        .btn-clear {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-clear:hover {
+            background: #5a6268;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -147,6 +234,53 @@ $totalIngresos = array_sum(array_map(fn($v) => $v->total ?? 0, $ventas));
                     <div class="stat-label">Ingresos Totales</div>
                 </div>
             </div>
+        </div>
+
+        <!-- Formulario de Filtros -->
+        <div class="filter-box">
+            <h4><i class="fas fa-filter"></i> Filtros de Búsqueda</h4>
+            <form method="GET" action="/RMIE/app/controllers/ReportController.php">
+                <input type="hidden" name="action" value="ventas">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label"><i class="fas fa-user"></i> Cliente</label>
+                        <input type="text" name="cliente" class="form-control" placeholder="Buscar por cliente..." value="<?= htmlspecialchars($filtros['cliente'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-select">
+                            <option value="">Todos</option>
+                            <option value="completada" <?= ($filtros['estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
+                            <option value="pendiente" <?= ($filtros['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                            <option value="cancelada" <?= ($filtros['estado'] ?? '') === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-dollar-sign"></i> Monto Mín</label>
+                        <input type="number" name="monto_min" class="form-control" placeholder="0" step="0.01" value="<?= htmlspecialchars($filtros['monto_min'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-dollar-sign"></i> Monto Máx</label>
+                        <input type="number" name="monto_max" class="form-control" placeholder="9999" step="0.01" value="<?= htmlspecialchars($filtros['monto_max'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
+                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
+                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-1 mb-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 text-end">
+                        <a href="/RMIE/app/controllers/ReportController.php?action=ventas" class="btn btn-clear"><i class="fas fa-times"></i> Limpiar Filtros</a>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <div class="data-table">

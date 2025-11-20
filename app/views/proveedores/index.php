@@ -183,36 +183,269 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .table-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Diseño de Tarjetas para proveedores */
+        .providers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .provider-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .provider-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .provider-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .provider-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .provider-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .provider-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .provider-card-title {
+            flex: 1;
+        }
+
+        .provider-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .provider-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .provider-card-body {
+            margin-bottom: 20px;
+        }
+
+        .provider-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .provider-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .provider-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .provider-info-content {
+            flex: 1;
+        }
+
+        .provider-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .provider-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .provider-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .provider-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .table-modern {
             background: transparent;
             color: #fff;
+            display: none;
+            width: 100%;
+            margin-bottom: 0;
         }
 
         .table-modern th {
             background: rgba(255, 255, 255, 0.2);
             color: #fff;
             border: none;
-            padding: 15px 10px;
-            font-weight: 600;
+            padding: 18px 15px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
 
         .table-modern td {
             border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 12px 10px;
+            padding: 20px 15px;
             vertical-align: middle;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .table-modern tbody tr {
             transition: all 0.3s ease;
         }
 
         .table-modern tbody tr:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .table-modern tbody tr:hover td {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.005);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-toggle-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
             background: rgba(255, 255, 255, 0.1);
-            transform: scale(1.02);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #fff;
+        }
+
+        .empty-state i {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .empty-state p {
+            font-size: 1.1rem;
+            opacity: 0.8;
+            margin-bottom: 25px;
         }
 
         /* Estilos para los option del select */
@@ -368,97 +601,99 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .contact-info {
-            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
             color: #fff !important;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+
+        .contact-info i {
+            color: rgba(79, 172, 254, 1);
         }
 
         .text-muted {
             color: rgba(255, 255, 255, 0.7) !important;
         }
 
-        /* Scroll horizontal para móviles - Proveedores */
+        .table-responsive {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-responsive::-webkit-scrollbar {
+            height: 10px;
+        }
+
+        .table-responsive::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 5px;
+        }
+
+        .table-responsive::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Responsive design */
+        @media (max-width: 992px) {
+            .providers-grid {
+                grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            }
+        }
+
         @media (max-width: 768px) {
-            .table-container {
-                padding: 15px;
-                overflow: visible;
+            .providers-grid {
+                grid-template-columns: 1fr;
             }
             
-            .table-responsive {
-                -webkit-overflow-scrolling: touch;
-                overflow-x: auto !important;
-                overflow-y: visible;
-                border-radius: 10px;
-                max-width: 100%;
-                position: relative;
+            .table-header {
+                flex-direction: column;
+                gap: 15px;
             }
             
-            .table-responsive::-webkit-scrollbar {
-                height: 12px;
-                background: rgba(255, 255, 255, 0.2);
-                border-radius: 6px;
+            .view-toggle {
+                width: 100%;
+                justify-content: center;
             }
-            
-            .table-responsive::-webkit-scrollbar-thumb {
-                background: rgba(255, 255, 255, 0.5);
-                border-radius: 6px;
-                border: 2px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .table-responsive::-webkit-scrollbar-thumb:hover {
-                background: rgba(255, 255, 255, 0.7);
-            }
-            
+
             .table-modern {
-                min-width: 1050px !important; /* Ajustado similar a reportes */
-                margin-bottom: 0;
-                width: 1050px;
+                font-size: 0.85rem;
             }
-            
+
             .table-modern th,
             .table-modern td {
-                white-space: nowrap !important;
-                padding: 10px 12px;
+                padding: 12px 8px;
+                white-space: nowrap;
+            }
+
+            .contact-info {
                 font-size: 0.85rem;
-                min-width: 120px;
+                padding: 6px 10px;
             }
-            
-            /* Anchos específicos (adaptados) */
-            .table-modern th:nth-child(1),
-            .table-modern td:nth-child(1) { min-width: 70px; }
-            .table-modern th:nth-child(2),
-            .table-modern td:nth-child(2) { min-width: 180px; }
-            .table-modern th:nth-child(3),
-            .table-modern td:nth-child(3) { min-width: 120px; }
-            .table-modern th:nth-child(4),
-            .table-modern td:nth-child(4) { min-width: 250px; }
-            .table-modern th:nth-child(5),
-            .table-modern td:nth-child(5) { min-width: 120px; }
-            .table-modern th:nth-child(6),
-            .table-modern td:nth-child(6) { min-width: 150px; }
-            .table-modern th:nth-child(7),
-            .table-modern td:nth-child(7) { min-width: 120px; }
-            .table-modern th:nth-child(8),
-            .table-modern td:nth-child(8) { min-width: 120px; }
-            
-            /* Scroll indicator */
-            .scroll-hint {
-                position: absolute;
-                bottom: -30px;
-                left: 50%;
-                transform: translateX(-50%);
-                color: rgba(255, 255, 255, 0.8);
-                font-size: 0.8rem;
-                font-style: italic;
-                animation: pulse 2s ease-in-out infinite;
-                background: rgba(0, 0, 0, 0.3);
-                padding: 5px 10px;
-                border-radius: 15px;
-                backdrop-filter: blur(5px);
+
+            .provider-icon {
+                width: 35px;
+                height: 35px;
+                font-size: 1rem;
             }
-            
-            @keyframes pulse {
-                0%, 100% { opacity: 0.6; }
-                50% { opacity: 1; }
+
+            .badge-modern {
+                padding: 6px 12px;
+                font-size: 0.75rem;
+            }
+
+            .btn-modern {
+                padding: 6px 12px;
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -585,77 +820,75 @@ if (isset($proveedores) && is_array($proveedores)) {
             </a>
         </div>
 
-        <!-- Tabla de Proveedores (Desktop) -->
-        <div class="table-container d-none d-md-block">
-            <div class="table-responsive">
-                <table class="table table-modern table-hover">
-                    <thead>
-                        <tr>
-                            <th><i class="fas fa-hashtag"></i> ID</th>
-                            <th><i class="fas fa-truck"></i> Proveedor</th>
-                            <th><i class="fas fa-address-card"></i> Información</th>
-                            <th><i class="fas fa-phone"></i> Contacto</th>
-                            <th><i class="fas fa-map-marker-alt"></i> Ubicación</th>
-                            <th><i class="fas fa-traffic-light"></i> Estado</th>
-                            <th><i class="fas fa-calendar-alt"></i> Fecha Registro</th>
-                            <th><i class="fas fa-cogs"></i> Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php if (isset($proveedores) && is_array($proveedores) && !empty($proveedores)): ?>
-                            <?php foreach ($proveedores as $proveedor): ?>
-                            <tr>
-                                <td>
-                                    <strong>#<?= htmlspecialchars($proveedor->id_proveedores) ?></strong>
-                                </td>
-                                <td>
-                                    <div class="d-flex align-items-center">
-                                        <div class="provider-icon">
-                                            <i class="fas fa-truck"></i>
-                                        </div>
-                                        <div>
-                                            <strong><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-barcode"></i> ID: <?= $proveedor->id_proveedores ?>
-                                            </small>
-                                        </div>
+        <!-- Contenedor de Proveedores con Toggle de Vista -->
+        <div class="table-container">
+            <div class="table-header">
+                <h3><i class="fas fa-truck-loading"></i> Lista de Proveedores (<?= $totalProveedores ?>)</h3>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="toggleView('cards')" id="btnCards">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button class="view-toggle-btn" onclick="toggleView('table')" id="btnTable">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vista de Tarjetas (por defecto) -->
+            <div id="cardsView" class="providers-grid">
+                <?php if (isset($proveedores) && is_array($proveedores) && !empty($proveedores)): ?>
+                    <?php foreach ($proveedores as $proveedor): ?>
+                        <div class="provider-card">
+                            <div class="provider-card-header">
+                                <div class="provider-card-icon">
+                                    <i class="fas fa-truck"></i>
+                                </div>
+                                <div class="provider-card-title">
+                                    <h4><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></h4>
+                                    <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($proveedor->id_proveedores) ?></p>
+                                </div>
+                            </div>
+                            
+                            <div class="provider-card-body">
+                                <?php if (!empty($proveedor->cel_proveedor)): ?>
+                                <div class="provider-info-item">
+                                    <div class="provider-info-icon">
+                                        <i class="fas fa-mobile-alt"></i>
                                     </div>
-                                </td>
-                                <td>
-                                    <?php if (!empty($proveedor->cel_proveedor)): ?>
-                                        <div class="contact-info mb-1">
-                                            <i class="fas fa-mobile-alt"></i> <?= htmlspecialchars($proveedor->cel_proveedor) ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-minus"></i> Sin celular
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if (!empty($proveedor->correo)): ?>
-                                        <div class="contact-info">
-                                            <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->correo) ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-minus"></i> Sin email
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if (!empty($proveedor->ubicacion)): ?>
-                                        <div class="contact-info">
-                                            <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars(substr($proveedor->ubicacion, 0, 30)) ?><?= strlen($proveedor->ubicacion) > 30 ? '...' : '' ?>
-                                        </div>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-question"></i> Sin ubicación
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
+                                    <div class="provider-info-content">
+                                        <div class="provider-info-label">Teléfono</div>
+                                        <div class="provider-info-value"><?= htmlspecialchars($proveedor->cel_proveedor) ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($proveedor->correo)): ?>
+                                <div class="provider-info-item">
+                                    <div class="provider-info-icon">
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                    <div class="provider-info-content">
+                                        <div class="provider-info-label">Correo Electrónico</div>
+                                        <div class="provider-info-value"><?= htmlspecialchars($proveedor->correo) ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <?php if (!empty($proveedor->ubicacion)): ?>
+                                <div class="provider-info-item">
+                                    <div class="provider-info-icon">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                    </div>
+                                    <div class="provider-info-content">
+                                        <div class="provider-info-label">Ubicación</div>
+                                        <div class="provider-info-value"><?= htmlspecialchars($proveedor->ubicacion) ?></div>
+                                    </div>
+                                </div>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <div class="provider-card-footer">
+                                <div>
                                     <?php
                                     $estado = strtolower($proveedor->estado ?? 'pendiente');
                                     $badgeClass = '';
@@ -682,69 +915,49 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     <span class="badge badge-modern <?= $badgeClass ?>">
                                         <i class="<?= $iconClass ?>"></i> <?= ucfirst($estado) ?>
                                     </span>
-                                </td>
-                                <td>
-                                    <div class="text-center">
-                                        <i class="fas fa-calendar text-info"></i>
-                                        <strong><?= date('d/m/Y') ?></strong>
-                                        <br>
-                                        <small class="text-muted">
-                                            <?= date('H:i') ?>
-                                        </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
-                                           title="Editar proveedor">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                        <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
-                                           title="Eliminar proveedor"
-                                           onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
-                                            <i class="fas fa-trash"></i>
-                                        </a>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="8" class="text-center py-4">
-                                    <div class="text-muted">
-                                        <i class="fas fa-truck fa-3x mb-3"></i>
-                                        <h5>No hay proveedores disponibles</h5>
-                                        <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
-                                        <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
-                                            <i class="fas fa-plus"></i> Crear Primer Proveedor
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        <?php endif; ?>
-                    </tbody>
-                </table>
+                                </div>
+                                <div class="provider-actions">
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       title="Editar proveedor">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       title="Eliminar proveedor"
+                                       onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <i class="fas fa-truck"></i>
+                        <h3>No hay proveedores disponibles</h3>
+                        <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
+                        <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <i class="fas fa-plus"></i> Crear Primer Proveedor
+                        </a>
+                    </div>
+                <?php endif; ?>
             </div>
-        </div>
 
-        <!-- Vista de Tabla Móvil -->
-        <div class="d-block d-md-none">
-            <div class="table-container">
+            <!-- Vista de Tabla (oculta por defecto) -->
+            <div id="tableView" style="display: none;">
                 <div class="table-responsive">
-                    <table class="table table-modern table-hover">
+                    <table class="table table-modern table-hover" style="display: table;">
                         <thead>
                             <tr>
                                 <th><i class="fas fa-hashtag"></i> ID</th>
                                 <th><i class="fas fa-truck"></i> Proveedor</th>
-                                <th><i class="fas fa-address-card"></i> Información</th>
-                                <th><i class="fas fa-phone"></i> Contacto</th>
+                                <th><i class="fas fa-mobile-alt"></i> Teléfono</th>
+                                <th><i class="fas fa-envelope"></i> Email</th>
                                 <th><i class="fas fa-map-marker-alt"></i> Ubicación</th>
                                 <th><i class="fas fa-traffic-light"></i> Estado</th>
-                                <th><i class="fas fa-calendar-alt"></i> Fecha Registro</th>
                                 <th><i class="fas fa-cogs"></i> Acciones</th>
                             </tr>
                         </thead>
@@ -752,38 +965,32 @@ if (isset($proveedores) && is_array($proveedores)) {
                             <?php if (isset($proveedores) && is_array($proveedores) && !empty($proveedores)): ?>
                                 <?php foreach ($proveedores as $proveedor): ?>
                                 <tr>
-                                    <td>
-                                        <strong>#<?= htmlspecialchars($proveedor->id_proveedores) ?></strong>
-                                    </td>
+                                    <td><strong>#<?= htmlspecialchars($proveedor->id_proveedores) ?></strong></td>
                                     <td>
                                         <div class="d-flex align-items-center">
                                             <div class="provider-icon">
                                                 <i class="fas fa-truck"></i>
                                             </div>
                                             <div>
-                                                <strong><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></strong>
-                                                <br>
-                                                <small class="text-muted">
-                                                    <i class="fas fa-barcode"></i> ID: <?= $proveedor->id_proveedores ?>
-                                                </small>
+                                                <strong style="font-size: 1.05rem;"><?= htmlspecialchars($proveedor->nombre_distribuidor) ?></strong>
                                             </div>
                                         </div>
                                     </td>
                                     <td>
                                         <?php if (!empty($proveedor->cel_proveedor)): ?>
-                                            <span class="badge badge-modern badge-info" title="Celular: <?= htmlspecialchars($proveedor->cel_proveedor) ?>">
-                                                <i class="fas fa-mobile-alt"></i> <?= htmlspecialchars(substr($proveedor->cel_proveedor, 0, 10)) ?><?= strlen($proveedor->cel_proveedor) > 10 ? '...' : '' ?>
+                                            <span class="contact-info">
+                                                <i class="fas fa-mobile-alt"></i> <?= htmlspecialchars($proveedor->cel_proveedor) ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="badge badge-modern badge-secondary">
-                                                <i class="fas fa-minus"></i> Sin celular
+                                                <i class="fas fa-minus"></i> Sin teléfono
                                             </span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
                                         <?php if (!empty($proveedor->correo)): ?>
-                                            <span class="badge badge-modern badge-primary" title="Email: <?= htmlspecialchars($proveedor->correo) ?>">
-                                                <i class="fas fa-envelope"></i> Email
+                                            <span class="contact-info">
+                                                <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->correo) ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="badge badge-modern badge-secondary">
@@ -793,8 +1000,8 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     </td>
                                     <td>
                                         <?php if (!empty($proveedor->ubicacion)): ?>
-                                            <span class="badge badge-modern badge-success" title="Ubicación: <?= htmlspecialchars($proveedor->ubicacion) ?>">
-                                                <i class="fas fa-map-marker-alt"></i> Ubicación
+                                            <span class="contact-info" title="<?= htmlspecialchars($proveedor->ubicacion) ?>">
+                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars(substr($proveedor->ubicacion, 0, 30)) ?><?= strlen($proveedor->ubicacion) > 30 ? '...' : '' ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="badge badge-modern badge-secondary">
@@ -831,16 +1038,6 @@ if (isset($proveedores) && is_array($proveedores)) {
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="text-center">
-                                            <i class="fas fa-calendar text-info"></i>
-                                            <strong><?= date('d/m/Y') ?></strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <?= date('H:i') ?>
-                                            </small>
-                                        </div>
-                                    </td>
-                                    <td>
                                         <div class="btn-group" role="group">
                                             <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
                                                class="btn btn-sm btn-modern btn-warning-modern" 
@@ -861,10 +1058,10 @@ if (isset($proveedores) && is_array($proveedores)) {
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="8" class="text-center py-4">
-                                        <div class="text-muted">
-                                            <i class="fas fa-truck fa-3x mb-3"></i>
-                                            <h5>No hay proveedores disponibles</h5>
+                                    <td colspan="7" class="text-center py-4">
+                                        <div class="empty-state">
+                                            <i class="fas fa-truck"></i>
+                                            <h3>No hay proveedores disponibles</h3>
                                             <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
                                             <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
                                                 <i class="fas fa-plus"></i> Crear Primer Proveedor
@@ -876,21 +1073,39 @@ if (isset($proveedores) && is_array($proveedores)) {
                         </tbody>
                     </table>
                 </div>
-                <!-- Indicador de scroll para móviles -->
-                <div class="scroll-hint d-block d-md-none">
-                    <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
-                </div>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-// Capturar promesas rechazadas
-window.addEventListener('unhandledrejection', function(e) { console.log('Promise Error:', e.reason); e.preventDefault(); });
-
-// Debug mode - capturar errores JavaScript
-window.addEventListener('error', function(e) { console.log('JS Error:', e.message, 'at', e.filename + ':' + e.lineno); });
+        // Toggle entre vista de tarjetas y tabla
+        function toggleView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const btnCards = document.getElementById('btnCards');
+            const btnTable = document.getElementById('btnTable');
+            
+            if (view === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                localStorage.setItem('proveedoresView', 'cards');
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'block';
+                btnCards.classList.remove('active');
+                btnTable.classList.add('active');
+                localStorage.setItem('proveedoresView', 'table');
+            }
+        }
+        
+        // Restaurar vista guardada
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('proveedoresView') || 'cards';
+            toggleView(savedView);
+        });
 
         function limpiarFiltros() {
             document.getElementById('filterForm').reset();
