@@ -1,21 +1,28 @@
 <?php
 // app/controllers/LoginController.php
 require_once '../../config/db.php';
+require_once __DIR__ . '/../models/User.php';
 session_start();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $user = $_POST['user'] ?? '';
+    $user = trim($_POST['user'] ?? '');
     $password = $_POST['password'] ?? '';
-    $stmt = $conn->prepare('SELECT * FROM usuarios WHERE correo = ?');
-    $stmt->bind_param('s', $user);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $usuario = $result->fetch_assoc();
+
+    if (empty($user) || empty($password)) {
+        echo '<script>alert("Usuario o contraseña incorrectos");window.location="../../index.php";</script>';
+        exit();
+    }
+
+    // Buscar usuario por identificador (num_doc, correo o nombre)
+    $usuario = User::getByIdentifier($conn, $user);
+
     if ($usuario && password_verify($password, $usuario['contrasena'])) {
-        $_SESSION['user'] = $usuario['correo'];
+        // Guardar num_doc en sesión para compatibilidad con el resto del sistema
+        $_SESSION['user'] = $usuario['num_doc'];
         $_SESSION['rol'] = $usuario['rol'];
         $_SESSION['nombres'] = $usuario['nombres'];
         $_SESSION['apellidos'] = $usuario['apellidos'];
-        
+
         // Redirigir según el rol
         switch($usuario['rol']) {
             case 'auxiliar':

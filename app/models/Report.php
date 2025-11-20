@@ -330,7 +330,7 @@ class Report {
                         $sql .= " WHERE " . implode(" AND ", $conditions);
                     }
                     
-                    $sql .= " ORDER BY p.nombre_producto";
+                    $sql .= " ORDER BY p.nombre";
                     
                     if (!empty($params)) {
                         $stmt = $conn->prepare($sql);

@@ -11,6 +11,7 @@ class Product {
     }
     public $id_productos;
     public $nombre;
+    public $nombre_producto;
     public $descripcion;
     public $fecha_entrada;
     public $fecha_fabricacion;
@@ -28,6 +29,8 @@ class Product {
     public function __construct($id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores = null, $num_doc = null) {
         $this->id_productos = $id_productos;
         $this->nombre = $nombre;
+        // Compatibilidad: algunos lugares usan nombre_producto
+        $this->nombre_producto = $nombre;
         $this->descripcion = $descripcion;
         $this->fecha_entrada = $fecha_entrada;
         $this->fecha_fabricacion = $fecha_fabricacion;

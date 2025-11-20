@@ -502,7 +502,7 @@ if ($rol === 'auxiliar') {
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h1 style="margin: 0; font-weight: 700; font-size: 2.5rem;">
-                            <i class="fas fa-chart-line me-3"></i>Bienvenido, <?php echo htmlspecialchars($_SESSION['user']); ?>
+                            <i class="fas fa-chart-line me-3"></i>Bienvenido, <?php echo htmlspecialchars((isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '') . ' ' . (isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '')); ?>
                         </h1>
                         <p style="margin: 5px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
                             <i class="fas fa-user-shield me-2"></i>Rol: <?php echo ucfirst($rol); ?>

@@ -43,14 +43,14 @@ if (isset($_SESSION['user'])) {
                 <div class="login-form-group">
                     <label for="user" class="login-form-label">
                         <i class="fas fa-user"></i>
-                        Usuario
+                        Usuario (Documento / Nombre / Correo)
                     </label>
                     <input 
                         type="text" 
                         class="login-form-input" 
                         id="user" 
                         name="user" 
-                        placeholder="Ingrese su usuario"
+                        placeholder="Documento, nombre o correo"
                         required
                         autocomplete="username"
                     >

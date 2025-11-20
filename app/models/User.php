@@ -151,6 +151,37 @@ class User {
         return null;
     }
 
+    // Obtener usuario por identificador (num_doc, correo o nombre)
+    public static function getByIdentifier($conn, $identifier) {
+        // Si es numérico, buscar por num_doc
+        if (is_numeric($identifier)) {
+            $sql = "SELECT * FROM usuarios WHERE num_doc = ? LIMIT 1";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $identifier);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_assoc();
+        }
+
+        // Buscar por correo exacto
+        $sql = "SELECT * FROM usuarios WHERE correo = ? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $identifier);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            return $row;
+        }
+
+        // Buscar por nombre o "nombres apellidos"
+        $sql = "SELECT * FROM usuarios WHERE nombres = ? OR CONCAT(nombres, ' ', apellidos) = ? LIMIT 1";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ss", $identifier, $identifier);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
     // Crear nuevo usuario
     public static function create($conn, $data) {
         $sql = "INSERT INTO usuarios (num_doc, tipo_doc, nombres, apellidos, correo, contrasena, num_cel, rol) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";

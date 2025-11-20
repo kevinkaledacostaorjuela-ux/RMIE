@@ -578,7 +578,7 @@
                                                     data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
                                                     data-stock="<?= htmlspecialchars($producto->stock) ?>"
                                                     <?= ($_POST['id_productos'] ?? '') == $producto->id_productos ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($producto->nombre_producto) ?> (Stock: <?= htmlspecialchars($producto->stock) ?>)
+                                                <?= htmlspecialchars($producto->nombre) ?> (Stock: <?= htmlspecialchars($producto->stock) ?>)
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
