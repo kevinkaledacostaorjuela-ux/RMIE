@@ -173,7 +173,7 @@ $stats = $statsQuery->fetch_assoc();
             border-radius: 12px;
             padding: 22px;
             width: 100%;
-            max-width: 760px;
+            max-width: 1200px;
             box-shadow: 0 10px 40px rgba(0,0,0,0.18);
             border: 1px solid rgba(0,0,0,0.06);
         }
@@ -804,44 +804,55 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Filtros -->
         <div class="filters-container">
-            <div class="filter-title">
-                <i class="fas fa-filter"></i> Filtros de Búsqueda
-            </div>
-            <form method="GET" action="" id="filterForm">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-tags"></i> Categoría Padre</span>
-                        <select name="categoria" class="filter-select">
-                            <option value="">Todas las categorías</option>
-                            <?php if (isset($categorias) && is_array($categorias)): ?>
-                                <?php foreach ($categorias as $cat): ?>
-                                    <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($cat->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-search"></i> Nombre Subcategoría</span>
-                        <input type="text"
-                               name="nombre"
-                               class="filter-input"
-                               placeholder="Buscar por nombre..."
-                               value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-times"></i> LIMPIAR
-                        </button>
-                    </div>
+            <div class="filters-inner" style="padding: 35px 50px; max-width: 95% !important;">
+                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.2rem;">
+                    <i class="fas fa-filter"></i> Filtros de Búsqueda
                 </div>
-            </form>
+                <form method="GET" action="" id="filterForm">
+                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
+                        <div class="col-md-3">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-tag"></i> Nombre
+                            </label>
+                            <input type="text"
+                                   name="nombre"
+                                   class="form-control"
+                                   placeholder="Buscar..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-layer-group"></i> Categoría
+                            </label>
+                            <select name="categoria" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todas</option>
+                                <?php if (isset($categorias) && is_array($categorias)): ?>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($cat->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end justify-content-center">
+                            <div class="d-flex gap-3 w-100 justify-content-center">
+                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                                <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;" title="Limpiar">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Botones de acción -->
@@ -856,29 +867,6 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Tabla de Subcategorías (Desktop) -->
         <div class="table-container d-none d-md-block">
-            <?php include __DIR__ . '/../partials/card_mode.php'; ?>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div class="card-toggle">
-                    <button id="toggleSubcategorias">Ver como tarjetas</button>
-                </div>
-            </div>
-            <div id="cardsSubcategorias" class="card-container">
-                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                    <?php foreach ($subcategorias as $subcatData): ?>
-                        <?php $subcat = $subcatData['obj'] ?? $subcatData; $categoria_nombre = $subcatData['categoria_nombre'] ?? '';?>
-                        <div class="card-item">
-                            <div class="card-title"><?= htmlspecialchars($subcat->nombre ?? '') ?></div>
-                            <div class="card-subtitle"><?= htmlspecialchars($categoria_nombre) ?></div>
-                            <div class="card-actions">
-                                <a class="btn-edit" href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>">Editar</a>
-                                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                <a class="btn-delete" href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php endif; ?>
-            </div>
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>

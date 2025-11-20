@@ -587,50 +587,97 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Filtros -->
         <div class="filters-container">
-            <h3 class="filter-title">
-                <i class="fas fa-filter"></i> Filtros de Búsqueda
-            </h3>
-            <form method="GET" action="" id="filterForm">
-                <input type="hidden" name="accion" value="index">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-tags"></i> Categoría</span>
-                        <select name="categoria" class="filter-select">
-                            <option value="">Todas las categorías</option>
-                            <?php if (isset($categorias) && is_array($categorias)): ?>
-                                <?php foreach ($categorias as $cat): ?>
-                                    <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($cat->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-layer-group"></i> Subcategoría</span>
-                        <select name="subcategoria" class="filter-select">
-                            <option value="">Todas las subcategorías</option>
-                            <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                                <?php foreach ($subcategorias as $subcat): ?>
-                                    <option value="<?= $subcat->id_subcategoria ?>" <?= isset($_GET['subcategoria']) && $_GET['subcategoria'] == $subcat->id_subcategoria ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($subcat->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-times"></i> LIMPIAR
-                        </button>
-                    </div>
+            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
+                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
+                    <i class="fas fa-filter"></i> Filtros de Búsqueda
                 </div>
-            </form>
+                <form method="GET" action="" id="filterForm">
+                    <input type="hidden" name="accion" value="index">
+                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-box"></i> Nombre
+                            </label>
+                            <input type="text"
+                                   name="nombre"
+                                   class="form-control"
+                                   placeholder="Buscar..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-tags"></i> Categoría
+                            </label>
+                            <select name="categoria" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todas</option>
+                                <?php if (isset($categorias) && is_array($categorias)): ?>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($cat->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-layer-group"></i> Subcategoría
+                            </label>
+                            <select name="subcategoria" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todas</option>
+                                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+                                    <?php foreach ($subcategorias as $subcat): ?>
+                                        <option value="<?= $subcat->id_subcategoria ?>" <?= isset($_GET['subcategoria']) && $_GET['subcategoria'] == $subcat->id_subcategoria ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($subcat->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-truck"></i> Proveedor
+                            </label>
+                            <select name="proveedor" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todos</option>
+                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
+                                    <?php foreach ($proveedores as $prov): ?>
+                                        <option value="<?= $prov->id_proveedor ?>" <?= isset($_GET['proveedor']) && $_GET['proveedor'] == $prov->id_proveedor ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($prov->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
+
+                        <div class="col-md-1 d-flex align-items-end justify-content-center">
+                            <div class="d-flex gap-2 flex-column w-100">
+                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                                <i class="fas fa-times"></i> Limpiar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Tabla de Productos -->
@@ -641,10 +688,10 @@ $stats = $statsQuery->fetch_assoc();
                 </h3>
                 <div>
                     <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                        <i class="fas fa-plus"></i> Nuevo
+                        <i class="fas fa-plus"></i> Nuevo Producto
                     </a>
                     <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-info-modern">
-                        <i class="fas fa-arrow-left"></i> Volver
+                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
                 </div>
             </div>

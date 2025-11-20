@@ -550,58 +550,91 @@ if (isset($usuarios) && is_array($usuarios)) {
 
         <!-- Filtros -->
         <div class="filters-container">
-            <div class="filter-title">
-                <i class="fas fa-filter"></i> Filtros de Búsqueda
-            </div>
-            <form method="GET" action="" id="filterForm">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-user"></i> Nombre Usuario</span>
-                        <input type="text"
-                               name="nombre"
-                               class="filter-input"
-                               placeholder="Buscar por nombre..."
-                               value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-user-tag"></i> Rol</span>
-                        <select name="rol" class="filter-select">
-                            <option value="">Todos los roles</option>
-                            <option value="admin" <?= ($_GET['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
-                            <option value="coordinador" <?= ($_GET['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
-                            <option value="auxiliar" <?= ($_GET['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-filter"></i> Estado</span>
-                        <select name="estado" class="filter-select">
-                            <option value="">Todos</option>
-                            <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                            <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-envelope"></i> Email</span>
-                        <input type="email"
-                               name="email"
-                               class="filter-input"
-                               placeholder="Buscar por email..."
-                               value="<?= htmlspecialchars($_GET['email'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-times"></i> LIMPIAR
-                        </button>
-                    </div>
+            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
+                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
+                    <i class="fas fa-filter"></i> Filtros de Búsqueda
                 </div>
-            </form>
+                <form method="GET" action="" id="filterForm">
+                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
+                        <div class="col-md-3">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-user"></i> Nombre
+                            </label>
+                            <input type="text"
+                                   name="buscar"
+                                   class="form-control"
+                                   placeholder="Buscar por nombre..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-users"></i> Rol
+                            </label>
+                            <select name="filtro_rol" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todos</option>
+                                <option value="admin" <?= ($_GET['filtro_rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                <option value="coordinador" <?= ($_GET['filtro_rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
+                                <option value="auxiliar" <?= ($_GET['filtro_rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-toggle-on"></i> Estado
+                            </label>
+                            <select name="estado" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todos</option>
+                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Desde
+                            </label>
+                            <input type="date"
+                                   name="fecha_desde"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Hasta
+                            </label>
+                            <input type="date"
+                                   name="fecha_hasta"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-1 d-flex align-items-end justify-content-center">
+                            <div class="d-flex gap-2 flex-column w-100">
+                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                                <i class="fas fa-times"></i> Limpiar Filtros
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
 
         <!-- Botones de acción -->

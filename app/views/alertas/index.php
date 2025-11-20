@@ -524,62 +524,93 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         <!-- Filtros Avanzados -->
         <div class="filters-container">
-            <div class="filter-title">
-                <i class="fas fa-filter"></i> Filtros Avanzados
-            </div>
-            <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm">
-                <input type="hidden" name="accion" value="index" />
+            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
+                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
+                    <i class="fas fa-filter"></i> Filtros de Búsqueda
+                </div>
+                <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm">
+                    <input type="hidden" name="accion" value="index" />
 
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-box"></i> Producto</span>
-                        <select name="producto" class="filter-select">
-                            <option value="">Todos los productos</option>
-                            <?php foreach ($productos as $prod): ?>
-                                <option value="<?= $prod->id_productos ?>" <?= ($filtros['producto'] == $prod->id_productos ? 'selected' : '') ?>>
-                                    <?= htmlspecialchars($prod->nombre) ?>
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-bell"></i> Tipo
+                            </label>
+                            <input type="text"
+                                   name="tipo"
+                                   class="form-control"
+                                   placeholder="Buscar por tipo..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['tipo'] ?? '') ?>">
+                        </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-search"></i> Nombre</span>
-                        <input type="text"
-                               name="nombre_producto"
-                               class="filter-input"
-                               placeholder="Ej: tpscoo, producto..."
-                               value="<?= htmlspecialchars($filtros['nombre_producto']) ?>">
-                    </div>
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-exclamation-triangle"></i> Prioridad
+                            </label>
+                            <select name="prioridad" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todas</option>
+                                <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
+                                <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
+                                <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
+                            </select>
+                        </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-sort-numeric-up"></i> Cantidad</span>
-                        <div style="display:flex; gap:8px;">
-                            <input type="number" name="cantidad_min" class="filter-input" placeholder="Mín" value="<?= htmlspecialchars($filtros['cantidad_min']) ?>">
-                            <input type="number" name="cantidad_max" class="filter-input" placeholder="Máx" value="<?= htmlspecialchars($filtros['cantidad_max']) ?>">
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-toggle-on"></i> Estado
+                            </label>
+                            <select name="estado" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
+                                <option value="">Todos</option>
+                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Desde
+                            </label>
+                            <input type="date"
+                                   name="fecha_desde"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-2">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Hasta
+                            </label>
+                            <input type="date"
+                                   name="fecha_hasta"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
+                        </div>
+
+                        <div class="col-md-1 d-flex align-items-end justify-content-center">
+                            <div class="d-flex gap-2 flex-column w-100">
+                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-calendar-alt"></i> Fecha Desde</span>
-                        <input type="date" name="fecha_desde" class="filter-input" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
+                    
+                    <div class="row mt-3">
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
+                                <i class="fas fa-times"></i> Limpiar Filtros
+                            </button>
+                        </div>
                     </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-calendar-alt"></i> Fecha Hasta</span>
-                        <input type="date" name="fecha_hasta" class="filter-input" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-eraser"></i> LIMPIAR
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
 
         <!-- Botones de acción -->
