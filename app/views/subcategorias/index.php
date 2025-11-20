@@ -159,6 +159,43 @@ $stats = $statsQuery->fetch_assoc();
             margin-right: 10px;
         }
 
+        /* Centrar el bloque de filtros y crear un inner-card centrado */
+        .filters-container {
+            display: flex;
+            justify-content: center;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .filters-inner {
+            background: rgba(255,255,255,0.94);
+            color: #2c3e50;
+            border-radius: 12px;
+            padding: 22px;
+            width: 100%;
+            max-width: 760px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+            border: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .filters-inner .filter-title {
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 12px;
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+            text-shadow: none;
+        }
+
+        /* Inputs inside the inner card should use darker text */
+        .filters-inner .filter-input,
+        .filters-inner .filter-select {
+            background: #fff;
+            color: #2c3e50;
+            box-shadow: none;
+        }
+
         /* Mejorar labels del formulario */
         .form-label {
             color: #fff;
@@ -771,12 +808,10 @@ $stats = $statsQuery->fetch_assoc();
                 <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
             <form method="GET" action="" id="filterForm">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-tags"></i> Categoría Padre
-                        </label>
-                        <select name="categoria" class="form-control form-control-modern">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-tags"></i> Categoría Padre</span>
+                        <select name="categoria" class="filter-select">
                             <option value="">Todas las categorías</option>
                             <?php if (isset($categorias) && is_array($categorias)): ?>
                                 <?php foreach ($categorias as $cat): ?>
@@ -787,27 +822,23 @@ $stats = $statsQuery->fetch_assoc();
                             <?php endif; ?>
                         </select>
                     </div>
-                    
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-search"></i> Nombre Subcategoría
-                        </label>
-                        <input type="text" 
-                               name="nombre" 
-                               class="form-control form-control-modern" 
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-search"></i> Nombre Subcategoría</span>
+                        <input type="text"
+                               name="nombre"
+                               class="filter-input"
                                placeholder="Buscar por nombre..."
                                value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-4 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="btn btn-modern btn-primary-modern me-2">
-                                <i class="fas fa-search"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-modern btn-warning-modern" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
                     </div>
                 </div>
             </form>

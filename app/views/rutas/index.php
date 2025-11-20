@@ -1329,13 +1329,10 @@ if (isset($rutas) && is_array($rutas)) {
                 <i class="fas fa-search"></i> Filtros de Búsqueda Avanzada
             </div>
             <form method="GET" action="" id="filterForm">
-                <!-- Filtros principales en una sola fila más compacta -->
-                <div class="row">
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-tags"></i> Estado
-                        </label>
-                        <select name="estado" class="rutas-filter-input">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-tags"></i> Estado</span>
+                        <select name="estado" class="filter-select">
                             <option value="">Todos los estados</option>
                             <option value="activa" <?= ($_GET['estado'] ?? '') === 'activa' ? 'selected' : '' ?>>Activa</option>
                             <option value="inactiva" <?= ($_GET['estado'] ?? '') === 'inactiva' ? 'selected' : '' ?>>Inactiva</option>
@@ -1343,24 +1340,15 @@ if (isset($rutas) && is_array($rutas)) {
                             <option value="completada" <?= ($_GET['estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
                         </select>
                     </div>
-                    
-                    <div class="col-lg-2 col-md-4 col-sm-6 mb-3">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-store"></i> Local
-                        </label>
-                        <input type="text" 
-                               name="local" 
-                               class="rutas-filter-input" 
-                               placeholder="Nombre del local..."
-                               value="<?= htmlspecialchars($_GET['local'] ?? '') ?>">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-store"></i> Local</span>
+                        <input type="text" name="local" class="filter-input" placeholder="Nombre del local..." value="<?= htmlspecialchars($_GET['local'] ?? '') ?>">
                     </div>
-                </div>
-                  
-                    <div class="col-lg-3 col-md-4 col-sm-6 mb-2">
-                        <label class="rutas-filter-label">
-                            <i class="fas fa-sort"></i> Ordenar por
-                        </label>
-                        <select name="orden" class="rutas-filter-input">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-sort"></i> Ordenar por</span>
+                        <select name="orden" class="filter-select">
                             <option value="fecha_desc" <?= ($_GET['orden'] ?? 'fecha_desc') === 'fecha_desc' ? 'selected' : '' ?>>Más recientes</option>
                             <option value="fecha_asc" <?= ($_GET['orden'] ?? '') === 'fecha_asc' ? 'selected' : '' ?>>Más antiguos</option>
                             <option value="direccion_asc" <?= ($_GET['orden'] ?? '') === 'direccion_asc' ? 'selected' : '' ?>>Dirección A-Z</option>
@@ -1368,24 +1356,20 @@ if (isset($rutas) && is_array($rutas)) {
                         </select>
                     </div>
 
-                       <div class="col-lg-2 col-md-4 col-sm-6 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="rutas-btn rutas-btn-primary w-100 mb-1">
-                                <i class="fas fa-search"></i> Buscar
-                            </button>
-                            <button type="button" class="rutas-btn rutas-btn-warning w-100" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> BUSCAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
                     </div>
 
-                    <div class="col-lg-3 col-md-6 col-sm-12 mb-2 d-flex align-items-end">
-                        <div class="w-100 text-center">
-                            <small class="text-white-50">
-                                <i class="fas fa-info-circle"></i> 
-                                Mostrando <?= count($rutas ?? []); ?> rutas de <?= $totalRutas; ?> total
-                            </small>
-                        </div>
+                    <div class="filter-item" style="margin-left: auto;">
+                        <small class="text-white-50">
+                            <i class="fas fa-info-circle"></i>
+                            Mostrando <?= count($rutas ?? []); ?> rutas de <?= $totalRutas; ?> total
+                        </small>
                     </div>
                 </div>
             </form>

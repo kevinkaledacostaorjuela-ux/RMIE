@@ -101,6 +101,28 @@ $stats = $statsQuery->fetch_assoc();
             font-weight: bold;
             color: #fff;
             margin-bottom: 10px;
+
+        /* Asegurar que la barra de acciones no oculte botones en pantallas pequeñas */
+        .acciones-principales {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            z-index: 5;
+        }
+
+        /* Permitir que el contenedor principal muestre elementos que sobresalgan */
+        .dashboard-container {
+            overflow: visible;
+        }
+
+        /* Forzar que el area de resumen ocupe solo el espacio necesario y garantizar alineado */
+        .resumen-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-shrink: 0;
+        }
         }
 
         .stat-label {
@@ -611,51 +633,39 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Filtros -->
         <div class="filters-container">
-            <form method="GET" action="/RMIE/app/controllers/LocalController.php" class="row g-3">
+            <form method="GET" action="/RMIE/app/controllers/LocalController.php" id="filterForm">
                 <input type="hidden" name="accion" value="index">
-                <div class="col-md-3">
-                    <label class="form-label text-white">
-                        <i class="fas fa-search"></i> Buscar
-                    </label>
-                    <input type="text" class="form-control form-control-modern" 
-                           name="buscar" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>" 
-                           placeholder="Buscar por nombre del local">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-white">
-                        <i class="fas fa-city"></i> Localidad
-                    </label>
-                    <input type="text" class="form-control form-control-modern" 
-                           name="localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>" 
-                           placeholder="Localidad">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-white">
-                        <i class="fas fa-map-marked-alt"></i> Barrio
-                    </label>
-                    <input type="text" class="form-control form-control-modern" 
-                           name="barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>" 
-                           placeholder="Barrio">
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-white">
-                        <i class="fas fa-toggle-on"></i> Estado
-                    </label>
-                    <select class="form-control form-control-modern" name="estado">
-                        <option value="">Todos</option>
-                        <option value="activo" <?php echo ($filtros['estado'] ?? '') === 'activo' ? 'selected' : ''; ?>>Activo</option>
-                        <option value="inactivo" <?php echo ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <label class="form-label text-white">&nbsp;</label>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-modern btn-primary-modern">
-                            <i class="fas fa-filter"></i> Filtrar
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-search"></i> Buscar</span>
+                        <input type="text" class="filter-input" name="buscar" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>" placeholder="Buscar por nombre del local">
+                    </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-city"></i> Localidad</span>
+                        <input type="text" class="filter-input" name="localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>" placeholder="Localidad">
+                    </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-map-marked-alt"></i> Barrio</span>
+                        <input type="text" class="filter-input" name="barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>" placeholder="Barrio">
+                    </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-toggle-on"></i> Estado</span>
+                        <select class="filter-select" name="estado">
+                            <option value="">Todos</option>
+                            <option value="activo" <?php echo ($filtros['estado'] ?? '') === 'activo' ? 'selected' : ''; ?>>Activo</option>
+                            <option value="inactivo" <?php echo ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-filter"></i> FILTRAR
                         </button>
-                        <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
-                           class="btn btn-modern btn-secondary-modern">
-                            <i class="fas fa-times"></i> Limpiar
+                        <a href="/RMIE/app/controllers/LocalController.php?accion=index" class="btn-pill btn-pill-clear">
+                            <i class="fas fa-times"></i> LIMPIAR
                         </a>
                     </div>
                 </div>

@@ -98,6 +98,82 @@ if (isset($ventas) && is_array($ventas)) {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Estilos 'podificados' para los filtros: apariencia tipo 'pill' */
+        .filters-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+            max-width: 320px;
+        }
+
+        .filter-label {
+            background: rgba(8, 8, 8, 0.06);
+            color: hsla(207, 85%, 46%, 0.95);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .filter-input, .filter-select {
+            background: #e20e0eff;
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            min-width: 160px;
+        }
+
+        .filter-input::placeholder { color: #333; }
+
+        .filter-actions {
+            margin-left: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-end;
+        }
+
+        .btn-pill {
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border: none;
+            color: white;
+            min-width: 120px;
+        }
+
+        .btn-pill i { margin-right: 8px; }
+
+        .btn-pill-primary {
+            background: linear-gradient(180deg,#1e90ff,#2a6df4);
+        }
+
+        .btn-pill-clear {
+            background: linear-gradient(180deg,#ffb3c6,#ff7aa2);
+        }
+
+        @media (max-width: 768px) {
+            .filter-actions { width: 100%; flex-direction: row; justify-content: stretch; }
+            .btn-pill { flex: 1; }
+            .filters-row { gap: 8px; }
+        }
+
         .filter-title {
             color: #fff;
             font-size: 1.3rem;
@@ -549,44 +625,37 @@ if (isset($ventas) && is_array($ventas)) {
             </div>
             <form method="GET" action="/RMIE/app/controllers/SaleController.php" id="filterForm">
                 <input type="hidden" name="accion" value="index">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-box"></i> Producto
-                        </label>
-                        <input type="text" 
-                               name="filtro_producto" 
-                               class="form-control form-control-modern" 
-                               placeholder="Nombre del producto..."
+
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-box"></i> Producto</span>
+                        <input type="text"
+                               name="filtro_producto"
+                               class="filter-input"
+                               placeholder="Buscar producto..."
                                value="<?= htmlspecialchars($_GET['filtro_producto'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-user"></i> Cliente
-                        </label>
-                        <input type="text" 
-                               name="filtro_cliente" 
-                               class="form-control form-control-modern" 
-                               placeholder="Nombre del cliente..."
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-user"></i> Cliente</span>
+                        <input type="text"
+                               name="filtro_cliente"
+                               class="filter-input"
+                               placeholder="Buscar cliente..."
                                value="<?= htmlspecialchars($_GET['filtro_cliente'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-calendar"></i> Fecha
-                        </label>
-                        <input type="date" 
-                               name="filtro_fecha" 
-                               class="form-control form-control-modern"
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-calendar"></i> Fecha</span>
+                        <input type="date"
+                               name="filtro_fecha"
+                               class="filter-input"
                                value="<?= htmlspecialchars($_GET['filtro_fecha'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-filter"></i> Estado
-                        </label>
-                        <select name="filtro_estado" class="form-control form-control-modern">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-filter"></i> Estado</span>
+                        <select name="filtro_estado" class="filter-select">
                             <option value="">Todos los estados</option>
                             <option value="pendiente" <?= ($_GET['filtro_estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
                             <option value="procesando" <?= ($_GET['filtro_estado'] ?? '') === 'procesando' ? 'selected' : '' ?>>Procesando</option>
@@ -594,16 +663,14 @@ if (isset($ventas) && is_array($ventas)) {
                             <option value="cancelada" <?= ($_GET['filtro_estado'] ?? '') === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
                         </select>
                     </div>
-                    
-                    <div class="col-md-2 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="btn btn-modern btn-primary-modern me-1 mb-1">
-                                <i class="fas fa-search"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-modern btn-warning-modern mb-1" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
                     </div>
                 </div>
             </form>

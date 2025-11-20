@@ -41,6 +41,36 @@ class ReportController {
             case 'export':
                 $this->export();
                 break;
+            case 'usuarios':
+                $this->reporteUsuarios();
+                break;
+            case 'categorias':
+                $this->reporteCategorias();
+                break;
+            case 'subcategorias':
+                $this->reporteSubcategorias();
+                break;
+            case 'productos':
+                $this->reporteProductos();
+                break;
+            case 'proveedores':
+                $this->reporteProveedores();
+                break;
+            case 'clientes':
+                $this->reporteClientes();
+                break;
+            case 'ventas':
+                $this->reporteVentas();
+                break;
+            case 'rutas':
+                $this->reporteRutas();
+                break;
+            case 'locales':
+                $this->reporteLocales();
+                break;
+            case 'alertas':
+                $this->reporteAlertas();
+                break;
             default:
                 $this->index();
                 break;
@@ -307,6 +337,57 @@ class ReportController {
         header('Content-Type: text/csv');
         header('Content-Disposition: attachment; filename="reporte_' . $reporte['nombre'] . '.csv"');
         echo "CSV Export functionality would be implemented here";
+    }
+    
+    // Métodos para reportes individuales de los 11 módulos
+    public function reporteUsuarios() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/usuarios.php';
+    }
+    
+    public function reporteCategorias() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/categorias.php';
+    }
+    
+    public function reporteSubcategorias() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/subcategorias.php';
+    }
+    
+    public function reporteProductos() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/productos.php';
+    }
+    
+    public function reporteProveedores() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/proveedores.php';
+    }
+    
+    public function reporteClientes() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/clientes.php';
+    }
+    
+    public function reporteVentas() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/ventas.php';
+    }
+    
+    public function reporteRutas() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/rutas.php';
+    }
+    
+    public function reporteLocales() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/locales.php';
+    }
+    
+    public function reporteAlertas() {
+        global $conn;
+        include __DIR__ . '/../views/reportes/alertas.php';
     }
 }
 

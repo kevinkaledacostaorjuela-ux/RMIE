@@ -738,8 +738,31 @@
             });
         });
 
-        // Establecer fecha actual por defecto
-        document.getElementById('fecha_ingreso').valueAsDate = new Date();
+        // Establecer fecha actual por defecto (espera DOM y comprueba existencia)
+        document.addEventListener('DOMContentLoaded', function() {
+            const fecha = document.getElementById('fecha_entrada');
+            if (!fecha) return;
+
+            // Si el input soporta valueAsDate, úsalo; si no, aplicar fallback a YYYY-MM-DD
+            try {
+                if ('valueAsDate' in fecha) {
+                    fecha.valueAsDate = new Date();
+                } else {
+                    const d = new Date();
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    fecha.value = `${yyyy}-${mm}-${dd}`;
+                }
+            } catch (e) {
+                // En caso de cualquier error, aplicar formato seguro
+                const d = new Date();
+                const yyyy = d.getFullYear();
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                fecha.value = `${yyyy}-${mm}-${dd}`;
+            }
+        });
     </script>
 </body>
 </html>

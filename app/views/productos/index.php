@@ -219,7 +219,7 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .form-control-modern {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 10px;
             color: #fff;
@@ -227,7 +227,7 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .form-control-modern::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            color: rgba(255, 255, 255, 1);
         }
 
         .form-control-modern:focus {
@@ -253,7 +253,7 @@ $stats = $statsQuery->fetch_assoc();
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(10px);
             border-radius: 15px;
-            padding: 20px;
+            padding: 20px;  
             border: 1px solid rgba(255, 255, 255, 0.2);
             overflow-x: auto;
             margin-bottom: 20px;
@@ -592,12 +592,10 @@ $stats = $statsQuery->fetch_assoc();
             </h3>
             <form method="GET" action="" id="filterForm">
                 <input type="hidden" name="accion" value="index">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-tags"></i> Categoría
-                        </label>
-                        <select name="categoria" class="form-control form-control-modern">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-tags"></i> Categoría</span>
+                        <select name="categoria" class="filter-select">
                             <option value="">Todas las categorías</option>
                             <?php if (isset($categorias) && is_array($categorias)): ?>
                                 <?php foreach ($categorias as $cat): ?>
@@ -608,12 +606,10 @@ $stats = $statsQuery->fetch_assoc();
                             <?php endif; ?>
                         </select>
                     </div>
-                    
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label">
-                            <i class="fas fa-layer-group"></i> Subcategoría
-                        </label>
-                        <select name="subcategoria" class="form-control form-control-modern">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-layer-group"></i> Subcategoría</span>
+                        <select name="subcategoria" class="filter-select">
                             <option value="">Todas las subcategorías</option>
                             <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
                                 <?php foreach ($subcategorias as $subcat): ?>
@@ -624,16 +620,14 @@ $stats = $statsQuery->fetch_assoc();
                             <?php endif; ?>
                         </select>
                     </div>
-                    
-                    <div class="col-md-4 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="btn btn-modern btn-primary-modern me-2">
-                                <i class="fas fa-search"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-modern btn-warning-modern" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
                     </div>
                 </div>
             </form>

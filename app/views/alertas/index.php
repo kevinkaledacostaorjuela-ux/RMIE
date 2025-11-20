@@ -461,14 +461,11 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
             <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm">
                 <input type="hidden" name="accion" value="index" />
-                
-                <div class="row g-3">
-                    <!-- Fila 1: Búsqueda de productos -->
-                    <div class="col-md-4">
-                        <label class="form-label text-white">
-                            <i class="fas fa-box"></i> Seleccionar Producto
-                        </label>
-                        <select name="producto" class="form-control form-control-modern">
+
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-box"></i> Producto</span>
+                        <select name="producto" class="filter-select">
                             <option value="">Todos los productos</option>
                             <?php foreach ($productos as $prod): ?>
                                 <option value="<?= $prod->id_productos ?>" <?= ($filtros['producto'] == $prod->id_productos ? 'selected' : '') ?>>
@@ -477,68 +474,39 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    
-                    <div class="col-md-4">
-                        <label class="form-label text-white">
-                            <i class="fas fa-search"></i> Buscar por Nombre
-                        </label>
-                        <input type="text" 
-                               name="nombre_producto" 
-                               class="form-control form-control-modern" 
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-search"></i> Nombre</span>
+                        <input type="text"
+                               name="nombre_producto"
+                               class="filter-input"
                                placeholder="Ej: tpscoo, producto..."
                                value="<?= htmlspecialchars($filtros['nombre_producto']) ?>">
                     </div>
-                    
-                    <div class="col-md-4">
-                        <label class="form-label text-white">
-                            <i class="fas fa-sort-numeric-up"></i> Rango de Cantidad
-                        </label>
-                        <div class="row g-2">
-                            <div class="col-6">
-                                <input type="number" 
-                                       name="cantidad_min" 
-                                       class="form-control form-control-modern" 
-                                       placeholder="Mín"
-                                       value="<?= htmlspecialchars($filtros['cantidad_min']) ?>">
-                            </div>
-                            <div class="col-6">
-                                <input type="number" 
-                                       name="cantidad_max" 
-                                       class="form-control form-control-modern" 
-                                       placeholder="Máx"
-                                       value="<?= htmlspecialchars($filtros['cantidad_max']) ?>">
-                            </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-sort-numeric-up"></i> Cantidad</span>
+                        <div style="display:flex; gap:8px;">
+                            <input type="number" name="cantidad_min" class="filter-input" placeholder="Mín" value="<?= htmlspecialchars($filtros['cantidad_min']) ?>">
+                            <input type="number" name="cantidad_max" class="filter-input" placeholder="Máx" value="<?= htmlspecialchars($filtros['cantidad_max']) ?>">
                         </div>
                     </div>
-                </div>
-                
-                <div class="row g-3 mt-2">
-                    <!-- Fila 2: Fechas y botones -->
-                    <div class="col-md-4">
-                        <label class="form-label text-white">
-                            <i class="fas fa-calendar-alt"></i> Fecha Desde
-                        </label>
-                        <input type="date" 
-                               name="fecha_desde" 
-                               class="form-control form-control-modern"
-                               value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-calendar-alt"></i> Fecha Desde</span>
+                        <input type="date" name="fecha_desde" class="filter-input" value="<?= htmlspecialchars($filtros['fecha_desde']) ?>">
                     </div>
-                    
-                    <div class="col-md-4">
-                        <label class="form-label text-white">
-                            <i class="fas fa-calendar-alt"></i> Fecha Hasta
-                        </label>
-                        <input type="date" 
-                               name="fecha_hasta" 
-                               class="form-control form-control-modern"
-                               value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-calendar-alt"></i> Fecha Hasta</span>
+                        <input type="date" name="fecha_hasta" class="filter-input" value="<?= htmlspecialchars($filtros['fecha_hasta']) ?>">
                     </div>
-                    
-                    <div class="col-md-4 d-flex align-items-end gap-2">
-                        <button type="submit" class="btn btn-modern btn-primary-modern flex-fill">
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
                             <i class="fas fa-search"></i> FILTRAR
                         </button>
-                        <button type="button" class="btn btn-modern btn-secondary-modern flex-fill" onclick="limpiarFiltros()">
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
                             <i class="fas fa-eraser"></i> LIMPIAR
                         </button>
                     </div>

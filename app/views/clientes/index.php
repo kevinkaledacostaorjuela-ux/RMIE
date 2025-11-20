@@ -482,49 +482,41 @@ $stats = $statsQuery->fetch_assoc();
                 <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
             <form method="GET" action="" id="filterForm">
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-user"></i> Nombre
-                        </label>
-                        <input type="text" 
-                               name="nombre" 
-                               class="form-control form-control-modern" 
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-user"></i> Nombre</span>
+                        <input type="text"
+                               name="nombre"
+                               class="filter-input"
                                placeholder="Buscar por nombre..."
                                value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-                        <input type="text" 
-                               name="email" 
-                               class="form-control form-control-modern" 
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-envelope"></i> Email</span>
+                        <input type="text"
+                               name="email"
+                               class="filter-input"
                                placeholder="Buscar por email..."
                                value="<?= htmlspecialchars($_GET['email'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-toggle-on"></i> Estado
-                        </label>
-                        <select name="estado" class="form-control form-control-modern">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-toggle-on"></i> Estado</span>
+                        <select name="estado" class="filter-select">
                             <option value="">Todos los estados</option>
                             <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
                             <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                         </select>
                     </div>
-                    
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
-                        <div class="w-100">
-                            <button type="submit" class="btn btn-modern btn-primary-modern me-2">
-                                <i class="fas fa-search"></i> Filtrar
-                            </button>
-                            <button type="button" class="btn btn-modern btn-warning-modern" onclick="limpiarFiltros()">
-                                <i class="fas fa-times"></i> Limpiar
-                            </button>
-                        </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
                     </div>
                 </div>
             </form>

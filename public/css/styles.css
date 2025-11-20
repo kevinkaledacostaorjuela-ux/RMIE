@@ -4637,3 +4637,79 @@ button:hover {
         hyphens: auto;
     }
 }
+
+/* --- Estilos compartidos para filtros 'podificados' (pills) --- */
+.filters-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 140px;
+    max-width: 360px;
+}
+
+.filter-label {
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.95);
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.filter-input, .filter-select, .filter-input[type="date"] {
+    background: #fff;
+    color: #333;
+    border-radius: 12px;
+    padding: 10px 14px;
+    border: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    min-width: 160px;
+}
+
+.filter-input::placeholder { color: #acb4c6; }
+
+.filter-actions {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+}
+
+.btn-pill {
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    border: none;
+    color: white;
+    min-width: 120px;
+}
+
+.btn-pill i { margin-right: 8px; }
+
+.btn-pill-primary {
+    background: linear-gradient(180deg,#1e90ff,#2a6df4);
+}
+
+.btn-pill-clear {
+    background: linear-gradient(180deg,#ffb3c6,#ff7aa2);
+}
+
+@media (max-width: 768px) {
+    .filter-actions { width: 100%; flex-direction: row; justify-content: stretch; }
+    .btn-pill { flex: 1; }
+    .filters-row { gap: 8px; }
+}

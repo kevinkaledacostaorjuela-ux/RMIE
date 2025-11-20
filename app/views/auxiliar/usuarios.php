@@ -230,33 +230,29 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
         <!-- Filtros -->
         <div class="filters-container">
             <form method="GET" action="">
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-search"></i> Buscar
-                        </label>
-                        <input type="text" 
-                               name="buscar" 
-                               class="form-control form-control-modern" 
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-search"></i> Buscar</span>
+                        <input type="text"
+                               name="buscar"
+                               class="filter-input"
                                placeholder="Buscar por nombre o email..."
                                value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
                     </div>
-                    
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label text-white">
-                            <i class="fas fa-user-tag"></i> Rol
-                        </label>
-                        <select name="rol" class="form-control form-control-modern">
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-user-tag"></i> Rol</span>
+                        <select name="rol" class="filter-select">
                             <option value="">Todos los roles</option>
                             <option value="admin" <?= ($_GET['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
                             <option value="coordinador" <?= ($_GET['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                             <option value="auxiliar" <?= ($_GET['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                         </select>
                     </div>
-                    
-                    <div class="col-md-3 mb-3 d-flex align-items-end">
-                        <button type="submit" class="btn btn-modern btn-back">
-                            <i class="fas fa-filter"></i> Filtrar
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-filter"></i> FILTRAR
                         </button>
                     </div>
                 </div>
