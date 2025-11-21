@@ -91,7 +91,7 @@ class ProductController {
             $id_subcategoria = $_POST['subcategoria_id'] ?? null;
             $id_categoria = $_POST['categoria_id'] ?? null;
             $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
-            $num_doc = $_POST['id_usuario'] ?? null;
+            $num_doc = $_POST['num_doc'] ?? null;
             
             // Validar campos requeridos
             // El proveedor ahora es opcional

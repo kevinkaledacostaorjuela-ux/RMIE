@@ -388,8 +388,8 @@
                 </div>
                 <div class="form-row two-cols">
                     <div class="form-group">
-                        <label for="id_proveedor">Proveedor (opcional)</label>
-                        <select id="id_proveedor" name="id_proveedor">
+                        <label for="id_proveedores">Proveedor (opcional)</label>
+                        <select id="id_proveedores" name="id_proveedores">
                             <option value="">Sin proveedor</option>
                             <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                 <?php foreach ($proveedores as $prov): ?>
@@ -402,8 +402,8 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="id_usuario">Usuario responsable</label>
-                        <select id="id_usuario" name="id_usuario" required>
+                        <label for="num_doc">Usuario responsable</label>
+                        <select id="num_doc" name="num_doc" required>
                             <option value="">Seleccione usuario</option>
                             <?php if (isset($usuarios) && is_array($usuarios)): ?>
                                 <?php foreach ($usuarios as $user): ?>
@@ -521,7 +521,7 @@
         document.getElementById('formEditarProducto').addEventListener('submit', function(e) {
             const nombre = document.getElementById('nombre').value.trim();
             const categoria = document.getElementById('id_categoria').value;
-            const usuario = document.getElementById('id_usuario').value;
+            const usuario = document.getElementById('num_doc').value;
 
             if (nombre.length < 3) {
                 e.preventDefault();

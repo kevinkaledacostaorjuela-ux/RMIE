@@ -50,10 +50,9 @@ class Provider {
             ]
         ];
         
-        // Construir consulta base con LEFT JOIN para productos usando tabla intermedia
+        // Construir consulta base con LEFT JOIN directo a productos
         $sql = "SELECT DISTINCT p.* FROM proveedores p 
-                LEFT JOIN proveedores_productos pp ON p.id_proveedores = pp.id_proveedor 
-                LEFT JOIN productos pr ON pp.id_producto = pr.id_productos 
+                LEFT JOIN productos pr ON p.id_proveedores = pr.id_proveedores 
                 WHERE 1=1";
         
         // Construir WHERE con filtros
@@ -123,12 +122,11 @@ class Provider {
         return $stmt->execute();
     }
 
-    // Obtener productos de un proveedor específico usando tabla intermedia
+    // Obtener productos de un proveedor específico
     public static function getProductosByProveedor($conn, $id_proveedor) {
-        $sql = "SELECT p.*, pp.fecha_asignacion 
+        $sql = "SELECT p.* 
                 FROM productos p 
-                INNER JOIN proveedores_productos pp ON p.id_productos = pp.id_producto 
-                WHERE pp.id_proveedor = ? AND pp.activo = 1
+                WHERE p.id_proveedores = ?
                 ORDER BY p.nombre";
         
         $stmt = $conn->prepare($sql);
@@ -145,23 +143,26 @@ class Provider {
 
     // Asignar producto a proveedor
     public static function assignProducto($conn, $id_proveedor, $id_producto) {
-        $sql = "INSERT IGNORE INTO proveedores_productos (id_proveedor, id_producto) VALUES (?, ?)";
+        $sql = "UPDATE productos SET id_proveedores = ? WHERE id_productos = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $id_proveedor, $id_producto);
         return $stmt->execute();
     }
 
-    // Remover producto de proveedor
+    // Remover producto de proveedor (establecer a NULL o a un proveedor por defecto)
     public static function removeProducto($conn, $id_proveedor, $id_producto) {
-        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ? AND id_producto = ?";
+        // Opción 1: Establecer a NULL si la columna lo permite
+        // Opción 2: Establecer a un proveedor por defecto (ID 13 = "Sin Proveedor")
+        $sql = "UPDATE productos SET id_proveedores = 13 WHERE id_proveedores = ? AND id_productos = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $id_proveedor, $id_producto);
         return $stmt->execute();
     }
 
-    // Remover todos los productos de un proveedor
+    // Remover todos los productos de un proveedor (establecer a proveedor por defecto)
     public static function removeAllProductos($conn, $id_proveedor) {
-        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ?";
+        // Establecer todos los productos de este proveedor al proveedor por defecto (ID 13)
+        $sql = "UPDATE productos SET id_proveedores = 13 WHERE id_proveedores = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_proveedor);
         return $stmt->execute();

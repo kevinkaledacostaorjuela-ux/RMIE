@@ -30864,5 +30864,3 @@ Se realizaron cambios.
 
 kevinkaledacostaorjuela-ux: @agent Intentar de nuevo
 
-GitHub Copilot: 
-http://localhost/RMIE/app/controllers/ReportController.php?action=proveedores ahora agrega que se pueda filtrar por producto y quita ubicacion desde y hasta por favor 

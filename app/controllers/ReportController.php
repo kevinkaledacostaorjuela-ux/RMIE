@@ -405,10 +405,8 @@ class ReportController {
         // Obtener filtros
         $filtros = [
             'nombre' => $_GET['nombre'] ?? '',
-            'ubicacion' => $_GET['ubicacion'] ?? '',
-            'estado' => $_GET['estado'] ?? '',
-            'fecha_desde' => $_GET['fecha_desde'] ?? '',
-            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+            'producto' => $_GET['producto'] ?? '',
+            'estado' => $_GET['estado'] ?? ''
         ];
         
         include __DIR__ . '/../views/reportes/proveedores.php';

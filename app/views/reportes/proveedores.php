@@ -8,22 +8,17 @@ if (!isset($_SESSION['user'])) {
 }
 
 require_once __DIR__ . '/../../models/Provider.php';
+require_once __DIR__ . '/../../models/Product.php';
 
 $proveedores = Provider::getAll($conn);
+$productos = Product::getAll($conn);
 
 // Aplicar filtros adicionales en PHP
 if (!empty($filtros)) {
-    $proveedores = array_filter($proveedores, function($p) use ($filtros) {
+    $proveedores = array_filter($proveedores, function($p) use ($filtros, $conn) {
         // Filtro por nombre
         if (!empty($filtros['nombre'])) {
             if (stripos($p->nombre_distribuidor ?? '', $filtros['nombre']) === false) {
-                return false;
-            }
-        }
-        
-        // Filtro por ubicación
-        if (!empty($filtros['ubicacion'])) {
-            if (stripos($p->ubicacion ?? '', $filtros['ubicacion']) === false) {
                 return false;
             }
         }
@@ -33,16 +28,17 @@ if (!empty($filtros)) {
             return false;
         }
         
-        // Filtro por fecha desde
-        if (!empty($filtros['fecha_desde']) && !empty($p->fecha_registro)) {
-            if (strtotime($p->fecha_registro) < strtotime($filtros['fecha_desde'])) {
-                return false;
+        // Filtro por producto
+        if (!empty($filtros['producto'])) {
+            $productosProveedor = Provider::getProductosByProveedor($conn, $p->id_proveedores);
+            $tieneProducto = false;
+            foreach ($productosProveedor as $prod) {
+                if ($prod->id_productos == $filtros['producto']) {
+                    $tieneProducto = true;
+                    break;
+                }
             }
-        }
-        
-        // Filtro por fecha hasta
-        if (!empty($filtros['fecha_hasta']) && !empty($p->fecha_registro)) {
-            if (strtotime($p->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
+            if (!$tieneProducto) {
                 return false;
             }
         }
@@ -228,29 +224,30 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
             <form method="GET" action="/RMIE/app/controllers/ReportController.php">
                 <input type="hidden" name="action" value="proveedores">
                 <div class="row">
-                    <div class="col-md-3 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label"><i class="fas fa-truck"></i> Nombre</label>
                         <input type="text" name="nombre" class="form-control" placeholder="Buscar por nombre..." value="<?= htmlspecialchars($filtros['nombre'] ?? '') ?>">
                     </div>
-                    <div class="col-md-3 mb-3">
-                        <label class="form-label"><i class="fas fa-map-marker-alt"></i> Ubicación</label>
-                        <input type="text" name="ubicacion" class="form-control" placeholder="Filtrar por ubicación..." value="<?= htmlspecialchars($filtros['ubicacion'] ?? '') ?>">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label"><i class="fas fa-box"></i> Producto</label>
+                        <select name="producto" class="form-select">
+                            <option value="">Todos</option>
+                            <?php if (!empty($productos) && is_array($productos)): ?>
+                                <?php foreach ($productos as $prod): ?>
+                                    <option value="<?= htmlspecialchars($prod->id_productos ?? '') ?>" <?= ($filtros['producto'] ?? '') == ($prod->id_productos ?? '') ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($prod->nombre ?? 'Sin nombre') ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
-                    <div class="col-md-2 mb-3">
+                    <div class="col-md-4 mb-3">
                         <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
                         <select name="estado" class="form-select">
                             <option value="">Todos</option>
                             <option value="activo" <?= ($filtros['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
                             <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                         </select>
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
-                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
-                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
                     </div>
                 </div>
                 <div class="row">
@@ -271,7 +268,6 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Contacto</th>
-                            <th>Teléfono</th>
                             <th>Email</th>
                             <th>Estado</th>
                         </tr>
@@ -281,9 +277,8 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
                         <tr>
                             <td><?= htmlspecialchars($proveedor->id_proveedores) ?></td>
                             <td><?= htmlspecialchars($proveedor->nombre_distribuidor ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($proveedor->ubicacion ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($proveedor->cel_proveedor ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($proveedor->correo ?? 'N/A') ?></td>
+                            <td><?= !empty($proveedor->cel_proveedor) && $proveedor->cel_proveedor !== '0000000000' ? htmlspecialchars($proveedor->cel_proveedor) : 'No registrado' ?></td>
+                            <td><?= !empty($proveedor->correo) && $proveedor->correo !== 'sin.proveedor@sistema.local' ? htmlspecialchars($proveedor->correo) : 'No registrado' ?></td>
                             <td>
                                 <span class="badge <?= strtolower($proveedor->estado ?? 'activo') === 'activo' ? 'badge-activo' : 'badge-inactivo' ?>">
                                     <?= htmlspecialchars($proveedor->estado ?? 'Activo') ?>
