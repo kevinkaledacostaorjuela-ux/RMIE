@@ -9,8 +9,9 @@ class Local {
     public $barrio;
     public $fecha_creacion;
     public $total_clientes;
+    public $nombres_clientes;
 
-    public function __construct($id_locales, $direccion, $nombre_local, $cel_local, $estado, $localidad, $barrio, $fecha_creacion = null, $total_clientes = 0) {
+    public function __construct($id_locales, $direccion, $nombre_local, $cel_local, $estado, $localidad, $barrio, $fecha_creacion = null, $total_clientes = 0, $nombres_clientes = null) {
         $this->id_locales = $id_locales;
         $this->direccion = $direccion;
         $this->nombre_local = $nombre_local;
@@ -20,11 +21,13 @@ class Local {
         $this->barrio = $barrio;
         $this->fecha_creacion = $fecha_creacion;
         $this->total_clientes = $total_clientes;
+        $this->nombres_clientes = $nombres_clientes;
     }
 
     public static function getAll($conn, $filtros = []) {
         $sql = "SELECT l.*, 
-                       COUNT(c.id_clientes) as total_clientes
+                       COUNT(c.id_clientes) as total_clientes,
+                       GROUP_CONCAT(c.nombre SEPARATOR ', ') as nombres_clientes
                 FROM locales l
                 LEFT JOIN clientes c ON l.id_locales = c.id_locales
                 WHERE 1=1";
@@ -78,7 +81,8 @@ class Local {
                 $row['localidad'],
                 $row['barrio'],
                 $row['fecha_creacion'],
-                $row['total_clientes']
+                $row['total_clientes'],
+                $row['nombres_clientes']
             );
         }
         

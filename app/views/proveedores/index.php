@@ -201,7 +201,7 @@ if (isset($proveedores) && is_array($proveedores)) {
         }
 
         .table-header h3 {
-            color: #fff;
+            color: #19269cff;
             font-size: 1.5rem;
             font-weight: 700;
             margin: 0;
@@ -605,7 +605,7 @@ if (isset($proveedores) && is_array($proveedores)) {
             align-items: center;
             gap: 8px;
             font-size: 0.95rem;
-            color: #fff !important;
+            color: #192d86ff !important;
             background: rgba(255, 255, 255, 0.1);
             padding: 8px 12px;
             border-radius: 8px;
@@ -785,15 +785,15 @@ if (isset($proveedores) && is_array($proveedores)) {
                         </div>
 
                         <div class="col-md-3">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-map-marker-alt"></i> Ubicación
+                            <label class="form-label" style="color: #1a202c; font-weight: 700; font-size: 1rem; display: block; margin-bottom: 8px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
+                                <i class="fas fa-box"></i> Producto
                             </label>
                             <input type="text"
-                                   name="ciudad"
+                                   name="producto"
                                    class="form-control"
-                                   placeholder="Filtrar..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['ciudad'] ?? '') ?>">
+                                   placeholder="Filtrar por producto..."
+                                   style="background: #fff; color: #1a202c; border: 2px solid #e2e8f0; padding: 12px 15px; border-radius: 8px; font-size: 1rem; width: 100%; font-weight: 500;"
+                                   value="<?= htmlspecialchars($_GET['producto'] ?? '') ?>">
                         </div>
 
                         <div class="col-md-2">
@@ -900,11 +900,44 @@ if (isset($proveedores) && is_array($proveedores)) {
                                         <i class="fas fa-map-marker-alt"></i>
                                     </div>
                                     <div class="provider-info-content">
-                                        <div class="provider-info-label">Ubicación</div>
+                                        <div class="provider-info-label">Dirección</div>
                                         <div class="provider-info-value"><?= htmlspecialchars($proveedor->ubicacion) ?></div>
                                     </div>
                                 </div>
                                 <?php endif; ?>
+                                
+                                <!-- Mostrar productos del proveedor -->
+                                <div class="provider-info-item">
+                                    <div class="provider-info-icon">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <div class="provider-info-content">
+                                        <div class="provider-info-label">Productos</div>
+                                        <div class="provider-info-value">
+                                            <?php if (isset($productosPorProveedor[$proveedor->id_proveedores]) && !empty($productosPorProveedor[$proveedor->id_proveedores])): ?>
+                                                <?php
+                                                $productos = $productosPorProveedor[$proveedor->id_proveedores];
+                                                $nombresProductos = [];
+                                                foreach ($productos as $producto) {
+                                                    // Los productos ahora vienen como objetos directos
+                                                    if (is_object($producto)) {
+                                                        $nombresProductos[] = $producto->nombre;
+                                                    }
+                                                }
+                                                $productosTexto = implode(', ', $nombresProductos);
+                                                ?>
+                                                <span title="<?= htmlspecialchars($productosTexto) ?>">
+                                                    <?= htmlspecialchars(strlen($productosTexto) > 60 ? substr($productosTexto, 0, 60) . '...' : $productosTexto) ?>
+                                                </span>
+                                                <small class="text-muted d-block"><?= count($nombresProductos) ?> producto(s)</small>
+                                            <?php else: ?>
+                                                <span class="text-muted">
+                                                    <i class="fas fa-question"></i> Sin productos asignados
+                                                </span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <div class="provider-card-footer">
@@ -976,7 +1009,8 @@ if (isset($proveedores) && is_array($proveedores)) {
                                 <th><i class="fas fa-truck"></i> Proveedor</th>
                                 <th><i class="fas fa-mobile-alt"></i> Teléfono</th>
                                 <th><i class="fas fa-envelope"></i> Email</th>
-                                <th><i class="fas fa-map-marker-alt"></i> Ubicación</th>
+                                <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
+                                <th><i class="fas fa-box"></i> Productos</th>
                                 <th><i class="fas fa-traffic-light"></i> Estado</th>
                                 <th><i class="fas fa-cogs"></i> Acciones</th>
                             </tr>
@@ -1021,11 +1055,38 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     <td>
                                         <?php if (!empty($proveedor->ubicacion)): ?>
                                             <span class="contact-info" title="<?= htmlspecialchars($proveedor->ubicacion) ?>">
-                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars(substr($proveedor->ubicacion, 0, 30)) ?><?= strlen($proveedor->ubicacion) > 30 ? '...' : '' ?>
+                                                <i class="fas fa-map-marker-alt"></i> 
+                                                <?= htmlspecialchars(strlen($proveedor->ubicacion) > 30 ? substr($proveedor->ubicacion, 0, 30) . '...' : $proveedor->ubicacion) ?>
                                             </span>
                                         <?php else: ?>
                                             <span class="badge badge-modern badge-secondary">
-                                                <i class="fas fa-question"></i> Sin ubicación
+                                                <i class="fas fa-question"></i> Sin dirección
+                                            </span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <?php if (isset($productosPorProveedor[$proveedor->id_proveedores]) && !empty($productosPorProveedor[$proveedor->id_proveedores])): ?>
+                                            <?php
+                                            $productos = $productosPorProveedor[$proveedor->id_proveedores];
+                                            $nombresProductos = [];
+                                            foreach ($productos as $producto) {
+                                                // Verificar si es array con 'obj' o directamente un objeto
+                                                if (is_array($producto) && isset($producto['obj'])) {
+                                                    $nombresProductos[] = $producto['obj']->nombre;
+                                                } elseif (is_object($producto)) {
+                                                    $nombresProductos[] = $producto->nombre;
+                                                }
+                                            }
+                                            $productosTexto = implode(', ', $nombresProductos);
+                                            ?>
+                                            <span class="contact-info" title="<?= htmlspecialchars($productosTexto) ?>">
+                                                <i class="fas fa-box"></i> 
+                                                <?= htmlspecialchars(strlen($productosTexto) > 40 ? substr($productosTexto, 0, 40) . '...' : $productosTexto) ?>
+                                            </span>
+                                            <small class="text-muted d-block"><?= count($nombresProductos) ?> producto(s)</small>
+                                        <?php else: ?>
+                                            <span class="badge badge-modern badge-secondary">
+                                                <i class="fas fa-question"></i> Sin productos
                                             </span>
                                         <?php endif; ?>
                                     </td>

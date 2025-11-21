@@ -28,33 +28,23 @@ if (!empty($filtros)) {
             }
         }
         
+        // Filtro por subcategoría
+        if (!empty($filtros['subcategoria'])) {
+            if (stripos($p->subcategoria_nombre ?? '', $filtros['subcategoria']) === false) {
+                return false;
+            }
+        }
+        
+        // Filtro por proveedor
+        if (!empty($filtros['proveedor'])) {
+            if (stripos($p->proveedor_nombre ?? '', $filtros['proveedor']) === false) {
+                return false;
+            }
+        }
+        
         // Filtro por estado
         if (!empty($filtros['estado']) && strtolower($p->estado ?? 'activo') !== strtolower($filtros['estado'])) {
             return false;
-        }
-        
-        // Filtro por stock mínimo
-        if (!empty($filtros['stock_min']) && ($p->stock ?? 0) < (int)$filtros['stock_min']) {
-            return false;
-        }
-        
-        // Filtro por stock máximo
-        if (!empty($filtros['stock_max']) && ($p->stock ?? 0) > (int)$filtros['stock_max']) {
-            return false;
-        }
-        
-        // Filtro por fecha desde
-        if (!empty($filtros['fecha_desde']) && !empty($p->fecha_registro)) {
-            if (strtotime($p->fecha_registro) < strtotime($filtros['fecha_desde'])) {
-                return false;
-            }
-        }
-        
-        // Filtro por fecha hasta
-        if (!empty($filtros['fecha_hasta']) && !empty($p->fecha_registro)) {
-            if (strtotime($p->fecha_registro) > strtotime($filtros['fecha_hasta'] . ' 23:59:59')) {
-                return false;
-            }
         }
         
         return true;
@@ -253,7 +243,15 @@ $totalStock = array_sum(array_map(fn($p) => $p->stock ?? 0, $productos));
                         <label class="form-label"><i class="fas fa-tag"></i> Categoría</label>
                         <input type="text" name="categoria" class="form-control" placeholder="Categoría..." value="<?= htmlspecialchars($filtros['categoria'] ?? '') ?>">
                     </div>
-                    <div class="col-md-1 mb-3">
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-tags"></i> Subcategoría</label>
+                        <input type="text" name="subcategoria" class="form-control" placeholder="Subcategoría..." value="<?= htmlspecialchars($filtros['subcategoria'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
+                        <label class="form-label"><i class="fas fa-truck"></i> Proveedor</label>
+                        <input type="text" name="proveedor" class="form-control" placeholder="Proveedor..." value="<?= htmlspecialchars($filtros['proveedor'] ?? '') ?>">
+                    </div>
+                    <div class="col-md-2 mb-3">
                         <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
                         <select name="estado" class="form-select">
                             <option value="">Todos</option>
@@ -261,23 +259,7 @@ $totalStock = array_sum(array_map(fn($p) => $p->stock ?? 0, $productos));
                             <option value="inactivo" <?= ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                         </select>
                     </div>
-                    <div class="col-md-1 mb-3">
-                        <label class="form-label"><i class="fas fa-cubes"></i> Stock Mín</label>
-                        <input type="number" name="stock_min" class="form-control" placeholder="0" value="<?= htmlspecialchars($filtros['stock_min'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-1 mb-3">
-                        <label class="form-label"><i class="fas fa-cubes"></i> Stock Máx</label>
-                        <input type="number" name="stock_max" class="form-control" placeholder="999" value="<?= htmlspecialchars($filtros['stock_max'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label"><i class="fas fa-calendar"></i> Desde</label>
-                        <input type="date" name="fecha_desde" class="form-control" value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-2 mb-3">
-                        <label class="form-label"><i class="fas fa-calendar"></i> Hasta</label>
-                        <input type="date" name="fecha_hasta" class="form-control" value="<?= htmlspecialchars($filtros['fecha_hasta'] ?? '') ?>">
-                    </div>
-                    <div class="col-md-1 mb-3 d-flex align-items-end">
+                    <div class="col-md-2 mb-3 d-flex align-items-end">
                         <button type="submit" class="btn btn-filter w-100"><i class="fas fa-search"></i></button>
                     </div>
                 </div>

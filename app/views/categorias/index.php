@@ -177,6 +177,204 @@ if (isset($conn)) {
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Estilos para toggle de vista */
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-toggle-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Diseño de tarjetas para categorías */
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .categories-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .categories-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .categories-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .categories-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .categories-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .categories-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .categories-card-title {
+            flex: 1;
+        }
+
+        .categories-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .categories-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .categories-card-body {
+            margin-bottom: 20px;
+        }
+
+        .categories-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .categories-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .categories-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .categories-info-content {
+            flex: 1;
+        }
+
+        .categories-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .categories-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .categories-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .categories-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         .table-modern {
             background: transparent;
             color: #fff;
@@ -417,6 +615,91 @@ if (isset($conn)) {
 
         <!-- Tabla de Categorías (Desktop) -->
         <div class="table-container d-none d-md-block">
+            <div class="table-header">
+                <h3><i class="fas fa-tags"></i> Lista de Categorías (<?= count($categorias ?? []) ?>)</h3>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="toggleCategoriesView('cards')" id="btnCards">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button class="view-toggle-btn" onclick="toggleCategoriesView('table')" id="btnTable">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vista de Tarjetas (por defecto) -->
+            <div id="cardsView" class="categories-grid">
+                <?php if (isset($categorias) && is_array($categorias) && !empty($categorias)): ?>
+                    <?php foreach ($categorias as $cat): ?>
+                        <div class="categories-card">
+                            <div class="categories-card-header">
+                                <div class="categories-card-icon">
+                                    <i class="fas fa-tag"></i>
+                                </div>
+                                <div class="categories-card-title">
+                                    <h4><?= htmlspecialchars($cat->nombre ?? 'Sin nombre') ?></h4>
+                                    <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($cat->id_categoria ?? '') ?></p>
+                                </div>
+                            </div>
+
+                            <div class="categories-card-body">
+                                <div class="categories-info-item">
+                                    <div class="categories-info-icon">
+                                        <i class="fas fa-align-left"></i>
+                                    </div>
+                                    <div class="categories-info-content">
+                                        <div class="categories-info-label">Descripción</div>
+                                        <div class="categories-info-value">
+                                            <?= !empty($cat->descripcion) ? htmlspecialchars($cat->descripcion) : 'Sin descripción' ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="categories-info-item">
+                                    <div class="categories-info-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="categories-info-content">
+                                        <div class="categories-info-label">Fecha de Creación</div>
+                                        <div class="categories-info-value">
+                                            <?= !empty($cat->fecha_creacion) ? date('d/m/Y H:i', strtotime($cat->fecha_creacion)) : 'Sin fecha' ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="categories-card-footer">
+                                <div class="categories-actions">
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       title="Editar categoría">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       title="Eliminar categoría"
+                                       onclick="return confirm('¿Está seguro de eliminar esta categoría?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center py-5">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No hay categorías registradas</p>
+                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                <i class="fas fa-plus"></i> Crear Primera Categoría
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Vista de Tabla -->
+            <div id="tableView" style="display: none;">
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -433,7 +716,7 @@ if (isset($conn)) {
                             <?php foreach ($categorias as $cat): ?>
                             <tr>
                                 <td>
-                                    <strong>#<?= htmlspecialchars($cat->id_categoria) ?></strong>
+                                    <strong>#<?= htmlspecialchars($cat->id_categoria ?? '') ?></strong>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -441,10 +724,10 @@ if (isset($conn)) {
                                             <i class="fas fa-tag"></i>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($cat->nombre) ?></strong>
+                                            <strong><?= htmlspecialchars($cat->nombre ?? 'Sin nombre') ?></strong>
                                             <br>
                                             <small class="text-muted">
-                                                <i class="fas fa-barcode"></i> ID: <?= $cat->id_categoria ?>
+                                                <i class="fas fa-barcode"></i> ID: <?= htmlspecialchars($cat->id_categoria ?? '') ?>
                                             </small>
                                         </div>
                                     </div>
@@ -463,25 +746,25 @@ if (isset($conn)) {
                                 <td>
                                     <div class="text-center">
                                         <i class="fas fa-calendar text-info"></i>
-                                        <strong><?= date('d/m/Y', strtotime($cat->fecha_creacion)) ?></strong>
+                                        <strong><?= !empty($cat->fecha_creacion) ? date('d/m/Y', strtotime($cat->fecha_creacion)) : 'Sin fecha' ?></strong>
                                         <br>
                                         <small class="text-muted">
-                                            <?= date('H:i', strtotime($cat->fecha_creacion)) ?>
+                                            <?= !empty($cat->fecha_creacion) ? date('H:i', strtotime($cat->fecha_creacion)) : '--:--' ?>
                                         </small>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria) ?>" 
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar categoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria) ?>" 
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar categoría"
-                                           onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -549,7 +832,7 @@ if (isset($conn)) {
                                 <?php foreach ($categorias as $cat): ?>
                                 <tr>
                                     <td>
-                                        <strong>#<?= htmlspecialchars($cat->id_categoria) ?></strong>
+                                        <strong>#<?= htmlspecialchars($cat->id_categoria ?? '') ?></strong>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -557,10 +840,10 @@ if (isset($conn)) {
                                                 <i class="fas fa-tag"></i>
                                             </div>
                                             <div>
-                                                <strong><?= htmlspecialchars($cat->nombre) ?></strong>
+                                                <strong><?= htmlspecialchars($cat->nombre ?? 'Sin nombre') ?></strong>
                                                 <br>
                                                 <small class="text-muted">
-                                                    <i class="fas fa-barcode"></i> ID: <?= $cat->id_categoria ?>
+                                                    <i class="fas fa-barcode"></i> ID: <?= htmlspecialchars($cat->id_categoria ?? '') ?>
                                                 </small>
                                             </div>
                                         </div>
@@ -579,25 +862,25 @@ if (isset($conn)) {
                                     <td>
                                         <div class="text-center">
                                             <i class="fas fa-calendar text-info"></i>
-                                            <strong><?= date('d/m/Y', strtotime($cat->fecha_creacion)) ?></strong>
+                                            <strong><?= !empty($cat->fecha_creacion) ? date('d/m/Y', strtotime($cat->fecha_creacion)) : 'Sin fecha' ?></strong>
                                             <br>
                                             <small class="text-muted">
-                                                <?= date('H:i', strtotime($cat->fecha_creacion)) ?>
+                                                <?= !empty($cat->fecha_creacion) ? date('H:i', strtotime($cat->fecha_creacion)) : '--:--' ?>
                                             </small>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria) ?>" 
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
                                                class="btn btn-sm btn-modern btn-warning-modern" 
                                                title="Editar categoría">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria) ?>" 
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                title="Eliminar categoría"
-                                               onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                               onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.')">>
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -632,6 +915,34 @@ if (isset($conn)) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle entre vista de tarjetas y tabla para categorías
+        function toggleCategoriesView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const btnCards = document.getElementById('btnCards');
+            const btnTable = document.getElementById('btnTable');
+            
+            if (view === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                localStorage.setItem('categoriasView', 'cards');
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'block';
+                btnCards.classList.remove('active');
+                btnTable.classList.add('active');
+                localStorage.setItem('categoriasView', 'table');
+            }
+        }
+        
+        // Restaurar vista guardada
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('categoriasView') || 'cards';
+            toggleCategoriesView(savedView);
+        });
+
         // Auto-hide alerts after 5 seconds
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-modern');

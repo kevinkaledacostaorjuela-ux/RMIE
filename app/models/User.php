@@ -9,8 +9,9 @@ class User {
     public $num_cel;
     public $rol;
     public $fecha_creacion;
+    public $ultimo_acceso;
 
-    public function __construct($num_doc, $tipo_doc, $nombres, $apellidos, $correo, $contrasena, $num_cel, $rol, $fecha_creacion = null) {
+    public function __construct($num_doc, $tipo_doc, $nombres, $apellidos, $correo, $contrasena, $num_cel, $rol, $fecha_creacion = null, $ultimo_acceso = null) {
         $this->num_doc = $num_doc;
         $this->tipo_doc = $tipo_doc;
         $this->nombres = $nombres;
@@ -20,6 +21,7 @@ class User {
         $this->num_cel = $num_cel;
         $this->rol = $rol;
         $this->fecha_creacion = $fecha_creacion;
+        $this->ultimo_acceso = $ultimo_acceso;
     }
 
     // Obtener todos los usuarios con filtros opcionales
@@ -97,7 +99,8 @@ class User {
                 $row['contrasena'], 
                 $row['num_cel'], 
                 $row['rol'],
-                $row['fecha_creacion'] ?? null
+                $row['fecha_creacion'] ?? null,
+                $row['ultimo_acceso'] ?? null
             );
         }
         return $usuarios;
@@ -121,7 +124,8 @@ class User {
                 $row['contrasena'], 
                 $row['num_cel'], 
                 $row['rol'],
-                $row['fecha_creacion'] ?? null
+                $row['fecha_creacion'] ?? null,
+                $row['ultimo_acceso'] ?? null
             );
         }
         return null;
@@ -145,7 +149,8 @@ class User {
                 $row['contrasena'], 
                 $row['num_cel'], 
                 $row['rol'],
-                $row['fecha_creacion'] ?? null
+                $row['fecha_creacion'] ?? null,
+                $row['ultimo_acceso'] ?? null
             );
         }
         return null;
@@ -248,6 +253,14 @@ class User {
     // Eliminar usuario
     public static function delete($conn, $num_doc) {
         $sql = "DELETE FROM usuarios WHERE num_doc = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $num_doc);
+        return $stmt->execute();
+    }
+
+    // Actualizar último acceso
+    public static function updateLastAccess($conn, $num_doc) {
+        $sql = "UPDATE usuarios SET ultimo_acceso = CURRENT_TIMESTAMP WHERE num_doc = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $num_doc);
         return $stmt->execute();

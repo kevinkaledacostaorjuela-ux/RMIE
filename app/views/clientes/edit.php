@@ -1633,18 +1633,26 @@ if (!isset($cliente)) {
                 }
             });
             
+            // Evitar diálogo de salida si el formulario se está enviando
+            let isSubmitting = false;
+            form.addEventListener('submit', function() {
+                isSubmitting = true;
+            });
+
             // Confirmar antes de salir si hay cambios sin guardar
             window.addEventListener('beforeunload', function(e) {
+                if (isSubmitting) return;
+
                 const currentData = new FormData(form);
                 let hasUnsavedChanges = false;
-                
+
                 for (let [key, value] of currentData.entries()) {
                     if (originalData.get(key) !== value) {
                         hasUnsavedChanges = true;
                         break;
                     }
                 }
-                
+
                 if (hasUnsavedChanges) {
                     e.preventDefault();
                     e.returnValue = '¿Estás seguro de que quieres salir sin guardar los cambios?';

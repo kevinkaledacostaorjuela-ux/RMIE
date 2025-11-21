@@ -304,6 +304,207 @@ unset($_SESSION['success'], $_SESSION['error']);
             box-shadow: 0 2px 8px rgba(245, 87, 108, 0.3);
         }
 
+        /* Estilos específicos para tarjetas de alertas */
+        .alerts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 20px;
+            padding: 0;
+        }
+
+        .alerts-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 24px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .alerts-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .alerts-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+            background-size: 200% 100%;
+            animation: gradient-shift 3s ease infinite;
+        }
+
+        @keyframes gradient-shift {
+            0%, 100% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+        }
+
+        .alerts-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+
+        .alerts-card-title {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alerts-card-id {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .alerts-card-icon {
+            font-size: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .alerts-card:hover .alerts-card-icon {
+            color: #fff;
+            transform: scale(1.1);
+        }
+
+        .alerts-card-body {
+            margin-bottom: 20px;
+        }
+
+        .alerts-card-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .alerts-card-field {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .alerts-card-field-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .alerts-card-field-value {
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .alerts-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .alerts-card-status {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alerts-card-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .alerts-card-actions .btn {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .alerts-card-actions .btn:hover {
+            transform: scale(1.1);
+        }
+
+        .alerts-card-date {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .alerts-card-date-main {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .alerts-card-date-sub {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 4px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .view-toggle .btn {
+            border-radius: 20px;
+            padding: 8px 20px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.3s ease;
+            background: transparent;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .view-toggle .btn.active {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .view-toggle .btn:not(.active):hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
         .alert-modern {
             border-radius: 15px;
             border: none;
@@ -455,72 +656,18 @@ unset($_SESSION['success'], $_SESSION['error']);
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
-            <button id="viewCardsBtnAlertas" class="btn btn-modern btn-primary-modern">Tarjetas</button>
-            <button id="viewTableBtnAlertas" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
-        </div>
-
-        <!-- Cards container for alertas -->
-        <div id="cardsContainerAlertas" style="display:none; margin-bottom:20px;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-                <?php if (!empty($alertas) && is_array($alertas)): ?>
-                    <?php foreach ($alertas as $alerta): ?>
-                        <?php
-                            $fecha_actual = date('Y-m-d');
-                            $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
-                            $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
-                            if ($dias_restantes !== null) {
-                                if ($dias_restantes < 0) {
-                                    $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
-                                } elseif ($dias_restantes <= 7) {
-                                    $estado = 'Crítica'; $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
-                                } elseif ($dias_restantes <= 30) {
-                                    $estado = 'Próxima'; $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
-                                } else {
-                                    $estado = 'Normal'; $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
-                                }
-                            } else {
-                                $estado = 'N/A'; $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
-                            }
-                        ?>
-                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <strong style="color:#fff;">Alerta #<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></strong>
-                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Producto: <?= htmlspecialchars($alerta['producto_nombre'] ?? 'N/A') ?></div>
-                                </div>
-                                <div style="font-size:1.4rem; color:rgba(255,255,255,0.8);"><i class="fas fa-exclamation-triangle"></i></div>
-                            </div>
-                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <div><strong>Tipo:</strong> <?= htmlspecialchars($alerta['tipo_alerta'] ?? 'N/A') ?></div>
-                                    <div><strong>Cantidad mínima:</strong> <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?></div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div class="text-muted"><?= $fecha_caducidad ? date('d/m/Y', strtotime($fecha_caducidad)) : 'N/A' ?></div>
-                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.8);"><?= $dias_restantes !== null ? ($dias_restantes < 0 ? 'Vencida hace ' . abs(round($dias_restantes)) . ' días' : round($dias_restantes) . ' días restantes') : '' ?></div>
-                                </div>
-                            </div>
-                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <span class="badge badge-modern <?= $badge_class ?>">
-                                        <i class="<?= $icono ?>"></i> <?= $estado ?>
-                                    </span>
-                                </div>
-                                <div style="display:flex; gap:8px;">
-                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
-                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <button type="button" class="btn btn-sm btn-modern btn-danger-modern" onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')"><i class="fas fa-trash"></i></button>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div>No hay alertas disponibles</div>
-                <?php endif; ?>
+        <div class="d-flex justify-content-end mb-4">
+            <div class="view-toggle">
+                <button id="viewCardsBtnAlertas" class="btn">
+                    <i class="fas fa-th-large me-2"></i> Tarjetas
+                </button>
+                <button id="viewTableBtnAlertas" class="btn active">
+                    <i class="fas fa-table me-2"></i> Tabla
+                </button>
             </div>
         </div>
+
+        <!-- Cards container for alertas (moved below filters) -->
 
         <!-- Filtros Avanzados -->
         <div class="filters-container">
@@ -611,6 +758,151 @@ unset($_SESSION['success'], $_SESSION['error']);
                     </div>
                 </form>
             </div>
+        </div>
+        <!-- Cards container for alertas (placed after filters) -->
+        <div id="cardsContainerAlertas" class="alerts-grid" style="display:none; margin-bottom:30px; position: relative;">
+            <?php if (!empty($alertas) && is_array($alertas)): ?>
+                <?php foreach ($alertas as $alerta): ?>
+                    <?php
+                        $fecha_actual = date('Y-m-d');
+                        $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
+                        $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
+                        
+                        if ($dias_restantes !== null) {
+                            if ($dias_restantes < 0) {
+                                $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
+                            } elseif ($dias_restantes <= 7) {
+                                $estado = 'Crítica'; $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
+                            } elseif ($dias_restantes <= 30) {
+                                $estado = 'Próxima'; $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
+                            } else {
+                                $estado = 'Normal'; $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
+                            }
+                        } else {
+                            $estado = 'N/A'; $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
+                        }
+                        
+                        $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
+                    ?>
+                    <div class="alerts-card">
+                        <div class="alerts-card-header">
+                            <div>
+                                <h3 class="alerts-card-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Alerta #<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?>
+                                </h3>
+                                <div class="alerts-card-id">ID: <?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></div>
+                            </div>
+                            <div class="alerts-card-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        </div>
+
+                        <div class="alerts-card-body">
+                            <div class="alerts-card-info">
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-box"></i> Producto
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-user"></i> Cliente
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-tag"></i> Tipo
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
+                                            <span class="badge badge-stock-bajo">
+                                                <i class="fas fa-boxes"></i> Stock Bajo
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-vencimiento">
+                                                <i class="fas fa-calendar-times"></i> Vencimiento
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-sort-numeric-up"></i> Cantidad Mín.
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <span class="badge badge-modern badge-warning">
+                                            <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?> unidades
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <?php if ($fecha_caducidad): ?>
+                            <div class="alerts-card-date">
+                                <div class="alerts-card-date-main">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <?= date('d/m/Y', strtotime($fecha_caducidad)) ?>
+                                </div>
+                                <div class="alerts-card-date-sub">
+                                    <?php if ($dias_restantes !== null): ?>
+                                        <?php if ($dias_restantes < 0): ?>
+                                            Vencida hace <?= abs(round($dias_restantes)) ?> días
+                                        <?php else: ?>
+                                            <?= round($dias_restantes) ?> días restantes
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="alerts-card-footer">
+                            <div class="alerts-card-status">
+                                <span class="badge badge-modern <?= $badge_class ?>">
+                                    <i class="<?= $icono ?>"></i> <?= $estado ?>
+                                </span>
+                            </div>
+                            
+                            <div class="alerts-card-actions">
+                                <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" 
+                                   class="btn btn-modern btn-warning-modern" 
+                                   title="Editar alerta">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                <button type="button" 
+                                       class="btn btn-modern btn-danger-modern" 
+                                       title="Eliminar alerta"
+                                       onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="alerts-card" style="text-align: center; padding: 40px;">
+                    <div class="alerts-card-icon" style="font-size: 4rem; margin-bottom: 20px;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 style="color: #fff; margin-bottom: 10px;">No hay alertas disponibles</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">No se encontraron alertas que coincidan con los filtros aplicados.</p>
+                    <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern">
+                        <i class="fas fa-plus"></i> Crear Primera Alerta
+                    </a>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Botones de acción -->
@@ -772,6 +1064,152 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
             </div>
         </div>
+        
+        <!-- Cards container for alertas (moved here so it appears below filters and actions) -->
+        <div id="cardsContainerAlertas" class="alerts-grid" style="display:none; margin-top:30px;">
+            <?php if (!empty($alertas) && is_array($alertas)): ?>
+                <?php foreach ($alertas as $alerta): ?>
+                    <?php
+                        $fecha_actual = date('Y-m-d');
+                        $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
+                        $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
+                        
+                        if ($dias_restantes !== null) {
+                            if ($dias_restantes < 0) {
+                                $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
+                            } elseif ($dias_restantes <= 7) {
+                                $estado = 'Crítica'; $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
+                            } elseif ($dias_restantes <= 30) {
+                                $estado = 'Próxima'; $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
+                            } else {
+                                $estado = 'Normal'; $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
+                            }
+                        } else {
+                            $estado = 'N/A'; $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
+                        }
+                        
+                        $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
+                    ?>
+                    <div class="alerts-card">
+                        <div class="alerts-card-header">
+                            <div>
+                                <h3 class="alerts-card-title">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Alerta #<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?>
+                                </h3>
+                                <div class="alerts-card-id">ID: <?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></div>
+                            </div>
+                            <div class="alerts-card-icon">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                        </div>
+
+                        <div class="alerts-card-body">
+                            <div class="alerts-card-info">
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-box"></i> Producto
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-user"></i> Cliente
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-tag"></i> Tipo
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
+                                            <span class="badge badge-stock-bajo">
+                                                <i class="fas fa-boxes"></i> Stock Bajo
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="badge badge-vencimiento">
+                                                <i class="fas fa-calendar-times"></i> Vencimiento
+                                            </span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <div class="alerts-card-field">
+                                    <div class="alerts-card-field-label">
+                                        <i class="fas fa-sort-numeric-up"></i> Cantidad Mín.
+                                    </div>
+                                    <div class="alerts-card-field-value">
+                                        <span class="badge badge-modern badge-warning">
+                                            <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?> unidades
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <?php if ($fecha_caducidad): ?>
+                            <div class="alerts-card-date">
+                                <div class="alerts-card-date-main">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    <?= date('d/m/Y', strtotime($fecha_caducidad)) ?>
+                                </div>
+                                <div class="alerts-card-date-sub">
+                                    <?php if ($dias_restantes !== null): ?>
+                                        <?php if ($dias_restantes < 0): ?>
+                                            Vencida hace <?= abs(round($dias_restantes)) ?> días
+                                        <?php else: ?>
+                                            <?= round($dias_restantes) ?> días restantes
+                                        <?php endif; ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="alerts-card-footer">
+                            <div class="alerts-card-status">
+                                <span class="badge badge-modern <?= $badge_class ?>">
+                                    <i class="<?= $icono ?>"></i> <?= $estado ?>
+                                </span>
+                            </div>
+                            
+                            <div class="alerts-card-actions">
+                                <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" 
+                                   class="btn btn-modern btn-warning-modern" 
+                                   title="Editar alerta">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                <button type="button" 
+                                       class="btn btn-modern btn-danger-modern" 
+                                       title="Eliminar alerta"
+                                       onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="alerts-card" style="text-align: center; padding: 40px;">
+                    <div class="alerts-card-icon" style="font-size: 4rem; margin-bottom: 20px;">
+                        <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 style="color: #fff; margin-bottom: 10px;">No hay alertas disponibles</h3>
+                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">No se encontraron alertas que coincidan con los filtros aplicados.</p>
+                    <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern">
+                        <i class="fas fa-plus"></i> Crear Primera Alerta
+                    </a>
+                </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -817,23 +1255,74 @@ unset($_SESSION['success'], $_SESSION['error']);
             const cardsContainer = document.getElementById('cardsContainerAlertas');
             const tableContainer = document.querySelector('.table-container');
 
+            function updateButtonStates(activeView) {
+                if (cardsBtn && tableBtn) {
+                    cardsBtn.classList.toggle('active', activeView === 'cards');
+                    tableBtn.classList.toggle('active', activeView === 'table');
+                }
+            }
+
             function setView(view){
                 if (view === 'cards'){
-                    if (cardsContainer) cardsContainer.style.display = '';
+                    if (cardsContainer) {
+                        cardsContainer.style.display = 'grid';
+                        cardsContainer.style.animation = 'fadeInUp 0.5s ease';
+                    }
                     if (tableContainer) tableContainer.style.display = 'none';
+                    updateButtonStates('cards');
                 } else {
                     if (cardsContainer) cardsContainer.style.display = 'none';
-                    if (tableContainer) tableContainer.style.display = '';
+                    if (tableContainer) {
+                        tableContainer.style.display = 'block';
+                        tableContainer.style.animation = 'fadeInUp 0.5s ease';
+                    }
+                    updateButtonStates('table');
                 }
-                try{ localStorage.setItem('alertas_view', view); }catch(e){}
+                
+                try { 
+                    localStorage.setItem('alertasView', view); 
+                } catch(e) { 
+                    console.warn('No se pudo guardar la preferencia de vista:', e); 
+                }
             }
 
             if (cardsBtn && tableBtn){
-                cardsBtn.addEventListener('click', ()=>setView('cards'));
-                tableBtn.addEventListener('click', ()=>setView('table'));
-                const pref = (function(){ try{ return localStorage.getItem('alertas_view'); }catch(e){return null;} })();
-                setView(pref === 'cards' ? 'cards' : 'table');
+                cardsBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setView('cards');
+                });
+                
+                tableBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    setView('table');
+                });
+                
+                // Cargar preferencia guardada
+                let savedView = 'table';
+                try { 
+                    savedView = localStorage.getItem('alertasView') || 'table';
+                } catch(e) { 
+                    console.warn('No se pudo cargar la preferencia de vista:', e);
+                }
+                
+                setView(savedView);
             }
+
+            // Animaciones CSS para transiciones suaves
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
         })();
     </script>
 </body>

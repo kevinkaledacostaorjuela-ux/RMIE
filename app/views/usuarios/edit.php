@@ -613,14 +613,20 @@
                         <div class="form-group">
                             <label for="correo">
                                 <i class="fas fa-envelope"></i> Correo electrónico:
+                                <span class="text-warning"><i class="fas fa-edit" title="Campo editable"></i></span>
                             </label>
                             <input type="email" 
                                 id="correo" 
                                 name="correo" 
                                 required 
-                                maxlength="45"
+                                maxlength="100"
                                 value="<?= htmlspecialchars($usuario->correo) ?>"
-                                placeholder="ejemplo@correo.com" class="form-control">
+                                placeholder="ejemplo@correo.com" 
+                                class="form-control"
+                                style="border: 2px solid #667eea; background-color: white;">
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> Ingrese una dirección de correo válida
+                            </small>
                         </div>
                         
                         <div class="form-group">
@@ -830,6 +836,46 @@
                 field.addEventListener('change', actualizarVistaPrevia);
             }
         });
+
+        // Indicador visual para cambios en el correo
+        const correoInput = document.getElementById('correo');
+        const originalEmail = correoInput.value;
+        
+        correoInput.addEventListener('input', function() {
+            if (this.value !== originalEmail) {
+                this.style.borderColor = '#28a745';
+                this.style.boxShadow = '0 0 0 0.2rem rgba(40, 167, 69, 0.25)';
+                // Agregar icono de cambio si no existe
+                if (!this.parentNode.querySelector('.email-changed-indicator')) {
+                    const indicator = document.createElement('small');
+                    indicator.className = 'email-changed-indicator text-success d-block mt-1';
+                    indicator.innerHTML = '<i class="fas fa-check-circle"></i> Correo modificado - será actualizado al guardar';
+                    this.parentNode.appendChild(indicator);
+                }
+            } else {
+                this.style.borderColor = '#667eea';
+                this.style.boxShadow = '';
+                // Remover icono de cambio
+                const indicator = this.parentNode.querySelector('.email-changed-indicator');
+                if (indicator) indicator.remove();
+            }
+        });
+        
+        // Validación de correo en tiempo real
+        correoInput.addEventListener('blur', function() {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (this.value && !emailPattern.test(this.value)) {
+                this.style.borderColor = '#dc3545';
+                this.setCustomValidity('Por favor ingrese un formato de correo válido');
+            } else {
+                this.setCustomValidity('');
+                if (this.value !== originalEmail) {
+                    this.style.borderColor = '#28a745';
+                } else {
+                    this.style.borderColor = '#667eea';
+                }
+            }
+        });
         
         // Validación de contraseñas en tiempo real
         function validarContrasenas() {
@@ -867,6 +913,15 @@
             const confirmar = confirmarInput.value;
             const correo = document.getElementById('correo').value;
             
+            // Validar correo
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!correo || !emailPattern.test(correo)) {
+                e.preventDefault();
+                alert('Por favor ingrese una dirección de correo electrónico válida');
+                document.getElementById('correo').focus();
+                return;
+            }
+            
             // Validar contraseñas solo si se están cambiando
             if (contrasena.length > 0 || confirmar.length > 0) {
                 if (contrasena !== confirmar) {
@@ -884,12 +939,20 @@
                 }
             }
             
-            // Validar correo
-            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailPattern.test(correo)) {
+            // Confirmación especial si se cambió el correo
+            const correoActual = document.getElementById('correo').value;
+            const correoOriginal = '<?= addslashes($usuario->correo) ?>';
+            
+            if (correoActual !== correoOriginal) {
+                if (!confirm(`¿Está seguro de cambiar el correo electrónico?\n\nDe: ${correoOriginal}\nA: ${correoActual}\n\nEste cambio afectará el acceso al sistema.`)) {
+                    e.preventDefault();
+                    return;
+                }
+            }
+            
+            // Confirmación final
+            if (!confirm('¿Está seguro de actualizar la información de este usuario?')) {
                 e.preventDefault();
-                alert('Por favor ingrese un correo electrónico válido');
-                document.getElementById('correo').focus();
                 return;
             }
         });

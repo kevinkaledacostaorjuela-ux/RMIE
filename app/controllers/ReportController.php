@@ -391,11 +391,9 @@ class ReportController {
         $filtros = [
             'nombre' => $_GET['nombre'] ?? '',
             'categoria' => $_GET['categoria'] ?? '',
-            'estado' => $_GET['estado'] ?? '',
-            'stock_min' => $_GET['stock_min'] ?? '',
-            'stock_max' => $_GET['stock_max'] ?? '',
-            'fecha_desde' => $_GET['fecha_desde'] ?? '',
-            'fecha_hasta' => $_GET['fecha_hasta'] ?? ''
+            'subcategoria' => $_GET['subcategoria'] ?? '',
+            'proveedor' => $_GET['proveedor'] ?? '',
+            'estado' => $_GET['estado'] ?? ''
         ];
         
         include __DIR__ . '/../views/reportes/productos.php';

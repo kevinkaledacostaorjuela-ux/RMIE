@@ -109,91 +109,42 @@ $stats = $statsQuery->fetch_assoc();
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
-        }
-
-        .filters-container {
+        }        .filters-container {
+            margin-bottom: 2rem;
+        }        .filters-inner {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 35px;
-            margin-bottom: 35px;
             border: 1px solid rgba(255, 255, 255, 0.15);
             box-shadow: 
                 0 10px 30px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
         }
 
-        .filters-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #f39c12);
-            background-size: 200% 100%;
-            animation: borderGlow 3s ease-in-out infinite;
+        .btn-modern-filter {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-filter:hover {
+            background: #3A7BC8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-modern-clear {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-clear:hover {
+            background: #E67E93 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 143, 163, 0.4);
         }
 
         @keyframes borderGlow {
             0%, 100% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
-        }
-
-        .filter-title {
-            color: #fff;
-            font-size: 1.4rem;
-            font-weight: 700;
-            margin-bottom: 25px;
-            text-align: center;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-        }
-
-        .filter-title i {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-right: 10px;
-        }
-
-        /* Centrar el bloque de filtros y crear un inner-card centrado */
-        .filters-container {
-            display: flex;
-            justify-content: center;
-            padding-top: 10px;
-            padding-bottom: 10px;
-        }
-
-        .filters-inner {
-            background: rgba(255,255,255,0.94);
-            color: #2c3e50;
-            border-radius: 12px;
-            padding: 22px;
-            width: 100%;
-            max-width: 1200px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.18);
-            border: 1px solid rgba(0,0,0,0.06);
-        }
-
-        .filters-inner .filter-title {
-            color: #2c3e50;
-            margin-top: 0;
-            margin-bottom: 12px;
-            background: none;
-            -webkit-background-clip: initial;
-            -webkit-text-fill-color: initial;
-            text-shadow: none;
-        }
-
-        /* Inputs inside the inner card should use darker text */
-        .filters-inner .filter-input,
-        .filters-inner .filter-select {
-            background: #fff;
-            color: #2c3e50;
-            box-shadow: none;
         }
 
         /* Mejorar labels del formulario */
@@ -374,6 +325,204 @@ $stats = $statsQuery->fetch_assoc();
             border-radius: 15px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* Estilos para toggle de vista */
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-toggle-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Diseño de tarjetas para subcategorías */
+        .subcategories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .subcategories-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subcategories-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #9c27b0);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .subcategories-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .subcategories-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .subcategories-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .subcategories-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #9c27b0);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(156, 39, 176, 0.4);
+        }
+
+        .subcategories-card-title {
+            flex: 1;
+        }
+
+        .subcategories-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .subcategories-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .subcategories-card-body {
+            margin-bottom: 20px;
+        }
+
+        .subcategories-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .subcategories-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .subcategories-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .subcategories-info-content {
+            flex: 1;
+        }
+
+        .subcategories-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .subcategories-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .subcategories-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .subcategories-actions {
+            display: flex;
+            gap: 8px;
         }
 
         .table-modern {
@@ -756,6 +905,26 @@ $stats = $statsQuery->fetch_assoc();
                 50% { opacity: 1; }
             }
         }
+
+        .btn-modern-filter {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-filter:hover {
+            background: #3A7BC8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-modern-clear {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-clear:hover {
+            background: #E67E93 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 143, 163, 0.4);
+        }
     </style>
 </head>
 <body>
@@ -800,25 +969,23 @@ $stats = $statsQuery->fetch_assoc();
                 <div class="stat-number"><?php echo $stats['con_descripcion']; ?></div>
                 <div class="stat-label">Con Descripción</div>
             </div>
-        </div>
-
-        <!-- Filtros -->
+        </div>        <!-- Filtros -->
         <div class="filters-container">
-            <div class="filters-inner" style="padding: 35px 50px; max-width: 95% !important;">
-                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.2rem;">
-                    <i class="fas fa-filter"></i> Filtros de Búsqueda
-                </div>
-                <form method="GET" action="" id="filterForm">
-                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
+            <div class="filters-inner">
+                <form method="GET" action="/RMIE/app/controllers/SubcategoryController.php" id="filterForm" 
+                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <input type="hidden" name="accion" value="index">
+                    
+                    <div class="row g-3">
                         <div class="col-md-3">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-tag"></i> Nombre
+                                <i class="fas fa-sitemap"></i> Subcategoría
                             </label>
                             <input type="text"
                                    name="nombre"
                                    class="form-control"
-                                   placeholder="Buscar..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   placeholder="Buscar subcategoría..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
                                    value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
                         </div>
 
@@ -828,8 +995,8 @@ $stats = $statsQuery->fetch_assoc();
                             </label>
                             <select name="categoria" 
                                     class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todas</option>
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todas las categorías</option>
                                 <?php if (isset($categorias) && is_array($categorias)): ?>
                                     <?php foreach ($categorias as $cat): ?>
                                         <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
@@ -838,15 +1005,27 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
+                        </div>                        <div class="col-md-3">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Fecha
+                            </label>
+                            <input type="date"
+                                   name="fecha"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
                         </div>
 
-                        <div class="col-md-3 d-flex align-items-end justify-content-center">
-                            <div class="d-flex gap-3 w-100 justify-content-center">
-                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;" title="Buscar">
-                                    <i class="fas fa-search"></i>
+                        <div class="col-md-3">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-cogs"></i> Acciones
+                            </label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-search"></i> FILTRAR
                                 </button>
-                                <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;" title="Limpiar">
-                                    <i class="fas fa-times"></i>
+                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-times"></i> LIMPIAR
                                 </button>
                             </div>
                         </div>
@@ -867,6 +1046,106 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Tabla de Subcategorías (Desktop) -->
         <div class="table-container d-none d-md-block">
+            <div class="table-header">
+                <h3><i class="fas fa-layer-group"></i> Lista de Subcategorías (<?= count($subcategorias ?? []) ?>)</h3>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="toggleSubcategoriesView('cards')" id="btnCards">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button class="view-toggle-btn" onclick="toggleSubcategoriesView('table')" id="btnTable">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vista de Tarjetas (por defecto) -->
+            <div id="cardsView" class="subcategories-grid">
+                <?php if (isset($subcategorias) && is_array($subcategorias) && !empty($subcategorias)): ?>
+                    <?php foreach ($subcategorias as $subcatData): ?>
+                    <?php 
+                    // Extraer el objeto subcategoría y el nombre de la categoría
+                    $subcat = $subcatData['obj'];
+                    $categoria_nombre = $subcatData['categoria_nombre'];
+                    ?>
+                        <div class="subcategories-card">
+                            <div class="subcategories-card-header">
+                                <div class="subcategories-card-icon">
+                                    <i class="fas fa-layer-group"></i>
+                                </div>
+                                <div class="subcategories-card-title">
+                                    <h4><?= htmlspecialchars($subcat->nombre ?? 'Sin nombre') ?></h4>
+                                    <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($subcat->id_subcategoria ?? '') ?></p>
+                                </div>
+                            </div>
+
+                            <div class="subcategories-card-body">
+                                <div class="subcategories-info-item">
+                                    <div class="subcategories-info-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="subcategories-info-content">
+                                        <div class="subcategories-info-label">Categoría Padre</div>
+                                        <div class="subcategories-info-value"><?= htmlspecialchars($categoria_nombre) ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="subcategories-info-item">
+                                    <div class="subcategories-info-icon">
+                                        <i class="fas fa-align-left"></i>
+                                    </div>
+                                    <div class="subcategories-info-content">
+                                        <div class="subcategories-info-label">Descripción</div>
+                                        <div class="subcategories-info-value">
+                                            <?= !empty($subcat->descripcion) ? htmlspecialchars($subcat->descripcion) : 'Sin descripción' ?>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="subcategories-info-item">
+                                    <div class="subcategories-info-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="subcategories-info-content">
+                                        <div class="subcategories-info-label">Fecha de Creación</div>
+                                        <div class="subcategories-info-value">
+                                            <?= !empty($subcat->fecha_creacion) ? date('d/m/Y H:i', strtotime($subcat->fecha_creacion)) : 'Sin fecha' ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="subcategories-card-footer">
+                                <div class="subcategories-actions">
+                                    <a href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       title="Editar subcategoría">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       title="Eliminar subcategoría"
+                                       onclick="return confirm('¿Está seguro de eliminar esta subcategoría?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center py-5">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No hay subcategorías registradas</p>
+                            <a href="/RMIE/app/controllers/SubcategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                <i class="fas fa-plus"></i> Crear Primera Subcategoría
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Vista de Tabla -->
+            <div id="tableView" style="display: none;">
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -889,7 +1168,7 @@ $stats = $statsQuery->fetch_assoc();
                             ?>
                             <tr>
                                 <td>
-                                    <strong>#<?= htmlspecialchars($subcat->id_subcategoria) ?></strong>
+                                    <strong>#<?= htmlspecialchars($subcat->id_subcategoria ?? '') ?></strong>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -897,7 +1176,7 @@ $stats = $statsQuery->fetch_assoc();
                                             <i class="fas fa-layer-group"></i>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($subcat->nombre) ?></strong>
+                                            <strong><?= htmlspecialchars($subcat->nombre ?? 'Sin nombre') ?></strong>
                                             <br>
                                             <small class="text-muted">
                                                 <i class="fas fa-barcode"></i> ID: <?= $subcat->id_subcategoria ?>
@@ -933,13 +1212,13 @@ $stats = $statsQuery->fetch_assoc();
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria) ?>" 
+                                        <a href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar subcategoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria) ?>" 
+                                        <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar subcategoría">
                                             <i class="fas fa-trash"></i>
@@ -993,7 +1272,7 @@ $stats = $statsQuery->fetch_assoc();
                                 ?>
                                 <tr>
                                     <td>
-                                        <strong>#<?= htmlspecialchars($subcat->id_subcategoria) ?></strong>
+                                        <strong>#<?= htmlspecialchars($subcat->id_subcategoria ?? '') ?></strong>
                                     </td>
                                     <td>
                                         <div class="d-flex align-items-center">
@@ -1001,10 +1280,10 @@ $stats = $statsQuery->fetch_assoc();
                                                 <i class="fas fa-layer-group"></i>
                                             </div>
                                             <div>
-                                                <strong><?= htmlspecialchars($subcat->nombre) ?></strong>
+                                                <strong><?= htmlspecialchars($subcat->nombre ?? 'Sin nombre') ?></strong>
                                                 <br>
                                                 <small class="text-muted">
-                                                    <i class="fas fa-barcode"></i> ID: <?= $subcat->id_subcategoria ?>
+                                                    <i class="fas fa-barcode"></i> ID: <?= htmlspecialchars($subcat->id_subcategoria ?? '') ?>
                                                 </small>
                                             </div>
                                         </div>
@@ -1037,13 +1316,13 @@ $stats = $statsQuery->fetch_assoc();
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria) ?>" 
+                                            <a href="/RMIE/app/controllers/SubcategoryController.php?accion=edit&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
                                                class="btn btn-sm btn-modern btn-warning-modern" 
                                                title="Editar subcategoría">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria) ?>" 
+                                            <a href="/RMIE/app/views/subcategorias/delete.php?id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                title="Eliminar subcategoría">
                                                 <i class="fas fa-trash"></i>
@@ -1080,6 +1359,34 @@ $stats = $statsQuery->fetch_assoc();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle entre vista de tarjetas y tabla para subcategorías
+        function toggleSubcategoriesView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const btnCards = document.getElementById('btnCards');
+            const btnTable = document.getElementById('btnTable');
+            
+            if (view === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                localStorage.setItem('subcategoriasView', 'cards');
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'block';
+                btnCards.classList.remove('active');
+                btnTable.classList.add('active');
+                localStorage.setItem('subcategoriasView', 'table');
+            }
+        }
+        
+        // Restaurar vista guardada
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('subcategoriasView') || 'cards';
+            toggleSubcategoriesView(savedView);
+        });
+
         function limpiarFiltros() {
             document.getElementById('filterForm').reset();
             window.location.href = '/RMIE/app/controllers/SubcategoryController.php?accion=index';

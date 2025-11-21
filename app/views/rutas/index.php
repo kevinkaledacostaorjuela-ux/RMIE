@@ -1101,6 +1101,245 @@ if (isset($rutas) && is_array($rutas)) {
             }
         }
 
+        /* Estilos para modo tarjetas - Rutas */
+        .routes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .routes-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            min-height: 280px;
+        }
+
+        .routes-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .routes-card:hover::before {
+            left: 100%;
+        }
+
+        .routes-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .routes-card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .routes-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .routes-card-title {
+            flex-grow: 1;
+        }
+
+        .routes-card-id {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .routes-card-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .routes-card-body {
+            margin-bottom: 20px;
+        }
+
+        .routes-card-info {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .routes-card-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 0;
+        }
+
+        .routes-card-field i {
+            width: 20px;
+            text-align: center;
+            color: #4facfe;
+            font-size: 1rem;
+        }
+
+        .routes-card-label {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.8);
+            min-width: 80px;
+            font-weight: 500;
+        }
+
+        .routes-card-value {
+            flex-grow: 1;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .routes-card-status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .routes-status-activa {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .routes-status-inactiva {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .routes-status-pendiente {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: white;
+        }
+
+        .routes-status-completada {
+            background: linear-gradient(45deg, #a8edea, #fed6e3);
+            color: #333;
+        }
+
+        .routes-card-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .routes-card-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            min-width: 70px;
+            justify-content: center;
+        }
+
+        .routes-card-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .routes-btn-info {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .routes-btn-warning {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: white;
+        }
+
+        .routes-btn-danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .routes-empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .routes-empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .routes-empty-state h5 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        /* Responsividad para tarjetas de rutas */
+        @media (max-width: 1200px) {
+            .routes-grid {
+                grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .routes-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+                gap: 15px;
+            }
+            
+            .routes-card {
+                padding: 20px;
+                min-height: auto;
+            }
+            
+            .routes-card-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+            }
+            
+            .routes-card-name {
+                font-size: 1.1rem;
+            }
+        }
+
         /* Scroll horizontal para móviles - Rutas */
         @media (max-width: 768px) {
             .table-container {
@@ -1392,79 +1631,143 @@ if (isset($rutas) && is_array($rutas)) {
 
             <!-- Selector de vista: Tabla / Tarjetas -->
             <div class="mb-3 d-flex justify-content-end align-items-center">
-                <div class="btn-group me-2" role="group" aria-label="View toggle">
-                    <button id="rutasTableBtn" class="btn btn-sm btn-modern btn-primary-modern">Tabla</button>
-                    <button id="rutasCardsBtn" class="btn btn-sm btn-modern btn-secondary-modern">Tarjetas</button>
+                <div class="btn-group" role="group" aria-label="Selector de vista">
+                    <button type="button" id="rutasTableBtn" class="btn btn-sm btn-modern btn-primary-modern">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                    <button type="button" id="rutasCardsBtn" class="btn btn-sm btn-modern btn-secondary-modern">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
                 </div>
             </div>
 
-            <!-- Contenedor de Tarjetas (oculto por defecto, se muestra según preferencia) -->
-            <div id="cardsContainer" class="row g-3 mb-3" style="display:none;">
+            <!-- Contenedor de Tarjetas -->
+            <div id="rutasCardsContainer" class="routes-grid" style="display: none;">
                 <?php if (isset($rutas) && is_array($rutas) && !empty($rutas)): ?>
                     <?php foreach ($rutas as $ruta): ?>
-                        <div class="col-12 col-md-6 col-lg-4">
-                            <div class="info-widget p-3">
-                                <div class="d-flex align-items-start gap-3">
-                                    <div class="route-icon"><i class="fas fa-route"></i></div>
-                                    <div class="flex-grow-1">
-                                        <h5 class="mb-1 text-white"><?= htmlspecialchars($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></h5>
-                                        <p class="mb-1 text-muted"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?></p>
-                                        <p class="mb-1"><span class="badge badge-modern badge-secondary"><i class="fas fa-user"></i> <?= htmlspecialchars($ruta['nombre_cliente'] ?? 'Sin cliente') ?></span></p>
-                                        <div class="mt-2 d-flex justify-content-between align-items-center">
-                                            <div>
-                                                <small class="text-white-50">Venta: <?= $ruta['id_ventas'] ?? 'N/A' ?></small>
-                                                <?php if (!empty($ruta['id_reportes'])): ?>
-                                                    <br><small class="text-white-50">Reporte: <?= $ruta['id_reportes'] ?></small>
-                                                <?php endif; ?>
-                                            </div>
-                                            <div class="btn-group">
-                                                <a href="/RMIE/app/controllers/RouteController.php?accion=view&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-info-modern" title="Ver ruta"><i class="fas fa-eye"></i></a>
-                                                <a href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern" title="Editar ruta"><i class="fas fa-edit"></i></a>
-                                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                                <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" title="Eliminar ruta" onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')"><i class="fas fa-trash"></i></a>
-                                                <?php endif; ?>
-                                            </div>
-                                        </div>
+                        <div class="routes-card">
+                            <div class="routes-card-header">
+                                <div class="routes-card-icon">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <div class="routes-card-title">
+                                    <div class="routes-card-id">
+                                        <i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($ruta['id_ruta'] ?? '') ?>
+                                    </div>
+                                    <h5 class="routes-card-name">
+                                        <?= htmlspecialchars($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>
+                                    </h5>
+                                </div>
+                            </div>
+                            
+                            <div class="routes-card-body">
+                                <div class="routes-card-info">
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span class="routes-card-label">Dirección:</span>
+                                        <span class="routes-card-value">
+                                            <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-user"></i>
+                                        <span class="routes-card-label">Cliente:</span>
+                                        <span class="routes-card-value">
+                                            <?= htmlspecialchars($ruta['nombre_cliente'] ?? 'Sin cliente') ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-store"></i>
+                                        <span class="routes-card-label">Local:</span>
+                                        <span class="routes-card-value">
+                                            <?= htmlspecialchars($ruta['nombre_local'] ?? 'Sin local') ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span class="routes-card-label">Venta ID:</span>
+                                        <span class="routes-card-value">
+                                            <?= $ruta['id_ventas'] ?? 'N/A' ?>
+                                        </span>
+                                    </div>
+                                    
+                                    <?php if (!empty($ruta['id_reportes'])): ?>
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span class="routes-card-label">Reporte:</span>
+                                        <span class="routes-card-value">
+                                            #<?= $ruta['id_reportes'] ?>
+                                        </span>
+                                    </div>
+                                    <?php endif; ?>
+                                    
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-traffic-light"></i>
+                                        <span class="routes-card-label">Estado:</span>
+                                        <span class="routes-card-value">
+                                            <?php
+                                            // Estado por defecto ya que no existe campo estado en la BD
+                                            $estado = 'activa';
+                                            $statusClass = 'routes-status-' . $estado;
+                                            ?>
+                                            <span class="routes-card-status <?= $statusClass ?>">
+                                                <?= ucfirst($estado) ?>
+                                            </span>
+                                        </span>
+                                    </div>
+                                    
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-calendar-alt"></i>
+                                        <span class="routes-card-label">Fecha:</span>
+                                        <span class="routes-card-value">
+                                            <?= date('d/m/Y H:i') ?>
+                                        </span>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <div class="routes-card-actions">
+                                <a href="/RMIE/app/controllers/RouteController.php?accion=view&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
+                                   class="routes-card-btn routes-btn-info" 
+                                   title="Ver ruta">
+                                    <i class="fas fa-eye"></i> Ver
+                                </a>
+                                
+                                <a href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
+                                   class="routes-card-btn routes-btn-warning" 
+                                   title="Editar ruta">
+                                    <i class="fas fa-edit"></i> Editar
+                                </a>
+                                
+                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
+                                   class="routes-card-btn routes-btn-danger" 
+                                   title="Eliminar ruta"
+                                   onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')">
+                                    <i class="fas fa-trash"></i> Eliminar
+                                </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
-                    <div class="col-12">
-                        <div class="text-center text-muted">
-                            <i class="fas fa-route fa-3x mb-3"></i>
-                            <h5>No hay rutas disponibles</h5>
-                            <p>No se encontraron rutas que coincidan con los filtros aplicados.</p>
-                        </div>
+                    <div class="routes-empty-state">
+                        <i class="fas fa-route"></i>
+                        <h5>No hay rutas disponibles</h5>
+                        <p>No se encontraron rutas que coincidan con los filtros aplicados.</p>
+                        <a href="/RMIE/app/controllers/RouteController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <i class="fas fa-plus"></i> Crear Primera Ruta
+                        </a>
                     </div>
                 <?php endif; ?>
             </div>
 
             <!-- Tabla de Rutas -->
-            <div class="table-container">
-                <?php include __DIR__ . '/../partials/card_mode.php'; ?>
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <div class="card-toggle">
-                        <button id="toggleRutas">Ver como tarjetas</button>
-                    </div>
-                </div>
-                <div id="cardsRutas" class="card-container">
-                    <?php if (isset($rutas) && is_array($rutas)): ?>
-                        <?php foreach ($rutas as $ruta): ?>
-                            <div class="card-item">
-                                <div class="card-title"><?= htmlspecialchars($ruta['nombre_local'] ?? ('Ruta #' . ($ruta['id_ruta'] ?? ''))) ?></div>
-                                <div class="card-subtitle"><?= htmlspecialchars($ruta['direccion'] ?? '') ?></div>
-                                <div class="card-actions">
-                                    <a class="btn-edit" href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>">Editar</a>
-                                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a class="btn-delete" href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </div>
+            <div id="rutasTableContainer" class="table-container">
+
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -1595,12 +1898,6 @@ if (isset($rutas) && is_array($rutas)) {
                                 </td>
                             </tr>
                             <?php endforeach; ?>
-                                        <button class="btn btn-sm btn-modern btn-secondary-modern" onclick="verDetalles(<?= $ruta['id_ruta'] ?? 0 ?>)" title="Ver detalles completos">
-                                            <i class="fas fa-info-circle"></i>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
                         <?php else: ?>
                             <tr>
                                 <td colspan="9" class="text-center py-4">
@@ -1634,35 +1931,58 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
         // Toggle de vista Tabla / Tarjetas para Rutas
         function initRutasViewToggle() {
             try {
-                const key = 'rutas_view';
-                const tableContainer = document.querySelector('.table-container');
-                const cardsContainer = document.getElementById('cardsContainer');
+                const key = 'rutasView';
+                const tableContainer = document.getElementById('rutasTableContainer');
+                const cardsContainer = document.getElementById('rutasCardsContainer');
                 const btnTable = document.getElementById('rutasTableBtn');
                 const btnCards = document.getElementById('rutasCardsBtn');
 
-                if (!tableContainer || !cardsContainer || !btnTable || !btnCards) return;
+                if (!tableContainer || !cardsContainer || !btnTable || !btnCards) {
+                    console.log('Elementos de toggle no encontrados');
+                    return;
+                }
 
-                function apply(view) {
+                function applyView(view) {
                     if (view === 'cards') {
-                        cardsContainer.style.display = 'flex';
+                        // Mostrar tarjetas, ocultar tabla
+                        cardsContainer.style.display = 'grid';
                         tableContainer.style.display = 'none';
+                        
+                        // Actualizar botones
+                        btnCards.classList.remove('btn-secondary-modern');
                         btnCards.classList.add('btn-primary-modern');
                         btnTable.classList.remove('btn-primary-modern');
+                        btnTable.classList.add('btn-secondary-modern');
                     } else {
+                        // Mostrar tabla, ocultar tarjetas
                         cardsContainer.style.display = 'none';
                         tableContainer.style.display = 'block';
+                        
+                        // Actualizar botones
+                        btnTable.classList.remove('btn-secondary-modern');
                         btnTable.classList.add('btn-primary-modern');
                         btnCards.classList.remove('btn-primary-modern');
+                        btnCards.classList.add('btn-secondary-modern');
                     }
                 }
 
-                const stored = localStorage.getItem(key) || 'table';
-                apply(stored);
+                // Cargar vista guardada o usar tabla por defecto
+                const savedView = localStorage.getItem(key) || 'table';
+                applyView(savedView);
 
-                btnTable.addEventListener('click', function() { localStorage.setItem(key, 'table'); apply('table'); });
-                btnCards.addEventListener('click', function() { localStorage.setItem(key, 'cards'); apply('cards'); });
+                // Event listeners para los botones
+                btnTable.addEventListener('click', function() {
+                    localStorage.setItem(key, 'table');
+                    applyView('table');
+                });
+                
+                btnCards.addEventListener('click', function() {
+                    localStorage.setItem(key, 'cards');
+                    applyView('cards');
+                });
+                
             } catch (err) {
-                console.log('initRutasViewToggle error', err);
+                console.error('Error en initRutasViewToggle:', err);
             }
         }
 

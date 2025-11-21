@@ -136,14 +136,31 @@ if (isset($ventas) && is_array($ventas)) {
             min-width: 160px;
         }
 
-        .filter-input::placeholder { color: #333; }
-
-        .filter-actions {
-            margin-left: auto;
+        .filter-input::placeholder { color: #333; }        .filter-actions {
             display: flex;
             flex-direction: column;
             gap: 10px;
             align-items: flex-end;
+        }
+
+        .btn-modern-filter {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-filter:hover {
+            background: #3A7BC8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-modern-clear {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-clear:hover {
+            background: #E67E93 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 143, 163, 0.4);
         }
 
         .btn-pill {
@@ -156,6 +173,7 @@ if (isset($ventas) && is_array($ventas)) {
             border: none;
             color: white;
             min-width: 120px;
+            width: 100%;
         }
 
         .btn-pill i { margin-right: 8px; }
@@ -169,9 +187,14 @@ if (isset($ventas) && is_array($ventas)) {
         }
 
         @media (max-width: 768px) {
-            .filter-actions { width: 100%; flex-direction: row; justify-content: stretch; }
-            .btn-pill { flex: 1; }
-            .filters-row { gap: 8px; }
+            .filters-row { 
+                gap: 8px; 
+                justify-content: center;
+            }
+            .filter-item {
+                min-width: 120px;
+                max-width: 200px;
+            }
         }
 
         .filter-title {
@@ -456,6 +479,399 @@ if (isset($ventas) && is_array($ventas)) {
             background-clip: text;
         }
 
+        /* Diseño de Tarjetas para ventas */
+        .sales-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .sales-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            color: #1f2937; /* texto oscuro para buen contraste dentro de la tarjeta */
+        }
+
+        .sales-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .sales-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .sales-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .sales-card-title {
+            flex: 1;
+        }
+
+        .sales-card-title h4 {
+            color: #1f2937;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .sales-card-title p {
+            color: rgba(31, 41, 55, 0.75);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .sales-card-body {
+            margin-bottom: 20px;
+        }
+
+        .sales-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .sales-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .sales-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sales-info-content {
+            flex: 1;
+        }
+
+        .sales-info-label {
+            color: rgba(31, 41, 55, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .sales-info-value {
+            color: #0f1724;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .sales-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-toggle-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Contenedor de ventas: mostrado por defecto; la visibilidad de tabla/tarjetas
+           se controla en los selectores específicos (#tableView / #cardsView) y por JS. */
+
+        /* Responsive para tarjetas */
+        @media (max-width: 768px) {
+            .sales-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .view-toggle {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .view-toggle-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Diseño de Tarjetas para ventas */
+        .sales-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .sales-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sales-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .sales-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .sales-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .sales-card-title {
+            flex: 1;
+        }
+
+        .sales-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .sales-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .sales-card-body {
+            margin-bottom: 20px;
+        }
+
+        .sales-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .sales-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .sales-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .sales-info-content {
+            flex: 1;
+        }
+
+        .sales-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .sales-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .sales-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sales-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+        }
+
+        .view-toggle-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Vista de tabla (se maneja con JavaScript) */
+        #tableView {
+            display: none;
+        }
+
+        #cardsView {
+            display: grid;
+        }
+
+        /* Responsive para tarjetas */
+        @media (max-width: 768px) {
+            .sales-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .view-toggle {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .view-toggle-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
         /* Scroll horizontal para móviles - Ventas */
         @media (max-width: 768px) {
             .table-container {
@@ -554,6 +970,7 @@ if (isset($ventas) && is_array($ventas)) {
     </style>
 </head>
 <body>
+        <!-- Debug block removed -->
     <div class="dashboard-container">
         <h1 class="page-title">
             <i class="fas fa-shopping-cart"></i> Gestión de Ventas
@@ -618,56 +1035,6 @@ if (isset($ventas) && is_array($ventas)) {
             </div>
         </div>
 
-        <!-- Vista selector: Tarjetas / Tabla -->
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
-            <button id="viewCardsBtn" class="btn btn-modern btn-primary-modern">Tarjetas</button>
-            <button id="viewTableBtn" class="btn btn-modern btn-secondary" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
-        </div>
-
-        <!-- Cards container for ventas -->
-        <div id="cardsContainer" style="display:none; margin-bottom:20px;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:16px;">
-                <?php if (isset($ventas) && is_array($ventas) && !empty($ventas)): ?>
-                    <?php foreach ($ventas as $venta): ?>
-                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
-                            <div style="display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <strong style="color:#fff;">Venta #<?= htmlspecialchars($venta->id_ventas) ?></strong>
-                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Cliente: <?= htmlspecialchars($venta->cliente_nombre ?? 'N/A') ?></div>
-                                </div>
-                                <div class="sale-icon" style="width:48px; height:48px; font-size:1.2rem;"><i class="fas fa-shopping-cart"></i></div>
-                            </div>
-                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <div><strong>Producto:</strong> <?= htmlspecialchars($venta->producto_nombre ?? 'N/A') ?></div>
-                                    <div><strong>Cant:</strong> <?= htmlspecialchars($venta->cantidad ?? 0) ?></div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <div class="money-amount">$<?= number_format(floatval($venta->total ?? 0), 2) ?></div>
-                                    <div style="font-size:0.85rem; color:rgba(255,255,255,0.8);"><?= date('d/m/Y H:i', strtotime($venta->fecha_venta ?? 'now')) ?></div>
-                                </div>
-                            </div>
-                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <span class="badge badge-modern <?php $e = strtolower($venta->estado ?? 'pendiente'); echo $e === 'completada' ? 'badge-success' : ($e === 'cancelada' ? 'badge-danger' : ($e === 'procesando' ? 'badge-info' : 'badge-warning')); ?>">
-                                        <?= ucfirst($venta->estado ?? 'Pendiente') ?>
-                                    </span>
-                                </div>
-                                <div style="display:flex; gap:8px;">
-                                    <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
-                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?')"><i class="fas fa-trash"></i></a>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div>No hay ventas disponibles</div>
-                <?php endif; ?>
-            </div>
-        </div>
-
         <!-- Filtros -->
         <div class="filters-container">
             <div class="filter-title">
@@ -712,15 +1079,16 @@ if (isset($ventas) && is_array($ventas)) {
                             <option value="completada" <?= ($_GET['filtro_estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
                             <option value="cancelada" <?= ($_GET['filtro_estado'] ?? '') === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
                         </select>
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-times"></i> LIMPIAR
-                        </button>
+                    </div>                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-cogs"></i> Acciones</span>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <i class="fas fa-search"></i> FILTRAR
+                            </button>
+                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <i class="fas fa-times"></i> LIMPIAR
+                            </button>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -736,10 +1104,177 @@ if (isset($ventas) && is_array($ventas)) {
             </a>
         </div>
 
-        <!-- Tabla de Ventas -->
-        <div class="table-container">
-            <div class="table-responsive">
-                <table class="table table-modern table-hover">
+        <!-- Contenedor de Ventas con Toggle de Vista -->
+        <div class="table-container" id="ventas-container">
+            <div class="table-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid rgba(255, 255, 255, 0.2);">
+                <h3 style="color: #fff; margin: 0;"><i class="fas fa-shopping-cart"></i> Lista de Ventas (<?= $totalVentas ?>)</h3>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="toggleSalesView('cards')" id="btnCards">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button class="view-toggle-btn" onclick="toggleSalesView('table')" id="btnTable">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vista de Tarjetas (por defecto) -->
+            <div id="cardsView" class="sales-grid">
+                <?php if (is_array($ventas) && count($ventas) > 0): ?>
+                    <?php foreach ($ventas as $venta): ?>
+                        <div class="sales-card">
+                            <div class="sales-card-header">
+                                <div class="sales-card-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <div class="sales-card-title">
+                                    <h4>Venta #<?= htmlspecialchars($venta->id_ventas) ?></h4>
+                                    <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($venta->id_ventas) ?></p>
+                                </div>
+                            </div>
+                            
+                            <div class="sales-card-body">
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Cliente</div>
+                                        <div class="sales-info-value"><?= htmlspecialchars($venta->cliente_nombre ?? 'Cliente N/A') ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <i class="fas fa-box"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Producto</div>
+                                        <div class="sales-info-value"><?= htmlspecialchars($venta->producto_nombre ?? 'Producto N/A') ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <i class="fas fa-sort-numeric-up"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Cantidad</div>
+                                        <div class="sales-info-value"><?= htmlspecialchars($venta->cantidad ?? 0) ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Total</div>
+                                        <div class="sales-info-value">$<?= number_format(floatval($venta->total ?? 0), 2) ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <?php
+                                        $estado = strtolower($venta->estado ?? 'pendiente');
+                                        $iconClass = '';
+                                        
+                                        switch ($estado) {
+                                            case 'completada':
+                                                $iconClass = 'fas fa-check-circle';
+                                                break;
+                                            case 'pendiente':
+                                                $iconClass = 'fas fa-clock';
+                                                break;
+                                            case 'cancelada':
+                                                $iconClass = 'fas fa-times-circle';
+                                                break;
+                                            case 'procesando':
+                                                $iconClass = 'fas fa-cogs';
+                                                break;
+                                            default:
+                                                $iconClass = 'fas fa-question-circle';
+                                        }
+                                        ?>
+                                        <i class="<?= $iconClass ?>"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Estado</div>
+                                        <div class="sales-info-value"><?= ucfirst($estado) ?></div>
+                                    </div>
+                                </div>
+                                
+                                <div class="sales-info-item">
+                                    <div class="sales-info-icon">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="sales-info-content">
+                                        <div class="sales-info-label">Fecha</div>
+                                        <div class="sales-info-value"><?= date('d/m/Y H:i', strtotime($venta->fecha_venta ?? 'now')) ?></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="sales-card-footer">
+                                <?php
+                                $estado = strtolower($venta->estado ?? 'pendiente');
+                                $badgeClass = '';
+                                
+                                switch ($estado) {
+                                    case 'completada':
+                                        $badgeClass = 'badge-success';
+                                        break;
+                                    case 'pendiente':
+                                        $badgeClass = 'badge-warning';
+                                        break;
+                                    case 'cancelada':
+                                        $badgeClass = 'badge-danger';
+                                        break;
+                                    case 'procesando':
+                                        $badgeClass = 'badge-info';
+                                        break;
+                                    default:
+                                        $badgeClass = 'badge-secondary';
+                                }
+                                ?>
+                                <span class="badge badge-modern <?= $badgeClass ?>">
+                                    <i class="<?= $iconClass ?>"></i> <?= ucfirst($estado) ?>
+                                </span>
+                                <div class="sales-actions">
+                                    <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       title="Editar venta">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       title="Eliminar venta"
+                                       onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px 20px; color: #fff;">
+                        <i class="fas fa-shopping-cart fa-5x mb-4" style="opacity: 0.5;"></i>
+                        <h3 style="font-size: 1.8rem; margin-bottom: 15px;">No hay ventas disponibles</h3>
+                        <p style="font-size: 1.1rem; opacity: 0.8; margin-bottom: 25px;">No se encontraron ventas que coincidan con los filtros aplicados.</p>
+                        <a href="/RMIE/app/controllers/SaleController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <i class="fas fa-plus"></i> Crear Primera Venta
+                        </a>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Vista de Tabla (oculta por defecto) -->
+            <div id="tableView" style="display: none;">
+                <div class="table-responsive">
+                    <table class="table table-modern table-hover">
                     <thead>
                         <tr>
                             <th><i class="fas fa-hashtag"></i> ID</th>
@@ -754,7 +1289,7 @@ if (isset($ventas) && is_array($ventas)) {
                         </tr>
                     </thead>
                     <tbody>
-                        <?php if (isset($ventas) && is_array($ventas) && !empty($ventas)): ?>
+                        <?php if (is_array($ventas) && count($ventas) > 0): ?>
                             <?php foreach ($ventas as $venta): ?>
                             <tr>
                                 <td>
@@ -869,11 +1404,13 @@ if (isset($ventas) && is_array($ventas)) {
                         <?php endif; ?>
                     </tbody>
                 </table>
+                </div>
+                <!-- Indicador de scroll para móviles -->
+                <div class="scroll-hint d-block d-md-none">
+                    <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
+                </div>
             </div>
-            <!-- Indicador de scroll para móviles -->
-            <div class="scroll-hint d-block d-md-none">
-                <i class="fas fa-hand-point-left"></i> Desliza para ver más columnas <i class="fas fa-hand-point-right"></i>
-            </div>
+        </div>
         </div>
     </div>
 
@@ -911,31 +1448,33 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
             });
         });
 
-        // View toggle: Tarjetas / Tabla (ventas)
-        (function(){
-            const cardsBtn = document.getElementById('viewCardsBtn');
-            const tableBtn = document.getElementById('viewTableBtn');
-            const cardsContainer = document.getElementById('cardsContainer');
-            const tableContainer = document.querySelector('.table-container');
-
-            function setView(view){
-                if (view === 'cards'){
-                    cardsContainer.style.display = '';
-                    tableContainer.style.display = 'none';
-                } else {
-                    cardsContainer.style.display = 'none';
-                    tableContainer.style.display = '';
-                }
-                try{ localStorage.setItem('ventas_view', view); }catch(e){}
+        // Toggle entre vista de tarjetas y tabla para ventas
+        function toggleSalesView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const btnCards = document.getElementById('btnCards');
+            const btnTable = document.getElementById('btnTable');
+            
+            if (view === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                localStorage.setItem('ventasView', 'cards');
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'block';
+                btnCards.classList.remove('active');
+                btnTable.classList.add('active');
+                localStorage.setItem('ventasView', 'table');
             }
-
-            if (cardsBtn && tableBtn){
-                cardsBtn.addEventListener('click', ()=>setView('cards'));
-                tableBtn.addEventListener('click', ()=>setView('table'));
-                const pref = (function(){ try{ return localStorage.getItem('ventas_view'); }catch(e){return null;} })();
-                setView(pref === 'cards' ? 'cards' : 'table');
-            }
-        })();
+        }
+        
+        // Restaurar vista guardada
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('ventasView') || 'cards';
+            toggleSalesView(savedView);
+        });
     </script>
 </body>
 </html>

@@ -37,21 +37,24 @@ class Provider {
         
         // Mapeo de campos a columnas SQL
         $mapping = [
-            'nombre' => ['column' => 'nombre_distribuidor', 'operator' => 'LIKE', 'type' => 's'],
-            'estado' => ['column' => 'estado', 'operator' => '=', 'type' => 's'],
-            'email' => ['column' => 'correo', 'operator' => 'LIKE', 'type' => 's'],
-            'ubicacion' => ['column' => 'ubicacion', 'operator' => 'LIKE', 'type' => 's'],
-            'celular' => ['column' => 'cel_proveedor', 'operator' => 'LIKE', 'type' => 's'],
-            'fecha_desde' => ['column' => 'DATE(fecha_creacion)', 'operator' => '>=', 'type' => 's'],
-            'fecha_hasta' => ['column' => 'DATE(fecha_creacion)', 'operator' => '<=', 'type' => 's'],
+            'nombre' => ['column' => 'p.nombre_distribuidor', 'operator' => 'LIKE', 'type' => 's'],
+            'estado' => ['column' => 'p.estado', 'operator' => '=', 'type' => 's'],
+            'email' => ['column' => 'p.correo', 'operator' => 'LIKE', 'type' => 's'],
+            'celular' => ['column' => 'p.cel_proveedor', 'operator' => 'LIKE', 'type' => 's'],
+            'producto' => ['column' => 'pr.nombre', 'operator' => 'LIKE', 'type' => 's'],
+            'fecha_desde' => ['column' => 'DATE(p.fecha_creacion)', 'operator' => '>=', 'type' => 's'],
+            'fecha_hasta' => ['column' => 'DATE(p.fecha_creacion)', 'operator' => '<=', 'type' => 's'],
             'buscar' => [
-                'columns' => ['nombre_distribuidor', 'correo', 'ubicacion', 'cel_proveedor'],
+                'columns' => ['p.nombre_distribuidor', 'p.correo', 'p.cel_proveedor', 'pr.nombre'],
                 'operator' => 'MULTIPLE_LIKE'
             ]
         ];
         
-        // Construir consulta base
-        $sql = "SELECT * FROM proveedores WHERE 1=1";
+        // Construir consulta base con LEFT JOIN para productos usando tabla intermedia
+        $sql = "SELECT DISTINCT p.* FROM proveedores p 
+                LEFT JOIN proveedores_productos pp ON p.id_proveedores = pp.id_proveedor 
+                LEFT JOIN productos pr ON pp.id_producto = pr.id_productos 
+                WHERE 1=1";
         
         // Construir WHERE con filtros
         $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);
@@ -60,7 +63,7 @@ class Provider {
             $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
         
-        $sql .= " ORDER BY nombre_distribuidor";
+        $sql .= " ORDER BY p.nombre_distribuidor";
         
         $stmt = $conn->prepare($sql);
         if (!empty($whereData['params'])) {
@@ -118,6 +121,77 @@ class Provider {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_proveedores);
         return $stmt->execute();
+    }
+
+    // Obtener productos de un proveedor específico usando tabla intermedia
+    public static function getProductosByProveedor($conn, $id_proveedor) {
+        $sql = "SELECT p.*, pp.fecha_asignacion 
+                FROM productos p 
+                INNER JOIN proveedores_productos pp ON p.id_productos = pp.id_producto 
+                WHERE pp.id_proveedor = ? AND pp.activo = 1
+                ORDER BY p.nombre";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_proveedor);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $productos = [];
+        while ($row = $result->fetch_assoc()) {
+            $productos[] = (object) $row;
+        }
+        return $productos;
+    }
+
+    // Asignar producto a proveedor
+    public static function assignProducto($conn, $id_proveedor, $id_producto) {
+        $sql = "INSERT IGNORE INTO proveedores_productos (id_proveedor, id_producto) VALUES (?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $id_proveedor, $id_producto);
+        return $stmt->execute();
+    }
+
+    // Remover producto de proveedor
+    public static function removeProducto($conn, $id_proveedor, $id_producto) {
+        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ? AND id_producto = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $id_proveedor, $id_producto);
+        return $stmt->execute();
+    }
+
+    // Remover todos los productos de un proveedor
+    public static function removeAllProductos($conn, $id_proveedor) {
+        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_proveedor);
+        return $stmt->execute();
+    }
+
+    // Actualizar productos de un proveedor (reemplaza todos)
+    public static function updateProductos($conn, $id_proveedor, $productos_ids) {
+        // Iniciar transacción
+        $conn->begin_transaction();
+        
+        try {
+            // Remover todas las asignaciones actuales
+            self::removeAllProductos($conn, $id_proveedor);
+            
+            // Agregar las nuevas asignaciones
+            if (!empty($productos_ids)) {
+                foreach ($productos_ids as $id_producto) {
+                    if (!empty($id_producto)) {
+                        self::assignProducto($conn, $id_proveedor, $id_producto);
+                    }
+                }
+            }
+            
+            $conn->commit();
+            return true;
+        } catch (Exception $e) {
+            $conn->rollback();
+            error_log("Error updating provider products: " . $e->getMessage());
+            return false;
+        }
     }
 }
 ?>

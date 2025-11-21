@@ -90,7 +90,7 @@ class ProductController {
             $marca = $_POST['marca'] ?? null;
             $id_subcategoria = $_POST['subcategoria_id'] ?? null;
             $id_categoria = $_POST['categoria_id'] ?? null;
-            $id_proveedores = !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : null;
+            $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
             
             // Validar campos requeridos
@@ -147,7 +147,7 @@ class ProductController {
             $marca = $_POST['marca'] ?? null;
             $id_subcategoria = $_POST['subcategoria_id'] ?? $_POST['id_subcategoria'] ?? null;
             $id_categoria = $_POST['categoria_id'] ?? $_POST['id_categoria'] ?? null;
-            $id_proveedores = !empty($_POST['proveedor_id']) ? $_POST['proveedor_id'] : (!empty($_POST['id_proveedor']) ? $_POST['id_proveedor'] : null);
+            $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
             
             // Validación de datos requeridos

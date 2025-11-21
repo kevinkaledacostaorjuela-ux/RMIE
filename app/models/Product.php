@@ -379,5 +379,31 @@ class Product {
             return ['error' => 'exception', 'message' => $e->getMessage()];
         }
     }
+
+    // Método para remover proveedor de todos los productos
+    public static function removeProviderFromProducts($conn, $providerId) {
+        try {
+            $sql = "UPDATE productos SET id_proveedores = NULL WHERE id_proveedores = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("i", $providerId);
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            error_log("Error removing provider from products: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Método para asignar proveedor a un producto específico
+    public static function assignProvider($conn, $productId, $providerId) {
+        try {
+            $sql = "UPDATE productos SET id_proveedores = ? WHERE id_productos = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $providerId, $productId);
+            return $stmt->execute();
+        } catch (mysqli_sql_exception $e) {
+            error_log("Error assigning provider to product: " . $e->getMessage());
+            return false;
+        }
+    }
 }
 ?>

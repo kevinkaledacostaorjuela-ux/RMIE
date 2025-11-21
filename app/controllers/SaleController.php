@@ -14,47 +14,31 @@ class SaleController {
             
             require_once __DIR__ . '/../utils/FilterHelper.php';
             
-            // Definir reglas de filtro
+            // Definir reglas de filtro (coincidir con los nombres del formulario de la vista)
             $filterRules = [
-                'filtro_producto' => ['type' => 'int', 'options' => ['min' => 1]],
-                'filtro_cliente' => ['type' => 'int', 'options' => ['min' => 1]],
-                'filtro_usuario' => ['type' => 'text'],
-                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'en_proceso']]],
-                'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
-                'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
-                'cantidad_min' => ['type' => 'int', 'options' => ['min' => 1]],
-                'cantidad_max' => ['type' => 'int', 'options' => ['min' => 1]],
-                'fecha_desde' => ['type' => 'date'],
-                'fecha_hasta' => ['type' => 'date'],
-                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+                'filtro_producto' => ['type' => 'text'],
+                'filtro_cliente' => ['type' => 'text'],
+                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'procesando']]],
+                'filtro_fecha' => ['type' => 'date'],
+                'monto_min' => ['type' => 'float', 'options' => ['min' => 0]],
+                'monto_max' => ['type' => 'float', 'options' => ['min' => 0]]
             ];
-            
+
             // Procesar filtros del GET
             $filtros = FilterHelper::processFilters($_GET, $filterRules);
-            
-            // Mapear filtros para el modelo
+
+            // Mapear filtros para el modelo (coincidir con los nombres usados en Sale::getFiltered)
             $filtrosModelo = [
                 'producto' => $filtros['filtro_producto'] ?? '',
                 'cliente' => $filtros['filtro_cliente'] ?? '',
-                'usuario' => $filtros['filtro_usuario'] ?? '',
                 'estado' => $filtros['filtro_estado'] ?? '',
-                'precio_min' => $filtros['precio_min'] ?? '',
-                'precio_max' => $filtros['precio_max'] ?? '',
-                'cantidad_min' => $filtros['cantidad_min'] ?? '',
-                'cantidad_max' => $filtros['cantidad_max'] ?? '',
-                'fecha_desde' => $filtros['fecha_desde'] ?? '',
-                'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
-                'buscar' => $filtros['buscar'] ?? ''
+                'fecha_desde' => $filtros['filtro_fecha'] ?? '',
+                'precio_min' => $filtros['monto_min'] ?? '',
+                'precio_max' => $filtros['monto_max'] ?? ''
             ];
             
-            // Validar rangos
-            if (!empty($filtrosModelo['fecha_desde']) && !empty($filtrosModelo['fecha_hasta'])) {
-                $dateRange = FilterHelper::validateDateRange($filtrosModelo['fecha_desde'], $filtrosModelo['fecha_hasta']);
-                $filtrosModelo = array_merge($filtrosModelo, $dateRange);
-            }
-            
+            // Validar rangos de monto
             if (!empty($filtrosModelo['precio_min']) && !empty($filtrosModelo['precio_max']) && $filtrosModelo['precio_min'] > $filtrosModelo['precio_max']) {
-                // Intercambiar si están al revés
                 $temp = $filtrosModelo['precio_min'];
                 $filtrosModelo['precio_min'] = $filtrosModelo['precio_max'];
                 $filtrosModelo['precio_max'] = $temp;

@@ -16,7 +16,7 @@ class ProviderController {
                 'filtro_nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
                 'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'bloqueado']]],
                 'filtro_email' => ['type' => 'email'],
-                'filtro_ubicacion' => ['type' => 'text', 'options' => ['max_length' => 200]],
+                'producto' => ['type' => 'text', 'options' => ['max_length' => 100]],
                 'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
                 'fecha_desde' => ['type' => 'date'],
                 'fecha_hasta' => ['type' => 'date'],
@@ -31,7 +31,7 @@ class ProviderController {
                 'nombre' => $filtros['filtro_nombre'] ?? '',
                 'estado' => $filtros['filtro_estado'] ?? '',
                 'email' => $filtros['filtro_email'] ?? '',
-                'ubicacion' => $filtros['filtro_ubicacion'] ?? '',
+                'producto' => $filtros['producto'] ?? '',
                 'celular' => $filtros['filtro_celular'] ?? '',
                 'fecha_desde' => $filtros['fecha_desde'] ?? '',
                 'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
@@ -47,12 +47,12 @@ class ProviderController {
             // Obtener proveedores con filtros
             $proveedores = Provider::getAll($conn, $filtrosModelo);
 
-            // Cargar productos asociados para cada proveedor (si los hay)
+            // Cargar productos asociados para cada proveedor usando tabla intermedia
             require_once __DIR__ . '/../models/Product.php';
             $productosPorProveedor = [];
             if (is_array($proveedores)) {
                 foreach ($proveedores as $prov) {
-                    $productos = Product::getFiltered($conn, ['proveedor' => $prov->id_proveedores]);
+                    $productos = Provider::getProductosByProveedor($conn, $prov->id_proveedores);
                     $productosPorProveedor[$prov->id_proveedores] = $productos;
                 }
             }
@@ -146,6 +146,11 @@ class ProviderController {
             if (!$proveedor) {
                 throw new Exception("Proveedor no encontrado");
             }
+
+            // Cargar productos disponibles y productos del proveedor usando tabla intermedia
+            require_once __DIR__ . '/../models/Product.php';
+            $productosDisponibles = Product::getAll($conn);
+            $productosDelProveedor = Provider::getProductosByProveedor($conn, $id);
             
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos
@@ -172,6 +177,15 @@ class ProviderController {
                 }
                 
                 $resultado = Provider::update($conn, $id, $nombre_distribuidor, $correo, $cel_proveedor, $estado, $ubicacion);
+                
+                // Actualizar productos del proveedor si se enviaron
+                if (isset($_POST['productos']) && is_array($_POST['productos'])) {
+                    // Usar nuevo método para actualizar productos
+                    Provider::updateProductos($conn, $id, $_POST['productos']);
+                } else {
+                    // Si no se enviaron productos, remover todas las asignaciones
+                    Provider::removeAllProductos($conn, $id);
+                }
                 
                 if ($resultado) {
                     header('Location: ' . $this->baseUrl . '?accion=index&success=updated');

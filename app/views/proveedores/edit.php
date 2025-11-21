@@ -280,6 +280,81 @@
         ::-webkit-scrollbar-track { background: rgba(255,255,255,0.06); border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: var(--secondary-gradient); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--primary-gradient); }
+
+        /* Estilos para productos */
+        .productos-selection {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .producto-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 15px;
+            transition: var(--transition);
+            cursor: pointer;
+            height: 100%;
+        }
+
+        .producto-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-light);
+        }
+
+        .producto-card.selected {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: #667eea;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.3);
+        }
+
+        .producto-card .form-check-input {
+            margin-top: 0;
+            margin-right: 10px;
+            transform: scale(1.2);
+        }
+
+        .producto-card .form-check-label {
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .producto-info {
+            margin-left: 25px;
+        }
+
+        .producto-nombre {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .producto-descripcion {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .producto-details {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .producto-details .badge {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+        }
     </style>
 </head>
 <body>
@@ -356,6 +431,74 @@
                             </div>
                         </div>
                         <div class="col-md-6"></div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h5 class="section-title"><i class="fas fa-box"></i> Productos del Proveedor</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Gestión de Productos:</strong> Seleccione los productos que este proveedor suministra.
+                            </div>
+                            
+                            <?php if (!empty($productosDisponibles)): ?>
+                                <div class="productos-selection">
+                                    <div class="row">
+                                        <?php 
+                                        // Crear array de IDs de productos del proveedor para fácil verificación
+                                        $productosProveedorIds = [];
+                                        if (!empty($productosDelProveedor)) {
+                                            foreach ($productosDelProveedor as $producto) {
+                                                // Los productos ahora vienen como objetos directos de Provider::getProductosByProveedor
+                                                if (is_object($producto)) {
+                                                    $productosProveedorIds[] = $producto->id_productos;
+                                                }
+                                            }
+                                        }
+                                        
+                                        foreach ($productosDisponibles as $producto): 
+                                            // Verificar si es un array con 'obj' o directamente un objeto
+                                            if (is_array($producto) && isset($producto['obj'])) {
+                                                $productoObj = $producto['obj'];
+                                            } else {
+                                                $productoObj = $producto;
+                                            }
+                                            
+                                            $isSelected = in_array($productoObj->id_productos, $productosProveedorIds);
+                                        ?>
+                                            <div class="col-md-6 col-lg-4 mb-3">
+                                                <div class="form-check producto-card <?= $isSelected ? 'selected' : '' ?>">
+                                                    <input type="checkbox" 
+                                                           class="form-check-input" 
+                                                           id="producto_<?= $productoObj->id_productos ?>" 
+                                                           name="productos[]" 
+                                                           value="<?= $productoObj->id_productos ?>"
+                                                           <?= $isSelected ? 'checked' : '' ?>>
+                                                    <label class="form-check-label" for="producto_<?= $productoObj->id_productos ?>">
+                                                        <div class="producto-info">
+                                                            <h6 class="producto-nombre"><?= htmlspecialchars($productoObj->nombre) ?></h6>
+                                                            <p class="producto-descripcion"><?= htmlspecialchars($productoObj->descripcion ?? 'Sin descripción') ?></p>
+                                                            <div class="producto-details">
+                                                                <span class="badge bg-primary">Stock: <?= htmlspecialchars($productoObj->stock ?? '0') ?></span>
+                                                                <span class="badge bg-secondary">$<?= number_format($productoObj->precio_unitario ?? 0, 2) ?></span>
+                                                            </div>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </div>
+                            <?php else: ?>
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    No hay productos disponibles en el sistema. 
+                                    <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="alert-link">Crear nuevo producto</a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
                     </div>
                 </div>
 
@@ -475,35 +618,59 @@
         
         // Validación antes del envío
         form.addEventListener('submit', function(e) {
-            const correo = correoInput.value;
-            const telefono = telefonoInput.value;
+            const correo = correoInput.value.trim();
+            const telefono = telefonoInput.value.trim();
             const nombre = nombreInput.value.trim();
+            const estado = estadoSelect.value;
             
             if (!nombre) {
                 e.preventDefault();
                 alert('El nombre del distribuidor es requerido');
                 nombreInput.focus();
-                return;
+                return false;
             }
             
             if (!correo || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo)) {
                 e.preventDefault();
                 alert('Por favor ingrese un correo electrónico válido');
                 correoInput.focus();
-                return;
+                return false;
             }
             
             if (!telefono || telefono.replace(/\D/g, '').length < 7) {
                 e.preventDefault();
                 alert('Por favor ingrese un número de teléfono válido (mínimo 7 dígitos)');
                 telefonoInput.focus();
-                return;
+                return false;
+            }
+            
+            if (!estado) {
+                e.preventDefault();
+                alert('Por favor seleccione un estado para el proveedor');
+                estadoSelect.focus();
+                return false;
             }
             
             // Confirmación final
             if (!confirm('¿Está seguro de actualizar la información de este proveedor?')) {
                 e.preventDefault();
+                return false;
             }
+            
+            // Si llegamos aquí, todas las validaciones pasaron
+            // Mostrar indicador de carga
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+            
+            // En caso de error, restaurar el botón después de un tiempo
+            setTimeout(function() {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }, 10000);
+            
+            return true;
         });
         
         // Auto-ocultar alertas después de 5 segundos
@@ -517,6 +684,59 @@
                 }
             });
         }, 5000);
+
+        // Gestión de selección de productos
+        const productosCheckboxes = document.querySelectorAll('input[name="productos[]"]');
+        
+        productosCheckboxes.forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                const card = this.closest('.producto-card');
+                if (this.checked) {
+                    card.classList.add('selected');
+                } else {
+                    card.classList.remove('selected');
+                }
+            });
+
+            // También permitir seleccionar haciendo clic en la tarjeta
+            const card = checkbox.closest('.producto-card');
+            card.addEventListener('click', function(e) {
+                if (e.target.type !== 'checkbox') {
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change'));
+                }
+            });
+        });
+
+        // Botones para seleccionar/deseleccionar todos los productos
+        const productosSection = document.querySelector('.productos-selection');
+        if (productosSection && productosCheckboxes.length > 0) {
+            const buttonContainer = document.createElement('div');
+            buttonContainer.className = 'text-center mb-3';
+            buttonContainer.innerHTML = `
+                <button type="button" class="btn btn-sm btn-outline-primary me-2" id="selectAllProducts">
+                    <i class="fas fa-check-square"></i> Seleccionar Todos
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="deselectAllProducts">
+                    <i class="fas fa-square"></i> Deseleccionar Todos
+                </button>
+            `;
+            productosSection.insertBefore(buttonContainer, productosSection.firstChild);
+
+            document.getElementById('selectAllProducts').addEventListener('click', function() {
+                productosCheckboxes.forEach(function(checkbox) {
+                    checkbox.checked = true;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+            });
+
+            document.getElementById('deselectAllProducts').addEventListener('click', function() {
+                productosCheckboxes.forEach(function(checkbox) {
+                    checkbox.checked = false;
+                    checkbox.dispatchEvent(new Event('change'));
+                });
+            });
+        }
     });
     </script>
 </body>

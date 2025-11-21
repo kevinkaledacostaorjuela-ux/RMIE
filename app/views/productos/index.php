@@ -259,6 +259,204 @@ $stats = $statsQuery->fetch_assoc();
             margin-bottom: 20px;
         }
 
+        /* Estilos para toggle de vista */
+        .view-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 5px;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+        }
+
+        .view-toggle-btn {
+            background: transparent;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .table-header h3 {
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Diseño de tarjetas para productos */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .products-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .products-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .products-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .products-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .products-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .products-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .products-card-title {
+            flex: 1;
+        }
+
+        .products-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .products-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .products-card-body {
+            margin-bottom: 20px;
+        }
+
+        .products-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .products-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .products-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .products-info-content {
+            flex: 1;
+        }
+
+        .products-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .products-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .products-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .products-actions {
+            display: flex;
+            gap: 8px;
+        }
+
         .table-responsive {
             border-radius: 10px;
             overflow: hidden;
@@ -586,106 +784,168 @@ $stats = $statsQuery->fetch_assoc();
         </div>
 
         <!-- Filtros -->
+        <style>
+        .filters-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px 32px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            grid-template-rows: auto auto auto;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+            max-width: 320px;
+        }
+        .filter-label {
+            background: rgba(8, 8, 8, 0.06);
+            color: hsla(207, 85%, 46%, 0.95);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .filter-input, .filter-select {
+            background: #fff;
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            min-width: 160px;
+        }
+        .filter-input::placeholder { color: #333; }
+        .filter-actions {
+            grid-column: span 2;
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 24px;
+        }
+        .btn-pill {
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border: none;
+            color: white;
+            min-width: 120px;
+        }
+        .btn-pill i { margin-right: 8px; }
+        .btn-pill-primary {
+            background: linear-gradient(180deg,#1e90ff,#2a6df4);
+        }
+        .btn-pill-clear {
+            background: linear-gradient(180deg,#ffb3c6,#ff7aa2);
+            padding: 10px 10px;
+            min-width: 120px;
+        }
+        @media (max-width: 768px) {
+            .filter-actions { width: 100%; flex-direction: row; justify-content: stretch; }
+            .btn-pill { flex: 1; }
+            .filters-row { gap: 8px; }
+        }
+        .filter-title {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        </style>
         <div class="filters-container">
-            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
-                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
-                    <i class="fas fa-filter"></i> Filtros de Búsqueda
-                </div>
-                <form method="GET" action="" id="filterForm">
-                    <input type="hidden" name="accion" value="index">
-                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-box"></i> Nombre
-                            </label>
-                            <input type="text"
-                                   name="nombre"
-                                   class="form-control"
-                                   placeholder="Buscar..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-tags"></i> Categoría
-                            </label>
-                            <select name="categoria" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todas</option>
-                                <?php if (isset($categorias) && is_array($categorias)): ?>
-                                    <?php foreach ($categorias as $cat): ?>
-                                        <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($cat->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-layer-group"></i> Subcategoría
-                            </label>
-                            <select name="subcategoria" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todas</option>
-                                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                                    <?php foreach ($subcategorias as $subcat): ?>
-                                        <option value="<?= $subcat->id_subcategoria ?>" <?= isset($_GET['subcategoria']) && $_GET['subcategoria'] == $subcat->id_subcategoria ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($subcat->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-truck"></i> Proveedor
-                            </label>
-                            <select name="proveedor" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todos</option>
-                                <?php if (isset($proveedores) && is_array($proveedores)): ?>
-                                    <?php foreach ($proveedores as $prov): ?>
-                                        <option value="<?= $prov->id_proveedor ?>" <?= isset($_GET['proveedor']) && $_GET['proveedor'] == $prov->id_proveedor ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($prov->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>
-
-                        <div class="col-md-1 d-flex align-items-end justify-content-center">
-                            <div class="d-flex gap-2 flex-column w-100">
-                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-12 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-times"></i> Limpiar Filtros
-                            </button>
-                        </div>
-                    </div>
-                </form>
+            <div class="filter-title">
+                <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
+            <form method="GET" action="/RMIE/app/controllers/ProductController.php" id="filterForm">
+                <input type="hidden" name="accion" value="index">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-box"></i> Nombre</span>
+                        <input type="text" name="nombre" class="filter-input" placeholder="Buscar nombre..." value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-tags"></i> Categoría</span>
+                        <select name="categoria" class="filter-select">
+                            <option value="">Categoría</option>
+                            <?php if (isset($categorias) && is_array($categorias)): ?>
+                                <?php foreach ($categorias as $cat): ?>
+                                    <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>><?= htmlspecialchars($cat->nombre) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-layer-group"></i> Subcategoría</span>
+                        <select name="subcategoria" class="filter-select">
+                            <option value="">Subcategoría</option>
+                            <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+                                <?php foreach ($subcategorias as $subcat): ?>
+                                    <?php $obj = isset($subcat['obj']) ? $subcat['obj'] : null; ?>
+                                    <?php if ($obj): ?>
+                                        <option value="<?= $obj->id_subcategoria ?>" <?= isset($_GET['subcategoria']) && $_GET['subcategoria'] == $obj->id_subcategoria ? 'selected' : '' ?>><?= htmlspecialchars($obj->nombre) ?></option>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-truck"></i> Proveedor</span>
+                        <select name="id_proveedores" class="filter-select">
+                            <option value="">Proveedor</option>
+                            <?php if (isset($proveedores) && is_array($proveedores)): ?>
+                                <?php foreach ($proveedores as $prov): ?>
+                                    <option value="<?= $prov->id_proveedores ?>" <?= isset($_GET['id_proveedores']) && $_GET['id_proveedores'] == $prov->id_proveedores ? 'selected' : '' ?>><?= htmlspecialchars($prov->nombre_distribuidor) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- Tabla de Productos -->
         <div class="table-container">
+            <div class="table-header">
+                <h3><i class="fas fa-box"></i> Lista de Productos (<?= count($productos ?? []) ?>)</h3>
+                <div class="view-toggle">
+                    <button class="view-toggle-btn active" onclick="toggleProductsView('cards')" id="btnCards">
+                        <i class="fas fa-th-large"></i> Tarjetas
+                    </button>
+                    <button class="view-toggle-btn" onclick="toggleProductsView('table')" id="btnTable">
+                        <i class="fas fa-table"></i> Tabla
+                    </button>
+                </div>
+            </div>
+
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="filter-title mb-0">
-                    <i class="fas fa-list"></i> Lista de Productos
-                </h3>
+                <div></div>
                 <div>
                     <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                         <i class="fas fa-plus"></i> Nuevo Producto
@@ -696,6 +956,110 @@ $stats = $statsQuery->fetch_assoc();
                 </div>
             </div>
 
+            <!-- Vista de Tarjetas (por defecto) -->
+            <div id="cardsView" class="products-grid">
+                <?php if (isset($productos) && is_array($productos) && !empty($productos)): ?>
+                    <?php foreach ($productos as $productData): ?>
+                    <?php $producto = $productData['obj']; ?>
+                        <div class="products-card">
+                            <div class="products-card-header">
+                                <div class="products-card-icon">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="products-card-title">
+                                    <h4><?= htmlspecialchars($producto->nombre ?? 'Sin nombre') ?></h4>
+                                    <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($producto->id_productos ?? '') ?></p>
+                                </div>
+                            </div>
+
+                            <div class="products-card-body">
+                                <div class="products-info-item">
+                                    <div class="products-info-icon">
+                                        <i class="fas fa-tag"></i>
+                                    </div>
+                                    <div class="products-info-content">
+                                        <div class="products-info-label">Categoría</div>
+                                        <div class="products-info-value"><?= htmlspecialchars($productData['categoria_nombre'] ?? 'Sin categoría') ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="products-info-item">
+                                    <div class="products-info-icon">
+                                        <i class="fas fa-layer-group"></i>
+                                    </div>
+                                    <div class="products-info-content">
+                                        <div class="products-info-label">Subcategoría</div>
+                                        <div class="products-info-value"><?= htmlspecialchars($productData['subcategoria_nombre'] ?? 'Sin subcategoría') ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="products-info-item">
+                                    <div class="products-info-icon">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <div class="products-info-content">
+                                        <div class="products-info-label">Precio Unitario</div>
+                                        <div class="products-info-value">$<?= number_format($producto->precio_unitario ?? 0, 2) ?></div>
+                                    </div>
+                                </div>
+
+                                <div class="products-info-item">
+                                    <div class="products-info-icon">
+                                        <i class="fas fa-boxes"></i>
+                                    </div>
+                                    <div class="products-info-content">
+                                        <div class="products-info-label">Stock</div>
+                                        <div class="products-info-value">
+                                            <span class="badge <?= ($producto->stock ?? 0) > 10 ? 'badge-success' : (($producto->stock ?? 0) > 0 ? 'badge-warning' : 'badge-danger') ?>">
+                                                <?= $producto->stock ?? 0 ?> unidades
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="products-info-item">
+                                    <div class="products-info-icon">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                    <div class="products-info-content">
+                                        <div class="products-info-label">Proveedor</div>
+                                        <div class="products-info-value"><?= htmlspecialchars($producto->proveedor ?? 'Sin proveedor') ?></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="products-card-footer">
+                                <div class="products-actions">
+                                    <a href="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= urlencode($producto->id_productos ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       title="Editar producto">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?= urlencode($producto->id_productos ?? '') ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       title="Eliminar producto"
+                                       onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <div class="col-12 text-center py-5">
+                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No hay productos registrados</p>
+                            <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                <i class="fas fa-plus"></i> Crear Primer Producto
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+
+            <!-- Vista de Tabla -->
+            <div id="tableView" style="display: none;">
             <div class="table-responsive">
                 <table class="table table-modern">
                     <thead>
@@ -723,11 +1087,11 @@ $stats = $statsQuery->fetch_assoc();
                             ?>
                             <tr>
                                 <td>
-                                    <span class="badge badge-modern badge-secondary">#<?= htmlspecialchars($prod->id_productos) ?></span>
+                                    <span class="badge badge-modern badge-secondary">#<?= htmlspecialchars($prod->id_productos ?? '') ?></span>
                                 </td>
                                 <td>
                                     <div>
-                                        <strong><?= htmlspecialchars($prod->nombre) ?></strong>
+                                        <strong><?= htmlspecialchars($prod->nombre ?? 'Sin nombre') ?></strong>
                                         <br>
                                         <small style="color: rgba(255,255,255,0.7);">
                                             <?= htmlspecialchars(substr($prod->descripcion ?? '', 0, 50)) ?>...
@@ -766,17 +1130,17 @@ $stats = $statsQuery->fetch_assoc();
                                 </td>
                                 <td>
                                     <small>
-                                        <?= date('d/m/Y', strtotime($prod->fecha_entrada ?? 'now')) ?>
+                                        <?= $prod->fecha_entrada && $prod->fecha_entrada !== '0000-00-00 00:00:00' ? date('d/m/Y', strtotime($prod->fecha_entrada)) : 'Sin fecha' ?>
                                     </small>
                                 </td>
                                 <td>
-                                    <a href="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= urlencode($prod->id_productos) ?>" 
+                                    <a href="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= urlencode($prod->id_productos ?? '') ?>" 
                                        class="btn btn-modern btn-warning-modern btn-action" 
                                        title="Editar producto">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos) ?>" 
+                                    <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos ?? '') ?>" 
                                        class="btn btn-modern btn-danger-modern btn-action" 
                                        onclick="return confirm('¿Está seguro de eliminar este producto?')"
                                        title="Eliminar producto">
@@ -808,6 +1172,34 @@ $stats = $statsQuery->fetch_assoc();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Toggle entre vista de tarjetas y tabla para productos
+        function toggleProductsView(view) {
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
+            const btnCards = document.getElementById('btnCards');
+            const btnTable = document.getElementById('btnTable');
+            
+            if (view === 'cards') {
+                cardsView.style.display = 'grid';
+                tableView.style.display = 'none';
+                btnCards.classList.add('active');
+                btnTable.classList.remove('active');
+                localStorage.setItem('productosView', 'cards');
+            } else {
+                cardsView.style.display = 'none';
+                tableView.style.display = 'block';
+                btnCards.classList.remove('active');
+                btnTable.classList.add('active');
+                localStorage.setItem('productosView', 'table');
+            }
+        }
+        
+        // Restaurar vista guardada
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedView = localStorage.getItem('productosView') || 'cards';
+            toggleProductsView(savedView);
+        });
+
         function limpiarFiltros() {
             document.getElementById('filterForm').reset();
             window.location.href = '/RMIE/app/controllers/ProductController.php?accion=index';

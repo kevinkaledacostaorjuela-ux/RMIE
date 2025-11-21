@@ -543,6 +543,209 @@ $stats = $statsQuery->fetch_assoc();
             animation: float 3s ease-in-out infinite;
         }
 
+        /* Diseño de Tarjetas para locales */
+        .locals-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .locals-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .locals-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .locals-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .locals-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .locals-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .locals-card-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .locals-card-title {
+            flex: 1;
+        }
+
+        .locals-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .locals-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .locals-card-body {
+            margin-bottom: 20px;
+        }
+
+        .locals-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .locals-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .locals-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .locals-info-content {
+            flex: 1;
+        }
+
+        .locals-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .locals-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .locals-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .locals-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin: 15px 0 25px 0;
+        }
+
+        .view-toggle-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: #fff;
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .badge-clients {
+            background: linear-gradient(45deg, #11998e, #38ef7d);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* Responsive para tarjetas */
+        @media (max-width: 768px) {
+            .locals-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .view-toggle {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .view-toggle-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
         .loading-screen {
             position: fixed;
             top: 0;
@@ -700,60 +903,172 @@ $stats = $statsQuery->fetch_assoc();
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
-            <button id="viewCardsBtnLocales" class="btn btn-modern btn-primary-modern">Tarjetas</button>
-            <button id="viewTableBtnLocales" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        <div class="view-toggle">
+            <button id="viewCardsBtnLocales" class="view-toggle-btn active">
+                <i class="fas fa-th-large"></i> Tarjetas
+            </button>
+            <button id="viewTableBtnLocales" class="view-toggle-btn">
+                <i class="fas fa-table"></i> Tabla
+            </button>
         </div>
 
-        <!-- Cards container for locales -->
-        <div id="cardsContainerLocales" style="display:none; margin-bottom:20px;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap:16px;">
-                <?php if (!empty($locales) && is_array($locales)): ?>
-                    <?php foreach ($locales as $local): ?>
-                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
-                            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:12px;">
-                                <div style="display:flex; gap:12px; align-items:center;">
-                                    <div class="local-icon"><i class="fas fa-building"></i></div>
-                                    <div>
-                                        <strong style="color:#fff;"><?= htmlspecialchars($local->nombre_local ?? 'Sin nombre') ?></strong>
-                                        <div style="font-size:0.9rem; color:rgba(255,255,255,0.7);"><?= htmlspecialchars($local->direccion ?? 'Sin dirección') ?></div>
-                                    </div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <?php if (!empty($local->total_clientes) && $local->total_clientes > 0): ?>
-                                        <span class="badge" style="background: linear-gradient(45deg, #11998e, #38ef7d); color: white; font-size: 1rem; padding: 8px 12px;">
-                                            <i class="fas fa-users"></i> <?= $local->total_clientes ?>
-                                        </span>
+        <!-- Vista de Tarjetas -->
+        <div id="cardsViewLocales" class="locals-grid">
+            <?php if (!empty($locales)): ?>
+                <?php foreach ($locales as $local): ?>
+                    <div class="locals-card">
+                        <div class="locals-card-header">
+                            <div class="locals-card-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <div class="locals-card-title">
+                                <h4><?php echo htmlspecialchars($local->nombre_local); ?></h4>
+                                <p>#<?php echo $local->id_locales; ?> - Local comercial</p>
+                            </div>
+                            <div>
+                                <span class="badge badge-status badge-<?php echo $local->estado; ?>">
+                                    <?php if ($local->estado === 'activo'): ?>
+                                        <i class="fas fa-check-circle"></i> Activo
                                     <?php else: ?>
-                                        <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.6);">0</span>
+                                        <i class="fas fa-times-circle"></i> Inactivo
                                     <?php endif; ?>
-                                    <div style="margin-top:8px;">
-                                        <span class="badge badge-status badge-<?= htmlspecialchars($local->estado ?? 'inactivo') ?>"><?= ucfirst($local->estado ?? 'Inactivo') ?></span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="locals-card-body">
+                            <div class="locals-info-item">
+                                <div class="locals-info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="locals-info-content">
+                                    <div class="locals-info-label">Dirección</div>
+                                    <div class="locals-info-value"><?php echo htmlspecialchars($local->direccion); ?></div>
+                                </div>
+                            </div>
+                            
+                            <div class="locals-info-item">
+                                <div class="locals-info-icon">
+                                    <i class="fas fa-city"></i>
+                                </div>
+                                <div class="locals-info-content">
+                                    <div class="locals-info-label">Localidad y Barrio</div>
+                                    <div class="locals-info-value">
+                                        <?php echo htmlspecialchars($local->localidad ?? 'Sin localidad'); ?>, 
+                                        <?php echo htmlspecialchars($local->barrio ?? 'Sin barrio'); ?>
                                     </div>
                                 </div>
                             </div>
-                            <div style="margin-top:12px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <div><i class="fas fa-city"></i> <?= htmlspecialchars($local->localidad ?? 'N/A') ?></div>
-                                    <div><i class="fas fa-map-marked-alt"></i> <?= htmlspecialchars($local->barrio ?? 'N/A') ?></div>
+                            
+                            <?php if (!empty($local->cel_local)): ?>
+                            <div class="locals-info-item">
+                                <div class="locals-info-icon">
+                                    <i class="fas fa-phone"></i>
                                 </div>
-                                <div style="display:flex; gap:8px;">
-                                    <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?= urlencode($local->id_locales ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
-                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?= urlencode($local->id_locales ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Estás seguro de eliminar el local \"<?= addslashes($local->nombre_local ?? '') ?>\"?')"><i class="fas fa-trash"></i></a>
-                                    <?php endif; ?>
+                                <div class="locals-info-content">
+                                    <div class="locals-info-label">Teléfono</div>
+                                    <div class="locals-info-value"><?php echo htmlspecialchars($local->cel_local); ?></div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+                            
+                            <div class="locals-info-item">
+                                <div class="locals-info-icon">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="locals-info-content">
+                                    <div class="locals-info-label">Clientes asociados</div>
+                                    <div class="locals-info-value">
+                                        <?php if ($local->total_clientes > 0): ?>
+                                            <span class="badge-clients">
+                                                <?php echo $local->total_clientes; ?> 
+                                                <?php echo $local->total_clientes == 1 ? 'cliente' : 'clientes'; ?>
+                                            </span>
+                                            <?php if (!empty($local->nombres_clientes)): ?>
+                                                <small class="d-block text-muted mt-2" style="color: rgba(255, 255, 255, 0.7) !important;">
+                                                    <?php 
+                                                    $nombres = explode(', ', $local->nombres_clientes);
+                                                    if (count($nombres) > 2) {
+                                                        echo htmlspecialchars($nombres[0]) . ', ' . htmlspecialchars($nombres[1]) . ' y ' . (count($nombres) - 2) . ' más';
+                                                    } else {
+                                                        echo htmlspecialchars($local->nombres_clientes);
+                                                    }
+                                                    ?>
+                                                </small>
+                                            <?php endif; ?>
+                                        <?php else: ?>
+                                            <span style="color: rgba(255, 255, 255, 0.6);">Sin clientes asociados</span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="locals-info-item">
+                                <div class="locals-info-icon">
+                                    <i class="fas fa-calendar"></i>
+                                </div>
+                                <div class="locals-info-content">
+                                    <div class="locals-info-label">Fecha de creación</div>
+                                    <div class="locals-info-value">
+                                        <?php echo date('d/m/Y H:i', strtotime($local->fecha_creacion)); ?>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div>No hay locales disponibles</div>
-                <?php endif; ?>
-            </div>
+                        
+                        <div class="locals-card-footer">
+                            <div class="locals-actions">
+                                <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?php echo $local->id_locales; ?>" 
+                                   class="btn btn-sm btn-modern btn-warning-modern" 
+                                   title="Editar local">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
+                                   class="btn btn-sm btn-modern btn-danger-modern" 
+                                   title="Eliminar local"
+                                   onclick="return confirm('¿Estás seguro de eliminar el local \'<?php echo addslashes($local->nombre_local); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="empty-state">
+                        <i class="fas fa-building"></i>
+                        <?php if ($filtros_activos): ?>
+                            <h3>No se encontraron locales</h3>
+                            <p>No hay locales que coincidan con los filtros aplicados</p>
+                            <div class="mt-3">
+                                <a href="/RMIE/app/controllers/LocalController.php?accion=index" 
+                                   class="btn btn-modern btn-secondary-modern me-2">
+                                    <i class="fas fa-times"></i> Limpiar Filtros
+                                </a>
+                                <a href="/RMIE/app/controllers/LocalController.php?accion=create" 
+                                   class="btn btn-modern btn-success-modern">
+                                    <i class="fas fa-plus"></i> Crear Nuevo Local
+                                </a>
+                            </div>
+                        <?php else: ?>
+                            <h3>No hay locales registrados</h3>
+                            <p>Comienza creando tu primer local comercial</p>
+                            <div class="mt-3">
+                                <a href="/RMIE/app/controllers/LocalController.php?accion=create" 
+                                   class="btn btn-modern btn-success-modern">
+                                    <i class="fas fa-plus"></i> Crear Primer Local
+                                </a>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Tabla de Locales -->
-        <div class="table-container">
+        <div id="tableViewLocales" class="table-container" style="display: none;">
             <?php if (empty($locales)): ?>
                 <div class="empty-state">
                     <i class="fas fa-building"></i>
@@ -873,7 +1188,18 @@ $stats = $statsQuery->fetch_assoc();
                                                 <i class="fas fa-users"></i> <?php echo $local->total_clientes; ?>
                                             </span>
                                             <small class="d-block text-muted mt-1">
-                                                <?php echo $local->total_clientes == 1 ? 'cliente' : 'clientes'; ?>
+                                                <?php if (!empty($local->nombres_clientes)): ?>
+                                                    <?php 
+                                                    $nombres = explode(', ', $local->nombres_clientes);
+                                                    if (count($nombres) > 2) {
+                                                        echo htmlspecialchars($nombres[0]) . ', ' . htmlspecialchars($nombres[1]) . ' y ' . (count($nombres) - 2) . ' más';
+                                                    } else {
+                                                        echo htmlspecialchars($local->nombres_clientes);
+                                                    }
+                                                    ?>
+                                                <?php else: ?>
+                                                    <?php echo $local->total_clientes == 1 ? 'cliente' : 'clientes'; ?>
+                                                <?php endif; ?>
                                             </small>
                                         <?php else: ?>
                                             <span class="badge" style="background: rgba(255, 255, 255, 0.1); color: rgba(255, 255, 255, 0.5);">
@@ -966,30 +1292,47 @@ $stats = $statsQuery->fetch_assoc();
         });
 
         // View toggle: Tarjetas / Tabla (locales)
-        (function(){
+        document.addEventListener('DOMContentLoaded', function() {
             const cardsBtn = document.getElementById('viewCardsBtnLocales');
             const tableBtn = document.getElementById('viewTableBtnLocales');
-            const cardsContainer = document.getElementById('cardsContainerLocales');
-            const tableContainer = document.querySelector('.table-container');
+            const cardsView = document.getElementById('cardsViewLocales');
+            const tableView = document.getElementById('tableViewLocales');
 
-            function setView(view){
-                if (view === 'cards'){
-                    if (cardsContainer) cardsContainer.style.display = '';
-                    if (tableContainer) tableContainer.style.display = 'none';
+            function setView(view) {
+                if (view === 'cards') {
+                    cardsView.style.display = 'grid';
+                    tableView.style.display = 'none';
+                    cardsBtn.classList.add('active');
+                    tableBtn.classList.remove('active');
                 } else {
-                    if (cardsContainer) cardsContainer.style.display = 'none';
-                    if (tableContainer) tableContainer.style.display = '';
+                    cardsView.style.display = 'none';
+                    tableView.style.display = 'block';
+                    cardsBtn.classList.remove('active');
+                    tableBtn.classList.add('active');
                 }
-                try{ localStorage.setItem('locales_view', view); }catch(e){}
+                try {
+                    localStorage.setItem('localesView', view);
+                } catch(e) {
+                    console.warn('No se pudo guardar la preferencia de vista');
+                }
             }
 
-            if (cardsBtn && tableBtn){
-                cardsBtn.addEventListener('click', ()=>setView('cards'));
-                tableBtn.addEventListener('click', ()=>setView('table'));
-                const pref = (function(){ try{ return localStorage.getItem('locales_view'); }catch(e){return null;} })();
-                setView(pref === 'cards' ? 'cards' : 'table');
+            if (cardsBtn && tableBtn && cardsView && tableView) {
+                cardsBtn.addEventListener('click', () => setView('cards'));
+                tableBtn.addEventListener('click', () => setView('table'));
+                
+                // Cargar preferencia guardada o usar tarjetas por defecto
+                const savedView = (function() {
+                    try {
+                        return localStorage.getItem('localesView');
+                    } catch(e) {
+                        return null;
+                    }
+                })();
+                
+                setView(savedView === 'table' ? 'table' : 'cards');
             }
-        })();
+        });
     </script>
 </body>
 </html>

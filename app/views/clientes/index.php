@@ -338,6 +338,201 @@ $stats = $statsQuery->fetch_assoc();
             background: linear-gradient(45deg, #667eea, #764ba2);
         }
 
+        /* Diseño de Tarjetas para clientes */
+        .clients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .clients-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .clients-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2, #4facfe);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s ease;
+        }
+
+        .clients-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .clients-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .clients-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .clients-card-avatar {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.8rem;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .clients-card-title {
+            flex: 1;
+        }
+
+        .clients-card-title h4 {
+            color: #fff;
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin: 0 0 5px 0;
+        }
+
+        .clients-card-title p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin: 0;
+        }
+
+        .clients-card-body {
+            margin-bottom: 20px;
+        }
+
+        .client-info-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .client-info-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .client-info-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1rem;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .client-info-content {
+            flex: 1;
+        }
+
+        .client-info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 3px;
+        }
+
+        .client-info-value {
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        .clients-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .client-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .view-toggle-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .view-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.5);
+            color: #fff;
+        }
+
+        .view-toggle-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-color: #667eea;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Responsive para tarjetas */
+        @media (max-width: 768px) {
+            .clients-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .view-toggle {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .view-toggle-btn {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+        }
+
         /* Scroll horizontal para móviles - Clientes */
         @media (max-width: 768px) {
             .table-container {
@@ -477,49 +672,132 @@ $stats = $statsQuery->fetch_assoc();
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->
-        <div style="display:flex; justify-content:flex-end; gap:10px; margin:10px 0 20px;">
-            <button id="viewCardsBtnClientes" class="btn btn-modern btn-primary-modern">Tarjetas</button>
-            <button id="viewTableBtnClientes" class="btn btn-modern btn-secondary-modern" style="background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.15);">Tabla</button>
+        <div class="view-toggle">
+            <button id="viewCardsBtnClientes" class="view-toggle-btn">
+                <i class="fas fa-th-large"></i> Tarjetas
+            </button>
+            <button id="viewTableBtnClientes" class="view-toggle-btn active">
+                <i class="fas fa-table"></i> Tabla
+            </button>
         </div>
 
-        <!-- Cards container for clientes -->
-        <div id="cardsContainerClientes" style="display:none; margin-bottom:20px;">
-            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
-                <?php if (isset($clientes) && is_array($clientes) && !empty($clientes)): ?>
-                    <?php foreach ($clientes as $cliente): ?>
-                        <div class="card" style="background: rgba(255,255,255,0.04); border-radius:12px; padding:16px; border:1px solid rgba(255,255,255,0.06);">
-                            <div style="display:flex; gap:12px; align-items:center;">
-                                <div class="client-icon" style="flex-shrink:0;"><i class="fas fa-user"></i></div>
-                                <div style="flex:1;">
-                                    <strong style="color:#fff;"><?= htmlspecialchars($cliente->nombre ?? 'Sin nombre') ?></strong>
-                                    <div style="color:rgba(255,255,255,0.7); font-size:0.9rem;">Documento: <?= htmlspecialchars($cliente->documento ?? 'N/A') ?></div>
-                                </div>
+        <!-- Vista de Tarjetas -->
+        <div id="cardsView" class="clients-grid" style="display: none;">
+            <?php if (isset($clientes) && is_array($clientes) && !empty($clientes)): ?>
+                <?php foreach ($clientes as $cliente): ?>
+                <div class="clients-card">
+                    <div class="clients-card-header">
+                        <div class="clients-card-avatar">
+                            <?= strtoupper(substr(htmlspecialchars($cliente->nombre ?? 'U'), 0, 1)) ?>
+                        </div>
+                        <div class="clients-card-title">
+                            <h4><?= htmlspecialchars($cliente->nombre ?? 'Sin nombre') ?></h4>
+                            <p><i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($cliente->id_clientes ?? 'N/A') ?></p>
+                        </div>
+                    </div>
+
+                    <div class="clients-card-body">
+                        <?php if (!empty($cliente->documento)): ?>
+                        <div class="client-info-item">
+                            <div class="client-info-icon">
+                                <i class="fas fa-id-card"></i>
                             </div>
-                            <div style="margin-top:10px; display:flex; justify-content:space-between; align-items:center;">
-                                <div>
-                                    <div><i class="fas fa-envelope"></i> <?= htmlspecialchars($cliente->correo ?? 'Sin email') ?></div>
-                                    <div><i class="fas fa-phone"></i> <?= htmlspecialchars($cliente->cel_cliente ?? 'Sin teléfono') ?></div>
-                                </div>
-                                <div style="text-align:right;">
-                                    <?php if (($cliente->estado ?? '') === 'activo'): ?>
-                                        <span class="badge badge-modern badge-success">Activo</span>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-danger">Inactivo</span>
-                                    <?php endif; ?>
-                                    <div style="margin-top:8px; display:flex; gap:6px; justify-content:flex-end;">
-                                        <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" class="btn btn-sm btn-modern btn-warning-modern"><i class="fas fa-edit"></i></a>
-                                        <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
-                                        <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes ?? '') ?>" class="btn btn-sm btn-modern btn-danger-modern" onclick="return confirm('¿Está seguro de eliminar el cliente \"<?= addslashes($cliente->nombre ?? '') ?>\"?')"><i class="fas fa-trash"></i></a>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
+                            <div class="client-info-content">
+                                <div class="client-info-label">Documento</div>
+                                <div class="client-info-value"><?= htmlspecialchars($cliente->documento) ?></div>
                             </div>
                         </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div>No hay clientes disponibles</div>
-                <?php endif; ?>
-            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($cliente->correo)): ?>
+                        <div class="client-info-item">
+                            <div class="client-info-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="client-info-content">
+                                <div class="client-info-label">Email</div>
+                                <div class="client-info-value"><?= htmlspecialchars($cliente->correo) ?></div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($cliente->cel_cliente)): ?>
+                        <div class="client-info-item">
+                            <div class="client-info-icon">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="client-info-content">
+                                <div class="client-info-label">Teléfono</div>
+                                <div class="client-info-value"><?= htmlspecialchars($cliente->cel_cliente) ?></div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($cliente->local_nombre)): ?>
+                        <div class="client-info-item">
+                            <div class="client-info-icon">
+                                <i class="fas fa-store"></i>
+                            </div>
+                            <div class="client-info-content">
+                                <div class="client-info-label">Local Asignado</div>
+                                <div class="client-info-value"><?= htmlspecialchars($cliente->local_nombre) ?></div>
+                            </div>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="clients-card-footer">
+                        <div>
+                            <?php if (($cliente->estado ?? 'inactivo') === 'activo'): ?>
+                                <span class="badge badge-modern badge-success">
+                                    <i class="fas fa-check-circle"></i> Activo
+                                </span>
+                            <?php else: ?>
+                                <span class="badge badge-modern badge-danger">
+                                    <i class="fas fa-times-circle"></i> Inactivo
+                                </span>
+                            <?php endif; ?>
+                        </div>
+                        <div class="client-actions">
+                            <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
+                            <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
+                               class="btn btn-sm btn-modern btn-warning-modern" 
+                               title="Editar cliente">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <?php else: ?>
+                            <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
+                               class="btn btn-sm btn-modern btn-primary-modern" 
+                               title="Ver detalles del cliente">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <?php endif; ?>
+                            <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
+                            <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
+                               class="btn btn-sm btn-modern btn-danger-modern" 
+                               title="Eliminar cliente"
+                               onclick="return confirm('¿Está seguro de eliminar el cliente \'<?= addslashes($cliente->nombre ?? '') ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            <?php else: ?>
+                <div class="col-12 text-center py-5">
+                    <div class="text-muted">
+                        <i class="fas fa-inbox fa-3x mb-3" style="color: rgba(255,255,255,0.5);"></i>
+                        <h5 style="color: #fff;">No hay clientes disponibles</h5>
+                        <p style="color: rgba(255,255,255,0.7);">No se encontraron clientes que coincidan con los filtros aplicados.</p>
+                        <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
+                        <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <i class="fas fa-plus"></i> Crear Primer Cliente
+                        </a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Filtros -->
@@ -581,7 +859,7 @@ $stats = $statsQuery->fetch_assoc();
         </div>
 
         <!-- Tabla de Clientes -->
-        <div class="table-container">
+        <div id="tableView" class="table-container">
             <div class="table-responsive">
                 <table class="table table-modern table-hover">
                     <thead>
@@ -591,7 +869,6 @@ $stats = $statsQuery->fetch_assoc();
                             <th><i class="fas fa-envelope"></i> Email</th>
                             <th><i class="fas fa-phone"></i> Teléfono</th>
                             <th><i class="fas fa-store"></i> Local</th>
-                            <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
                             <th><i class="fas fa-toggle-on"></i> Estado</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
                         </tr>
@@ -645,18 +922,6 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php else: ?>
                                         <span class="badge badge-modern badge-secondary">
                                             <i class="fas fa-minus"></i> Sin local
-                                        </span>
-                                    <?php endif; ?>
-                                </td>
-                                <td>
-                                    <?php if (isset($cliente->direccion) && !empty($cliente->direccion)): ?>
-                                        <span class="badge badge-modern badge-info" title="<?= htmlspecialchars($cliente->direccion) ?>">
-                                            <i class="fas fa-map-marker-alt"></i> 
-                                            <?= strlen($cliente->direccion) > 30 ? substr(htmlspecialchars($cliente->direccion), 0, 30) . '...' : htmlspecialchars($cliente->direccion) ?>
-                                        </span>
-                                    <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-minus"></i> Sin dirección
                                         </span>
                                     <?php endif; ?>
                                 </td>
@@ -756,29 +1021,51 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
             });
         });
 
-        // View toggle: Tarjetas / Tabla (clientes)
-        (function(){
+        // Toggle entre vista de tarjetas y tabla para clientes
+        (function() {
             const cardsBtn = document.getElementById('viewCardsBtnClientes');
             const tableBtn = document.getElementById('viewTableBtnClientes');
-            const cardsContainer = document.getElementById('cardsContainerClientes');
-            const tableContainer = document.querySelector('.table-container');
+            const cardsView = document.getElementById('cardsView');
+            const tableView = document.getElementById('tableView');
 
-            function setView(view){
-                if (view === 'cards'){
-                    if (cardsContainer) cardsContainer.style.display = '';
-                    if (tableContainer) tableContainer.style.display = 'none';
-                } else {
-                    if (cardsContainer) cardsContainer.style.display = 'none';
-                    if (tableContainer) tableContainer.style.display = '';
-                }
-                try{ localStorage.setItem('clientes_view', view); }catch(e){}
+            function setActiveButton(activeBtn, inactiveBtn) {
+                activeBtn.classList.add('active');
+                inactiveBtn.classList.remove('active');
             }
 
-            if (cardsBtn && tableBtn){
-                cardsBtn.addEventListener('click', ()=>setView('cards'));
-                tableBtn.addEventListener('click', ()=>setView('table'));
-                const pref = (function(){ try{ return localStorage.getItem('clientes_view'); }catch(e){return null;} })();
-                setView(pref === 'cards' ? 'cards' : 'table');
+            function showCardsView() {
+                if (cardsView) cardsView.style.display = 'grid';
+                if (tableView) tableView.style.display = 'none';
+                setActiveButton(cardsBtn, tableBtn);
+                try {
+                    localStorage.setItem('clientesView', 'cards');
+                } catch(e) {}
+            }
+
+            function showTableView() {
+                if (cardsView) cardsView.style.display = 'none';
+                if (tableView) tableView.style.display = 'block';
+                setActiveButton(tableBtn, cardsBtn);
+                try {
+                    localStorage.setItem('clientesView', 'table');
+                } catch(e) {}
+            }
+
+            if (cardsBtn && tableBtn) {
+                cardsBtn.addEventListener('click', showCardsView);
+                tableBtn.addEventListener('click', showTableView);
+
+                // Cargar preferencia guardada
+                try {
+                    const savedView = localStorage.getItem('clientesView');
+                    if (savedView === 'cards') {
+                        showCardsView();
+                    } else {
+                        showTableView();
+                    }
+                } catch(e) {
+                    showTableView();
+                }
             }
         })();
     </script>
