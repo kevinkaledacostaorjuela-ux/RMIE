@@ -47,6 +47,39 @@ unset($_SESSION['success'], $_SESSION['error']);
             font-size: 2.5rem;
             font-weight: 700;
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }        .filters-container {
+            margin-bottom: 2rem;
+        }
+
+        .filters-inner {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modern-filter {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-filter:hover {
+            background: #3A7BC8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-modern-clear {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-clear:hover {
+            background: #E67E93 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 143, 163, 0.4);
         }
 
         .filters-container {
@@ -524,10 +557,24 @@ unset($_SESSION['success'], $_SESSION['error']);
             background: rgba(231, 76, 60, 0.2);
             color: #e74c3c;
             border: 1px solid rgba(231, 76, 60, 0.4);
-        }
-
-        /* Scroll horizontal para móviles - Alertas */
+        }        /* Scroll horizontal para móviles - Alertas */
         @media (max-width: 768px) {
+            .filters-container .row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem !important;
+            }
+            
+            .filters-container .col:last-child {
+                margin-top: 1rem;
+            }
+            
+            .filters-container .col:last-child div {
+                flex-direction: row !important;
+                justify-content: center !important;
+                gap: 1rem !important;
+            }
+            
             .table-container {
                 padding: 15px;
                 overflow: visible;
@@ -653,6 +700,91 @@ unset($_SESSION['success'], $_SESSION['error']);
                 <div class="stat-number"><?php echo $estadisticas['proximas']; ?></div>
                 <div class="stat-label">Próximas (30 días)</div>
             </div>
+        </div>        <!-- Filtros -->
+        <div class="filters-container">
+            <div class="filters-inner">
+                <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm" 
+                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <input type="hidden" name="accion" value="index">
+                    
+                    <div class="row g-3" style="grid-template-columns: 1fr 1fr 1fr 1fr 200px; display: grid;">
+                        <div class="col">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-bell"></i> Tipo
+                            </label>
+                            <input type="text"
+                                   name="tipo"
+                                   class="form-control"
+                                   placeholder="Buscar tipo..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                   value="<?= htmlspecialchars($_GET['tipo'] ?? '') ?>">
+                        </div>
+
+                        <div class="col">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-exclamation-triangle"></i> Prioridad
+                            </label>
+                            <select name="prioridad" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todas las prioridades</option>
+                                <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
+                                <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
+                                <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
+                            </select>
+                        </div>
+
+                        <div class="col">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-toggle-on"></i> Estado
+                            </label>
+                            <select name="estado" 
+                                    class="form-select"
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todos los estados</option>
+                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                            </select>
+                        </div>
+
+                        <div class="col">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-calendar"></i> Fecha
+                            </label>
+                            <input type="date"
+                                   name="fecha"
+                                   class="form-control"
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
+                        </div>
+
+                        <div class="col" style="display: flex; flex-direction: column; justify-content: flex-end;">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                <i class="fas fa-cogs"></i> Acciones
+                            </label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-search"></i> FILTRAR
+                                </button>
+                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-times"></i> LIMPIAR
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+
+        <!-- Botones de acción -->
+        <div class="mb-4 text-center">
+            <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
+                <i class="fas fa-plus"></i> Nueva Alerta
+            </a>
+            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->
@@ -666,100 +798,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 </button>
             </div>
         </div>
-
-        <!-- Cards container for alertas (moved below filters) -->
-
-        <!-- Filtros Avanzados -->
-        <div class="filters-container">
-            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
-                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
-                    <i class="fas fa-filter"></i> Filtros de Búsqueda
-                </div>
-                <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm">
-                    <input type="hidden" name="accion" value="index" />
-
-                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-bell"></i> Tipo
-                            </label>
-                            <input type="text"
-                                   name="tipo"
-                                   class="form-control"
-                                   placeholder="Buscar por tipo..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['tipo'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-exclamation-triangle"></i> Prioridad
-                            </label>
-                            <select name="prioridad" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todas</option>
-                                <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
-                                <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
-                                <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-toggle-on"></i> Estado
-                            </label>
-                            <select name="estado" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todos</option>
-                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Desde
-                            </label>
-                            <input type="date"
-                                   name="fecha_desde"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($filtros['fecha_desde'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Hasta
-                            </label>
-                            <input type="date"
-                                   name="fecha_hasta"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-1 d-flex align-items-end justify-content-center">
-                            <div class="d-flex gap-2 flex-column w-100">
-                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-12 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-times"></i> Limpiar Filtros
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-        <!-- Cards container for alertas (placed after filters) -->
+        <!-- Cards container for alertas (moved after action buttons) -->
         <div id="cardsContainerAlertas" class="alerts-grid" style="display:none; margin-bottom:30px; position: relative;">
             <?php if (!empty($alertas) && is_array($alertas)): ?>
                 <?php foreach ($alertas as $alerta): ?>
@@ -904,16 +943,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 </div>
             <?php endif; ?>
         </div>
-
-        <!-- Botones de acción -->
-        <div class="mb-4 text-center">
-            <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                <i class="fas fa-plus"></i> Nueva Alerta
-            </a>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
-        </div>
+        
 
         <!-- Tabla de Alertas -->
         <div class="table-container">
@@ -1065,151 +1095,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
         </div>
         
-        <!-- Cards container for alertas (moved here so it appears below filters and actions) -->
-        <div id="cardsContainerAlertas" class="alerts-grid" style="display:none; margin-top:30px;">
-            <?php if (!empty($alertas) && is_array($alertas)): ?>
-                <?php foreach ($alertas as $alerta): ?>
-                    <?php
-                        $fecha_actual = date('Y-m-d');
-                        $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
-                        $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
-                        
-                        if ($dias_restantes !== null) {
-                            if ($dias_restantes < 0) {
-                                $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
-                            } elseif ($dias_restantes <= 7) {
-                                $estado = 'Crítica'; $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
-                            } elseif ($dias_restantes <= 30) {
-                                $estado = 'Próxima'; $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
-                            } else {
-                                $estado = 'Normal'; $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
-                            }
-                        } else {
-                            $estado = 'N/A'; $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
-                        }
-                        
-                        $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
-                    ?>
-                    <div class="alerts-card">
-                        <div class="alerts-card-header">
-                            <div>
-                                <h3 class="alerts-card-title">
-                                    <i class="fas fa-exclamation-triangle"></i>
-                                    Alerta #<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?>
-                                </h3>
-                                <div class="alerts-card-id">ID: <?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></div>
-                            </div>
-                            <div class="alerts-card-icon">
-                                <i class="fas fa-bell"></i>
-                            </div>
-                        </div>
-
-                        <div class="alerts-card-body">
-                            <div class="alerts-card-info">
-                                <div class="alerts-card-field">
-                                    <div class="alerts-card-field-label">
-                                        <i class="fas fa-box"></i> Producto
-                                    </div>
-                                    <div class="alerts-card-field-value">
-                                        <?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>
-                                    </div>
-                                </div>
-                                
-                                <div class="alerts-card-field">
-                                    <div class="alerts-card-field-label">
-                                        <i class="fas fa-user"></i> Cliente
-                                    </div>
-                                    <div class="alerts-card-field-value">
-                                        <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
-                                    </div>
-                                </div>
-                                
-                                <div class="alerts-card-field">
-                                    <div class="alerts-card-field-label">
-                                        <i class="fas fa-tag"></i> Tipo
-                                    </div>
-                                    <div class="alerts-card-field-value">
-                                        <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
-                                            <span class="badge badge-stock-bajo">
-                                                <i class="fas fa-boxes"></i> Stock Bajo
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="badge badge-vencimiento">
-                                                <i class="fas fa-calendar-times"></i> Vencimiento
-                                            </span>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                
-                                <div class="alerts-card-field">
-                                    <div class="alerts-card-field-label">
-                                        <i class="fas fa-sort-numeric-up"></i> Cantidad Mín.
-                                    </div>
-                                    <div class="alerts-card-field-value">
-                                        <span class="badge badge-modern badge-warning">
-                                            <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?> unidades
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <?php if ($fecha_caducidad): ?>
-                            <div class="alerts-card-date">
-                                <div class="alerts-card-date-main">
-                                    <i class="fas fa-calendar-alt"></i>
-                                    <?= date('d/m/Y', strtotime($fecha_caducidad)) ?>
-                                </div>
-                                <div class="alerts-card-date-sub">
-                                    <?php if ($dias_restantes !== null): ?>
-                                        <?php if ($dias_restantes < 0): ?>
-                                            Vencida hace <?= abs(round($dias_restantes)) ?> días
-                                        <?php else: ?>
-                                            <?= round($dias_restantes) ?> días restantes
-                                        <?php endif; ?>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <?php endif; ?>
-                        </div>
-
-                        <div class="alerts-card-footer">
-                            <div class="alerts-card-status">
-                                <span class="badge badge-modern <?= $badge_class ?>">
-                                    <i class="<?= $icono ?>"></i> <?= $estado ?>
-                                </span>
-                            </div>
-                            
-                            <div class="alerts-card-actions">
-                                <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" 
-                                   class="btn btn-modern btn-warning-modern" 
-                                   title="Editar alerta">
-                                    <i class="fas fa-edit"></i>
-                                </a>
-                                <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                <button type="button" 
-                                       class="btn btn-modern btn-danger-modern" 
-                                       title="Eliminar alerta"
-                                       onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                                <?php endif; ?>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
-            <?php else: ?>
-                <div class="alerts-card" style="text-align: center; padding: 40px;">
-                    <div class="alerts-card-icon" style="font-size: 4rem; margin-bottom: 20px;">
-                        <i class="fas fa-inbox"></i>
-                    </div>
-                    <h3 style="color: #fff; margin-bottom: 10px;">No hay alertas disponibles</h3>
-                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 20px;">No se encontraron alertas que coincidan con los filtros aplicados.</p>
-                    <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern">
-                        <i class="fas fa-plus"></i> Crear Primera Alerta
-                    </a>
-                </div>
-            <?php endif; ?>
-        </div>
+        
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

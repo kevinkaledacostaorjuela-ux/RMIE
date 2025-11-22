@@ -19,14 +19,13 @@ class Provider {
     // Método mejorado con filtros
     public static function getAll($conn, $filtros = []) {
         require_once __DIR__ . '/../utils/FilterHelper.php';
-        
-        // Definir reglas de validación para filtros
+          // Definir reglas de validación para filtros
         $filterRules = [
             'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
-            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'bloqueado']]],
-            'email' => ['type' => 'email'],
+            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'pendiente']]],
+            'correo' => ['type' => 'email'],
+            'telefono' => ['type' => 'text', 'options' => ['max_length' => 20]],
             'ubicacion' => ['type' => 'text', 'options' => ['max_length' => 200]],
-            'celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
             'fecha_desde' => ['type' => 'date'],
             'fecha_hasta' => ['type' => 'date'],
             'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
@@ -39,8 +38,8 @@ class Provider {
         $mapping = [
             'nombre' => ['column' => 'p.nombre_distribuidor', 'operator' => 'LIKE', 'type' => 's'],
             'estado' => ['column' => 'p.estado', 'operator' => '=', 'type' => 's'],
-            'email' => ['column' => 'p.correo', 'operator' => 'LIKE', 'type' => 's'],
-            'celular' => ['column' => 'p.cel_proveedor', 'operator' => 'LIKE', 'type' => 's'],
+            'correo' => ['column' => 'p.correo', 'operator' => 'LIKE', 'type' => 's'],
+            'telefono' => ['column' => 'p.cel_proveedor', 'operator' => 'LIKE', 'type' => 's'],
             'producto' => ['column' => 'pr.nombre', 'operator' => 'LIKE', 'type' => 's'],
             'fecha_desde' => ['column' => 'DATE(p.fecha_creacion)', 'operator' => '>=', 'type' => 's'],
             'fecha_hasta' => ['column' => 'DATE(p.fecha_creacion)', 'operator' => '<=', 'type' => 's'],

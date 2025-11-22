@@ -251,10 +251,7 @@ class Product {
     }
 
     public static function update($conn, $id_productos, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc) {
-        echo '<pre>DEBUG Model: Actualizando producto ID: ' . $id_productos . '</pre>';
-        echo '<pre>DEBUG Model: Datos recibidos: nombre=' . $nombre . ', descripcion=' . $descripcion . ', stock=' . $stock . '</pre>';
-        echo '<pre>DEBUG Model: Subcategoría original: ' . var_export($id_subcategoria, true) . '</pre>';
-        echo '<pre>DEBUG Model: Categoría original: ' . var_export($id_categoria, true) . '</pre>';
+        // Debug prints removed to avoid showing internal logs in the UI
         
         // Si no se proporciona proveedor, usar proveedor genérico
         if ($id_proveedores === null || $id_proveedores === '') {
@@ -278,7 +275,7 @@ class Product {
         
         // Validar que la categoría existe (requerida)
         if ($id_categoria === '' || $id_categoria === '0' || $id_categoria === null) {
-            echo '<pre>ERROR: La categoría es obligatoria</pre>';
+            error_log('Product::update error: La categoría es obligatoria');
             return false;
         } else {
             // Verificar que la categoría existe
@@ -286,32 +283,91 @@ class Product {
             $check_cat->bind_param("i", $id_categoria);
             $check_cat->execute();
             $result = $check_cat->get_result();
-            if ($result->num_rows == 0) {
-                echo '<pre>ERROR: La categoría seleccionada no existe</pre>';
-                return false;
-            }
+                if ($result->num_rows == 0) {
+                    error_log('Product::update error: La categoría seleccionada no existe');
+                    return false;
+                }
             $check_cat->close();
         }
+        // Final category/subcategory values validated
         
-        echo '<pre>DEBUG Model: Subcategoría final: ' . var_export($id_subcategoria, true) . '</pre>';
-        echo '<pre>DEBUG Model: Categoría final: ' . var_export($id_categoria, true) . '</pre>';
-        
-        $sql = "UPDATE productos SET nombre = ?, descripcion = ?, fecha_entrada = ?, fecha_fabricacion = ?, fecha_caducidad = ?, stock = ?, precio_unitario = ?, precio_por_mayor = ?, valor_unitario = ?, marca = ?, id_subcategoria = ?, id_categoria = ?, id_proveedores = ?, num_doc = ? WHERE id_productos = ?";
-        
-        $stmt = $conn->prepare($sql);
-        if (!$stmt) {
-            echo '<pre>ERROR: No se pudo preparar la consulta: ' . $conn->error . '</pre>';
-            return false;
+        // Validar num_doc: si está vacío o no existe en usuarios, usar NULL
+        if ($num_doc === '' || $num_doc === null) {
+            $num_doc = null;
+            error_log('Product::update notice: num_doc vacío — se usará NULL');
+        } else {
+            // Comprobar existencia en la tabla usuarios
+            try {
+                $check_user_sql = "SELECT num_doc FROM usuarios WHERE num_doc = ? LIMIT 1";
+                $check_user = $conn->prepare($check_user_sql);
+                    if ($check_user) {
+                    // elegir tipo de bind según si es numérico
+                    if (is_numeric($num_doc)) {
+                        $check_user->bind_param("i", $num_doc);
+                    } else {
+                        $check_user->bind_param("s", $num_doc);
+                    }
+                    $check_user->execute();
+                    $res = $check_user->get_result();
+                    if ($res->num_rows == 0) {
+                        // Usuario no existe -> asignar NULL para evitar violación de FK
+                        error_log('Product::update notice: num_doc ' . $num_doc . ' no existe en usuarios — se usará NULL');
+                        $num_doc = null;
+                    }
+                    $check_user->close();
+                } else {
+                    // Si no se pudo preparar la consulta, dejar num_doc como NULL por seguridad
+                    $num_doc = null;
+                }
+            } catch (mysqli_sql_exception $e) {
+                error_log('Product::update check user error: ' . $e->getMessage());
+                $num_doc = null;
+            }
         }
         
-        $stmt->bind_param("sssssdddssiiisi", $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc, $id_productos);
-        
+        // Construir UPDATE dinámico: si num_doc es NULL, asignar NULL directamente en la consulta
+        $sql = "UPDATE productos SET nombre = ?, descripcion = ?, fecha_entrada = ?, fecha_fabricacion = ?, fecha_caducidad = ?, stock = ?, precio_unitario = ?, precio_por_mayor = ?, valor_unitario = ?, marca = ?, id_subcategoria = ?, id_categoria = ?, id_proveedores = ?";
+
+        $types = "sssssdddssiii"; // tipos por defecto (sin num_doc ni id_productos)
+        $params = [$nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores];
+
+        if ($num_doc !== null) {
+            $sql .= ", num_doc = ?";
+            $types .= "s";
+            $params[] = $num_doc;
+        } else {
+            // No cambiar el valor de num_doc si no se proporcionó uno válido
+            // Así evitamos potenciales problemas con la constraint o columnas NOT NULL
+            // Para ello, removemos la asignación a num_doc del SET construído.
+            // Como el SQL ya fue creado sin num_doc, simplemente no hacemos nada aquí.
+        }
+
+        $sql .= " WHERE id_productos = ?";
+        $types .= "i";
+        $params[] = $id_productos;
+
+        $stmt = $conn->prepare($sql);
+        if (!$stmt) {
+            error_log('Product::update error: No se pudo preparar la consulta: ' . $conn->error);
+            return false;
+        }
+
+        // bind_param requiere variables, no valores directos, por eso usamos referencias
+        $bind_names = [];
+        $bind_names[] = $types;
+        foreach ($params as $key => $value) {
+            // Necesitamos pasar por referencia
+            $bind_names[] = &$params[$key];
+        }
+
+        call_user_func_array([$stmt, 'bind_param'], $bind_names);
+
         $result = $stmt->execute();
         
         if (!$result) {
-            echo '<pre>ERROR: No se pudo ejecutar la actualización: ' . $stmt->error . '</pre>';
+            error_log('Product::update error: No se pudo ejecutar la actualización: ' . $stmt->error);
         } else {
-            echo '<pre>SUCCESS: Producto actualizado correctamente. Filas afectadas: ' . $stmt->affected_rows . '</pre>';
+            error_log('Product::update success: Producto actualizado. Filas afectadas: ' . $stmt->affected_rows);
         }
         
         return $result;

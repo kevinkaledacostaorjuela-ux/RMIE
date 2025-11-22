@@ -671,6 +671,66 @@ $stats = $statsQuery->fetch_assoc();
             </div>
         </div>
 
+        
+
+        <!-- Filtros -->
+        <div class="filters-container">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i> Filtros de Búsqueda
+            </div>
+            <form method="GET" action="" id="filterForm">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-user"></i> Nombre</span>
+                        <input type="text"
+                               name="nombre"
+                               class="filter-input"
+                               placeholder="Buscar por nombre..."
+                               value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                    </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-envelope"></i> Email</span>
+                        <input type="text"
+                               name="email"
+                               class="filter-input"
+                               placeholder="Buscar por email..."
+                               value="<?= htmlspecialchars($_GET['email'] ?? '') ?>">
+                    </div>
+
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-toggle-on"></i> Estado</span>
+                        <select name="estado" class="filter-select">
+                            <option value="">Todos los estados</option>
+                            <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Botones de acción -->
+        <div class="mb-4 text-center">
+            <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
+            <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
+                <i class="fas fa-plus"></i> Nuevo Cliente
+            </a>
+            <?php endif; ?>
+            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
+                <i class="fas fa-arrow-left"></i> Volver al Dashboard
+            </a>
+        </div>
+
         <!-- Vista selector: Tarjetas / Tabla -->
         <div class="view-toggle">
             <button id="viewCardsBtnClientes" class="view-toggle-btn">
@@ -681,8 +741,8 @@ $stats = $statsQuery->fetch_assoc();
             </button>
         </div>
 
-        <!-- Vista de Tarjetas -->
-        <div id="cardsView" class="clients-grid" style="display: none;">
+        <!-- Vista de Tarjetas (moved after action buttons) -->
+        <div id="cardsView" class="clients-grid" style="display: none; margin-top:20px;">
             <?php if (isset($clientes) && is_array($clientes) && !empty($clientes)): ?>
                 <?php foreach ($clientes as $cliente): ?>
                 <div class="clients-card">
@@ -798,64 +858,6 @@ $stats = $statsQuery->fetch_assoc();
                     </div>
                 </div>
             <?php endif; ?>
-        </div>
-
-        <!-- Filtros -->
-        <div class="filters-container">
-            <div class="filter-title">
-                <i class="fas fa-filter"></i> Filtros de Búsqueda
-            </div>
-            <form method="GET" action="" id="filterForm">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-user"></i> Nombre</span>
-                        <input type="text"
-                               name="nombre"
-                               class="filter-input"
-                               placeholder="Buscar por nombre..."
-                               value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-envelope"></i> Email</span>
-                        <input type="text"
-                               name="email"
-                               class="filter-input"
-                               placeholder="Buscar por email..."
-                               value="<?= htmlspecialchars($_GET['email'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-toggle-on"></i> Estado</span>
-                        <select name="estado" class="filter-select">
-                            <option value="">Todos los estados</option>
-                            <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                            <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> FILTRAR
-                        </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
-                            <i class="fas fa-times"></i> LIMPIAR
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-
-        <!-- Botones de acción -->
-        <div class="mb-4 text-center">
-            <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
-            <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                <i class="fas fa-plus"></i> Nuevo Cliente
-            </a>
-            <?php endif; ?>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
         </div>
 
         <!-- Tabla de Clientes -->

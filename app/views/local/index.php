@@ -836,39 +836,42 @@ $stats = $statsQuery->fetch_assoc();
 
         <!-- Filtros -->
         <div class="filters-container">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i> Filtros de Búsqueda
+            </div>
             <form method="GET" action="/RMIE/app/controllers/LocalController.php" id="filterForm">
                 <input type="hidden" name="accion" value="index">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-search"></i> Buscar</span>
-                        <input type="text" class="filter-input" name="buscar" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>" placeholder="Buscar por nombre del local">
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-4">
+                        <label class="form-label"><i class="fas fa-search"></i> Buscar</label>
+                        <input type="text" name="buscar" class="form-control-modern form-control" placeholder="Buscar por nombre del local" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>">
                     </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-city"></i> Localidad</span>
-                        <input type="text" class="filter-input" name="localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>" placeholder="Localidad">
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="fas fa-city"></i> Localidad</label>
+                        <input type="text" name="localidad" class="form-control-modern form-control" placeholder="Localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>">
                     </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-map-marked-alt"></i> Barrio</span>
-                        <input type="text" class="filter-input" name="barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>" placeholder="Barrio">
+                    <div class="col-md-3">
+                        <label class="form-label"><i class="fas fa-map-marked-alt"></i> Barrio</label>
+                        <input type="text" name="barrio" class="form-control-modern form-control" placeholder="Barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>">
                     </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-toggle-on"></i> Estado</span>
-                        <select class="filter-select" name="estado">
+                    <div class="col-md-2">
+                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select name="estado" class="form-control-modern form-select">
                             <option value="">Todos</option>
                             <option value="activo" <?php echo ($filtros['estado'] ?? '') === 'activo' ? 'selected' : ''; ?>>Activo</option>
                             <option value="inactivo" <?php echo ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
                         </select>
                     </div>
 
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-filter"></i> FILTRAR
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-modern btn-primary-modern me-2">
+                            <i class="fas fa-filter"></i> Filtrar
                         </button>
-                        <a href="/RMIE/app/controllers/LocalController.php?accion=index" class="btn-pill btn-pill-clear">
-                            <i class="fas fa-times"></i> LIMPIAR
+                        <a href="/RMIE/app/controllers/LocalController.php?accion=index" class="btn btn-modern btn-secondary-modern">
+                            <i class="fas fa-times"></i> Limpiar
                         </a>
                     </div>
                 </div>

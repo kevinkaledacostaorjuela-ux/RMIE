@@ -761,73 +761,138 @@ if (isset($proveedores) && is_array($proveedores)) {
                 <div class="stat-number"><?php echo $proveedoresConEmail; ?></div>
                 <div class="stat-label">Con Email</div>
             </div>
-        </div>
-
-        <!-- Filtros -->
+        </div>        <!-- Filtros -->
+        <style>
+        .filters-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }        .filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 200px;
+            gap: 18px 32px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+            max-width: 320px;
+        }
+        .filter-label {
+            background: rgba(8, 8, 8, 0.06);
+            color: hsla(207, 85%, 46%, 0.95);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .filter-input, .filter-select {
+            background: #fff;
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            min-width: 160px;
+        }
+        .filter-input::placeholder { color: #333; }
+        .filter-actions {
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+            justify-content: center;
+            padding-left: 20px;
+        }
+        .btn-pill {
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border: none;
+            color: white;
+            min-width: 120px;
+        }
+        .btn-pill i { margin-right: 8px; }
+        .btn-pill-primary {
+            background: linear-gradient(180deg,#1e90ff,#2a6df4);
+        }
+        .btn-pill-clear {
+            background: linear-gradient(180deg,#ffb3c6,#ff7aa2);
+            padding: 10px 10px;
+            min-width: 120px;
+        }        @media (max-width: 768px) {
+            .filters-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .filter-actions { 
+                grid-row: auto;
+                flex-direction: row;
+                justify-content: stretch;
+                padding-left: 0;
+                margin-top: 16px;
+            }
+            .btn-pill { flex: 1; }
+        }
+        .filter-title {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        </style>
         <div class="filters-container">
-            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
-                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
-                    <i class="fas fa-filter"></i> Filtros de Búsqueda
-                </div>
-                <form method="GET" action="" id="filterForm">
-                    <input type="hidden" name="accion" value="index">
-                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
-                        <div class="col-md-3">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-truck"></i> Nombre
-                            </label>
-                            <input type="text"
-                                   name="nombre"
-                                   class="form-control"
-                                   placeholder="Buscar..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label" style="color: #1a202c; font-weight: 700; font-size: 1rem; display: block; margin-bottom: 8px; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);">
-                                <i class="fas fa-box"></i> Producto
-                            </label>
-                            <input type="text"
-                                   name="producto"
-                                   class="form-control"
-                                   placeholder="Filtrar por producto..."
-                                   style="background: #fff; color: #1a202c; border: 2px solid #e2e8f0; padding: 12px 15px; border-radius: 8px; font-size: 1rem; width: 100%; font-weight: 500;"
-                                   value="<?= htmlspecialchars($_GET['producto'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-2">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-toggle-on"></i> Estado
-                            </label>
-                            <select name="estado" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todos</option>
-                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                                <option value="pendiente" <?= ($_GET['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-1 d-flex align-items-end justify-content-center">
-                            <div class="d-flex gap-2 flex-column w-100">
-                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-12 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-times"></i> Limpiar Filtros
-                            </button>
-                        </div>
-                    </div>
-                </form>
+            <div class="filter-title">
+                <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
+            <form method="GET" action="/RMIE/app/controllers/ProviderController.php" id="filterForm">
+                <input type="hidden" name="accion" value="index">
+                <div class="filters-row">
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-truck"></i> Nombre</span>
+                        <input type="text" name="nombre" class="filter-input" placeholder="Buscar proveedor..." value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-envelope"></i> Email</span>
+                        <input type="text" name="correo" class="filter-input" placeholder="Buscar por email..." value="<?= htmlspecialchars($_GET['correo'] ?? '') ?>">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-mobile-alt"></i> Teléfono</span>
+                        <input type="text" name="telefono" class="filter-input" placeholder="Buscar por teléfono..." value="<?= htmlspecialchars($_GET['telefono'] ?? '') ?>">
+                    </div>
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-traffic-light"></i> Estado</span>
+                        <select name="estado" class="filter-select">
+                            <option value="">Todos los estados</option>
+                            <option value="activo" <?= isset($_GET['estado']) && $_GET['estado'] == 'activo' ? 'selected' : '' ?>>Activo</option>
+                            <option value="inactivo" <?= isset($_GET['estado']) && $_GET['estado'] == 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                            <option value="pendiente" <?= isset($_GET['estado']) && $_GET['estado'] == 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
+                        </select>
+                    </div>
+                    <div class="filter-actions">
+                        <button type="submit" class="btn-pill btn-pill-primary">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
 
         <!-- Botones de acción -->

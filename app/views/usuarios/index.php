@@ -82,6 +82,39 @@ if (isset($usuarios) && is_array($usuarios)) {
             font-size: 2.5rem;
             font-weight: 700;
             text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }        .filters-container {
+            margin-bottom: 2rem;
+        }
+
+        .filters-inner {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 
+                0 10px 30px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-modern-filter {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-filter:hover {
+            background: #3A7BC8 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
+        }
+
+        .btn-modern-clear {
+            transition: all 0.3s ease;
+        }
+
+        .btn-modern-clear:hover {
+            background: #E67E93 !important;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 143, 163, 0.4);
         }
 
         .filters-container {
@@ -574,10 +607,24 @@ if (isset($usuarios) && is_array($usuarios)) {
             border-color: #667eea;
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
             color: #fff;
-        }
-
-        /* Responsive para tarjetas */
+        }        /* Responsive para tarjetas */
         @media (max-width: 768px) {
+            .filters-container .row {
+                display: flex !important;
+                flex-direction: column !important;
+                gap: 1rem !important;
+            }
+            
+            .filters-container .col:last-child {
+                margin-top: 1rem;
+            }
+            
+            .filters-container .col:last-child div {
+                flex-direction: row !important;
+                justify-content: center !important;
+                gap: 1rem !important;
+            }
+            
             .users-grid {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -751,91 +798,76 @@ if (isset($usuarios) && is_array($usuarios)) {
                 <div class="stat-number"><?php echo $usuariosRecientes; ?></div>
                 <div class="stat-label">Nuevos (30 días)</div>
             </div>
-        </div>
-
-        <!-- Filtros -->
+        </div>        <!-- Filtros -->
         <div class="filters-container">
-            <div class="filters-inner" style="padding: 35px 60px; max-width: 96% !important;">
-                <div class="filter-title" style="margin-bottom: 25px; text-align: center; font-size: 1.5rem; font-weight: 600;">
-                    <i class="fas fa-filter"></i> Filtros de Búsqueda
-                </div>
-                <form method="GET" action="" id="filterForm">
-                    <div class="row g-4" style="max-width: 100%; margin: 0 auto;">
-                        <div class="col-md-3">
+            <div class="filters-inner">
+                <form method="GET" action="/RMIE/app/controllers/UserController.php" id="filterForm" 
+                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    <input type="hidden" name="accion" value="index">
+                    
+                    <div class="row g-3" style="grid-template-columns: 1fr 1fr 1fr 1fr 200px; display: grid;">
+                        <div class="col">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-user"></i> Nombre
                             </label>
                             <input type="text"
                                    name="buscar"
                                    class="form-control"
-                                   placeholder="Buscar por nombre..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
+                                   placeholder="Buscar usuario..."
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
                                    value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-users"></i> Rol
                             </label>
                             <select name="filtro_rol" 
                                     class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todos</option>
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todos los roles</option>
                                 <option value="admin" <?= ($_GET['filtro_rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
                                 <option value="coordinador" <?= ($_GET['filtro_rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="auxiliar" <?= ($_GET['filtro_rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-toggle-on"></i> Estado
                             </label>
                             <select name="estado" 
                                     class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;">
-                                <option value="">Todos</option>
+                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todos los estados</option>
                                 <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
                                 <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                             </select>
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Desde
+                                <i class="fas fa-calendar"></i> Fecha
                             </label>
                             <input type="date"
-                                   name="fecha_desde"
+                                   name="fecha"
                                    class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['fecha_desde'] ?? '') ?>">
+                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
                         </div>
 
-                        <div class="col-md-2">
+                        <div class="col" style="display: flex; flex-direction: column; justify-content: flex-end;">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Hasta
+                                <i class="fas fa-cogs"></i> Acciones
                             </label>
-                            <input type="date"
-                                   name="fecha_hasta"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem; width: 100%;"
-                                   value="<?= htmlspecialchars($_GET['fecha_hasta'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-1 d-flex align-items-end justify-content-center">
-                            <div class="d-flex gap-2 flex-column w-100">
-                                <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; padding: 12px; border-radius: 50%; font-weight: 600; font-size: 1rem; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; margin: 0 auto;" title="Buscar">
-                                    <i class="fas fa-search"></i>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-search"></i> FILTRAR
+                                </button>
+                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                    <i class="fas fa-times"></i> LIMPIAR
                                 </button>
                             </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row mt-3">
-                        <div class="col-12 text-end">
-                            <button type="button" class="btn btn-secondary" onclick="limpiarFiltros()" style="background: #6c757d; border: none; padding: 8px 20px; border-radius: 20px; font-weight: 600; font-size: 0.9rem;">
-                                <i class="fas fa-times"></i> Limpiar Filtros
-                            </button>
                         </div>
                     </div>
                 </form>

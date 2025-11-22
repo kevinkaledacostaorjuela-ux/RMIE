@@ -10,9 +10,12 @@ class AlertController {
         
         // Obtener productos para el filtro
         $productos = Product::getAll($conn);
-        
-        // Recoger filtros
+          // Recoger filtros
         $filtros = [
+            'tipo' => $_GET['tipo'] ?? '',
+            'prioridad' => $_GET['prioridad'] ?? '',
+            'estado' => $_GET['estado'] ?? '',
+            'fecha' => $_GET['fecha'] ?? '',
             'producto' => $_GET['producto'] ?? '',
             'nombre_producto' => $_GET['nombre_producto'] ?? '',
             'cantidad_min' => $_GET['cantidad_min'] ?? '',

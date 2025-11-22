@@ -3,14 +3,13 @@ require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . '/../../config/db.php';
 
 class UserController {
-    
-    public function index() {
+      public function index() {
         global $conn;
         
         try {
             require_once __DIR__ . '/../utils/FilterHelper.php';
             
-            // Definir reglas de filtro
+            // Definir reglas de filtro actualizadas
             $filterRules = [
                 'filtro_rol' => ['type' => 'select', 'options' => ['allowed_values' => ['admin', 'coordinador', 'auxiliar']]],
                 'filtro_tipo_doc' => ['type' => 'select', 'options' => ['allowed_values' => ['CC', 'CE', 'TI', 'PP']]],
@@ -18,13 +17,14 @@ class UserController {
                 'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
                 'fecha_desde' => ['type' => 'date'],
                 'fecha_hasta' => ['type' => 'date'],
-                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo']]]
+                'fecha' => ['type' => 'date'],
+                'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo']]]
             ];
             
             // Procesar filtros del GET
             $filtros = FilterHelper::processFilters($_GET, $filterRules);
             
-            // Mapear para compatibilidad con el modelo
+            // Mapear para compatibilidad con el modelo (con los nuevos nombres)
             $filtrosModelo = [
                 'rol' => $filtros['filtro_rol'] ?? '',
                 'tipo_doc' => $filtros['filtro_tipo_doc'] ?? '',
@@ -32,8 +32,15 @@ class UserController {
                 'num_cel' => $filtros['filtro_celular'] ?? '',
                 'fecha_desde' => $filtros['fecha_desde'] ?? '',
                 'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
-                'estado' => $filtros['filtro_estado'] ?? ''
+                'fecha' => $filtros['fecha'] ?? '',
+                'estado' => $filtros['estado'] ?? ''
             ];
+            
+            // Si se especificó una fecha exacta, usarla como rango
+            if (!empty($filtrosModelo['fecha'])) {
+                $filtrosModelo['fecha_desde'] = $filtrosModelo['fecha'];
+                $filtrosModelo['fecha_hasta'] = $filtrosModelo['fecha'];
+            }
             
             // Obtener usuarios con filtros
             $usuarios = User::getAll($conn, $filtrosModelo);

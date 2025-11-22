@@ -74,7 +74,7 @@ if (isset($rutas) && is_array($rutas)) {
         }
 
         .page-title {
-            color: #fff;
+            color: #ffffffff;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5rem;
@@ -1560,12 +1560,105 @@ if (isset($rutas) && is_array($rutas)) {
                     <span>Ver Mapa</span>
                 </button>
             </div>
-        </div>
-
-        <!-- Panel de Filtros Avanzados -->
-        <div class="rutas-filters">
-            <div class="rutas-filter-title">
-                <i class="fas fa-search"></i> Filtros de Búsqueda Avanzada
+        </div>        <!-- Filtros modernos -->
+        <style>
+        .filters-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .filters-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr 200px;
+            gap: 18px 32px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            min-width: 140px;
+            max-width: 320px;
+        }
+        .filter-label {
+            background: rgba(8, 8, 8, 0.06);
+            color: hsla(207, 85%, 46%, 0.95);
+            padding: 6px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+        .filter-input, .filter-select {
+            background: #fff;
+            color: #333;
+            border-radius: 12px;
+            padding: 10px 14px;
+            border: none;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            min-width: 160px;
+        }
+        .filter-input::placeholder { color: #333; }
+        .filter-actions {
+            grid-row: span 2;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: stretch;
+            justify-content: center;
+            padding-left: 20px;
+        }
+        .btn-pill {
+            border-radius: 999px;
+            padding: 10px 18px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+            border: none;
+            color: white;
+            min-width: 120px;
+        }
+        .btn-pill i { margin-right: 8px; }
+        .btn-pill-primary {
+            background: linear-gradient(180deg,#1e90ff,#2a6df4);
+        }
+        .btn-pill-clear {
+            background: linear-gradient(180deg,#ffb3c6,#ff7aa2);
+            padding: 10px 10px;
+            min-width: 120px;
+        }
+        @media (max-width: 768px) {
+            .filters-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            .filter-actions { 
+                grid-row: auto;
+                flex-direction: row;
+                justify-content: stretch;
+                padding-left: 0;
+                margin-top: 16px;
+            }
+            .btn-pill { flex: 1; }
+        }
+        .filter-title {
+            color: #fff;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        </style>
+        <div class="filters-container">
+            <div class="filter-title">
+                <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
             <form method="GET" action="" id="filterForm">
                 <div class="filters-row">
@@ -1579,12 +1672,14 @@ if (isset($rutas) && is_array($rutas)) {
                             <option value="completada" <?= ($_GET['estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
                         </select>
                     </div>
-
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-store"></i> Local</span>
                         <input type="text" name="local" class="filter-input" placeholder="Nombre del local..." value="<?= htmlspecialchars($_GET['local'] ?? '') ?>">
                     </div>
-
+                    <div class="filter-item">
+                        <span class="filter-label"><i class="fas fa-map-marker-alt"></i> Cliente</span>
+                        <input type="text" name="cliente" class="filter-input" placeholder="Nombre del cliente..." value="<?= htmlspecialchars($_GET['cliente'] ?? '') ?>">
+                    </div>
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-sort"></i> Ordenar por</span>
                         <select name="orden" class="filter-select">
@@ -1594,21 +1689,13 @@ if (isset($rutas) && is_array($rutas)) {
                             <option value="estado_asc" <?= ($_GET['orden'] ?? '') === 'estado_asc' ? 'selected' : '' ?>>Estado A-Z</option>
                         </select>
                     </div>
-
                     <div class="filter-actions">
                         <button type="submit" class="btn-pill btn-pill-primary">
-                            <i class="fas fa-search"></i> BUSCAR
+                            <i class="fas fa-search"></i> FILTRAR
                         </button>
                         <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
                             <i class="fas fa-times"></i> LIMPIAR
                         </button>
-                    </div>
-
-                    <div class="filter-item" style="margin-left: auto;">
-                        <small class="text-white-50">
-                            <i class="fas fa-info-circle"></i>
-                            Mostrando <?= count($rutas ?? []); ?> rutas de <?= $totalRutas; ?> total
-                        </small>
                     </div>
                 </div>
             </form>
@@ -1730,12 +1817,6 @@ if (isset($rutas) && is_array($rutas)) {
                             </div>
                             
                             <div class="routes-card-actions">
-                                <a href="/RMIE/app/controllers/RouteController.php?accion=view&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
-                                   class="routes-card-btn routes-btn-info" 
-                                   title="Ver ruta">
-                                    <i class="fas fa-eye"></i> Ver
-                                </a>
-                                
                                 <a href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                    class="routes-card-btn routes-btn-warning" 
                                    title="Editar ruta">
@@ -1876,11 +1957,6 @@ if (isset($rutas) && is_array($rutas)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/RouteController.php?accion=view&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
-                                           class="btn btn-sm btn-modern btn-info-modern" 
-                                           title="Ver ruta">
-                                            <i class="fas fa-eye"></i>
-                                        </a>
                                         <a href="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar ruta">
@@ -2461,10 +2537,18 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             // Texto central
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(total, centerX, centerY - 5);
+            ctx.textAlign = 'center';            ctx.fillText(total, centerX, centerY - 5);
             ctx.font = '12px Arial';
             ctx.fillText('Total', centerX, centerY + 15);
+        }
+
+        // Función para limpiar filtros
+        function limpiarFiltros() {
+            document.querySelector('select[name="estado"]').value = '';
+            document.querySelector('input[name="local"]').value = '';
+            document.querySelector('input[name="cliente"]').value = '';
+            document.querySelector('select[name="orden"]').value = 'fecha_desc';
+            document.getElementById('filterForm').submit();
         }
     </script>
 </body>

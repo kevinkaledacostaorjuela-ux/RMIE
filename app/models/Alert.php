@@ -80,17 +80,57 @@ class Alert {
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('i', $id);
         return $stmt->execute();
-    }
-
-    public static function getFiltered($conn, $filters = []) {
-        $sql = "SELECT a.*, p.nombre AS producto_nombre, c.nombre AS cliente_nombre 
-                FROM alertas a 
-                JOIN productos p ON a.id_productos = p.id_productos 
-                LEFT JOIN clientes c ON a.id_clientes = c.id_clientes";
+    }    public static function getFiltered($conn, $filters = []) {
+        // Verificar si las columnas tipo_alerta, prioridad, estado existen
+        $check_tipo = $conn->query("SHOW COLUMNS FROM alertas LIKE 'tipo_alerta'");
+        $tipo_exists = $check_tipo && $check_tipo->num_rows > 0;
+        
+        $check_prioridad = $conn->query("SHOW COLUMNS FROM alertas LIKE 'prioridad'");
+        $prioridad_exists = $check_prioridad && $check_prioridad->num_rows > 0;
+        
+        $check_estado = $conn->query("SHOW COLUMNS FROM alertas LIKE 'estado'");
+        $estado_exists = $check_estado && $check_estado->num_rows > 0;
+        
+        $sql = "SELECT a.*, p.nombre AS producto_nombre, c.nombre AS cliente_nombre";
+        if ($tipo_exists) $sql .= ", a.tipo_alerta";
+        if ($prioridad_exists) $sql .= ", a.prioridad";
+        if ($estado_exists) $sql .= ", a.estado";
+        
+        $sql .= " FROM alertas a 
+                 JOIN productos p ON a.id_productos = p.id_productos 
+                 LEFT JOIN clientes c ON a.id_clientes = c.id_clientes";
         
         $params = [];
         $types = '';
         $where = [];
+        
+        // Filtro por tipo
+        if (!empty($filters['tipo']) && $tipo_exists) {
+            $where[] = "a.tipo_alerta LIKE ?";
+            $params[] = '%' . $filters['tipo'] . '%';
+            $types .= 's';
+        }
+        
+        // Filtro por prioridad
+        if (!empty($filters['prioridad']) && $prioridad_exists) {
+            $where[] = "a.prioridad = ?";
+            $params[] = $filters['prioridad'];
+            $types .= 's';
+        }
+        
+        // Filtro por estado
+        if (!empty($filters['estado']) && $estado_exists) {
+            $where[] = "a.estado = ?";
+            $params[] = $filters['estado'];
+            $types .= 's';
+        }
+        
+        // Filtro por fecha específica
+        if (!empty($filters['fecha'])) {
+            $where[] = "DATE(a.fecha_caducidad) = ?";
+            $params[] = $filters['fecha'];
+            $types .= 's';
+        }
         
         // Filtro por producto ID
         if (!empty($filters['producto'])) {

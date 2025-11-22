@@ -246,8 +246,18 @@
                 Editar Producto
             </h1>
             <p style="margin: 10px 0 0 0; color: rgba(255,255,255,0.7);">
-                ID: <?= htmlspecialchars($producto->id_productos ?? '') ?> — <?= htmlspecialchars($producto->nombre ?? '') ?>
-            </p>
+                    ID: <?= htmlspecialchars($producto->id_productos ?? '') ?> — <?= htmlspecialchars($producto->nombre ?? '') ?>
+                </p>
+
+            <?php if (!empty($successMessage)): ?>
+                <div style="margin-top:15px;padding:12px;border-radius:10px;background:linear-gradient(90deg,#2ecc71,#27ae60);color:#fff;font-weight:600;text-align:center;">
+                    <?= htmlspecialchars($successMessage) ?>
+                </div>
+            <?php elseif (!empty($errorMessage)): ?>
+                <div style="margin-top:15px;padding:12px;border-radius:10px;background:linear-gradient(90deg,#e74c3c,#c0392b);color:#fff;font-weight:600;text-align:center;">
+                    <?= htmlspecialchars($errorMessage) ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <form id="formEditarProducto" method="POST" action="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= $producto->id_productos ?>">

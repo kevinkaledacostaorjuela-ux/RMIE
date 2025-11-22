@@ -10,14 +10,13 @@ class ProviderController {
             global $conn;
             
             require_once __DIR__ . '/../utils/FilterHelper.php';
-            
-            // Definir reglas de filtro
+              // Definir reglas de filtro
             $filterRules = [
-                'filtro_nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
-                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'bloqueado']]],
-                'filtro_email' => ['type' => 'email'],
+                'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'correo' => ['type' => 'email'],
+                'telefono' => ['type' => 'text', 'options' => ['max_length' => 20]],
+                'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['activo', 'inactivo', 'pendiente']]],
                 'producto' => ['type' => 'text', 'options' => ['max_length' => 100]],
-                'filtro_celular' => ['type' => 'text', 'options' => ['max_length' => 20]],
                 'fecha_desde' => ['type' => 'date'],
                 'fecha_hasta' => ['type' => 'date'],
                 'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
@@ -28,11 +27,11 @@ class ProviderController {
             
             // Mapear filtros para el modelo
             $filtrosModelo = [
-                'nombre' => $filtros['filtro_nombre'] ?? '',
-                'estado' => $filtros['filtro_estado'] ?? '',
-                'email' => $filtros['filtro_email'] ?? '',
+                'nombre' => $filtros['nombre'] ?? '',
+                'correo' => $filtros['correo'] ?? '',
+                'telefono' => $filtros['telefono'] ?? '',
+                'estado' => $filtros['estado'] ?? '',
                 'producto' => $filtros['producto'] ?? '',
-                'celular' => $filtros['filtro_celular'] ?? '',
                 'fecha_desde' => $filtros['fecha_desde'] ?? '',
                 'fecha_hasta' => $filtros['fecha_hasta'] ?? '',
                 'buscar' => $filtros['buscar'] ?? ''

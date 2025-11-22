@@ -117,7 +117,9 @@ class ClientController {
                     'id_locales' => (int)$_POST['id_locales']
                 ]);
                 
-                $success = "Cliente creado exitosamente";
+                // Redirigir al index con mensaje de éxito
+                header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente creado exitosamente');
+                exit;
                 
             } catch (Exception $e) {
                 $error = $e->getMessage();
@@ -225,26 +227,19 @@ class ClientController {
                 throw new Exception("Cliente no encontrado");
             }
             
-            // Verificar si el cliente tiene ventas asociadas
-            $stats = Client::getClientStats($conn, $id);
+            // Eliminar directamente el cliente
+            Client::delete($conn, $id);
             
-            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Verificar contraseña del administrador si es necesario
-                if (isset($_POST['admin_password_confirm']) && !empty($_POST['admin_password_confirm'])) {
-                    // Aquí podrías verificar la contraseña del administrador
-                    // Por ahora, procedemos con la eliminación
-                }
-                
-                Client::delete($conn, $id);
-                header('Location: /RMIE/app/controllers/ClientController.php?accion=index&deleted=1');
-                exit;
-            }
+            // Redirigir con mensaje de éxito
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente eliminado exitosamente');
+            exit;
             
         } catch (Exception $e) {
-            $error = $e->getMessage();
+            // Redirigir con mensaje de error
+            $error_msg = urlencode($e->getMessage());
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index&error=' . $error_msg);
+            exit;
         }
-        
-        include __DIR__ . '/../views/clientes/delete.php';
     }
 }
 

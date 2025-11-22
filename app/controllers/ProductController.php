@@ -132,9 +132,6 @@ class ProductController {
         $usuarios = User::getAll($conn);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            echo '<pre>POST recibido: ' . print_r($_POST, true) . '</pre>';
-            echo '<pre>ID del producto: ' . $id . '</pre>';
-            
             $nombre = $_POST['nombre'] ?? null;
             $descripcion = $_POST['descripcion'] ?? null;
             $fecha_entrada = $_POST['fecha_entrada'] ?? null;
@@ -149,20 +146,19 @@ class ProductController {
             $id_categoria = $_POST['categoria_id'] ?? $_POST['id_categoria'] ?? null;
             $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
             $num_doc = $_POST['id_usuario'] ?? null;
-            
+
             // Validación de datos requeridos
             if (empty($nombre) || empty($descripcion)) {
-                echo '<pre>Error: Nombre y descripción son obligatorios.</pre>';
+                $errorMessage = 'Nombre y descripción son obligatorios.';
             } else {
-                echo '<pre>Intentando actualizar producto...</pre>';
                 $result = Product::update($conn, $id, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
-                
+
                 if (!$result) {
-                    echo '<pre>Error al actualizar el producto.</pre>';
+                    $errorMessage = 'Error al actualizar el producto.';
                 } else {
-                    echo '<pre>Producto actualizado correctamente.</pre>';
-                    echo '<script>alert("Producto actualizado exitosamente."); window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index";</script>';
-                    exit();
+                    // Recargar el producto con los datos actualizados y mostrar mensaje de éxito
+                    $successMessage = 'Producto actualizado exitosamente.';
+                    $producto = Product::getById($conn, $id);
                 }
             }
         }
