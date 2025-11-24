@@ -7,6 +7,7 @@ if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
 }
+}
 $rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'invitado';
 $nombreCompleto = trim((isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '') . ' ' . (isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : ''));
 if (empty($nombreCompleto)) {
@@ -703,7 +704,7 @@ if ($rol === 'auxiliar') {
                                     <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas</h5>
                                     <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Gestionar rutas</p>
                                 </div>
-                                <a href="/RMIE/app/controllers/RouteController.php" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                <a href="/RMIE/app/controllers/RouteController.php?accion=index" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
                                     <i class="fas fa-arrow-right me-1"></i>Ir
                                 </a>
                             </div>
