@@ -55,6 +55,19 @@ if (isset($rutas) && is_array($rutas)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
+        /* Ocultar botones de eliminar para roles que no sean admin */
+        a[href*="accion=delete"],
+        button[onclick*="delete"],
+        button[onclick*="Eliminacion"],
+        button[onclick*="eliminar"],
+        .btn-danger[href*="delete"],
+        .btn-danger-modern,
+        button.btn-danger-modern {
+            display: none !important;
+        }
+        <?php endif; ?>
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -1742,7 +1755,7 @@ if (isset($rutas) && is_array($rutas)) {
                                         <i class="fas fa-hashtag"></i> ID: <?= htmlspecialchars($ruta['id_ruta'] ?? '') ?>
                                     </div>
                                     <h5 class="routes-card-name">
-                                        <?= htmlspecialchars($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>
+                                        <?= htmlspecialchars($ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>
                                     </h5>
                                 </div>
                             </div>
@@ -1761,7 +1774,7 @@ if (isset($rutas) && is_array($rutas)) {
                                         <i class="fas fa-user"></i>
                                         <span class="routes-card-label">Cliente:</span>
                                         <span class="routes-card-value">
-                                            <?= htmlspecialchars($ruta['nombre_cliente'] ?? 'Sin cliente') ?>
+                                            <?= htmlspecialchars($ruta['cliente_nombre'] ?? 'Sin cliente') ?>
                                         </span>
                                     </div>
                                     
@@ -1769,7 +1782,7 @@ if (isset($rutas) && is_array($rutas)) {
                                         <i class="fas fa-store"></i>
                                         <span class="routes-card-label">Local:</span>
                                         <span class="routes-card-value">
-                                            <?= htmlspecialchars($ruta['nombre_local'] ?? 'Sin local') ?>
+                                            <?= htmlspecialchars($ruta['local_nombre'] ?? 'Sin local') ?>
                                         </span>
                                     </div>
                                     
@@ -1827,7 +1840,7 @@ if (isset($rutas) && is_array($rutas)) {
                                 <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                    class="routes-card-btn routes-btn-danger" 
                                    title="Eliminar ruta"
-                                   onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')">
+                                   onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </a>
                                 <?php endif; ?>
@@ -1877,7 +1890,7 @@ if (isset($rutas) && is_array($rutas)) {
                                             <i class="fas fa-route"></i>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></strong>
+                                            <strong><?= htmlspecialchars($ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></strong>
                                             <br>
                                             <small class="text-muted">
                                                 <i class="fas fa-barcode"></i> ID: <?= $ruta['id_ruta'] ?? '' ?>
@@ -1892,12 +1905,12 @@ if (isset($rutas) && is_array($rutas)) {
                                 </td>
                                 <td>
                                     <span class="badge badge-modern badge-secondary">
-                                        <i class="fas fa-user"></i> <?= htmlspecialchars($ruta['nombre_cliente'] ?? 'Sin cliente') ?>
+                                        <i class="fas fa-user"></i> <?= htmlspecialchars($ruta['cliente_nombre'] ?? 'Sin cliente') ?>
                                     </span>
                                 </td>
                                 <td>
                                     <span class="badge badge-modern badge-info">
-                                        <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['nombre_local'] ?? 'Sin local') ?>
+                                        <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['local_nombre'] ?? 'Sin local') ?>
                                     </span>
                                 </td>
                                 <td>

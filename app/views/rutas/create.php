@@ -491,17 +491,19 @@
             </div>
 
             <!-- Warning Panel -->
-            <?php if (empty($available_clients) || empty($available_sales)): ?>
+            <?php if (empty($available_clients) || empty($available_sales) || empty($available_locals)): ?>
                 <div class="form-section">
                     <div class="warning-panel">
                         <h6><i class="fas fa-exclamation-triangle"></i> Atención</h6>
                         <p>
-                            <?php if (empty($available_clients) && empty($available_sales)): ?>
-                                No hay clientes ni ventas disponibles. Debes crear al menos un cliente y una venta antes de poder crear rutas.
-                            <?php elseif (empty($available_clients)): ?>
+                            <?php if (empty($available_clients)): ?>
                                 No hay clientes disponibles. Debes crear al menos un cliente antes de poder crear rutas.
-                            <?php else: ?>
+                            <?php elseif (empty($available_sales)): ?>
                                 No hay ventas disponibles. Debes crear al menos una venta antes de poder crear rutas.
+                            <?php elseif (empty($available_locals)): ?>
+                                No hay locales disponibles. Debes crear al menos un local antes de poder crear rutas.
+                            <?php else: ?>
+                                No hay datos disponibles. Verifica que existan clientes, locales y ventas en el sistema.
                             <?php endif; ?>
                         </p>
                     </div>
@@ -548,46 +550,34 @@
                             </div>
 
                             <div class="form-floating-modern">
-                                <input type="text" 
-                                       class="form-control-modern" 
-                                       id="nombre_local" 
-                                       name="nombre_local" 
-                                       placeholder=" "
-                                       maxlength="100"
-                                       minlength="2"
-                                       required>
-                                <label for="nombre_local">
+                                <select class="form-select-modern" 
+                                        id="id_locales" 
+                                        name="id_locales" 
+                                        required>
+                                    <option value="">Seleccionar local...</option>
+                                    <?php if (!empty($available_locals)): ?>
+                                        <?php foreach ($available_locals as $local): ?>
+                                            <option value="<?= htmlspecialchars($local['id_locales']) ?>"
+                                                    data-direccion="<?= htmlspecialchars($local['direccion']) ?>"
+                                                    data-localidad="<?= htmlspecialchars($local['localidad'] ?? '') ?>"
+                                                    data-barrio="<?= htmlspecialchars($local['barrio'] ?? '') ?>">
+                                                <?= htmlspecialchars($local['nombre_local']) ?>
+                                                <?php if (!empty($local['localidad'])): ?>
+                                                    - <?= htmlspecialchars($local['localidad']) ?>
+                                                <?php endif; ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <option value="" disabled>No hay locales disponibles</option>
+                                    <?php endif; ?>
+                                </select>
+                                <label for="id_locales">
                                     <i class="fas fa-store"></i>
-                                    Nombre del Local <span class="required">*</span>
+                                    Local Existente <span class="required">*</span>
                                 </label>
-                                <div class="character-count">
-                                    <span id="nombre_local-count">0</span>/100
-                                </div>
                                 <div class="form-help">
-                                    <i class="fas fa-info-circle"></i>
-                                    Nombre comercial del establecimiento de destino
-                                </div>
-                            </div>
-
-                            <div class="form-floating-modern">
-                                <input type="text" 
-                                       class="form-control-modern" 
-                                       id="nombre_cliente" 
-                                       name="nombre_cliente" 
-                                       placeholder=" "
-                                       maxlength="100"
-                                       minlength="2"
-                                       required>
-                                <label for="nombre_cliente">
-                                    <i class="fas fa-user"></i>
-                                    Nombre del Cliente <span class="required">*</span>
-                                </label>
-                                <div class="character-count">
-                                    <span id="nombre_cliente-count">0</span>/100
-                                </div>
-                                <div class="form-help">
-                                    <i class="fas fa-info-circle"></i>
-                                    Persona de contacto responsable en el local
+                                    <i class="fas fa-database"></i>
+                                    Selecciona el local de destino registrado en el sistema
                                 </div>
                             </div>
                         </div>
@@ -680,14 +670,6 @@
                                 
                                 <div class="preview-item">
                                     <span class="preview-label">
-                                        <i class="fas fa-user"></i>
-                                        Cliente:
-                                    </span>
-                                    <span class="preview-value" id="preview-cliente">No especificado</span>
-                                </div>
-                                
-                                <div class="preview-item">
-                                    <span class="preview-label">
                                         <i class="fas fa-users"></i>
                                         Cliente Sistema:
                                     </span>
@@ -710,9 +692,9 @@
             <!-- Buttons -->
             <div class="buttons-section">
                 <button type="submit" form="createRouteForm" class="btn-modern btn-create" id="submitBtn"
-                        <?php if (empty($available_clients) || empty($available_sales)): ?>disabled<?php endif; ?>>
+                        <?php if (empty($available_clients) || empty($available_sales) || empty($available_locals)): ?>disabled<?php endif; ?>>
                     <i class="fas fa-save"></i>
-                    <?php if (empty($available_clients) || empty($available_sales)): ?>
+                    <?php if (empty($available_clients) || empty($available_sales) || empty($available_locals)): ?>
                         NO SE PUEDE CREAR RUTA
                     <?php else: ?>
                         CREAR RUTA
@@ -722,7 +704,7 @@
                     <i class="fas fa-times"></i>
                     CANCELAR
                 </a>
-                <?php if (!empty($available_clients) && !empty($available_sales)): ?>
+                <?php if (!empty($available_clients) && !empty($available_sales) && !empty($available_locals)): ?>
                     <button type="button" class="btn-modern btn-clear" id="resetBtn">
                         <i class="fas fa-undo"></i>
                         LIMPIAR
@@ -737,8 +719,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('createRouteForm');
             const direccionField = document.getElementById('direccion');
-            const localField = document.getElementById('nombre_local');
-            const clienteField = document.getElementById('nombre_cliente');
+            const idLocalesField = document.getElementById('id_locales');
             const idClienteField = document.getElementById('id_clientes');
             const idVentaField = document.getElementById('id_ventas');
 
@@ -760,18 +741,35 @@
             }
             
             setupCharacterCount('direccion', 'direccion-count', 200);
-            setupCharacterCount('nombre_local', 'nombre_local-count', 100);
-            setupCharacterCount('nombre_cliente', 'nombre_cliente-count', 100);
+
+            // Autocompletar dirección cuando se selecciona un local
+            if (idLocalesField) {
+                idLocalesField.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const localDireccion = selectedOption.getAttribute('data-direccion');
+                    const localidad = selectedOption.getAttribute('data-localidad');
+                    const barrio = selectedOption.getAttribute('data-barrio');
+                    
+                    if (localDireccion && direccionField.value.trim() === '') {
+                        let direccionCompleta = localDireccion;
+                        if (barrio) direccionCompleta += ', ' + barrio;
+                        if (localidad) direccionCompleta += ', ' + localidad;
+                        direccionField.value = direccionCompleta;
+                        updatePreview();
+                    }
+                });
+            }
 
             // Vista previa en tiempo real
             function updatePreview() {
-                // Actualizar avatar con primera letra de dirección o local
+                // Actualizar avatar con primera letra de dirección
                 const avatar = document.getElementById('previewAvatar');
                 const direccion = direccionField.value;
-                const local = localField.value;
+                const localSelect = idLocalesField;
+                const localNombre = localSelect ? localSelect.options[localSelect.selectedIndex]?.text : '';
                 
-                if (direccion || local) {
-                    const firstChar = (direccion || local).charAt(0).toUpperCase();
+                if (direccion || localNombre) {
+                    const firstChar = (localNombre || direccion).charAt(0).toUpperCase();
                     avatar.innerHTML = firstChar;
                 } else {
                     avatar.innerHTML = '<i class="fas fa-route"></i>';
@@ -780,24 +778,27 @@
                 // Actualizar vista previa
                 document.getElementById('preview-direccion').textContent = 
                     direccionField.value || 'No especificada';
+                
+                // Para local
+                const selectedLocalText = localSelect.options[localSelect.selectedIndex]?.text || 'No seleccionado';
                 document.getElementById('preview-local').textContent = 
-                    localField.value || 'No especificado';
-                document.getElementById('preview-cliente').textContent = 
-                    clienteField.value || 'No especificado';
+                    selectedLocalText !== 'Seleccionar local...' ? selectedLocalText : 'No seleccionado';
                 
                 // Para cliente del sistema
                 const clienteSelect = document.getElementById('id_clientes');
                 const selectedClienteText = clienteSelect.options[clienteSelect.selectedIndex]?.text || 'No seleccionado';
-                document.getElementById('preview-id-cliente').textContent = selectedClienteText;
+                document.getElementById('preview-id-cliente').textContent = 
+                    selectedClienteText !== 'Seleccionar cliente...' ? selectedClienteText : 'No seleccionado';
                 
                 // Para venta
                 const ventaSelect = document.getElementById('id_ventas');
                 const selectedVentaText = ventaSelect.options[ventaSelect.selectedIndex]?.text || 'No seleccionada';
-                document.getElementById('preview-id-venta').textContent = selectedVentaText;
+                document.getElementById('preview-id-venta').textContent = 
+                    selectedVentaText !== 'Seleccionar venta...' ? selectedVentaText : 'No seleccionada';
             }
 
             // Agregar listeners para vista previa
-            [direccionField, localField, clienteField, idClienteField, idVentaField].forEach(field => {
+            [direccionField, idLocalesField, idClienteField, idVentaField].forEach(field => {
                 if (field) {
                     field.addEventListener('input', updatePreview);
                     field.addEventListener('change', updatePreview);
@@ -815,15 +816,9 @@
                     isValid = false;
                 }
 
-                // Validar nombre del local
-                if (localField.value.trim().length < 2) {
-                    errors.push('El nombre del local debe tener al menos 2 caracteres');
-                    isValid = false;
-                }
-
-                // Validar nombre del cliente
-                if (clienteField.value.trim().length < 2) {
-                    errors.push('El nombre del cliente debe tener al menos 2 caracteres');
+                // Validar local
+                if (!idLocalesField.value || idLocalesField.value === '') {
+                    errors.push('Debe seleccionar un local');
                     isValid = false;
                 }
 
@@ -845,10 +840,12 @@
                 }
 
                 // Confirmación antes de enviar
+                const localSelect = idLocalesField;
+                const localNombre = localSelect.options[localSelect.selectedIndex]?.text || '';
+                
                 const confirmMessage = `¿Confirmas la creación de esta ruta?\n\n` +
                     `Dirección: ${direccionField.value}\n` +
-                    `Local: ${localField.value}\n` +
-                    `Cliente: ${clienteField.value}`;
+                    `Local: ${localNombre}`;
 
                 if (!confirm(confirmMessage)) {
                     e.preventDefault();

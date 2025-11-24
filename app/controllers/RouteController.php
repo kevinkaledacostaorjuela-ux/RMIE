@@ -56,13 +56,13 @@ class RouteController {
         // Obtener datos para los selects
         $available_clients = Route::getAvailableClients($conn);
         $available_sales = Route::getAvailableSales($conn);
+        $available_locals = Route::getAvailableLocals($conn);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Validación de datos
                 $direccion = trim($_POST['direccion'] ?? '');
-                $nombre_local = trim($_POST['nombre_local'] ?? '');
-                $nombre_cliente = trim($_POST['nombre_cliente'] ?? '');
+                $id_locales = intval($_POST['id_locales'] ?? 0);
                 $id_clientes = intval($_POST['id_clientes'] ?? 0);
                 $id_ventas = intval($_POST['id_ventas'] ?? 0);
 
@@ -70,11 +70,8 @@ class RouteController {
                 if (empty($direccion) || strlen($direccion) < 5) {
                     throw new Exception("La dirección debe tener al menos 5 caracteres.");
                 }
-                if (empty($nombre_local) || strlen($nombre_local) < 2) {
-                    throw new Exception("El nombre del local debe tener al menos 2 caracteres.");
-                }
-                if (empty($nombre_cliente) || strlen($nombre_cliente) < 2) {
-                    throw new Exception("El nombre del cliente debe tener al menos 2 caracteres.");
+                if ($id_locales <= 0) {
+                    throw new Exception("Debe seleccionar un local válido.");
                 }
                 if ($id_clientes <= 0) {
                     throw new Exception("Debe seleccionar un cliente válido.");
@@ -90,6 +87,32 @@ class RouteController {
                 
                 if (!Route::saleExists($conn, $id_ventas)) {
                     throw new Exception("La venta seleccionada no existe en el sistema. Por favor, selecciona una venta válida.");
+                }
+
+                // Obtener nombre del local desde la base de datos
+                $localQuery = "SELECT nombre_local FROM locales WHERE id_locales = ?";
+                $stmt = $conn->prepare($localQuery);
+                $stmt->bind_param('i', $id_locales);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $localData = $result->fetch_assoc();
+                $nombre_local = $localData['nombre_local'] ?? '';
+
+                if (empty($nombre_local)) {
+                    throw new Exception("El local seleccionado no existe.");
+                }
+
+                // Obtener nombre del cliente desde la base de datos
+                $clienteQuery = "SELECT nombre FROM clientes WHERE id_clientes = ?";
+                $stmtCliente = $conn->prepare($clienteQuery);
+                $stmtCliente->bind_param('i', $id_clientes);
+                $stmtCliente->execute();
+                $resultCliente = $stmtCliente->get_result();
+                $clienteData = $resultCliente->fetch_assoc();
+                $nombre_cliente = $clienteData['nombre'] ?? '';
+
+                if (empty($nombre_cliente)) {
+                    throw new Exception("El cliente seleccionado no existe.");
                 }
 
                 Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);

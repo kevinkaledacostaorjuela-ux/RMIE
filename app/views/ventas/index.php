@@ -62,6 +62,19 @@ if (isset($ventas) && is_array($ventas)) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
+        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
+        /* Ocultar botones de eliminar para roles que no sean admin */
+        a[href*="accion=delete"],
+        button[onclick*="delete"],
+        button[onclick*="Eliminacion"],
+        button[onclick*="eliminar"],
+        .btn-danger[href*="delete"],
+        .btn-danger-modern,
+        button.btn-danger-modern {
+            display: none !important;
+        }
+        <?php endif; ?>
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;

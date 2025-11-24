@@ -24,21 +24,33 @@ class Route {
             'venta' => ['column' => 'r.id_ventas', 'operator' => '=', 'type' => 'i'],
             'reporte' => ['column' => 'r.id_reportes', 'operator' => '=', 'type' => 'i'],
             'direccion' => ['column' => 'r.direccion', 'operator' => 'LIKE', 'type' => 's'],
-            'nombre_local' => ['column' => 'r.nombre_local', 'operator' => 'LIKE', 'type' => 's'],
-            'nombre_cliente' => ['column' => 'r.nombre_cliente', 'operator' => 'LIKE', 'type' => 's'],
+            'nombre_local' => ['column' => 'l.nombre_local', 'operator' => 'LIKE', 'type' => 's'],
+            'nombre_cliente' => ['column' => 'c.nombre', 'operator' => 'LIKE', 'type' => 's'],
             'buscar' => [
-                'columns' => ['r.direccion', 'r.nombre_local', 'r.nombre_cliente'],
+                'columns' => ['r.direccion', 'l.nombre_local', 'c.nombre'],
                 'operator' => 'MULTIPLE_LIKE'
             ]
         ];
         
-        // Construir consulta base con JOINs para obtener información relacionada
+        // Construir consulta base con JOINs para obtener información relacionada de clientes y locales
         $sql = "SELECT r.*, 
-                       c.nombre as cliente_real_nombre,
+                       c.nombre as cliente_nombre,
+                       c.cel_cliente as cliente_celular,
+                       c.correo as cliente_correo,
+                       c.estado as cliente_estado,
+                       l.nombre_local as local_nombre,
+                       l.direccion as local_direccion,
+                       l.cel_local as local_celular,
+                       l.estado as local_estado,
+                       l.localidad as local_localidad,
+                       l.barrio as local_barrio,
                        v.nombre as venta_nombre,
+                       v.cantidad as venta_cantidad,
+                       v.fecha_venta as venta_fecha,
                        rep.nombre as reporte_nombre
                 FROM rutas r 
                 LEFT JOIN clientes c ON r.id_clientes = c.id_clientes
+                LEFT JOIN locales l ON c.id_locales = l.id_locales
                 LEFT JOIN ventas v ON r.id_ventas = v.id_ventas
                 LEFT JOIN reportes rep ON r.id_reportes = rep.id_reportes
                 WHERE 1=1";
@@ -209,6 +221,20 @@ class Route {
             return $result->fetch_all(MYSQLI_ASSOC);
         } catch (Exception $e) {
             error_log("Error en getAvailableSales: " . $e->getMessage());
+            return [];
+        }
+    }
+
+    public static function getAvailableLocals($conn) {
+        try {
+            $sql = "SELECT id_locales, nombre_local, direccion, localidad, barrio FROM locales WHERE estado = 'activo' ORDER BY nombre_local";
+            $result = $conn->query($sql);
+            if (!$result) {
+                throw new Exception("Error al obtener locales: " . $conn->error);
+            }
+            return $result->fetch_all(MYSQLI_ASSOC);
+        } catch (Exception $e) {
+            error_log("Error en getAvailableLocals: " . $e->getMessage());
             return [];
         }
     }

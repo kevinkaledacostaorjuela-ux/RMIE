@@ -10,7 +10,11 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
     exit();
 }
 
-$usuario_nombre = $_SESSION['nombres'] ?? 'Auxiliar';
+$rol = 'auxiliar';
+$nombreCompleto = trim(($_SESSION['nombres'] ?? '') . ' ' . ($_SESSION['apellidos'] ?? ''));
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Auxiliar';
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -19,365 +23,378 @@ $usuario_nombre = $_SESSION['nombres'] ?? 'Auxiliar';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Auxiliar - RMIE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../../public/css/styles.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .dashboard-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .welcome-section {
-            text-align: center;
-            margin-bottom: 40px;
-            color: white;
-        }
-
-        .welcome-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .welcome-subtitle {
-            font-size: 1.2rem;
-            opacity: 0.9;
-            margin-bottom: 20px;
-        }
-
-        .role-badge {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            color: white;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.15);
-        }
-
-        .stat-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: #28a745;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .modules-section {
-            margin-bottom: 40px;
-        }
-
-        .section-title {
-            color: white;
-            font-size: 1.8rem;
-            font-weight: 600;
-            margin-bottom: 25px;
-            text-align: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        .modules-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .module-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: white;
-            display: block;
-        }
-
-        .module-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            text-decoration: none;
-        }
-
-        .module-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            color: #28a745;
-        }
-
-        .module-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 10px;
-        }
-
-        .module-description {
-            font-size: 0.9rem;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .case-use-badge {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            display: inline-block;
-            margin-top: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-        }
-
-        .activity-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .activity-item {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            margin-bottom: 10px;
-            color: white;
-        }
-
-        .activity-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.2rem;
-        }
-
-        .activity-venta {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-        }
-
-        .activity-reporte {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        }
-
-        .btn-navigation {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
-            color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            padding: 12px 25px;
-            border-radius: 25px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            margin-top: 20px;
-        }
-
-        .btn-navigation:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            text-decoration: none;
-        }
-
-        .alert-info-aux {
-            background: rgba(32, 201, 151, 0.2);
-            border: 1px solid rgba(32, 201, 151, 0.4);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 25px;
-            color: white;
-        }
-
-        @media (max-width: 768px) {
-            .dashboard-container {
-                margin: 10px;
-                padding: 20px;
-            }
-            
-            .welcome-title {
-                font-size: 2rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .modules-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sección de Bienvenida -->
-        <div class="welcome-section">
-            <h1 class="welcome-title">
-                <i class="fas fa-user"></i>
-                Bienvenido, <?= htmlspecialchars($usuario_nombre) ?>
-            </h1>
-            <p class="welcome-subtitle">Panel de Consultas - Sistema RMIE</p>
-            <div class="role-badge">
-                <i class="fas fa-eye"></i>
-                Auxiliar - Solo Lectura
-            </div>
-        </div>
 
-        <!-- Alerta informativa -->
-        <div class="alert-info-aux">
-            <h6><i class="fas fa-info-circle"></i> Permisos del Rol Auxiliar</h6>
-            <p>Según el diagrama de casos de uso, tienes acceso a:</p>
-            <ul style="margin: 10px 0 0 20px;">
-                <li><strong>CU2 - Gestionar usuarios:</strong> Solo consulta de información</li>
-                <li><strong>CU6 - Gestión de ventas:</strong> Consulta de historial de ventas</li>
-                <li><strong>CU8 - Gestión de reportes:</strong> Visualización de reportes</li>
-                <li><strong>Consultar/Modificar:</strong> Tu perfil personal únicamente</li>
-            </ul>
+<div class="d-flex">
+    <!-- Menú lateral moderno -->
+    <nav class="sidebar-modern" id="sidebar">
+        <div class="sidebar-header">
+            <h4 class="sidebar-title">
+                <i class="fas fa-user-shield"></i>
+                <span>Panel Auxiliar</span>
+            </h4>
         </div>
-
-        <!-- Estadísticas Rápidas -->
-        <?php if (isset($stats)): ?>
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-users"></i></div>
-                <div class="stat-number"><?= $stats['total_usuarios'] ?? 0 ?></div>
-                <div class="stat-label">Usuarios Totales</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-user-friends"></i></div>
-                <div class="stat-number"><?= $stats['total_clientes'] ?? 0 ?></div>
-                <div class="stat-label">Clientes Registrados</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-box"></i></div>
-                <div class="stat-number"><?= $stats['total_productos'] ?? 0 ?></div>
-                <div class="stat-label">Productos Disponibles</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
-                <div class="stat-number"><?= $stats['ventas_hoy'] ?? 0 ?></div>
-                <div class="stat-label">Ventas Hoy</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
-                <div class="stat-number"><?= $stats['reportes_pendientes'] ?? 0 ?></div>
-                <div class="stat-label">Reportes Pendientes</div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <!-- Módulos Disponibles según Diagrama de Casos de Uso -->
-        <div class="modules-section">
-            <h2 class="section-title">
-                <i class="fas fa-th-large"></i>
-                Módulos Autorizados
-            </h2>
-            <div class="modules-grid">
-                <?php
-                require_once __DIR__ . '/../../utils/PermissionsConfig.php';
-                $modulos_auxiliar = PermissionsConfig::getAuxiliarModules();
-                foreach ($modulos_auxiliar as $key => $module):
-                ?>
-                <a href="<?= $module['url'] ?>" class="module-card">
-                    <div class="module-icon"><i class="<?= $module['icon'] ?>"></i></div>
-                    <div class="module-title"><?= $module['title'] ?></div>
-                    <div class="module-description"><?= $module['description'] ?></div>
-                    <div class="case-use-badge"><?= $module['case_use'] ?></div>
+        <ul class="sidebar-nav">
+            <li class="nav-item-modern">
+                <a class="nav-link-modern active" href="/RMIE/app/controllers/AuxiliarController.php?accion=dashboard">
+                    <i class="nav-icon fas fa-home"></i>
+                    <span class="nav-text">Mi Dashboard</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
                 </a>
-                <?php endforeach; ?>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_ventas">
+                    <i class="nav-icon fas fa-shopping-cart"></i>
+                    <span class="nav-text">Ventas (Consulta)</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_reportes">
+                    <i class="nav-icon fas fa-chart-bar"></i>
+                    <span class="nav-text">Reportes (Consulta)</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_alertas">
+                    <i class="nav-icon fas fa-exclamation-triangle"></i>
+                    <span class="nav-text">Alertas (Consulta)</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_rutas">
+                    <i class="nav-icon fas fa-route"></i>
+                    <span class="nav-text">Rutas (Consulta)</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios">
+                    <i class="nav-icon fas fa-users"></i>
+                    <span class="nav-text">Usuarios (Consulta)</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern mt-3">
+                <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=modificar_perfil">
+                    <i class="nav-icon fas fa-user-edit"></i>
+                    <span class="nav-text">Mi Perfil</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+            <li class="nav-item-modern">
+                <a class="nav-link-modern" href="/RMIE/logout.php" style="color: #ff6b6b;">
+                    <i class="nav-icon fas fa-sign-out-alt"></i>
+                    <span class="nav-text">Cerrar Sesión</span>
+                    <i class="nav-arrow fas fa-chevron-right"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main-content">
+        <!-- Header con degradado -->
+        <div class="dashboard-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; color: white; margin-bottom: 30px;">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h1 style="margin: 0; font-weight: 700; font-size: 2.5rem;">
+                            <i class="fas fa-chart-line me-3"></i>Bienvenido, <?php echo htmlspecialchars($nombreCompleto); ?>
+                        </h1>
+                        <p style="margin: 5px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
+                            <i class="fas fa-user-shield me-2"></i>Rol: <strong><?php echo ucfirst($rol); ?></strong>
+                        </p>
+                    </div>
+                    <div class="col-md-4 text-end">
+                        <div style="background: rgba(255,255,255,0.2); padding: 15px; border-radius: 15px; backdrop-filter: blur(10px);">
+                            <i class="fas fa-calendar-alt me-2"></i>
+                            <span id="currentDateTime"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Actividad Reciente -->
-        <?php if (isset($actividad_reciente) && !empty($actividad_reciente)): ?>
-        <div class="activity-section">
-            <h3 class="section-title">
-                <i class="fas fa-clock"></i>
-                Actividad Reciente
-            </h3>
-            <?php foreach (array_slice($actividad_reciente, 0, 5) as $actividad): ?>
-            <div class="activity-item">
-                <div class="activity-icon activity-<?= $actividad['tipo'] ?>">
-                    <i class="fas fa-<?= $actividad['tipo'] === 'venta' ? 'shopping-cart' : 'chart-bar' ?>"></i>
-                </div>
-                <div class="activity-content">
-                    <div class="activity-description"><?= htmlspecialchars($actividad['descripcion']) ?></div>
-                    <div class="activity-date"><?= date('d/m/Y H:i', strtotime($actividad['fecha'])) ?></div>
+        <div class="container-fluid px-4">
+            <!-- Estadísticas generales -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h3 style="color: #333; font-weight: 600; margin-bottom: 20px;">
+                        <i class="fas fa-chart-pie me-2"></i>Resumen del Sistema
+                    </h3>
                 </div>
             </div>
-            <?php endforeach; ?>
-        </div>
-        <?php endif; ?>
 
-        <!-- Navegación -->
-        <div class="text-center">
-            <a href="/RMIE/logout.php" class="btn-navigation">
-                <i class="fas fa-sign-out-alt"></i>
-                Cerrar Sesión
-            </a>
+            <!-- ALERTA DE SOLO LECTURA -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="alert alert-info" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); border: none; color: white;">
+                        <h5 class="alert-heading"><i class="fas fa-eye me-2"></i>Auxiliar - Solo Lectura</h5>
+                        <p class="mb-0">Como <strong>Auxiliar</strong>, tienes acceso de solo lectura a la información del sistema. Puedes consultar datos, generar reportes y analizar estadísticas sin modificar registros.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel de Consultas para Auxiliar -->
+            <div class="row mb-4">
+                <div class="col-12 mb-3">
+                    <h4 style="color: #28a745; font-weight: 600; border-left: 4px solid #28a745; padding-left: 15px;">
+                        <i class="fas fa-eye me-2"></i>Panel de Consultas y Análisis
+                    </h4>
+                </div>
+
+                <!-- Ventas (Consulta) -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(250, 112, 154, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Ventas (Consulta)</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Ver historial de ventas</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_ventas" class="btn btn-light btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-eye me-1"></i>Consultar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reportes (Consulta) -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Reportes (Consulta)</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Visualizar reportes</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_reportes" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-eye me-1"></i>Consultar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas (Consulta) -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Alertas (Consulta)</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Ver alertas del sistema</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_alertas" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-eye me-1"></i>Consultar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rutas (Consulta) -->
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas (Consulta)</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Ver rutas registradas</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_rutas" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-eye me-1"></i>Consultar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-route"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gestión de Usuarios y Perfil -->
+            <div class="row mb-4">
+                <div class="col-12 mb-3">
+                    <h4 style="color: #96fbc4; font-weight: 600; border-left: 4px solid #96fbc4; padding-left: 15px;">
+                        <i class="fas fa-users-cog me-2"></i>Usuarios y Perfil
+                    </h4>
+                </div>
+
+                <!-- Usuarios (Consulta) -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #96fbc4 0%, #f9f586 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(150, 251, 196, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Usuarios (Consulta)</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Ver información de usuarios</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-eye me-1"></i>Consultar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mi Perfil -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Mi Perfil</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Editar información personal</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=modificar_perfil" class="btn btn-light btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-user-edit me-1"></i>Editar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Volver al Dashboard Principal -->
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Dashboard Principal</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Ir al panel general</p>
+                                </div>
+                                <a href="/RMIE/app/views/dashboard.php" class="btn btn-light btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-home me-1"></i>Ir
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estadísticas (si existen) -->
+            <?php if (isset($stats)): ?>
+            <div class="row mb-4">
+                <div class="col-12 mb-3">
+                    <h4 style="color: #4facfe; font-weight: 600; border-left: 4px solid #4facfe; padding-left: 15px;">
+                        <i class="fas fa-chart-line me-2"></i>Estadísticas del Sistema
+                    </h4>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-users" style="font-size: 2rem; color: #667eea;"></i>
+                            <h3 class="mt-2"><?php echo $stats['total_usuarios'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Usuarios Totales</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-user-tie" style="font-size: 2rem; color: #fa709a;"></i>
+                            <h3 class="mt-2"><?php echo $stats['total_clientes'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Clientes Registrados</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-box" style="font-size: 2rem; color: #28a745;"></i>
+                            <h3 class="mt-2"><?php echo $stats['total_productos'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Productos Disponibles</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-shopping-cart" style="font-size: 2rem; color: #17a2b8;"></i>
+                            <h3 class="mt-2"><?php echo $stats['ventas_hoy'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Ventas Hoy</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-truck" style="font-size: 2rem; color: #ff7e79;"></i>
+                            <h3 class="mt-2"><?php echo $stats['total_proveedores'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Proveedores</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-2 col-md-4 col-6 mb-3">
+                    <div class="card text-center" style="border-radius: 15px; border: none; box-shadow: 0 5px 15px rgba(0,0,0,0.1);">
+                        <div class="card-body">
+                            <i class="fas fa-bell" style="font-size: 2rem; color: #ffc107;"></i>
+                            <h3 class="mt-2"><?php echo $stats['alertas_activas'] ?? 0; ?></h3>
+                            <p class="mb-0 text-muted">Alertas Activas</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <?php endif; ?>
         </div>
-    </div>
+    </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Actualizar fecha y hora en tiempo real
+function updateDateTime() {
+    const dateTimeElement = document.getElementById('currentDateTime');
+    if (dateTimeElement) {
+        const now = new Date();
+        const options = { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            second: '2-digit'
+        };
+        dateTimeElement.textContent = now.toLocaleDateString('es-ES', options);
+    }
+}
+
+// Actualizar cada segundo
+setInterval(updateDateTime, 1000);
+updateDateTime();
+</script>
 </body>
 </html>

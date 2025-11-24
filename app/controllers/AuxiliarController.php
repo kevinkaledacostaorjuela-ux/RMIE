@@ -94,30 +94,12 @@ class AuxiliarController {
     }
     
     /**
-     * Dashboard específico para auxiliares
+     * Dashboard específico para auxiliares - redirige al dashboard principal
      */
     public function dashboardAuxiliar() {
-        global $conn;
-        
-        try {
-            // Estadísticas básicas que puede ver un auxiliar
-            $stats = [
-                'total_usuarios' => $this->getTotalUsuarios(),
-                'total_clientes' => $this->getTotalClientes(),
-                'total_productos' => $this->getTotalProductos(),
-                'ventas_hoy' => $this->getVentasHoy(),
-                'reportes_pendientes' => $this->getReportesPendientes()
-            ];
-            
-            // Actividad reciente
-            $actividad_reciente = $this->getActividadReciente();
-            
-            include __DIR__ . '/../views/auxiliar/dashboard.php';
-            
-        } catch (Exception $e) {
-            $error = "Error al cargar dashboard: " . $e->getMessage();
-            include __DIR__ . '/../views/auxiliar/dashboard.php';
-        }
+        // Redirigir al dashboard principal que maneja todos los roles
+        header('Location: /RMIE/app/views/dashboard.php');
+        exit();
     }
     
     /**
@@ -274,16 +256,21 @@ class AuxiliarController {
             $stats = [
                 'total_ventas' => count($ventas),
                 'ventas_hoy' => 0,
+                'ventas_semana' => 0,
                 'ventas_mes' => 0
             ];
             
             $hoy = date('Y-m-d');
+            $hace_7_dias = date('Y-m-d', strtotime('-7 days'));
             $mes_actual = date('Y-m');
             
             foreach($ventas as $venta) {
                 if (isset($venta->fecha_venta)) {
                     if (strpos($venta->fecha_venta, $hoy) === 0) {
                         $stats['ventas_hoy']++;
+                    }
+                    if ($venta->fecha_venta >= $hace_7_dias) {
+                        $stats['ventas_semana']++;
                     }
                     if (strpos($venta->fecha_venta, $mes_actual) === 0) {
                         $stats['ventas_mes']++;
@@ -315,12 +302,30 @@ class AuxiliarController {
             ];
             
             $reportes = Report::getAll($conn, $filtros);
-            $stats = Report::getStats($conn);
+            
+            // Calcular estadísticas
+            $stats = [
+                'total_reportes' => count($reportes),
+                'reportes_pendientes' => 0,
+                'reportes_completados' => 0
+            ];
+            
+            foreach ($reportes as $reporte) {
+                if (isset($reporte->estado)) {
+                    if ($reporte->estado == 'pendiente') {
+                        $stats['reportes_pendientes']++;
+                    } elseif ($reporte->estado == 'completado') {
+                        $stats['reportes_completados']++;
+                    }
+                }
+            }
             
             include __DIR__ . '/../views/auxiliar/reportes.php';
             
         } catch (Exception $e) {
             $error = "Error al consultar reportes: " . $e->getMessage();
+            $reportes = [];
+            $stats = ['total_reportes' => 0, 'reportes_pendientes' => 0, 'reportes_completados' => 0];
             include __DIR__ . '/../views/auxiliar/reportes.php';
         }
     }
@@ -398,15 +403,45 @@ class AuxiliarController {
         return $result->fetch_assoc()['total'];
     }
     
+    private function getClientesActivos() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM clientes WHERE estado = 'activo'");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
     private function getTotalProductos() {
         global $conn;
         $result = $conn->query("SELECT COUNT(*) as total FROM productos");
         return $result->fetch_assoc()['total'];
     }
     
+    private function getProductosBajoStock() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM productos WHERE CAST(stock AS UNSIGNED) < 10");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
     private function getVentasHoy() {
         global $conn;
         $result = $conn->query("SELECT COUNT(*) as total FROM ventas WHERE DATE(fecha_venta) = CURDATE()");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getVentasSemana() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM ventas WHERE YEARWEEK(fecha_venta) = YEARWEEK(NOW())");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getVentasMes() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM ventas WHERE MONTH(fecha_venta) = MONTH(NOW()) AND YEAR(fecha_venta) = YEAR(NOW())");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getTotalVentas() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM ventas");
         return $result->fetch_assoc()['total'] ?? 0;
     }
     
@@ -416,13 +451,37 @@ class AuxiliarController {
         return $result->fetch_assoc()['total'] ?? 0;
     }
     
+    private function getReportesCompletados() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM reportes WHERE estado = 'completado'");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getTotalProveedores() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM proveedores");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getTotalRutas() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM rutas");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
+    private function getAlertasActivas() {
+        global $conn;
+        $result = $conn->query("SELECT COUNT(*) as total FROM alertas");
+        return $result->fetch_assoc()['total'] ?? 0;
+    }
+    
     private function getActividadReciente() {
         global $conn;
         $actividad = [];
         
         try {
             // Últimas ventas
-            $ventas = $conn->query("SELECT 'venta' as tipo, fecha_venta as fecha, nombre as descripcion FROM ventas ORDER BY fecha_venta DESC LIMIT 5");
+            $ventas = $conn->query("SELECT 'venta' as tipo, fecha_venta as fecha, CONCAT('Venta #', id_ventas, ' - ', nombre) as descripcion FROM ventas ORDER BY fecha_venta DESC LIMIT 5");
             if ($ventas) {
                 while ($row = $ventas->fetch_assoc()) {
                     $actividad[] = $row;
@@ -430,7 +489,7 @@ class AuxiliarController {
             }
             
             // Últimos reportes
-            $reportes = $conn->query("SELECT 'reporte' as tipo, fecha as fecha, nombre as descripcion FROM reportes ORDER BY fecha DESC LIMIT 5");
+            $reportes = $conn->query("SELECT 'reporte' as tipo, fecha as fecha, CONCAT('Reporte: ', nombre, ' - ', estado) as descripcion FROM reportes ORDER BY fecha DESC LIMIT 5");
             if ($reportes) {
                 while ($row = $reportes->fetch_assoc()) {
                     $actividad[] = $row;
@@ -447,6 +506,80 @@ class AuxiliarController {
         }
         
         return array_slice($actividad, 0, 10);
+    }
+    
+    private function getVentasUltimosDias($dias = 7) {
+        global $conn;
+        $ventas_por_dia = [];
+        
+        try {
+            $query = "SELECT DATE(fecha_venta) as fecha, COUNT(*) as total 
+                     FROM ventas 
+                     WHERE fecha_venta >= DATE_SUB(NOW(), INTERVAL $dias DAY)
+                     GROUP BY DATE(fecha_venta)
+                     ORDER BY fecha ASC";
+            
+            $result = $conn->query($query);
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $ventas_por_dia[] = $row;
+                }
+            }
+        } catch (Exception $e) {
+            // Si hay error, retornar array vacío
+        }
+        
+        return $ventas_por_dia;
+    }
+    
+    private function getProductosMasVendidos($limit = 5) {
+        global $conn;
+        $productos = [];
+        
+        try {
+            $query = "SELECT p.nombre, COUNT(v.id_ventas) as total_ventas 
+                     FROM productos p
+                     LEFT JOIN ventas v ON p.id_productos = v.id_productos
+                     GROUP BY p.id_productos, p.nombre
+                     ORDER BY total_ventas DESC
+                     LIMIT $limit";
+            
+            $result = $conn->query($query);
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $productos[] = $row;
+                }
+            }
+        } catch (Exception $e) {
+            // Si hay error, retornar array vacío
+        }
+        
+        return $productos;
+    }
+    
+    private function getClientesFrecuentes($limit = 5) {
+        global $conn;
+        $clientes = [];
+        
+        try {
+            $query = "SELECT c.nombre, COUNT(v.id_ventas) as total_compras 
+                     FROM clientes c
+                     LEFT JOIN ventas v ON c.id_clientes = v.id_clientes
+                     GROUP BY c.id_clientes, c.nombre
+                     ORDER BY total_compras DESC
+                     LIMIT $limit";
+            
+            $result = $conn->query($query);
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $clientes[] = $row;
+                }
+            }
+        } catch (Exception $e) {
+            // Si hay error, retornar array vacío
+        }
+        
+        return $clientes;
     }
 }
 

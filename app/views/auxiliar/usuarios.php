@@ -89,12 +89,24 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
             border: none;
             padding: 15px 10px;
             font-weight: 600;
+            text-align: center;
+            white-space: nowrap;
         }
 
         .table-modern td {
             border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 12px 10px;
             vertical-align: middle;
+            text-align: center;
+        }
+
+        .table-modern td:nth-child(2) {
+            text-align: left;
+        }
+
+        .table-modern td:nth-child(3),
+        .table-modern td:nth-child(4) {
+            text-align: left;
         }
 
         .table-modern tbody tr:hover {
@@ -230,19 +242,23 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
         <!-- Filtros -->
         <div class="filters-container">
             <form method="GET" action="">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-search"></i> Buscar</span>
+                <div class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label text-white">
+                            <i class="fas fa-search"></i> Buscar
+                        </label>
                         <input type="text"
                                name="buscar"
-                               class="filter-input"
+                               class="form-control form-control-modern"
                                placeholder="Buscar por nombre o email..."
                                value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
                     </div>
 
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-user-tag"></i> Rol</span>
-                        <select name="rol" class="filter-select">
+                    <div class="col-md-4">
+                        <label class="form-label text-white">
+                            <i class="fas fa-user-tag"></i> Rol
+                        </label>
+                        <select name="rol" class="form-select form-control-modern">
                             <option value="">Todos los roles</option>
                             <option value="admin" <?= ($_GET['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
                             <option value="coordinador" <?= ($_GET['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
@@ -250,8 +266,8 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
                         </select>
                     </div>
 
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-primary w-100" style="border-radius: 10px;">
                             <i class="fas fa-filter"></i> FILTRAR
                         </button>
                     </div>
@@ -265,11 +281,11 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
                 <table class="table table-modern table-hover">
                     <thead>
                         <tr>
-                            <th><i class="fas fa-id-card"></i> Documento</th>
-                            <th><i class="fas fa-user"></i> Nombre Completo</th>
-                            <th><i class="fas fa-envelope"></i> Email</th>
-                            <th><i class="fas fa-phone"></i> Teléfono</th>
-                            <th><i class="fas fa-user-tag"></i> Rol</th>
+                            <th style="width: 12%;"><i class="fas fa-id-card"></i> Documento</th>
+                            <th style="width: 25%;"><i class="fas fa-user"></i> Nombre Completo</th>
+                            <th style="width: 25%;"><i class="fas fa-envelope"></i> Email</th>
+                            <th style="width: 15%;"><i class="fas fa-phone"></i> Teléfono</th>
+                            <th style="width: 15%;"><i class="fas fa-user-tag"></i> Rol</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -277,8 +293,10 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
                             <?php foreach ($usuarios as $usuario): ?>
                             <tr>
                                 <td>
-                                    <strong><?= htmlspecialchars($usuario->tipo_doc ?? 'CC') ?>:</strong>
-                                    <?= htmlspecialchars($usuario->num_doc) ?>
+                                    <div class="text-center">
+                                        <strong class="d-block"><?= htmlspecialchars($usuario->tipo_doc ?? 'CC') ?>:</strong>
+                                        <span><?= htmlspecialchars($usuario->num_doc) ?></span>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="d-flex align-items-center">
@@ -292,23 +310,23 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
                                         </div>
                                     </div>
                                 </td>
-                                <td>
+                                <td style="text-align: left;">
                                     <?php if (!empty($usuario->correo)): ?>
                                         <i class="fas fa-envelope text-info"></i>
                                         <?= htmlspecialchars($usuario->correo) ?>
                                     <?php else: ?>
-                                        <span class="text-muted">Sin email</span>
+                                        <span class="text-muted"><i>Sin email</i></span>
                                     <?php endif; ?>
                                 </td>
-                                <td>
+                                <td style="text-align: left;">
                                     <?php if (!empty($usuario->num_cel)): ?>
                                         <i class="fas fa-phone text-success"></i>
                                         <?= htmlspecialchars($usuario->num_cel) ?>
                                     <?php else: ?>
-                                        <span class="text-muted">Sin teléfono</span>
+                                        <span class="text-muted"><i>Sin teléfono</i></span>
                                     <?php endif; ?>
                                 </td>
-                                <td class="text-center">
+                                <td>
                                     <span class="badge-role badge-<?= $usuario->rol ?>">
                                         <?php
                                         $roleIcons = [

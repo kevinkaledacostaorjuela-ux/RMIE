@@ -7,7 +7,11 @@ if (!isset($_SESSION['user'])) {
     header('Location: ../../index.php');
     exit();
 }
-$rol = $_SESSION['rol'];
+$rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'invitado';
+$nombreCompleto = trim((isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '') . ' ' . (isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : ''));
+if (empty($nombreCompleto)) {
+    $nombreCompleto = 'Usuario';
+}
 // Cargar configuración de permisos si es necesario
 require_once __DIR__ . '/../utils/PermissionsConfig.php';
 $allowedAux = [];
@@ -386,104 +390,106 @@ if ($rol === 'auxiliar') {
             </h4>
         </div>
         <ul class="sidebar-nav">
-            <?php if ($rol !== 'auxiliar' || in_array('categorias', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="../controllers/CategoryController.php?accion=index">
-                    <i class="nav-icon fas fa-tags"></i>
-                    <span class="nav-text">Categorías</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('subcategorias', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="../controllers/SubcategoryController.php?accion=index">
-                    <i class="nav-icon fas fa-layer-group"></i>
-                    <span class="nav-text">Subcategorías</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('productos', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="../controllers/ProductController.php?accion=index">
-                    <i class="nav-icon fas fa-box"></i>
-                    <span class="nav-text">Productos</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('ventas', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/SaleController.php?accion=index">
-                    <i class="nav-icon fas fa-shopping-cart"></i>
-                    <span class="nav-text">Ventas</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('reportes', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/ReportController.php?action=index">
-                    <i class="nav-icon fas fa-chart-bar"></i>
-                    <span class="nav-text">Reportes</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('alertas', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/AlertController.php?accion=index">
-                    <i class="nav-icon fas fa-exclamation-triangle"></i>
-                    <span class="nav-text">Alertas</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('proveedores', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/ProviderController.php?accion=index">
-                    <i class="nav-icon fas fa-truck"></i>
-                    <span class="nav-text">Proveedores</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('usuarios', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/UserController.php?accion=index">
-                    <i class="nav-icon fas fa-users"></i>
-                    <span class="nav-text">Usuarios</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('clientes', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/ClientController.php?accion=index">
-                    <i class="nav-icon fas fa-user-tie"></i>
-                    <span class="nav-text">Clientes</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('locales', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/LocalController.php?action=index">
-                    <i class="nav-icon fas fa-building"></i>
-                    <span class="nav-text">Locales</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
-            <?php endif; ?>
-            <?php if ($rol !== 'auxiliar' || in_array('rutas', $allowedAux)): ?>
-            <li class="nav-item-modern">
-                <a class="nav-link-modern" href="/RMIE/app/controllers/RouteController.php?accion=index">
-                    <i class="nav-icon fas fa-route"></i>
-                    <span class="nav-text">Rutas</span>
-                    <i class="nav-arrow fas fa-chevron-right"></i>
-                </a>
-            </li>
+            <?php if ($rol === 'auxiliar'): ?>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=dashboard">
+                        <i class="nav-icon fas fa-home"></i>
+                        <span class="nav-text">Mi Dashboard</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios">
+                        <i class="nav-icon fas fa-users"></i>
+                        <span class="nav-text">Usuarios (Consulta)</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=modificar_perfil">
+                        <i class="nav-icon fas fa-user-edit"></i>
+                        <span class="nav-text">Mi Perfil</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+            <?php else: ?>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="../controllers/CategoryController.php?accion=index">
+                        <i class="nav-icon fas fa-tags"></i>
+                        <span class="nav-text">Categorías</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="../controllers/SubcategoryController.php?accion=index">
+                        <i class="nav-icon fas fa-layer-group"></i>
+                        <span class="nav-text">Subcategorías</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="../controllers/ProductController.php?accion=index">
+                        <i class="nav-icon fas fa-box"></i>
+                        <span class="nav-text">Productos</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/SaleController.php?accion=index">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <span class="nav-text">Ventas</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/ReportController.php?action=index">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <span class="nav-text">Reportes</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AlertController.php?accion=index">
+                        <i class="nav-icon fas fa-exclamation-triangle"></i>
+                        <span class="nav-text">Alertas</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/RouteController.php?accion=index">
+                        <i class="nav-icon fas fa-route"></i>
+                        <span class="nav-text">Rutas</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/ProviderController.php?accion=index">
+                        <i class="nav-icon fas fa-truck"></i>
+                        <span class="nav-text">Proveedores</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/ClientController.php?accion=index">
+                        <i class="nav-icon fas fa-user-tie"></i>
+                        <span class="nav-text">Clientes</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/LocalController.php?action=index">
+                        <i class="nav-icon fas fa-building"></i>
+                        <span class="nav-text">Locales</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/UserController.php?accion=index">
+                        <i class="nav-icon fas fa-users"></i>
+                        <span class="nav-text">Usuarios</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
             <?php endif; ?>
         </ul>
         <div class="sidebar-divider"></div>
@@ -502,10 +508,10 @@ if ($rol === 'auxiliar') {
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h1 style="margin: 0; font-weight: 700; font-size: 2.5rem;">
-                            <i class="fas fa-chart-line me-3"></i>Bienvenido, <?php echo htmlspecialchars((isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '') . ' ' . (isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : '')); ?>
+                            <i class="fas fa-chart-line me-3"></i>Bienvenido, <?php echo htmlspecialchars($nombreCompleto); ?>
                         </h1>
                         <p style="margin: 5px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
-                            <i class="fas fa-user-shield me-2"></i>Rol: <?php echo ucfirst($rol); ?>
+                            <i class="fas fa-user-shield me-2"></i>Rol: <strong><?php echo ucfirst($rol); ?></strong>
                         </p>
                     </div>
                     <div class="col-md-4 text-end">
@@ -529,13 +535,13 @@ if ($rol === 'auxiliar') {
             </div>
 
             <!-- SECCIÓN 1: GESTIÓN DE INVENTARIO -->
+            <?php if ($rol !== 'auxiliar'): ?>
             <div class="row mb-4">
                 <div class="col-12 mb-3">
                     <h4 style="color: #667eea; font-weight: 600; border-left: 4px solid #667eea; padding-left: 15px;">
                         <i class="fas fa-boxes me-2"></i>Gestión de Inventario
                     </h4>
                 </div>
-            <?php if ($rol !== 'auxiliar' || in_array('categorias', $allowedAux)): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -627,7 +633,6 @@ if ($rol === 'auxiliar') {
                         <i class="fas fa-chart-line me-2"></i>Ventas y Reportes
                     </h4>
                 </div>
-            <?php if ($rol !== 'auxiliar' || in_array('ventas', $allowedAux)): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(250, 112, 154, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -646,9 +651,7 @@ if ($rol === 'auxiliar') {
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
 
-            <?php if ($rol !== 'auxiliar' || in_array('reportes', $allowedAux)): ?>
                 <div class="col-lg-4 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(168, 237, 234, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -667,38 +670,94 @@ if ($rol === 'auxiliar') {
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
 
-            <?php if ($rol !== 'auxiliar' || in_array('alertas', $allowedAux)): ?>
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div class="d-flex align-items-center justify-content-between h-100">
+                        <div class="d-flex flex-column justify-content-between h-100">
+                            <div>
+                                <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Alertas</h5>
+                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Ver alertas</p>
+                            </div>
+                            <a href="/RMIE/app/controllers/AlertController.php?accion=index" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                <i class="fas fa-arrow-right me-1"></i>Acceder
+                            </a>
+                        </div>
+                        <div style="font-size: 3.5rem; opacity: 0.2;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+
+            <!-- SECCIÓN 3: GESTIÓN DE USUARIOS Y LOCALES -->
+            <?php if ($rol === 'auxiliar'): ?>
+            <!-- Dashboard Especial para Auxiliar -->
+            <div class="row mb-4">
                 <div class="col-lg-4 col-md-6 mb-4">
-                    <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
                             <div class="d-flex flex-column justify-content-between h-100">
                                 <div>
-                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Alertas</h5>
-                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Ver alertas</p>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Gestionar rutas</p>
                                 </div>
-                                <a href="/RMIE/app/controllers/AlertController.php?accion=index" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
-                                    <i class="fas fa-arrow-right me-1"></i>Acceder
+                                <a href="/RMIE/app/controllers/RouteController.php" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-arrow-right me-1"></i>Ir
                                 </a>
                             </div>
                             <div style="font-size: 3.5rem; opacity: 0.2;">
-                                <i class="fas fa-exclamation-triangle"></i>
+                                <i class="fas fa-route"></i>
                             </div>
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #96fbc4 0%, #f9f586 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(150, 251, 196, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Usuarios</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Gestionar usuarios</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-arrow-right me-1"></i>Ir
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="dashboard-card" style="background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); border-radius: 20px; padding: 25px; color: white; box-shadow: 0 10px 30px rgba(255, 154, 158, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                        <div class="d-flex align-items-center justify-content-between h-100">
+                            <div class="d-flex flex-column justify-content-between h-100">
+                                <div>
+                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Mi Perfil</h5>
+                                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 0.9rem;">Editar información personal</p>
+                                </div>
+                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=modificar_perfil" class="btn btn-light btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                    <i class="fas fa-user-edit me-1"></i>Editar
+                                </a>
+                            </div>
+                            <div style="font-size: 3.5rem; opacity: 0.2;">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-            <!-- SECCIÓN 3: GESTIÓN DE USUARIOS Y LOCALES -->
+            <?php else: ?>
             <div class="row mb-4">
                 <div class="col-12 mb-3">
                     <h4 style="color: #96fbc4; font-weight: 600; border-left: 4px solid #96fbc4; padding-left: 15px;">
                         <i class="fas fa-users-cog me-2"></i>Gestión de Usuarios y Locales
                     </h4>
                 </div>
-            <?php if ($rol !== 'auxiliar' || in_array('usuarios', $allowedAux)): ?>
+            <?php if ($rol !== 'auxiliar'): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #96fbc4 0%, #f9f586 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(150, 251, 196, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -719,7 +778,7 @@ if ($rol === 'auxiliar') {
                 </div>
             <?php endif; ?>
 
-            <?php if ($rol !== 'auxiliar' || in_array('clientes', $allowedAux)): ?>
+            <?php if ($rol !== 'auxiliar'): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(255, 236, 210, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -740,7 +799,7 @@ if ($rol === 'auxiliar') {
                 </div>
             <?php endif; ?>
 
-            <?php if ($rol !== 'auxiliar' || in_array('locales', $allowedAux)): ?>
+            <?php if ($rol !== 'auxiliar'): ?>
                 <div class="col-lg-3 col-md-6 mb-4">
                     <div class="dashboard-card" style="background: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(161, 196, 253, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
                         <div class="d-flex align-items-center justify-content-between h-100">
@@ -761,27 +820,26 @@ if ($rol === 'auxiliar') {
                 </div>
             <?php endif; ?>
 
-            <?php if ($rol !== 'auxiliar' || in_array('rutas', $allowedAux)): ?>
-                <div class="col-lg-3 col-md-6 mb-4">
-                    <div class="dashboard-card" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
-                        <div class="d-flex align-items-center justify-content-between h-100">
-                            <div class="d-flex flex-column justify-content-between h-100">
-                                <div>
-                                    <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas</h5>
-                                    <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;">Gestionar rutas</p>
-                                </div>
-                                <a href="/RMIE/app/controllers/RouteController.php?accion=index" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
-                                    <i class="fas fa-arrow-right me-1"></i>Acceder
-                                </a>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="dashboard-card" style="background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%); border-radius: 20px; padding: 25px; color: #333; box-shadow: 0 10px 30px rgba(210, 153, 194, 0.3); transition: all 0.3s ease; height: 180px;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                    <div class="d-flex align-items-center justify-content-between h-100">
+                        <div class="d-flex flex-column justify-content-between h-100">
+                            <div>
+                                <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas <?php echo ($rol === 'auxiliar') ? '(Consulta)' : ''; ?></h5>
+                                <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;"><?php echo ($rol === 'auxiliar') ? 'Consultar rutas' : 'Gestionar rutas'; ?></p>
                             </div>
-                            <div style="font-size: 3.5rem; opacity: 0.2;">
-                                <i class="fas fa-route"></i>
-                            </div>
+                            <a href="<?php echo ($rol === 'auxiliar') ? '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_rutas' : '/RMIE/app/controllers/RouteController.php?accion=index'; ?>" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                                <i class="fas fa-arrow-right me-1"></i>Acceder
+                            </a>
+                        </div>
+                        <div style="font-size: 3.5rem; opacity: 0.2;">
+                            <i class="fas fa-route"></i>
                         </div>
                     </div>
                 </div>
-            <?php endif; ?>
             </div>
+            </div>
+            <?php endif; ?>
         </div>
     </main>
 </div>

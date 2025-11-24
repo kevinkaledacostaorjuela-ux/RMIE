@@ -39,14 +39,20 @@ class PermissionsConfig {
             'profile' => ['read', 'update']
         ],
         'auxiliar' => [
-            // CU2 - Gestionar usuarios (solo consulta)
-            'usuarios' => ['read'],
+            // Gestión completa de usuarios
+            'usuarios' => ['create', 'read', 'update', 'delete'],
             
-            // CU6 - Gestión de ventas (include - puede consultar)
-            'ventas' => ['read'],
+            // Gestión completa de ventas
+            'ventas' => ['create', 'read', 'update', 'delete'],
             
-            // CU8 - Gestión de reportes (include - puede consultar)
-            'reportes' => ['read'],
+            // Gestión completa de reportes
+            'reportes' => ['create', 'read', 'update', 'delete'],
+            
+            // Gestión completa de alertas
+            'alertas' => ['create', 'read', 'update', 'delete'],
+            
+            // Gestión completa de rutas
+            'rutas' => ['create', 'read', 'update', 'delete'],
             
             // Consultar/Modificar (solo su perfil)
             'profile' => ['read', 'update']
@@ -57,30 +63,44 @@ class PermissionsConfig {
      * Módulos disponibles en el dashboard auxiliar según diagrama
      */
     const AUXILIAR_MODULES = [
-        'usuarios' => [
-            'title' => 'Consultar Usuarios',
-            'description' => 'Ver información de usuarios del sistema',
-            'icon' => 'fas fa-users',
-            'url' => '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios',
-            'case_use' => 'CU2'
-        ],
         'ventas' => [
-            'title' => 'Gestión de Ventas',
-            'description' => 'Consultar historial de ventas realizadas',
+            'title' => 'Ventas',
+            'description' => 'Gestionar ventas del sistema',
             'icon' => 'fas fa-shopping-cart',
-            'url' => '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_ventas',
+            'url' => '/RMIE/app/controllers/SaleController.php',
             'case_use' => 'CU6'
         ],
         'reportes' => [
-            'title' => 'Gestión de Reportes',
-            'description' => 'Ver reportes generados del sistema',
+            'title' => 'Reportes',
+            'description' => 'Gestionar reportes del sistema',
             'icon' => 'fas fa-chart-bar',
-            'url' => '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_reportes',
+            'url' => '/RMIE/app/controllers/ReportController.php',
             'case_use' => 'CU8'
         ],
+        'alertas' => [
+            'title' => 'Alertas',
+            'description' => 'Gestionar alertas del sistema',
+            'icon' => 'fas fa-exclamation-triangle',
+            'url' => '/RMIE/app/controllers/AlertController.php',
+            'case_use' => 'CU9'
+        ],
+        'rutas' => [
+            'title' => 'Rutas',
+            'description' => 'Gestionar rutas del sistema',
+            'icon' => 'fas fa-route',
+            'url' => '/RMIE/app/controllers/RouteController.php',
+            'case_use' => 'CU7'
+        ],
+        'usuarios' => [
+            'title' => 'Usuarios',
+            'description' => 'Gestionar usuarios del sistema',
+            'icon' => 'fas fa-users',
+            'url' => '/RMIE/app/controllers/UserController.php',
+            'case_use' => 'CU2'
+        ],
         'profile' => [
-            'title' => 'Modificar Perfil',
-            'description' => 'Consultar y modificar información personal',
+            'title' => 'Mi Perfil',
+            'description' => 'Modificar información personal',
             'icon' => 'fas fa-user-edit',
             'url' => '/RMIE/app/controllers/AuxiliarController.php?accion=modificar_perfil',
             'case_use' => 'Consultar/Modificar'
