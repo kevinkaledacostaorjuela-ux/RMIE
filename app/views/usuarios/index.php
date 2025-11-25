@@ -815,73 +815,62 @@ if (isset($usuarios) && is_array($usuarios)) {
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/UserController.php" id="filterForm" 
-                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                    style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); max-width: 950px; margin: 0 auto;">
                     <input type="hidden" name="accion" value="index">
                     
-                    <div class="row g-3" style="grid-template-columns: 1fr 1fr 1fr 1fr 200px; display: grid;">
-                        <div class="col">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-user"></i> Nombre
-                            </label>
-                            <input type="text"
-                                   name="buscar"
-                                   class="form-control"
-                                   placeholder="Buscar usuario..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
-                        </div>
-
-                        <div class="col">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-users"></i> Rol
-                            </label>
-                            <select name="filtro_rol" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
-                                <option value="">Todos los roles</option>
-                                <option value="admin" <?= ($_GET['filtro_rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
-                                <option value="coordinador" <?= ($_GET['filtro_rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
-                                <option value="auxiliar" <?= ($_GET['filtro_rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
-                            </select>
-                        </div>
-
-                        <div class="col">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-toggle-on"></i> Estado
-                            </label>
-                            <select name="estado" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
-                                <option value="">Todos los estados</option>
-                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
-                            </select>
-                        </div>
-
-                        <div class="col">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Fecha
-                            </label>
-                            <input type="date"
-                                   name="fecha"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
-                        </div>
-
-                        <div class="col" style="display: flex; flex-direction: column; justify-content: flex-end;">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-cogs"></i> Acciones
-                            </label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    <div class="filtros-usuarios-flex" style="display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; justify-content: center; align-items: end; width: 100%; flex-direction: row;">
+                            <div class="filtro-usuario-item" style="min-width: 180px; max-width: 220px; flex: 1 1 180px;">
+                                <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                    <i class="fas fa-user"></i> Nombre
+                                </label>
+                                <input type="text"
+                                       name="buscar"
+                                       class="form-control"
+                                       placeholder="Buscar usuario..."
+                                       style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                       value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>">
+                            </div>
+                            <div class="filtro-usuario-item" style="min-width: 150px; max-width: 200px; flex: 1 1 150px;">
+                                <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                    <i class="fas fa-users"></i> Rol
+                                </label>
+                                <select name="filtro_rol" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                    <option value="">Todos los roles</option>
+                                    <option value="admin" <?= ($_GET['filtro_rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Admin</option>
+                                    <option value="coordinador" <?= ($_GET['filtro_rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
+                                    <option value="auxiliar" <?= ($_GET['filtro_rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
+                                </select>
+                            </div>
+                            <div class="filtro-usuario-item" style="min-width: 150px; max-width: 200px; flex: 1 1 150px;">
+                                <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                    <i class="fas fa-toggle-on"></i> Estado
+                                </label>
+                                <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                    <option value="">Todos los estados</option>
+                                    <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
+                                    <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 12px; align-items: end;">
+                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
                                     <i class="fas fa-search"></i> FILTRAR
                                 </button>
-                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
                                     <i class="fas fa-times"></i> LIMPIAR
                                 </button>
                             </div>
                         </div>
+                        <style>
+                        @media (max-width: 900px) {
+                            .filtros-usuarios-flex {
+                                flex-direction: column !important;
+                                align-items: stretch !important;
+                            }
+                            .filtro-usuario-item {
+                                max-width: 100% !important;
+                            }
+                        }
+                        </style>
                     </div>
                 </form>
             </div>

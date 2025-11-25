@@ -582,6 +582,20 @@
                     <!-- Columna izquierda: Formulario -->
                     <div>
                         <form action="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= $route['id_ruta'] ?>" method="POST" id="editRouteForm">
+
+                                                        <div class="form-group">
+                                                            <label for="estado">
+                                                                <i class="fas fa-toggle-on"></i> Estado de la Ruta *
+                                                            </label>
+                                                            <select name="estado" id="estado" class="form-control" required>
+                                                                <option value="activa" <?= (($route['estado'] ?? 'activa') === 'activa') ? 'selected' : '' ?>>Activa</option>
+                                                                <option value="pendiente" <?= (($route['estado'] ?? 'activa') === 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
+                                                            </select>
+                                                            <small class="form-text">
+                                                                <i class="fas fa-info-circle"></i>
+                                                                Selecciona el estado de la ruta
+                                                            </small>
+                                                        </div>
                             
                             <!-- Sección: Información de Ubicación -->
                             <div class="form-section">
@@ -706,6 +720,21 @@
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
                                         Número de venta asociada a esta ruta de entrega
+                                    </small>
+                                </div>
+
+                                <!-- Estado de la Ruta -->
+                                <div class="form-group">
+                                    <label for="estado">
+                                        <i class="fas fa-traffic-light"></i> Estado de la Ruta *
+                                    </label>
+                                    <select name="estado" id="estado" class="form-select" required>
+                                        <option value="activo" <?= (isset($route['estado']) && $route['estado'] === 'activo') ? 'selected' : '' ?>>Activo</option>
+                                        <option value="pendiente" <?= (isset($route['estado']) && $route['estado'] === 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
+                                    </select>
+                                    <small class="form-text">
+                                        <i class="fas fa-info-circle"></i>
+                                        Selecciona si la ruta estará activa o pendiente
                                     </small>
                                 </div>
                             </div>

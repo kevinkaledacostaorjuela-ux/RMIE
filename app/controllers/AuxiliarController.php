@@ -17,7 +17,10 @@ class AuxiliarController {
      * @return bool
      */
     private function hasModuleAccess($module) {
-        return PermissionsConfig::auxiliarCanAccess($module);
+        // Permitir acceso si el módulo está en los permisos del rol auxiliar o en los módulos del dashboard
+        $allowed = PermissionsConfig::getAllowedModules('auxiliar');
+        // 'usuarios' puede estar como clave o como módulo del dashboard
+        return isset($allowed[$module]) || isset(PermissionsConfig::AUXILIAR_MODULES[$module]);
     }
     
     /**
@@ -53,8 +56,8 @@ class AuxiliarController {
             session_start();
         }
         
-        // Verificar que sea auxiliar
-        if (!AuthUtils::isAuxiliar()) {
+        // Verificar que sea auxiliar SOLO usando la sesión, no el filtro GET
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'auxiliar') {
             header('Location: ../../index.php?error=acceso_denegado');
             exit();
         }
@@ -171,7 +174,14 @@ class AuxiliarController {
             
             $usuarios = User::getAll($conn, $filtros);
             $stats = User::getStats($conn);
-            
+            // Obtener roles únicos existentes en la base de datos
+            $roles_existentes = [];
+            $result_roles = $conn->query("SELECT DISTINCT rol FROM usuarios ORDER BY rol");
+            if ($result_roles) {
+                while ($row = $result_roles->fetch_assoc()) {
+                    $roles_existentes[] = $row['rol'];
+                }
+            }
             include __DIR__ . '/../views/auxiliar/usuarios.php';
             
         } catch (Exception $e) {

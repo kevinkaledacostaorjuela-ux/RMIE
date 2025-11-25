@@ -1670,43 +1670,55 @@ if (isset($rutas) && is_array($rutas)) {
         }
         </style>
         <div class="filters-container">
-            <div class="filter-title">
+            <div class="filter-title" style="text-align:center; font-size:1.3rem; font-weight:600; color:#fff; margin-bottom:18px;">
                 <i class="fas fa-filter"></i> Filtros de Búsqueda
             </div>
             <form method="GET" action="" id="filterForm">
-                <div class="filters-row">
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-tags"></i> Estado</span>
-                        <select name="estado" class="filter-select">
+                <div class="row g-3 align-items-end justify-content-center" style="margin-bottom:0; max-width:900px; margin-left:auto; margin-right:auto;">
+                    <div class="col-md-3 col-12">
+                        <label class="form-label" style="color:#333;font-weight:600;"><i class="fas fa-tags"></i> Estado</label>
+                        <select name="estado" class="form-select form-control-modern">
                             <option value="">Todos los estados</option>
                             <option value="activa" <?= ($_GET['estado'] ?? '') === 'activa' ? 'selected' : '' ?>>Activa</option>
-                            <option value="inactiva" <?= ($_GET['estado'] ?? '') === 'inactiva' ? 'selected' : '' ?>>Inactiva</option>
                             <option value="pendiente" <?= ($_GET['estado'] ?? '') === 'pendiente' ? 'selected' : '' ?>>Pendiente</option>
-                            <option value="completada" <?= ($_GET['estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
                         </select>
                     </div>
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-store"></i> Local</span>
-                        <input type="text" name="local" class="filter-input" placeholder="Nombre del local..." value="<?= htmlspecialchars($_GET['local'] ?? '') ?>">
+                    <div class="col-md-3 col-12">
+                        <label class="form-label" style="color:#333;font-weight:600;"><i class="fas fa-store"></i> Local</label>
+                        <select name="local" class="form-select form-control-modern">
+                            <option value="">Todos los locales</option>
+                            <?php if (isset($available_locals) && is_array($available_locals)): ?>
+                                <?php foreach ($available_locals as $local): ?>
+                                    <option value="<?= htmlspecialchars($local['nombre_local']) ?>" <?= (($_GET['local'] ?? '') === $local['nombre_local']) ? 'selected' : '' ?>><?= htmlspecialchars($local['nombre_local']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-map-marker-alt"></i> Cliente</span>
-                        <input type="text" name="cliente" class="filter-input" placeholder="Nombre del cliente..." value="<?= htmlspecialchars($_GET['cliente'] ?? '') ?>">
+                    <div class="col-md-3 col-12">
+                        <label class="form-label" style="color:#333;font-weight:600;"><i class="fas fa-map-marker-alt"></i> Cliente</label>
+                        <select name="cliente" class="form-select form-control-modern">
+                            <option value="">Todos los clientes</option>
+                            <?php if (isset($available_clients) && is_array($available_clients)): ?>
+                                <?php foreach ($available_clients as $cliente): ?>
+                                    <option value="<?= htmlspecialchars($cliente['nombre']) ?>" <?= (($_GET['cliente'] ?? '') === $cliente['nombre']) ? 'selected' : '' ?>><?= htmlspecialchars($cliente['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-sort"></i> Ordenar por</span>
-                        <select name="orden" class="filter-select">
+                    <div class="col-md-2 col-12">
+                        <label class="form-label" style="color:#333;font-weight:600;"><i class="fas fa-sort"></i> Ordenar por</label>
+                        <select name="orden" class="form-select form-control-modern">
                             <option value="fecha_desc" <?= ($_GET['orden'] ?? 'fecha_desc') === 'fecha_desc' ? 'selected' : '' ?>>Más recientes</option>
                             <option value="fecha_asc" <?= ($_GET['orden'] ?? '') === 'fecha_asc' ? 'selected' : '' ?>>Más antiguos</option>
                             <option value="direccion_asc" <?= ($_GET['orden'] ?? '') === 'direccion_asc' ? 'selected' : '' ?>>Dirección A-Z</option>
                             <option value="estado_asc" <?= ($_GET['orden'] ?? '') === 'estado_asc' ? 'selected' : '' ?>>Estado A-Z</option>
                         </select>
                     </div>
-                    <div class="filter-actions">
-                        <button type="submit" class="btn-pill btn-pill-primary">
+                    <div class="col-md-1 col-12 d-flex flex-column gap-2 align-items-center justify-content-end" style="min-width:120px;">
+                        <button type="submit" class="btn btn-primary w-100 mb-2" style="border-radius: 10px;">
                             <i class="fas fa-search"></i> FILTRAR
                         </button>
-                        <button type="button" class="btn-pill btn-pill-clear" onclick="limpiarFiltros()">
+                        <button type="button" class="btn btn-danger w-100" style="border-radius: 10px;" onclick="limpiarFiltros()">
                             <i class="fas fa-times"></i> LIMPIAR
                         </button>
                     </div>
@@ -1809,8 +1821,7 @@ if (isset($rutas) && is_array($rutas)) {
                                         <span class="routes-card-label">Estado:</span>
                                         <span class="routes-card-value">
                                             <?php
-                                            // Estado por defecto ya que no existe campo estado en la BD
-                                            $estado = 'activa';
+                                            $estado = $ruta['estado'] ?? 'activa';
                                             $statusClass = 'routes-status-' . $estado;
                                             ?>
                                             <span class="routes-card-status <?= $statusClass ?>">
@@ -1860,10 +1871,9 @@ if (isset($rutas) && is_array($rutas)) {
             </div>
 
             <!-- Tabla de Rutas -->
-            <div id="rutasTableContainer" class="table-container">
-
-            <div class="table-responsive">
-                <table class="table table-modern table-hover">
+            <div id="rutasTableContainer" class="table-container" style="overflow-x: auto; position: relative;">
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="table table-modern table-hover">
                     <thead>
                         <tr>
                             <th><i class="fas fa-hashtag"></i> ID</th>
@@ -1927,11 +1937,9 @@ if (isset($rutas) && is_array($rutas)) {
                                 </td>
                                 <td>
                                     <?php
-                                    // Como la tabla no tiene campo estado, usaremos un valor por defecto
-                                    $estado = 'activa'; // Valor por defecto
+                                    $estado = $ruta['estado'] ?? 'activa';
                                     $badgeClass = '';
                                     $iconClass = '';
-                                    
                                     switch ($estado) {
                                         case 'activa':
                                             $badgeClass = 'badge-success';
@@ -2077,30 +2085,8 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         // Función mejorada para limpiar filtros con animación
         function limpiarFiltros() {
-            const form = document.getElementById('filterForm');
-            const inputs = form.querySelectorAll('input, select');
-            
-            // Animación de limpieza
-            inputs.forEach((input, index) => {
-                setTimeout(() => {
-                    input.style.transform = 'scale(0.95)';
-                    input.style.transition = 'all 0.2s ease';
-                    
-                    setTimeout(() => {
-                        if (input.type === 'text' || input.type === 'date') {
-                            input.value = '';
-                        } else if (input.tagName === 'SELECT') {
-                            input.selectedIndex = 0;
-                        }
-                        input.style.transform = 'scale(1)';
-                    }, 100);
-                }, index * 30);
-            });
-
-            // Redirigir después de limpiar
-            setTimeout(() => {
-                window.location.href = '/RMIE/app/controllers/RouteController.php?accion=index';
-            }, inputs.length * 30 + 300);
+            // Redirige siempre a la URL base del listado de rutas
+            window.location.href = '/RMIE/app/controllers/RouteController.php?accion=index';
         }
 
         // Función mejorada para exportar rutas
@@ -2555,14 +2541,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             ctx.fillText('Total', centerX, centerY + 15);
         }
 
-        // Función para limpiar filtros
-        function limpiarFiltros() {
-            document.querySelector('select[name="estado"]').value = '';
-            document.querySelector('input[name="local"]').value = '';
-            document.querySelector('input[name="cliente"]').value = '';
-            document.querySelector('select[name="orden"]').value = 'fecha_desc';
-            document.getElementById('filterForm').submit();
-        }
+        // (Eliminada función duplicada limpiarFiltros, solo se mantiene la de redirección base)
     </script>
 </body>
 </html>

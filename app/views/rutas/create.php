@@ -507,6 +507,30 @@
                             <?php endif; ?>
                         </p>
                     </div>
+
+                    <!-- Estado de la Ruta -->
+                    <div class="form-row">
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-traffic-light"></i>
+                                Estado de la Ruta
+                            </div>
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" id="estado" name="estado" required>
+                                    <option value="activo">Activo</option>
+                                    <option value="pendiente">Pendiente</option>
+                                </select>
+                                <label for="estado">
+                                    <i class="fas fa-traffic-light"></i>
+                                    Estado <span class="required">*</span>
+                                </label>
+                                <div class="form-help">
+                                    <i class="fas fa-info-circle"></i>
+                                    Selecciona si la ruta estará activa o pendiente al crearla
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             <?php else: ?>
                 <div class="form-section">
@@ -520,6 +544,21 @@
             <!-- Form -->
             <div class="form-section">
                 <form action="/RMIE/app/controllers/RouteController.php?accion=create" method="POST" id="createRouteForm">
+
+                                        <div class="form-floating-modern">
+                                            <select class="form-select-modern" id="estado" name="estado" required>
+                                                <option value="activa">Activa</option>
+                                                <option value="pendiente">Pendiente</option>
+                                            </select>
+                                            <label for="estado">
+                                                <i class="fas fa-toggle-on"></i>
+                                                Estado de la Ruta <span class="required">*</span>
+                                            </label>
+                                            <div class="form-help">
+                                                <i class="fas fa-info-circle"></i>
+                                                Selecciona el estado inicial de la ruta
+                                            </div>
+                                        </div>
                     
                     <div class="form-row form-row-2">
                         <!-- Información de Ubicación -->

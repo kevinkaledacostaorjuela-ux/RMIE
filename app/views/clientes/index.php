@@ -36,6 +36,13 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <style>
+                .filter-label {
+                    color: #2c3e50 !important;
+                    font-weight: 600;
+                    font-size: 1rem;
+                    margin-bottom: 6px;
+                    display: block;
+                }
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
         a[href*="accion=delete"],

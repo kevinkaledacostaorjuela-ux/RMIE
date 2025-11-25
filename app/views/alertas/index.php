@@ -717,74 +717,61 @@ unset($_SESSION['success'], $_SESSION['error']);
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm" 
-                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                      style="background: white; padding: 2.5rem 3.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto;">
                     <input type="hidden" name="accion" value="index">
                     
-                    <div class="row g-3" style="grid-template-columns: 1fr 1fr 1fr 1fr 200px; display: grid;">
-                        <div class="col">
+                    <div class="filtros-alertas-flex" style="display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; justify-content: center; align-items: end;">
+                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-bell"></i> Tipo
                             </label>
-                            <input type="text"
-                                   name="tipo"
-                                   class="form-control"
-                                   placeholder="Buscar tipo..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['tipo'] ?? '') ?>">
+                            <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                <option value="">Todos</option>
+                                <option value="1" <?= (isset($_GET['tipo']) && $_GET['tipo'] == '1') ? 'selected' : '' ?>>Alerta</option>
+                                <option value="2" <?= (isset($_GET['tipo']) && $_GET['tipo'] == '2') ? 'selected' : '' ?>>Recordatorio</option>
+                            </select>
                         </div>
-
-                        <div class="col">
+                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-exclamation-triangle"></i> Prioridad
                             </label>
-                            <select name="prioridad" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                            <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
                                 <option value="">Todas las prioridades</option>
                                 <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
                                 <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
                                 <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
                             </select>
                         </div>
-
-                        <div class="col">
+                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-toggle-on"></i> Estado
                             </label>
-                            <select name="estado" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                            <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
                                 <option value="">Todos los estados</option>
                                 <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
                                 <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
                             </select>
                         </div>
-
-                        <div class="col">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Fecha
-                            </label>
-                            <input type="date"
-                                   name="fecha"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
-                        </div>
-
-                        <div class="col" style="display: flex; flex-direction: column; justify-content: flex-end;">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-cogs"></i> Acciones
-                            </label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <i class="fas fa-search"></i> FILTRAR
-                                </button>
-                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <i class="fas fa-times"></i> LIMPIAR
-                                </button>
-                            </div>
+                        <div style="display: flex; gap: 12px; align-items: end;">
+                            <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
+                                <i class="fas fa-search"></i> FILTRAR
+                            </button>
+                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #ff5c7a; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
+                                <i class="fas fa-times"></i> LIMPIAR
+                            </button>
                         </div>
                     </div>
+                    <style>
+                    @media (max-width: 900px) {
+                        .filtros-alertas-flex {
+                            flex-direction: column !important;
+                            align-items: stretch !important;
+                        }
+                        .filtro-alerta-item {
+                            max-width: 100% !important;
+                        }
+                    }
+                    </style>
                 </form>
             </div>
         </div>
@@ -1114,7 +1101,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function limpiarFiltros() {
-            document.getElementById('filterForm').reset();
+            // Redirige siempre a la URL base del listado de alertas
             window.location.href = '/RMIE/app/controllers/AlertController.php?accion=index';
         }
 

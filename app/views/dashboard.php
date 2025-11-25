@@ -3,17 +3,11 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
-if (!isset($_SESSION['user'])) {
-    header('Location: ../../index.php');
-    exit();
-}
-}
 $rol = isset($_SESSION['rol']) ? $_SESSION['rol'] : 'invitado';
 $nombreCompleto = trim((isset($_SESSION['nombres']) ? $_SESSION['nombres'] : '') . ' ' . (isset($_SESSION['apellidos']) ? $_SESSION['apellidos'] : ''));
 if (empty($nombreCompleto)) {
     $nombreCompleto = 'Usuario';
 }
-// Cargar configuración de permisos si es necesario
 require_once __DIR__ . '/../utils/PermissionsConfig.php';
 $allowedAux = [];
 if ($rol === 'auxiliar') {
@@ -393,16 +387,37 @@ if ($rol === 'auxiliar') {
         <ul class="sidebar-nav">
             <?php if ($rol === 'auxiliar'): ?>
                 <li class="nav-item-modern">
-                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=dashboard">
-                        <i class="nav-icon fas fa-home"></i>
-                        <span class="nav-text">Mi Dashboard</span>
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios">
+                        <i class="nav-icon fas fa-users"></i>
+                        <span class="nav-text">Usuarios (Consulta)</span>
                         <i class="nav-arrow fas fa-chevron-right"></i>
                     </a>
                 </li>
                 <li class="nav-item-modern">
-                    <a class="nav-link-modern" href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios">
-                        <i class="nav-icon fas fa-users"></i>
-                        <span class="nav-text">Usuarios (Consulta)</span>
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/SaleController.php?accion=index">
+                        <i class="nav-icon fas fa-shopping-cart"></i>
+                        <span class="nav-text">Ventas</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/ReportController.php?accion=index">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <span class="nav-text">Reportes</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/AlertController.php?accion=index">
+                        <i class="nav-icon fas fa-exclamation-triangle"></i>
+                        <span class="nav-text">Alertas</span>
+                        <i class="nav-arrow fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                <li class="nav-item-modern">
+                    <a class="nav-link-modern" href="/RMIE/app/controllers/RouteController.php?accion=index">
+                        <i class="nav-icon fas fa-route"></i>
+                        <span class="nav-text">Rutas</span>
                         <i class="nav-arrow fas fa-chevron-right"></i>
                     </a>
                 </li>

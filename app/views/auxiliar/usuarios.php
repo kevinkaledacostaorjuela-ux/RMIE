@@ -241,7 +241,8 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
 
         <!-- Filtros -->
         <div class="filters-container">
-            <form method="GET" action="">
+            <form method="GET" action="/RMIE/app/controllers/AuxiliarController.php">
+                <input type="hidden" name="accion" value="consultar_usuarios">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-5">
                         <label class="form-label text-white">
@@ -260,16 +261,21 @@ if (!isset($_SESSION['user']) || $_SESSION['rol'] !== 'auxiliar') {
                         </label>
                         <select name="rol" class="form-select form-control-modern">
                             <option value="">Todos los roles</option>
-                            <option value="admin" <?= ($_GET['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
-                            <option value="coordinador" <?= ($_GET['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
-                            <option value="auxiliar" <?= ($_GET['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
+                            <?php if (isset($roles_existentes) && is_array($roles_existentes)): ?>
+                                <?php foreach ($roles_existentes as $rol_db): ?>
+                                    <option value="<?= htmlspecialchars($rol_db) ?>" <?= (($_GET['rol'] ?? '') === $rol_db) ? 'selected' : '' ?>><?= ucfirst(htmlspecialchars($rol_db)) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
                         </select>
                     </div>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3 d-flex gap-2">
                         <button type="submit" class="btn btn-primary w-100" style="border-radius: 10px;">
                             <i class="fas fa-filter"></i> FILTRAR
                         </button>
+                        <a href="/RMIE/app/controllers/AuxiliarController.php?accion=consultar_usuarios" class="btn btn-secondary w-100" style="border-radius: 10px;">
+                            <i class="fas fa-eraser"></i> LIMPIAR
+                        </a>
                     </div>
                 </div>
             </form>

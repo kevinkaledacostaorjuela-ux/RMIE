@@ -982,63 +982,63 @@ $stats = $statsQuery->fetch_assoc();
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/SubcategoryController.php" id="filterForm" 
-                      style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+                      style="background: white; padding: 2.5rem 3.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 650px; margin: 0 auto;">
                     <input type="hidden" name="accion" value="index">
                     
-                    <div class="row g-3">
-                        <div class="col-md-3">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-sitemap"></i> Subcategoría
-                            </label>
-                            <input type="text"
-                                   name="nombre"
-                                   class="form-control"
-                                   placeholder="Buscar subcategoría..."
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                    <div class="filtros-subcategorias-flex" style="display: flex; flex-direction: row; justify-content: center; align-items: flex-end; gap: 2.2rem; flex-wrap: wrap;">
+                        <div class="filtros-campos-subcat" style="display: flex; flex-direction: row; gap: 2.2rem; align-items: flex-end;">
+                            <div class="col filtro-subcat-item" style="min-width: 180px; max-width: 220px; flex: 1 1 180px;">
+                                <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                    <i class="fas fa-sitemap"></i> Subcategoría
+                                </label>
+                                <input type="text"
+                                       name="nombre"
+                                       class="form-control"
+                                       placeholder="Buscar subcategoría..."
+                                       style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
+                                       value="<?= htmlspecialchars($_GET['nombre'] ?? '') ?>">
+                            </div>
+                            <div class="col filtro-subcat-item" style="min-width: 180px; max-width: 220px; flex: 1 1 180px;">
+                                <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                                    <i class="fas fa-layer-group"></i> Categoría
+                                </label>
+                                <select name="categoria"
+                                        class="form-select"
+                                        style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                                    <option value="">Todas las categorías</option>
+                                    <?php if (isset($categorias) && is_array($categorias)): ?>
+                                        <?php foreach ($categorias as $cat): ?>
+                                            <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($cat->nombre) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
                         </div>
-
-                        <div class="col-md-3">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-layer-group"></i> Categoría
-                            </label>
-                            <select name="categoria" 
-                                    class="form-select"
-                                    style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
-                                <option value="">Todas las categorías</option>
-                                <?php if (isset($categorias) && is_array($categorias)): ?>
-                                    <?php foreach ($categorias as $cat): ?>
-                                        <option value="<?= $cat->id_categoria ?>" <?= isset($_GET['categoria']) && $_GET['categoria'] == $cat->id_categoria ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($cat->nombre) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php endif; ?>
-                            </select>
-                        </div>                        <div class="col-md-3">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-calendar"></i> Fecha
-                            </label>
-                            <input type="date"
-                                   name="fecha"
-                                   class="form-control"
-                                   style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;"
-                                   value="<?= htmlspecialchars($_GET['fecha'] ?? '') ?>">
-                        </div>
-
-                        <div class="col-md-3">
+                        <div class="filtros-botones-subcat" style="display: flex; flex-direction: column; gap: 12px; align-items: center; justify-content: flex-end; min-width: 140px;">
                             <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-cogs"></i> Acciones
                             </label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <i class="fas fa-search"></i> FILTRAR
-                                </button>
-                                <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
-                                    <i class="fas fa-times"></i> LIMPIAR
-                                </button>
-                            </div>
+                            <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s; width: 100%;">
+                                <i class="fas fa-search"></i> FILTRAR
+                            </button>
+                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #ff5c7a; color: white; border: none; padding: 12px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s; width: 100%;">
+                                <i class="fas fa-times"></i> LIMPIAR
+                            </button>
                         </div>
                     </div>
+                    <style>
+                    @media (max-width: 900px) {
+                        .filtros-subcategorias-flex, .filtros-campos-subcat {
+                            flex-direction: column !important;
+                            align-items: stretch !important;
+                        }
+                        .filtro-subcat-item, .filtros-botones-subcat {
+                            max-width: 100% !important;
+                        }
+                    }
+                    </style>
                 </form>
             </div>
         </div>

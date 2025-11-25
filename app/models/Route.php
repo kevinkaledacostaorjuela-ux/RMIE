@@ -6,12 +6,12 @@ class Route {
         
         // Definir reglas de validación para filtros
         $filterRules = [
-            'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+            'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'venta' => ['type' => 'int', 'options' => ['min' => 1]],
             'reporte' => ['type' => 'int', 'options' => ['min' => 1]],
             'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
             'nombre_local' => ['type' => 'text', 'options' => ['max_length' => 100]],
-            'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'estado' => ['type' => 'text', 'options' => ['max_length' => 20]],
             'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
         ];
         
@@ -20,12 +20,12 @@ class Route {
         
         // Mapeo de campos a columnas SQL
         $mapping = [
-            'cliente' => ['column' => 'r.id_clientes', 'operator' => '=', 'type' => 'i'],
+            'nombre_cliente' => ['column' => 'c.nombre', 'operator' => '=', 'type' => 's'],
             'venta' => ['column' => 'r.id_ventas', 'operator' => '=', 'type' => 'i'],
             'reporte' => ['column' => 'r.id_reportes', 'operator' => '=', 'type' => 'i'],
             'direccion' => ['column' => 'r.direccion', 'operator' => 'LIKE', 'type' => 's'],
-            'nombre_local' => ['column' => 'l.nombre_local', 'operator' => 'LIKE', 'type' => 's'],
-            'nombre_cliente' => ['column' => 'c.nombre', 'operator' => 'LIKE', 'type' => 's'],
+            'nombre_local' => ['column' => 'l.nombre_local', 'operator' => '=', 'type' => 's'],
+            'estado' => ['column' => 'r.estado', 'operator' => '=', 'type' => 's'],
             'buscar' => [
                 'columns' => ['r.direccion', 'l.nombre_local', 'c.nombre'],
                 'operator' => 'MULTIPLE_LIKE'
@@ -90,14 +90,14 @@ class Route {
         return self::getAll($conn, $filtros);
     }
 
-    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas) {
+    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado) {
         try {
-            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado) VALUES (?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta: " . $conn->error);
             }
-            $stmt->bind_param('sssii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
+            $stmt->bind_param('sssiss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado);
             if (!$stmt->execute()) {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
@@ -117,7 +117,7 @@ class Route {
         return $result->fetch_assoc();
     }
 
-    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes = null) {
+    public static function update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes = null, $estado = null) {
         try {
             // Depuración: verificar datos de entrada
             error_log("DEBUG Update - ID: $id, Direccion: $direccion, Local: $nombre_local, Cliente: $nombre_cliente, ID_Clientes: $id_clientes, ID_Ventas: $id_ventas, ID_Reportes: $id_reportes");
@@ -137,7 +137,7 @@ class Route {
             error_log("DEBUG - Ruta existente encontrada: " . json_encode($existing));
             
             // Actualizar incluyendo id_reportes
-            $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, id_reportes = ? WHERE id_ruta = ?";
+            $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, id_reportes = ?, estado = ? WHERE id_ruta = ?";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta: " . $conn->error);
@@ -145,7 +145,7 @@ class Route {
             
             error_log("DEBUG - SQL preparado: $sql");
             
-            $stmt->bind_param('sssiiii', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes, $id);
+            $stmt->bind_param('sssiiiss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes, $estado, $id);
             
             if (!$stmt->execute()) {
                 error_log("DEBUG - Error en execute: " . $stmt->error);

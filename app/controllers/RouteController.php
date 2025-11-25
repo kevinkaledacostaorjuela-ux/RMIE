@@ -23,21 +23,29 @@ class RouteController {
         
         // Definir reglas de filtro
         $filterRules = [
-            'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
+            'cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'venta' => ['type' => 'int', 'options' => ['min' => 1]],
             'reporte' => ['type' => 'int', 'options' => ['min' => 1]],
             'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
-            'nombre_local' => ['type' => 'text', 'options' => ['max_length' => 100]],
-            'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'local' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'estado' => ['type' => 'text', 'options' => ['max_length' => 20]],
             'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
         ];
         
         // Procesar filtros del GET
         $filtros = FilterHelper::processFilters($_GET, $filterRules);
+        // Mapear los filtros de select a los nombres correctos para el modelo
+        if (!empty($filtros['cliente'])) {
+            $filtros['nombre_cliente'] = $filtros['cliente'];
+        }
+        if (!empty($filtros['local'])) {
+            $filtros['nombre_local'] = $filtros['local'];
+        }
         
         // Obtener datos para selectores
         $ventas = Sale::getFiltered($conn);
-        $clientes = Route::getAvailableClients($conn);
+        $available_clients = Route::getAvailableClients($conn);
+        $available_locals = Route::getAvailableLocals($conn);
         
         // Obtener rutas con filtros
         $rutas = Route::getAll($conn, $filtros);
@@ -65,6 +73,7 @@ class RouteController {
                 $id_locales = intval($_POST['id_locales'] ?? 0);
                 $id_clientes = intval($_POST['id_clientes'] ?? 0);
                 $id_ventas = intval($_POST['id_ventas'] ?? 0);
+                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
 
                 // Validaciones básicas
                 if (empty($direccion) || strlen($direccion) < 5) {
@@ -115,7 +124,7 @@ class RouteController {
                     throw new Exception("El cliente seleccionado no existe.");
                 }
 
-                Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas);
+                Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado);
                 
                 // Mensaje de éxito y redirección
                 $_SESSION['success_message'] = "Ruta creada exitosamente.";
@@ -162,6 +171,7 @@ class RouteController {
                 $nombre_cliente = trim($_POST['nombre_cliente'] ?? '');
                 $id_clientes = intval($_POST['id_clientes'] ?? 0);
                 $id_ventas = intval($_POST['id_ventas'] ?? 0);
+                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
 
                 // Validaciones solo para POST
                 if (empty($direccion) || strlen($direccion) < 5) {
@@ -182,7 +192,7 @@ class RouteController {
 
                 // Intentar actualizar la ruta (mantener id_reportes existente)
                 $id_reportes = $route['id_reportes']; // Mantener el valor existente
-                $success = Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes);
+                $success = Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes, $estado);
                 
                 if ($success) {
                     $_SESSION['success'] = "Ruta actualizada exitosamente.";

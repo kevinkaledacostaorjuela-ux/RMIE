@@ -902,20 +902,7 @@ $stats = $statsQuery->fetch_assoc();
                     <i class="fas fa-arrow-left"></i> Volver al Dashboard
                 </a>
             </div>
-            <div class="resumen-info">
-                <?php 
-                $total_mostrados = count($locales);
-                $filtros_activos = !empty($filtros['nombre']) || !empty($filtros['localidad']) || !empty($filtros['barrio']) || !empty($filtros['estado']);
-                ?>
-                <div class="info-badge">
-                    <i class="fas fa-list"></i>
-                    <span class="fw-bold"><?php echo $total_mostrados; ?></span> 
-                    <?php echo $filtros_activos ? 'locales filtrados' : 'locales totales'; ?>
-                    <?php if ($filtros_activos): ?>
-                        <small class="text-muted">(<?php echo $stats['total_locales']; ?> en total)</small>
-                    <?php endif; ?>
-                </div>
-            </div>
+            <!-- Resumen de locales eliminado por solicitud -->
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->

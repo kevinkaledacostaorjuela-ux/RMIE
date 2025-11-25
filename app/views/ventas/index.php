@@ -1068,19 +1068,16 @@ if (isset($ventas) && is_array($ventas)) {
 
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-user"></i> Cliente</span>
-                        <input type="text"
-                               name="filtro_cliente"
-                               class="filter-input"
-                               placeholder="Buscar cliente..."
-                               value="<?= htmlspecialchars($_GET['filtro_cliente'] ?? '') ?>">
-                    </div>
-
-                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-calendar"></i> Fecha</span>
-                        <input type="date"
-                               name="filtro_fecha"
-                               class="filter-input"
-                               value="<?= htmlspecialchars($_GET['filtro_fecha'] ?? '') ?>">
+                        <select name="filtro_cliente" class="filter-select">
+                            <option value="">Todos los clientes</option>
+                            <?php if (isset($clientes) && is_array($clientes)): ?>
+                                <?php foreach ($clientes as $cliente): ?>
+                                    <option value="<?= htmlspecialchars($cliente->nombre) ?>" <?= (isset($_GET['filtro_cliente']) && $_GET['filtro_cliente'] == $cliente->nombre) ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($cliente->nombre) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
                     </div>
 
                     <div class="filter-item">

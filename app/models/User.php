@@ -42,7 +42,7 @@ class User {
         
         // Definir reglas de validación para filtros
         $filterRules = [
-            'rol' => ['type' => 'select', 'options' => ['allowed_values' => ['administrador', 'empleado', 'vendedor']]],
+            'rol' => ['type' => 'text', 'options' => ['max_length' => 30]],
             'tipo_doc' => ['type' => 'select', 'options' => ['allowed_values' => ['CC', 'CE', 'TI', 'PP']]],
             'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'num_cel' => ['type' => 'text', 'options' => ['max_length' => 20]],

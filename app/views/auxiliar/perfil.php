@@ -23,7 +23,7 @@ if (empty($nombreCompleto)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mi Perfil - RMIE Auxiliar</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../../../public/css/styles.css" rel="stylesheet">
+    <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
@@ -76,19 +76,19 @@ if (empty($nombreCompleto)) {
 <body>
 
 <div class="container-fluid">
-    <main class="main-content" style="margin: 0 auto; max-width: 600px;">
+    <main class="main-content" style="margin: 0; max-width: 100%;">
         <!-- Header -->
-        <div class="dashboard-header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; color: white; margin-bottom: 30px; border-radius: 0 0 30px 30px;">
-            <h1 style="margin: 0; font-weight: 700; font-size: 2.5rem;">
+        <div class="dashboard-header text-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 18px 0 10px 0; color: white; margin-bottom: 18px; border-radius: 0 0 22px 22px;">
+            <h1 style="margin: 0; font-weight: 700; font-size: 2rem;">
                 <i class="fas fa-user-edit me-3"></i>Mi Perfil
             </h1>
-            <p style="margin: 5px 0 0 0; font-size: 1.1rem; opacity: 0.9;">
+            <p style="margin: 5px 0 0 0; font-size: 1rem; opacity: 0.9;">
                 Edita tu información personal y cambia tu contraseña
             </p>
         </div>
 
-        <div class="perfil-center-container" style="justify-content: center;">
-            <div class="perfil-card">
+        <div class="perfil-center-container" style="justify-content: flex-start;">
+            <div class="perfil-card" style="max-width: 100%;">
                 <!-- Mensajes de éxito o error -->
                 <?php if (isset($success)): ?>
                 <div class="alert alert-success alert-dismissible fade show" role="alert">
