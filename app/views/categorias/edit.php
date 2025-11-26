@@ -322,9 +322,9 @@ $fecha_creacion_formatted = $fecha_creacion_raw ? date('d/m/Y H:i', strtotime($f
             }
         });
 
-        console.log('✅ Vista de edición de CATEGORÍA cargada correctamente');
-        console.log('ID Categoría:', '<?= $categoria_id_safe ?>');
-        console.log('Nombre:', '<?= $categoria_nombre_safe ?>');
+        // console.log('✅ Vista de edición de CATEGORÍA cargada correctamente');
+        // console.log('ID Categoría:', '<?= $categoria_id_safe ?>');
+        // console.log('Nombre:', '<?= $categoria_nombre_safe ?>');
     </script>
 </body>
 </html>

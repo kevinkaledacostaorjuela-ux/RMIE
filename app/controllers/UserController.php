@@ -189,9 +189,8 @@ class UserController {
                     $resultado = User::update($conn, $id, $_POST);
                     
                     if ($resultado) {
-                        $success = "Usuario actualizado exitosamente";
-                        // Recargar los datos del usuario
-                        $usuario = User::getById($conn, $id);
+                        header('Location: /RMIE/app/controllers/UserController.php?accion=index&success=Usuario actualizado exitosamente');
+                        exit;
                     } else {
                         $error = "Error al actualizar el usuario";
                     }
@@ -199,11 +198,9 @@ class UserController {
                     $error = implode(", ", $errores);
                 }
             }
-            
         } catch (Exception $e) {
             $error = "Error al procesar la solicitud: " . $e->getMessage();
         }
-        
         include __DIR__ . '/../views/usuarios/edit.php';
     }
     

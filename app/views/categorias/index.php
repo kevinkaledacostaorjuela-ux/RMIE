@@ -1019,22 +1019,22 @@ if (isset($conn)) {
 
         // Debug: Log de todos los enlaces de edición
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('=== DEBUG: Enlaces de Categorías ===');
+            // console.log('=== DEBUG: Enlaces de Categorías ===');
             
             // Verificar botones de edición en tarjetas
             const editButtons = document.querySelectorAll('.btn-edit-categoria');
-            console.log(`Encontrados ${editButtons.length} botones de edición en tarjetas`);
+            // console.log(`Encontrados ${editButtons.length} botones de edición en tarjetas`);
             
             editButtons.forEach((btn, index) => {
                 const href = btn.getAttribute('href');
                 const id = btn.getAttribute('data-id');
                 const nombre = btn.getAttribute('data-nombre');
-                console.log(`Botón ${index + 1}: ID=${id}, Nombre="${nombre}", URL="${href}"`);
+                // console.log(`Botón ${index + 1}: ID=${id}, Nombre="${nombre}", URL="${href}"`);
                 
                 // Agregar listener para verificar clicks
                 btn.addEventListener('click', function(e) {
-                    console.log(`CLICK en botón editar: Redirigiendo a ${this.href}`);
-                    console.log(`Tipo: ${this.getAttribute('data-type')}, ID: ${this.getAttribute('data-id')}`);
+                    // console.log(`CLICK en botón editar: Redirigiendo a ${this.href}`);
+                    // console.log(`Tipo: ${this.getAttribute('data-type')}, ID: ${this.getAttribute('data-id')}`);
                 });
             });
             
@@ -1051,7 +1051,7 @@ if (isset($conn)) {
                     console.warn(`Link ${index + 1}: ${link.href}`);
                 });
             } else {
-                console.log('✅ Todos los enlaces apuntan correctamente a CategoryController');
+                // console.log('✅ Todos los enlaces apuntan correctamente a CategoryController');
             }
         });
     </script>

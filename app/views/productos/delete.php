@@ -277,16 +277,16 @@ $subcategoria = null;
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔧 DEBUG: Página de eliminación de producto cargada');
-            console.log('📦 DEBUG: ID Producto: <?php echo $id_producto; ?>');
-            console.log('🛒 DEBUG: Tiene ventas: <?php echo !empty($dependencies["ventas"]) ? "Sí (" . $dependencies["ventas"] . ")" : "No"; ?>');
+            // console.log('🔧 DEBUG: Página de eliminación de producto cargada');
+            // console.log('📦 DEBUG: ID Producto: <?php echo $id_producto; ?>');
+            // console.log('🛒 DEBUG: Tiene ventas: <?php echo !empty($dependencies["ventas"]) ? "Sí (" . $dependencies["ventas"] . ")" : "No"; ?>');
             
             // Verificar botones de eliminación
             const deleteButtons = document.querySelectorAll('a[href*="delete"]');
-            console.log(`🔍 DEBUG: Se encontraron ${deleteButtons.length} enlaces de eliminación`);
+            // console.log(`🔍 DEBUG: Se encontraron ${deleteButtons.length} enlaces de eliminación`);
             
             deleteButtons.forEach(function(button, index) {
-                console.log(`🔗 DEBUG: Enlace ${index + 1}: ${button.href}`);
+                // console.log(`🔗 DEBUG: Enlace ${index + 1}: ${button.href}`);
             });
         });
     </script>

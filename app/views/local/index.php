@@ -1101,6 +1101,7 @@ $stats = $statsQuery->fetch_assoc();
                 </div>
             <?php else: ?>
                 <div class="table-responsive">
+                    <div style="overflow-x:auto; width:100%">
                     <table class="table table-modern">
                         <thead>
                             <tr>
@@ -1253,6 +1254,7 @@ $stats = $statsQuery->fetch_assoc();
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 <!-- Indicador de scroll para móviles -->
                 <div class="scroll-hint d-block d-md-none">

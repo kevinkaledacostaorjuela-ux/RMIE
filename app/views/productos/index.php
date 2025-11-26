@@ -1074,6 +1074,7 @@ $stats = $statsQuery->fetch_assoc();
             <!-- Vista de Tabla -->
             <div id="tableView" style="display: none;">
             <div class="table-responsive">
+                <div style="overflow-x:auto; width:100%">
                 <table class="table table-modern">
                     <thead>
                         <tr>
@@ -1191,6 +1192,7 @@ $stats = $statsQuery->fetch_assoc();
                         <?php endif; ?>
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>
