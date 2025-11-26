@@ -578,8 +578,8 @@
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
-                                    id="id_proveedor" 
-                                    name="id_proveedor">
+                                    id="id_proveedores" 
+                                    name="id_proveedores">
                                 <option value="">Seleccione un proveedor</option>
                                 <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                     <?php foreach ($proveedores as $prov): ?>
@@ -589,7 +589,7 @@
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="id_proveedor">
+                            <label for="id_proveedores">
                                 <i class="fas fa-truck"></i>
                                 Proveedor (Opcional)
                             </label>
@@ -597,20 +597,20 @@
 
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
-                                    id="id_usuario" 
-                                    name="id_usuario"
+                                    id="num_doc" 
+                                    name="num_doc"
                                     required>
                                 <option value="">Seleccione un usuario responsable</option>
                                 <?php if (isset($usuarios) && is_array($usuarios)): ?>
                                     <?php foreach ($usuarios as $user): ?>
                                         <option value="<?= htmlspecialchars($user->num_doc ?? '') ?>">
-                                            <?= htmlspecialchars($user->nombre ?? 'Sin nombre') ?> 
+                                            <?= htmlspecialchars(($user->nombres ?? '') . ' ' . ($user->apellidos ?? '')) ?> 
                                             (<?= htmlspecialchars($user->rol ?? 'Sin rol') ?>)
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="id_usuario">
+                            <label for="num_doc">
                                 <i class="fas fa-user"></i>
                                 Usuario Responsable *
                             </label>

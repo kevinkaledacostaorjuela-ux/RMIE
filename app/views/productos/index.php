@@ -1032,11 +1032,11 @@ $stats = $statsQuery->fetch_assoc();
 
                                 <div class="products-info-item">
                                     <div class="products-info-icon">
-                                        <i class="fas fa-user"></i>
+                                        <i class="fas fa-truck"></i>
                                     </div>
                                     <div class="products-info-content">
                                         <div class="products-info-label">Proveedor</div>
-                                        <div class="products-info-value"><?= htmlspecialchars($producto->proveedor ?? 'Sin proveedor') ?></div>
+                                        <div class="products-info-value"><?= htmlspecialchars($productData['proveedor_nombre'] ?? 'Sin proveedor') ?></div>
                                     </div>
                                 </div>
                             </div>
@@ -1083,6 +1083,7 @@ $stats = $statsQuery->fetch_assoc();
                             <th><i class="fas fa-layer-group"></i> Subcategoría</th>
                             <th><i class="fas fa-dollar-sign"></i> Precio</th>
                             <th><i class="fas fa-warehouse"></i> Stock</th>
+                            <th><i class="fas fa-truck"></i> Proveedor</th>
                             <th><i class="fas fa-calendar-alt"></i> Fecha</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
                         </tr>
@@ -1140,6 +1141,17 @@ $stats = $statsQuery->fetch_assoc();
                                     <span class="badge <?= $badge_class ?>">
                                         <?= $stock ?> uds
                                     </span>
+                                </td>
+                                <td>
+                                    <?php if (!empty($proveedor_nombre)): ?>
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-truck"></i> <?= htmlspecialchars($proveedor_nombre) ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-question"></i> Sin proveedor
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <small>

@@ -307,28 +307,20 @@ $alertasResueltas = 0;
                         <tr>
                             <th>ID</th>
                             <th>Título</th>
-                            <th>Descripción</th>
+                            <th>Producto</th>
                             <th>Prioridad</th>
-                            <th>Estado</th>
-                            <th>Fecha</th>
+                            <th>Cantidad Mínima</th>
+                            <th>Fecha Caducidad</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($alertas as $alerta): ?>
                         <tr>
                             <td><?= htmlspecialchars($alerta['id_alertas']) ?></td>
-                            <td><?= htmlspecialchars($alerta['cliente_no_disponible'] ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?></td>
-                            <td>
-                                <span class="badge badge-info">
-                                    Stock: <?= htmlspecialchars($alerta['cantidad_minima'] ?? 'N/A') ?>
-                                </span>
-                            </td>
-                            <td>
-                                <span class="badge badge-activo">
-                                    Activo
-                                </span>
-                            </td>
+                            <td><?= htmlspecialchars($alerta['titulo'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($alerta['producto_nombre'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($alerta['prioridad'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($alerta['cantidad_minima'] ?? 0) ?></td>
                             <td><?= htmlspecialchars($alerta['fecha_caducidad'] ?? 'N/A') ?></td>
                         </tr>
                         <?php endforeach; ?>
@@ -368,11 +360,11 @@ $alertasResueltas = 0;
             
             ws['!cols'] = [
                 {wch: 12}, // ID
-                {wch: 40}, // Cliente No Disponible
-                {wch: 22}, // Cantidad Mínima
-                {wch: 25}, // Descripción
-                {wch: 18}, // Estado
-                {wch: 22}  // Fecha
+                {wch: 40}, // Título
+                {wch: 22}, // Producto
+                {wch: 25}, // Prioridad
+                {wch: 18}, // Cantidad Mínima
+                {wch: 22}  // Fecha Caducidad
             ];
             
             XLSX.utils.book_append_sheet(wb, ws, "Alertas");

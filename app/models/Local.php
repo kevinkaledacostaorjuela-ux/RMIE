@@ -136,15 +136,16 @@ class Local {
     }
     
     public static function create($conn, $data) {
-        $sql = "INSERT INTO locales (direccion, nombre_local, cel_local, estado, localidad, barrio) VALUES (?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO locales (direccion, nombre_local, cel_local, estado, localidad, barrio, id_clientes) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssss", 
+        $stmt->bind_param("ssssssi", 
             $data['direccion'],
             $data['nombre_local'],
             $data['cel_local'],
             $data['estado'],
             $data['localidad'],
-            $data['barrio']
+            $data['barrio'],
+            $data['id_clientes']
         );
         
         return $stmt->execute();

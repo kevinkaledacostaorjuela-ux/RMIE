@@ -76,48 +76,55 @@ class ProductController {
         $usuarios = User::getAll($conn);
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            echo '<pre>POST: ' . print_r($_POST, true) . '</pre>';
-            
-            $nombre = $_POST['nombre'] ?? null;
-            $descripcion = $_POST['descripcion'] ?? null;
-            $fecha_entrada = $_POST['fecha_entrada'] ?? null;
-            $fecha_fabricacion = $_POST['fecha_fabricacion'] ?? null;
-            $fecha_caducidad = $_POST['fecha_caducidad'] ?? null;
-            $stock = $_POST['stock'] ?? null;
-            $precio_unitario = $_POST['precio_unitario'] ?? null;
-            $precio_por_mayor = $_POST['precio_por_mayor'] ?? null;
-            $valor_unitario = $_POST['valor_unitario'] ?? null;
-            $marca = $_POST['marca'] ?? null;
-            $id_subcategoria = $_POST['subcategoria_id'] ?? null;
-            $id_categoria = $_POST['categoria_id'] ?? null;
-            $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
-            $num_doc = $_POST['num_doc'] ?? null;
-            
-            // Validar campos requeridos
-            // El proveedor ahora es opcional
-            if (empty($num_doc)) {
-                echo '<pre>Error: Debe seleccionar un usuario responsable.</pre>';
-                return;
-            }
-            
-            $result = Product::create($conn, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
-            
-            if (!$result) {
-                echo '<pre>Error al guardar el producto.</pre>';
-            } else {
-                echo '<pre>Producto guardado correctamente.</pre>';
-                header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
-                exit();
+            try {
+                $nombre = $_POST['nombre'] ?? null;
+                $descripcion = $_POST['descripcion'] ?? null;
+                $fecha_entrada = $_POST['fecha_entrada'] ?? null;
+                $fecha_fabricacion = $_POST['fecha_fabricacion'] ?? null;
+                $fecha_caducidad = $_POST['fecha_caducidad'] ?? null;
+                $stock = $_POST['stock'] ?? null;
+                $precio_unitario = $_POST['precio_unitario'] ?? null;
+                $precio_por_mayor = $_POST['precio_por_mayor'] ?? null;
+                $valor_unitario = $_POST['valor_unitario'] ?? null;
+                $marca = $_POST['marca'] ?? null;
+                $id_subcategoria = $_POST['subcategoria_id'] ?? null;
+                $id_categoria = $_POST['categoria_id'] ?? null;
+                $id_proveedores = !empty($_POST['id_proveedores']) ? $_POST['id_proveedores'] : null;
+                $num_doc = $_POST['num_doc'] ?? null;
+                
+                // Validar campos requeridos
+                if (empty($nombre)) {
+                    throw new Exception("El nombre del producto es requerido");
+                }
+                
+                if (empty($num_doc)) {
+                    throw new Exception("Debe seleccionar un usuario responsable");
+                }
+                
+                if (empty($id_categoria)) {
+                    throw new Exception("Debe seleccionar una categoría");
+                }
+                
+                if (empty($id_subcategoria)) {
+                    throw new Exception("Debe seleccionar una subcategoría");
+                }
+                
+                $result = Product::create($conn, $nombre, $descripcion, $fecha_entrada, $fecha_fabricacion, $fecha_caducidad, $stock, $precio_unitario, $precio_por_mayor, $valor_unitario, $marca, $id_subcategoria, $id_categoria, $id_proveedores, $num_doc);
+                
+                if ($result) {
+                    $_SESSION['success'] = 'Producto creado exitosamente';
+                    header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+                    exit();
+                } else {
+                    throw new Exception("Error al guardar el producto");
+                }
+            } catch (Exception $e) {
+                $_SESSION['error'] = $e->getMessage();
+                // Volver a cargar la vista con el error
             }
         }
         
         // Cargar datos necesarios para la vista
-        global $conn;
-        $categorias = Category::getAll($conn);
-        $subcategorias = SubcategorySimple::getAllSimple($conn);
-        $proveedores = Provider::getAll($conn);
-        $usuarios = User::getAll($conn);
-        
         include __DIR__ . '/../views/productos/create.php';
     }
 
@@ -156,9 +163,14 @@ class ProductController {
                 if (!$result) {
                     $errorMessage = 'Error al actualizar el producto.';
                 } else {
-                    // Recargar el producto con los datos actualizados y mostrar mensaje de éxito
-                    $successMessage = 'Producto actualizado exitosamente.';
-                    $producto = Product::getById($conn, $id);
+                    // Iniciar sesión si no está activa
+                    if (session_status() == PHP_SESSION_NONE) {
+                        session_start();
+                    }
+                    // Redirigir al index con mensaje de éxito
+                    $_SESSION['success'] = 'Producto actualizado exitosamente.';
+                    header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+                    exit();
                 }
             }
         }

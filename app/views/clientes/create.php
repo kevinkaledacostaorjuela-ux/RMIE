@@ -581,27 +581,6 @@
 
                             <div class="form-floating-modern">
                                 <select class="form-select-modern" 
-                                        id="id_locales" 
-                                        name="id_locales" 
-                                        required>
-                                    <option value="">Seleccione un local</option>
-                                    <?php if (isset($locales)): ?>
-                                        <?php foreach ($locales as $local): ?>
-                                            <option value="<?= $local->id_locales ?>" 
-                                                    <?= (isset($_POST['id_locales']) && $_POST['id_locales'] == $local->id_locales) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($local->nombre_local) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
-                                <label for="id_locales">
-                                    <i class="fas fa-store"></i>
-                                    Local Asignado <span class="required">*</span>
-                                </label>
-                            </div>
-
-                            <div class="form-floating-modern">
-                                <select class="form-select-modern" 
                                         id="estado" 
                                         name="estado">
                                     <option value="activo" <?= (isset($_POST['estado']) && $_POST['estado'] === 'activo') ? 'selected' : 'selected' ?>>Activo</option>
@@ -678,11 +657,6 @@
                                     <span id="previewPhoneText"></span>
                                 </div>
                                 
-                                <div class="preview-local" id="previewLocal">
-                                    <i class="fas fa-store"></i>
-                                    <span id="previewLocalText">Seleccione un local</span>
-                                </div>
-                                
                                 <div class="preview-status" id="previewStatus">
                                     <span class="status-badge status-activo">
                                         <i class="fas fa-check-circle"></i> Activo
@@ -754,7 +728,6 @@
                 const nombre = document.getElementById('nombre').value;
                 const correo = document.getElementById('correo').value;
                 const telefono = document.getElementById('cel_cliente').value;
-                const localSelect = document.getElementById('id_locales');
                 const estado = document.getElementById('estado').value;
                 
                 // Actualizar avatar
@@ -782,14 +755,6 @@
                     phoneDiv.style.display = 'none';
                 }
                 
-                // Actualizar local
-                const localText = document.getElementById('previewLocalText');
-                if (localSelect.value && localSelect.options[localSelect.selectedIndex]) {
-                    localText.textContent = localSelect.options[localSelect.selectedIndex].text;
-                } else {
-                    localText.textContent = 'Seleccione un local';
-                }
-                
                 // Actualizar estado
                 const statusDiv = document.getElementById('previewStatus');
                 if (estado === 'activo') {
@@ -804,7 +769,7 @@
             }
             
             // Agregar listeners para vista previa
-            ['nombre', 'correo', 'cel_cliente', 'id_locales', 'estado'].forEach(function(fieldId) {
+            ['nombre', 'correo', 'cel_cliente', 'estado'].forEach(function(fieldId) {
                 const field = document.getElementById(fieldId);
                 if (field) {
                     field.addEventListener('input', actualizarVistaPrevia);
@@ -816,7 +781,6 @@
             form.addEventListener('submit', function(e) {
                 const correo = document.getElementById('correo').value;
                 const nombre = document.getElementById('nombre').value;
-                const local = document.getElementById('id_locales').value;
                 
                 // Validar correo
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -832,14 +796,6 @@
                     e.preventDefault();
                     alert('El nombre debe tener al menos 2 caracteres');
                     document.getElementById('nombre').focus();
-                    return;
-                }
-                
-                // Validar local
-                if (!local) {
-                    e.preventDefault();
-                    alert('Por favor seleccione un local');
-                    document.getElementById('id_locales').focus();
                     return;
                 }
             });
@@ -883,7 +839,6 @@
                 document.getElementById('previewName').textContent = 'Nombre del Cliente';
                 document.querySelector('#previewEmail span').textContent = 'correo@ejemplo.com';
                 document.getElementById('previewPhone').style.display = 'none';
-                document.getElementById('previewLocalText').textContent = 'Seleccione un local';
                 document.getElementById('previewStatus').innerHTML = `<span class="status-badge status-activo">
                     <i class="fas fa-check-circle"></i> Activo
                 </span>`;

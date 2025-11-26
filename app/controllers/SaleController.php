@@ -62,50 +62,70 @@ class SaleController {
     public function create() {
         try {
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Validación de datos
-                $id_productos = trim($_POST['id_productos'] ?? '');
+                // Validar datos básicos
                 $id_clientes = trim($_POST['id_clientes'] ?? '');
                 $fecha_venta = trim($_POST['fecha_venta'] ?? '');
-                $cantidad = trim($_POST['cantidad'] ?? '');
-                $precio_unitario = trim($_POST['precio_unitario'] ?? '');
-                $total = trim($_POST['total'] ?? '');
                 $estado = trim($_POST['estado'] ?? 'pendiente');
                 $num_doc = trim($_POST['num_doc'] ?? '');
-                
-                if (empty($id_productos)) {
-                    throw new Exception("Debe seleccionar un producto");
-                }
+                $productos = $_POST['productos'] ?? [];
                 
                 if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");
                 }
                 
                 if (empty($fecha_venta)) {
-                    // Si no se proporciona fecha, usar la fecha actual
                     $fecha_venta = date('Y-m-d');
-                }
-                
-                if (empty($cantidad) || $cantidad <= 0) {
-                    throw new Exception("La cantidad debe ser mayor a 0");
-                }
-                
-                if (empty($precio_unitario) || $precio_unitario <= 0) {
-                    throw new Exception("El precio unitario debe ser mayor a 0");
                 }
                 
                 if (empty($num_doc)) {
                     throw new Exception("Debe seleccionar un usuario responsable");
                 }
                 
-                global $conn;
-                $resultado = Sale::create($conn, $id_productos, $id_clientes, $fecha_venta, $cantidad, $precio_unitario, $total, $estado, $num_doc);
-                
-                if ($resultado) {
-                    header('Location: ' . $this->baseUrl . '?accion=index&success=created');
-                } else {
-                    throw new Exception("Error al crear la venta");
+                if (empty($productos) || !is_array($productos)) {
+                    throw new Exception("Debe agregar al menos un producto al carrito");
                 }
-                exit();
+                
+                global $conn;
+                
+                // Iniciar transacción
+                $conn->begin_transaction();
+                
+                try {
+                    // Crear una venta por cada producto en el carrito
+                    $ventasCreadas = 0;
+                    
+                    foreach ($productos as $producto) {
+                        $id_productos = $producto['id'] ?? '';
+                        $cantidad = $producto['cantidad'] ?? 0;
+                        $precio_unitario = $producto['precio'] ?? 0;
+                        $total = $cantidad * $precio_unitario;
+                        
+                        if (empty($id_productos) || $cantidad <= 0 || $precio_unitario <= 0) {
+                            throw new Exception("Datos de producto inválidos en el carrito");
+                        }
+                        
+                        // Crear la venta para este producto
+                        $resultado = Sale::create($conn, $id_productos, $id_clientes, $fecha_venta, $cantidad, $precio_unitario, $total, $estado, $num_doc);
+                        
+                        if (!$resultado) {
+                            throw new Exception("Error al crear la venta para el producto ID: $id_productos");
+                        }
+                        
+                        $ventasCreadas++;
+                    }
+                    
+                    // Confirmar transacción
+                    $conn->commit();
+                    
+                    $_SESSION['success'] = "Se crearon $ventasCreadas venta(s) exitosamente";
+                    header('Location: ' . $this->baseUrl . '?accion=index');
+                    exit();
+                    
+                } catch (Exception $e) {
+                    // Revertir transacción en caso de error
+                    $conn->rollback();
+                    throw $e;
+                }
             }
             
             // Cargar datos necesarios para la vista
@@ -117,7 +137,7 @@ class SaleController {
             include __DIR__ . '/../views/ventas/create.php';
         } catch (Exception $e) {
             error_log("Error en SaleController::create: " . $e->getMessage());
-            $error = $e->getMessage();
+            $_SESSION['error'] = $e->getMessage();
             
             // Cargar datos para la vista en caso de error
             global $conn;

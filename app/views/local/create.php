@@ -642,6 +642,25 @@ $local = [
 
                             <div class="form-floating-modern">
                                 <select class="form-select-modern" 
+                                        id="id_clientes" 
+                                        name="id_clientes">
+                                    <option value="">Seleccione un cliente (Opcional)</option>
+                                    <?php if (isset($clientes) && !empty($clientes)): ?>
+                                        <?php foreach ($clientes as $cliente): ?>
+                                            <option value="<?= $cliente->id_clientes ?>">
+                                                <?= htmlspecialchars($cliente->nombre) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                                <label for="id_clientes">
+                                    <i class="fas fa-user-tie"></i>
+                                    Cliente Asignado
+                                </label>
+                            </div>
+
+                            <div class="form-floating-modern">
+                                <select class="form-select-modern" 
                                         id="estado" 
                                         name="estado"
                                         required>

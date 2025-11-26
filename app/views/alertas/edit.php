@@ -537,20 +537,20 @@ if (!isset($_SESSION['user'])) {
                             
                             <div class="form-group">
                                 <label for="id_clientes">
-                                    <i class="fas fa-user"></i> Cliente
+                                    <i class="fas fa-truck"></i> Proveedor
                                 </label>
                                 <select class="form-select" id="id_clientes" name="id_clientes" required>
-                                    <option value="">Seleccione un cliente</option>
-                                    <?php if (isset($clientes) && !empty($clientes) && is_array($clientes)): ?>
-                                        <?php foreach ($clientes as $cli): ?>
-                                            <option value="<?= htmlspecialchars($cli->id_clientes) ?>" 
-                                                    <?= (isset($alerta['id_clientes']) && $alerta['id_clientes'] == $cli->id_clientes) ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($cli->nombre) ?>
+                                    <option value="">Seleccione un proveedor</option>
+                                    <?php if (isset($proveedores) && !empty($proveedores) && is_array($proveedores)): ?>
+                                        <?php foreach ($proveedores as $prov): ?>
+                                            <option value="<?= htmlspecialchars($prov->id_proveedores) ?>" 
+                                                    <?= (isset($alerta['id_clientes']) && $alerta['id_clientes'] == $prov->id_proveedores) ? 'selected' : '' ?>>
+                                                <?= htmlspecialchars($prov->nombre_distribuidor) ?>
                                             </option>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
                                 </select>
-                                <small class="text-muted">Cliente al que se notificará sobre esta alerta</small>
+                                <small class="text-muted">Proveedor al que se notificará sobre esta alerta</small>
                             </div>
                         </div>
                     </div>
@@ -600,13 +600,13 @@ if (!isset($_SESSION['user'])) {
                             </div>
                             
                             <div class="summary-item">
-                                <span class="summary-label"><i class="fas fa-user"></i> Cliente:</span>
+                                <span class="summary-label"><i class="fas fa-truck"></i> Proveedor:</span>
                                 <span class="summary-value" id="cliente-nombre">
                                     <?php 
-                                    if (isset($alerta['id_clientes']) && isset($clientes)) {
-                                        foreach ($clientes as $c) {
-                                            if ($c->id_clientes == $alerta['id_clientes']) {
-                                                echo htmlspecialchars($c->nombre);
+                                    if (isset($alerta['id_clientes']) && isset($proveedores)) {
+                                        foreach ($proveedores as $p) {
+                                            if ($p->id_proveedores == $alerta['id_clientes']) {
+                                                echo htmlspecialchars($p->nombre_distribuidor);
                                                 break;
                                             }
                                         }

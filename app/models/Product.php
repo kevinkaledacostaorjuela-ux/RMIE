@@ -1,11 +1,23 @@
 <?php
 class Product {
     public static function getAll($conn) {
-        $sql = "SELECT * FROM productos";
+        $sql = "SELECT p.*, 
+                       COALESCE(s.nombre, '') AS subcategoria_nombre, 
+                       c.nombre AS categoria_nombre
+                FROM productos p
+                LEFT JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria
+                LEFT JOIN categorias c ON p.id_categoria = c.id_categoria";
         $result = $conn->query($sql);
         $productos = [];
         while ($row = $result->fetch_assoc()) {
-            $productos[] = new Product($row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], $row['id_categoria'], $row['id_proveedores'] ?? null, $row['num_doc'] ?? null);
+            $productos[] = new Product(
+                $row['id_productos'], $row['nombre'], $row['descripcion'], $row['fecha_entrada'], 
+                $row['fecha_fabricacion'], $row['fecha_caducidad'], $row['stock'], $row['precio_unitario'], 
+                $row['precio_por_mayor'], $row['valor_unitario'], $row['marca'], $row['id_subcategoria'], 
+                $row['id_categoria'], $row['id_proveedores'] ?? null, $row['num_doc'] ?? null
+            );
+            $productos[count($productos) - 1]->categoria_nombre = $row['categoria_nombre'];
+            $productos[count($productos) - 1]->subcategoria_nombre = $row['subcategoria_nombre'];
         }
         return $productos;
     }

@@ -90,7 +90,7 @@ class ClientController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Validar datos requeridos
-                $required_fields = ['nombre', 'correo', 'id_locales'];
+                $required_fields = ['nombre', 'correo'];
                 foreach ($required_fields as $field) {
                     if (empty($_POST[$field])) {
                         throw new Exception("El campo " . ucfirst($field) . " es requerido");
@@ -113,8 +113,7 @@ class ClientController {
                     'descripcion' => trim($_POST['descripcion'] ?? ''),
                     'cel_cliente' => trim($_POST['cel_cliente'] ?? ''),
                     'correo' => trim($_POST['correo']),
-                    'estado' => $_POST['estado'] ?? 'activo',
-                    'id_locales' => (int)$_POST['id_locales']
+                    'estado' => $_POST['estado'] ?? 'activo'
                 ]);
                 
                 // Redirigir al index con mensaje de éxito
@@ -126,8 +125,6 @@ class ClientController {
             }
         }
         
-        // Obtener locales para el formulario
-        $locales = Local::getAll($conn);
         include __DIR__ . '/../views/clientes/create.php';
     }
     
@@ -196,20 +193,26 @@ class ClientController {
             session_start();
         }
         
+        // Log para depuración
+        error_log("DELETE REQUEST - Usuario: " . ($_SESSION['user'] ?? 'no definido') . ", Rol: " . ($_SESSION['rol'] ?? 'no definido'));
+        
         // Verificar si el usuario está logueado
         if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
-            echo '<script>alert("Debe iniciar sesión para realizar esta acción."); window.location.href = "/RMIE/index.php";</script>';
+            $_SESSION['error'] = 'Debe iniciar sesión para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit();
         }
         
-        // Verificar si el rol es coordinador o auxiliar y restringir eliminación
+        // Verificar permisos por rol
         if ($_SESSION['rol'] === 'coordinador') {
-            echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/ClientController.php?accion=index";</script>';
+            $_SESSION['error'] = 'El rol de coordinador no tiene permisos para eliminar clientes';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit();
         }
         
         if ($_SESSION['rol'] === 'auxiliar') {
-            echo '<script>alert("El rol de auxiliar no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/ClientController.php?accion=index";</script>';
+            $_SESSION['error'] = 'El rol de auxiliar no tiene permisos para eliminar clientes';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit();
         }
         
@@ -217,27 +220,39 @@ class ClientController {
         
         $id = $_GET['id'] ?? null;
         if (!$id) {
+            $_SESSION['error'] = 'ID de cliente no especificado';
             header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit;
         }
         
+        error_log("DELETE REQUEST - Intentando eliminar cliente ID: $id");
+        
         try {
             $cliente = Client::getById($conn, $id);
             if (!$cliente) {
-                throw new Exception("Cliente no encontrado");
+                throw new Exception("Cliente no encontrado con ID: $id");
             }
             
-            // Eliminar directamente el cliente
-            Client::delete($conn, $id);
+            error_log("DELETE REQUEST - Cliente encontrado: " . $cliente->nombre);
             
-            // Redirigir con mensaje de éxito
-            header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente eliminado exitosamente');
+            // Intentar eliminar el cliente (el modelo verificará las restricciones)
+            $resultado = Client::delete($conn, $id);
+            
+            if ($resultado) {
+                error_log("DELETE REQUEST - Cliente eliminado exitosamente");
+                $_SESSION['success'] = 'Cliente eliminado exitosamente';
+            } else {
+                throw new Exception("No se pudo eliminar el cliente");
+            }
+            
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit;
             
         } catch (Exception $e) {
-            // Redirigir con mensaje de error
-            $error_msg = urlencode($e->getMessage());
-            header('Location: /RMIE/app/controllers/ClientController.php?accion=index&error=' . $error_msg);
+            // Guardar el error en la sesión para mostrarlo en la vista
+            error_log("DELETE REQUEST - Error: " . $e->getMessage());
+            $_SESSION['error'] = $e->getMessage();
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit;
         }
     }

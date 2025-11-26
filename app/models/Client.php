@@ -149,17 +149,16 @@ class Client {
     }
 
     public static function create($conn, $data) {
-        $sql = "INSERT INTO clientes (nombre, descripcion, cel_cliente, correo, estado, id_locales, fecha_creacion) 
-                VALUES (?, ?, ?, ?, ?, ?, NOW())";
+        $sql = "INSERT INTO clientes (nombre, descripcion, cel_cliente, correo, estado, fecha_creacion) 
+                VALUES (?, ?, ?, ?, ?, NOW())";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssssi', 
+        $stmt->bind_param('sssss', 
             $data['nombre'], 
             $data['descripcion'], 
             $data['cel_cliente'], 
             $data['correo'], 
-            $data['estado'], 
-            $data['id_locales']
+            $data['estado']
         );
         
         if ($stmt->execute()) {
@@ -193,10 +192,70 @@ class Client {
     }
 
     public static function delete($conn, $id) {
-        $sql = "DELETE FROM clientes WHERE id_clientes = ?";
+        // Verificar si el cliente tiene registros asociados
+        $verificaciones = [];
+        
+        // Verificar ventas
+        $sql = "SELECT COUNT(*) as total FROM ventas WHERE id_clientes = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('i', $id);
-        return $stmt->execute();
+        $stmt->execute();
+        $ventas = $stmt->get_result()->fetch_assoc()['total'];
+        if ($ventas > 0) {
+            $verificaciones[] = "$ventas venta(s)";
+        }
+        
+        // Verificar rutas
+        $sql = "SELECT COUNT(*) as total FROM rutas WHERE id_clientes = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $rutas = $stmt->get_result()->fetch_assoc()['total'];
+        if ($rutas > 0) {
+            $verificaciones[] = "$rutas ruta(s)";
+        }
+        
+        // Verificar alertas
+        $sql = "SELECT COUNT(*) as total FROM alertas WHERE id_clientes = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id);
+        $stmt->execute();
+        $alertas = $stmt->get_result()->fetch_assoc()['total'];
+        if ($alertas > 0) {
+            $verificaciones[] = "$alertas alerta(s)";
+        }
+        
+        // Si hay registros asociados, lanzar excepción con mensaje claro
+        if (!empty($verificaciones)) {
+            $mensaje = "No se puede eliminar el cliente porque tiene registros asociados:\n\n";
+            $mensaje .= "• " . implode("\n• ", $verificaciones);
+            $mensaje .= "\n\nDebes eliminar estos registros primero o cambiar el estado del cliente a 'inactivo'.";
+            throw new Exception($mensaje);
+        }
+        
+        // Si no hay registros asociados, proceder con la eliminación
+        try {
+            $sql = "DELETE FROM clientes WHERE id_clientes = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            
+            if ($stmt->execute()) {
+                if ($stmt->affected_rows > 0) {
+                    return true;
+                } else {
+                    throw new Exception("No se encontró el cliente con ID: $id");
+                }
+            } else {
+                throw new Exception("Error al ejecutar la eliminación: " . $stmt->error);
+            }
+        } catch (mysqli_sql_exception $e) {
+            // Capturar errores específicos de MySQL
+            if (strpos($e->getMessage(), 'foreign key constraint fails') !== false) {
+                throw new Exception("No se puede eliminar el cliente porque tiene registros asociados en otras tablas. Verifica ventas, rutas o alertas relacionadas.");
+            } else {
+                throw new Exception("Error de base de datos: " . $e->getMessage());
+            }
+        }
     }
 
     public static function getStats($conn) {

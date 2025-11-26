@@ -1,7 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/Alert.php';
 require_once __DIR__ . '/../models/Product.php';
-require_once __DIR__ . '/../models/Client.php';
+require_once __DIR__ . '/../models/Provider.php';
 require_once __DIR__ . '/../../config/db.php';
 
 class AlertController {
@@ -58,7 +58,7 @@ class AlertController {
         
         global $conn;
         $productos = Product::getAll($conn);
-        $clientes = Client::getAll($conn);
+        $proveedores = Provider::getAll($conn);
         $mensaje = '';
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -71,11 +71,11 @@ class AlertController {
             if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_cliente) {
                 // Validar existencia en BD
                 $prod = Product::getById($conn, $id_producto);
-                $cli = Client::getById($conn, $id_cliente);
+                $prov = Provider::getById($conn, $id_cliente);
                 if (!$prod) {
                     $_SESSION['error'] = 'Producto no válido.';
-                } elseif (!$cli) {
-                    $_SESSION['error'] = 'Cliente no válido.';
+                } elseif (!$prov) {
+                    $_SESSION['error'] = 'Proveedor no válido.';
                 } else {
                     try {
                         $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente, $tipo_alerta);
@@ -108,7 +108,7 @@ class AlertController {
             exit();
         }
         $productos = Product::getAll($conn);
-        $clientes = Client::getAll($conn);
+        $proveedores = Provider::getAll($conn);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $alerta['id_productos'] = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
             $alerta['cantidad_minima'] = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
@@ -118,15 +118,15 @@ class AlertController {
             if (empty($alerta['id_productos'])) $errors[] = 'El producto es obligatorio';
             if (empty($alerta['cantidad_minima'])) $errors[] = 'La cantidad mínima es obligatoria';
             if (empty($alerta['fecha_caducidad'])) $errors[] = 'La fecha de caducidad es obligatoria';
-            if (empty($alerta['id_clientes'])) $errors[] = 'El cliente es obligatorio';
+            if (empty($alerta['id_clientes'])) $errors[] = 'El proveedor es obligatorio';
 
             if (empty($errors)) {
                 // Validar existencia en BD
                 if (!Product::getById($conn, $alerta['id_productos'])) {
                     $errors[] = 'Producto no válido';
                 }
-                if (!Client::getById($conn, $alerta['id_clientes'])) {
-                    $errors[] = 'Cliente no válido';
+                if (!Provider::getById($conn, $alerta['id_clientes'])) {
+                    $errors[] = 'Proveedor no válido';
                 }
             }
 

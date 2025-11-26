@@ -59,7 +59,15 @@ class Alert {
     }
 
     public static function getAll($conn) {
-        $sql = "SELECT a.*, p.nombre AS producto_nombre FROM alertas a JOIN productos p ON a.id_productos = p.id_productos";
+        $sql = "SELECT a.*, p.nombre AS producto_nombre, 
+                       CASE 
+                           WHEN a.cantidad_minima <= 5 THEN 'Alta'
+                           WHEN a.cantidad_minima BETWEEN 6 AND 10 THEN 'Media'
+                           ELSE 'Baja'
+                       END AS prioridad,
+                       CONCAT('Alerta de ', p.nombre) AS titulo
+                FROM alertas a 
+                JOIN productos p ON a.id_productos = p.id_productos";
         $result = $conn->query($sql);
         $alertas = [];
         while ($row = $result->fetch_assoc()) {

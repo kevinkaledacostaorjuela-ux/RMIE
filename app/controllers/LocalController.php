@@ -37,12 +37,16 @@ class LocalController {
     }
     
     public function create() {
+        global $conn;
         try {
             session_start();
             if (!isset($_SESSION['user'])) {
                 header('Location: /RMIE/index.php');
                 exit();
             }
+            
+            require_once __DIR__ . '/../models/Client.php';
+            $clientes = Client::getAll($conn);
             
             include __DIR__ . '/../views/local/create.php';
         } catch (Exception $e) {
@@ -63,7 +67,8 @@ class LocalController {
                 'cel_local' => trim($_POST['telefono'] ?? ''), // telefono -> cel_local
                 'estado' => trim($_POST['estado'] ?? 'activo'),
                 'localidad' => trim($_POST['localidad'] ?? ''),
-                'barrio' => trim($_POST['barrio'] ?? '')
+                'barrio' => trim($_POST['barrio'] ?? ''),
+                'id_clientes' => !empty($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : null
             ];
             
             // Validaciones

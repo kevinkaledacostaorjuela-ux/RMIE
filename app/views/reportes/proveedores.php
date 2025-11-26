@@ -121,10 +121,29 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
         .badge-activo {
             background: #38ef7d;
             color: #000;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
         }
         .badge-inactivo {
             background: #eb3349;
             color: #fff;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .text-muted {
+            color: #6c757d !important;
+        }
+        .table td {
+            vertical-align: middle;
+            padding: 12px 15px;
+        }
+        .table td i {
+            margin-right: 5px;
+        }
+        .table tbody tr:hover {
+            background-color: rgba(240, 147, 251, 0.05);
         }
         .btn-back {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
@@ -273,19 +292,45 @@ $proveedoresInactivos = $totalProveedores - $proveedoresActivos;
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach ($proveedores as $proveedor): ?>
-                        <tr>
-                            <td><?= htmlspecialchars($proveedor->id_proveedores) ?></td>
-                            <td><?= htmlspecialchars($proveedor->nombre_distribuidor ?? 'N/A') ?></td>
-                            <td><?= !empty($proveedor->cel_proveedor) && $proveedor->cel_proveedor !== '0000000000' ? htmlspecialchars($proveedor->cel_proveedor) : 'No registrado' ?></td>
-                            <td><?= !empty($proveedor->correo) && $proveedor->correo !== 'sin.proveedor@sistema.local' ? htmlspecialchars($proveedor->correo) : 'No registrado' ?></td>
-                            <td>
-                                <span class="badge <?= strtolower($proveedor->estado ?? 'activo') === 'activo' ? 'badge-activo' : 'badge-inactivo' ?>">
-                                    <?= htmlspecialchars($proveedor->estado ?? 'Activo') ?>
-                                </span>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
+                        <?php if (!empty($proveedores) && is_array($proveedores)): ?>
+                            <?php foreach ($proveedores as $proveedor): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($proveedor->id_proveedores ?? '') ?></td>
+                                <td>
+                                    <strong><?= htmlspecialchars($proveedor->nombre_distribuidor ?? 'Sin nombre') ?></strong>
+                                    <?php if (!empty($proveedor->ubicacion)): ?>
+                                        <br><small class="text-muted"><i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($proveedor->ubicacion) ?></small>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($proveedor->cel_proveedor) && $proveedor->cel_proveedor !== '0000000000'): ?>
+                                        <i class="fas fa-phone"></i> <?= htmlspecialchars($proveedor->cel_proveedor) ?>
+                                    <?php else: ?>
+                                        <span class="text-muted"><i class="fas fa-phone-slash"></i> No registrado</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <?php if (!empty($proveedor->correo) && $proveedor->correo !== 'sin.proveedor@sistema.local' && filter_var($proveedor->correo, FILTER_VALIDATE_EMAIL)): ?>
+                                        <i class="fas fa-envelope"></i> <?= htmlspecialchars($proveedor->correo) ?>
+                                    <?php else: ?>
+                                        <span class="text-muted"><i class="fas fa-envelope-open"></i> No registrado</span>
+                                    <?php endif; ?>
+                                </td>
+                                <td>
+                                    <span class="badge <?= strtolower($proveedor->estado ?? 'activo') === 'activo' ? 'badge-activo' : 'badge-inactivo' ?>">
+                                        <?= ucfirst(strtolower($proveedor->estado ?? 'Activo')) ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <tr>
+                                <td colspan="5" class="text-center text-muted py-4">
+                                    <i class="fas fa-inbox fa-3x mb-3"></i>
+                                    <p>No hay proveedores registrados</p>
+                                </td>
+                            </tr>
+                        <?php endif; ?>
                     </tbody>
                 </table>
             </div>

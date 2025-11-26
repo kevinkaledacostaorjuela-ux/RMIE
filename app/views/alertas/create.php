@@ -479,25 +479,25 @@ if (session_status() == PHP_SESSION_NONE) {
                                     id="cliente_stock" 
                                     name="id_clientes" 
                                     required>
-                                <option value="">Seleccione un cliente</option>
-                                <?php if (isset($clientes) && !empty($clientes)): ?>
-                                    <?php foreach ($clientes as $cli): ?>
-                                        <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
-                                            <?= htmlspecialchars($cli->nombre) ?>
+                                <option value="">Seleccione un proveedor</option>
+                                <?php if (isset($proveedores) && !empty($proveedores)): ?>
+                                    <?php foreach ($proveedores as $prov): ?>
+                                        <option value="<?= htmlspecialchars($prov->id_proveedores) ?>">
+                                            <?= htmlspecialchars($prov->nombre_distribuidor) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                             <label for="cliente_stock">
-                                <i class="fas fa-user"></i>
-                                Cliente Responsable
+                                <i class="fas fa-truck"></i>
+                                Proveedor Responsable
                             </label>
                         </div>
                     </div>
 
                     <div class="info-panel">
                         <h6><i class="fas fa-info-circle"></i> Información</h6>
-                        <p>Esta alerta se activará automáticamente cuando el stock del producto seleccionado sea igual o menor a la cantidad mínima especificada, o cuando se acerque la fecha de caducidad. El cliente responsable recibirá notificaciones.</p>
+                        <p>Esta alerta se activará automáticamente cuando el stock del producto seleccionado sea igual o menor a la cantidad mínima especificada, o cuando se acerque la fecha de caducidad. El proveedor responsable recibirá notificaciones.</p>
                     </div>
                 </div>
 
@@ -564,25 +564,25 @@ if (session_status() == PHP_SESSION_NONE) {
                                     id="cliente_expiration" 
                                     name="id_clientes" 
                                     required>
-                                <option value="">Seleccione un cliente</option>
-                                <?php if (isset($clientes) && !empty($clientes)): ?>
-                                    <?php foreach ($clientes as $cli): ?>
-                                        <option value="<?= htmlspecialchars($cli->id_clientes) ?>">
-                                            <?= htmlspecialchars($cli->nombre) ?>
+                                <option value="">Seleccione un proveedor</option>
+                                <?php if (isset($proveedores) && !empty($proveedores)): ?>
+                                    <?php foreach ($proveedores as $prov): ?>
+                                        <option value="<?= htmlspecialchars($prov->id_proveedores) ?>">
+                                            <?= htmlspecialchars($prov->nombre_distribuidor) ?>
                                         </option>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
                             <label for="cliente_expiration">
-                                <i class="fas fa-user"></i>
-                                Cliente Responsable
+                                <i class="fas fa-truck"></i>
+                                Proveedor Responsable
                             </label>
                         </div>
                     </div>
 
                     <div class="info-panel">
                         <h6><i class="fas fa-info-circle"></i> Información</h6>
-                        <p>Esta alerta se activará antes de la fecha de caducidad especificada. El sistema notificará al cliente responsable con suficiente antelación para tomar las medidas necesarias.</p>
+                        <p>Esta alerta se activará antes de la fecha de caducidad especificada. El sistema notificará al proveedor responsable con suficiente antelación para tomar las medidas necesarias.</p>
                     </div>
                 </div>
             </form>
