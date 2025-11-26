@@ -1415,7 +1415,32 @@ $stats = $statsQuery->fetch_assoc();
         document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const subcategoriaNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                
+                // Obtener nombre de la subcategoría de forma segura
+                let subcategoriaNombre = 'esta subcategoría';
+                const tr = this.closest('tr');
+                
+                if (tr) {
+                    // Si está en una tabla
+                    const strongElement = tr.querySelector('td:nth-child(2) strong');
+                    if (strongElement) {
+                        subcategoriaNombre = strongElement.textContent;
+                    }
+                } else {
+                    // Si está en una tarjeta, buscar el nombre en data-nombre o en la tarjeta
+                    if (this.dataset.nombre) {
+                        subcategoriaNombre = this.dataset.nombre;
+                    } else {
+                        const card = this.closest('.subcategory-card');
+                        if (card) {
+                            const cardTitle = card.querySelector('.subcategory-name');
+                            if (cardTitle) {
+                                subcategoriaNombre = cardTitle.textContent;
+                            }
+                        }
+                    }
+                }
+                
                 if (confirm(`¿Está seguro de eliminar la subcategoría "${subcategoriaNombre}"?\n\nEsta acción no se puede deshacer.`)) {
                     window.location.href = this.href;
                 }

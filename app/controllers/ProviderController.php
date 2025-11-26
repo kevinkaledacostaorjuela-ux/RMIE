@@ -1,4 +1,10 @@
 <?php
+// Headers anti-caché para evitar problemas de navegación
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Cache-Control: post-check=0, pre-check=0', false);
+header('Pragma: no-cache');
+header('Expires: Sat, 26 Jul 1997 05:00:00 GMT');
+
 require_once __DIR__ . '/../models/Provider.php';
 require_once __DIR__ . '/../../config/db.php';
 
@@ -236,14 +242,39 @@ class ProviderController {
             global $conn;
             $resultado = Provider::delete($conn, $id);
             
-            if ($resultado) {
-                header('Location: ' . $this->baseUrl . '?accion=index&success=deleted');
+            // Manejar diferentes tipos de respuesta
+            if (is_array($resultado)) {
+                if ($resultado['success']) {
+                    echo '<script>alert("Proveedor eliminado exitosamente."); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
+                } else {
+                    // Error: dependencias o SQL
+                    $mensaje = $resultado['message'] ?? 'Error desconocido';
+                    
+                    if ($resultado['error'] === 'dependencies') {
+                        // Mostrar mensaje específico sobre productos
+                        $count = $resultado['productos_count'] ?? 0;
+                        echo '<script>';
+                        echo 'if (confirm("' . addslashes($mensaje) . '\\n\\n¿Desea ver los productos asociados?")) {';
+                        echo '  window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index&filter_proveedor=' . $id . '";';
+                        echo '} else {';
+                        echo '  window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";';
+                        echo '}';
+                        echo '</script>';
+                    } else {
+                        echo '<script>alert("' . addslashes($mensaje) . '"); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
+                    }
+                }
             } else {
-                throw new Exception("Error al eliminar el proveedor");
+                // Respuesta booleana antigua (por compatibilidad)
+                if ($resultado) {
+                    echo '<script>alert("Proveedor eliminado exitosamente."); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
+                } else {
+                    throw new Exception("Error al eliminar el proveedor");
+                }
             }
         } catch (Exception $e) {
             error_log("Error en ProviderController::delete: " . $e->getMessage());
-            header('Location: ' . $this->baseUrl . '?accion=index&error=' . urlencode($e->getMessage()));
+            echo '<script>alert("Error: ' . addslashes($e->getMessage()) . '"); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
         }
         exit();
     }

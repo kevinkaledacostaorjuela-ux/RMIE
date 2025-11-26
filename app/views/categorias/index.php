@@ -683,15 +683,24 @@ if (isset($conn)) {
 
                             <div class="categories-card-footer">
                                 <div class="categories-actions">
-                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern" 
-                                       title="Editar categoría">
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern btn-edit-categoria" 
+                                       data-type="categoria"
+                                       data-controller="CategoryController"
+                                       data-id="<?= htmlspecialchars($cat->id_categoria ?? '') ?>"
+                                       data-nombre="<?= htmlspecialchars($cat->nombre ?? '') ?>"
+                                       title="Editar categoría: <?= htmlspecialchars($cat->nombre ?? '') ?>"
+                                       onclick="console.log('🔍 Editando categoría ID: <?= $cat->id_categoria ?>', this.href); return true;">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
-                                       class="btn btn-sm btn-modern btn-danger-modern" 
-                                       title="Eliminar categoría"
-                                       onclick="return confirm('¿Está seguro de eliminar esta categoría?')">
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
+                                       class="btn btn-sm btn-modern btn-danger-modern btn-delete-categoria" 
+                                       data-type="categoria"
+                                       data-controller="CategoryController"
+                                       data-id="<?= htmlspecialchars($cat->id_categoria ?? '') ?>"
+                                       data-nombre="<?= htmlspecialchars($cat->nombre ?? '') ?>"
+                                       title="Eliminar categoría: <?= htmlspecialchars($cat->nombre ?? '') ?>"
+                                       onclick="console.log('🗑️ Intentando eliminar categoría ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -768,16 +777,19 @@ if (isset($conn)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
-                                           title="Editar categoría">
+                                           data-controller="CategoryController"
+                                           title="Editar categoría"
+                                           onclick="console.log('🔍 Editando categoría desde tabla ID: <?= $cat->id_categoria ?>', this.href); return true;">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
+                                           data-controller="CategoryController"
                                            title="Eliminar categoría"
-                                           onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -820,9 +832,9 @@ if (isset($conn)) {
                                 <div class="card-title"><?= htmlspecialchars($cat->nombre ?? $cat['nombre'] ?? 'Sin nombre') ?></div>
                                 <div class="card-subtitle"><?= htmlspecialchars($cat->descripcion ?? $cat['descripcion'] ?? '') ?></div>
                                 <div class="card-actions">
-                                    <a class="btn-edit" href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>">Editar</a>
+                                    <a class="btn-edit" href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>&t=<?= time() ?>" data-controller="CategoryController" onclick="console.log('🔍 Editando desde móvil:', this.href); return true;">Editar</a>
                                     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a class="btn-delete" href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>" onclick="return confirm('¿Eliminar?')">Eliminar</a>
+                                    <a class="btn-delete" href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>&t=<?= time() ?>" data-controller="CategoryController" onclick="console.log('🗑️ Eliminando desde móvil:', this.href); return confirm('¿Está seguro de eliminar esta categoría?');">Eliminar</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -884,16 +896,19 @@ if (isset($conn)) {
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
                                                class="btn btn-sm btn-modern btn-warning-modern" 
-                                               title="Editar categoría">
+                                               data-controller="CategoryController"
+                                               title="Editar categoría"
+                                               onclick="console.log('🔍 Editando desde tabla móvil ID: <?= $cat->id_categoria ?>', this.href); return true;">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
                                                class="btn btn-sm btn-modern btn-danger-modern" 
+                                               data-controller="CategoryController"
                                                title="Eliminar categoría"
-                                               onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.')">>
+                                               onclick="console.log('🗑️ Eliminando desde tabla móvil 2 ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -970,11 +985,74 @@ if (isset($conn)) {
         document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const categoriaNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                
+                // Obtener nombre de la categoría de forma segura
+                let categoriaNombre = 'esta categoría';
+                const tr = this.closest('tr');
+                
+                if (tr) {
+                    // Si está en una tabla
+                    const strongElement = tr.querySelector('td:nth-child(2) strong');
+                    if (strongElement) {
+                        categoriaNombre = strongElement.textContent;
+                    }
+                } else {
+                    // Si está en una tarjeta, buscar el nombre en data-nombre o en la tarjeta
+                    if (this.dataset.nombre) {
+                        categoriaNombre = this.dataset.nombre;
+                    } else {
+                        const card = this.closest('.categories-card');
+                        if (card) {
+                            const cardTitle = card.querySelector('.categories-card-title h4');
+                            if (cardTitle) {
+                                categoriaNombre = cardTitle.textContent;
+                            }
+                        }
+                    }
+                }
+                
                 if (confirm(`¿Está seguro de eliminar la categoría "${categoriaNombre}"?\n\nEsta acción no se puede deshacer.`)) {
                     window.location.href = this.href;
                 }
             });
+        });
+
+        // Debug: Log de todos los enlaces de edición
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== DEBUG: Enlaces de Categorías ===');
+            
+            // Verificar botones de edición en tarjetas
+            const editButtons = document.querySelectorAll('.btn-edit-categoria');
+            console.log(`Encontrados ${editButtons.length} botones de edición en tarjetas`);
+            
+            editButtons.forEach((btn, index) => {
+                const href = btn.getAttribute('href');
+                const id = btn.getAttribute('data-id');
+                const nombre = btn.getAttribute('data-nombre');
+                console.log(`Botón ${index + 1}: ID=${id}, Nombre="${nombre}", URL="${href}"`);
+                
+                // Agregar listener para verificar clicks
+                btn.addEventListener('click', function(e) {
+                    console.log(`CLICK en botón editar: Redirigiendo a ${this.href}`);
+                    console.log(`Tipo: ${this.getAttribute('data-type')}, ID: ${this.getAttribute('data-id')}`);
+                });
+            });
+            
+            // Verificar si hay enlaces que no sean de CategoryController
+            const allLinks = document.querySelectorAll('a[href*="Controller"]');
+            const wrongLinks = Array.from(allLinks).filter(link => 
+                !link.href.includes('CategoryController') && 
+                link.closest('.dashboard-container')
+            );
+            
+            if (wrongLinks.length > 0) {
+                console.warn('⚠️ ADVERTENCIA: Encontrados enlaces que NO apuntan a CategoryController:');
+                wrongLinks.forEach((link, index) => {
+                    console.warn(`Link ${index + 1}: ${link.href}`);
+                });
+            } else {
+                console.log('✅ Todos los enlaces apuntan correctamente a CategoryController');
+            }
         });
     </script>
 </body>

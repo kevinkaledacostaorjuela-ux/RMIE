@@ -1048,16 +1048,20 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     </span>
                                 </div>
                                 <div class="provider-actions">
-                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
                                        class="btn btn-sm btn-modern btn-warning-modern" 
+                                       data-controller="ProviderController"
                                        title="Editar proveedor">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
                                        class="btn btn-sm btn-modern btn-danger-modern" 
-                                       title="Eliminar proveedor"
-                                       onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                       data-controller="ProviderController"
+                                       data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
+                                       data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
+                                       title="Eliminar proveedor: <?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
+                                       onclick="console.log('🗑️ Eliminando proveedor ID: <?= $proveedor->id_proveedores ?>', this.href); return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1198,16 +1202,20 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
-                                               class="btn btn-sm btn-modern btn-warning-modern" 
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
+                                               class="btn btn-sm btn-modern btn-warning-modern"
+                                               data-controller="ProviderController" 
                                                title="Editar proveedor">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
-                                               class="btn btn-sm btn-modern btn-danger-modern" 
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
+                                               class="btn btn-sm btn-modern btn-danger-modern"
+                                               data-controller="ProviderController"
+                                               data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
+                                               data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>" 
                                                title="Eliminar proveedor"
-                                               onclick="return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                               onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $proveedor->id_proveedores ?>', this.href); return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -1285,7 +1293,20 @@ if (isset($proveedores) && is_array($proveedores)) {
         document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const proveedorNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                
+                // Obtener nombre del proveedor de forma segura
+                let proveedorNombre = 'este proveedor';
+                const tr = this.closest('tr');
+                
+                if (tr) {
+                    const strongElement = tr.querySelector('td:nth-child(2) strong');
+                    if (strongElement) {
+                        proveedorNombre = strongElement.textContent;
+                    }
+                } else if (this.dataset.nombre) {
+                    proveedorNombre = this.dataset.nombre;
+                }
+                
                 if (confirm(`¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\nEsta acción no se puede deshacer.`)) {
                     window.location.href = this.href;
                 }

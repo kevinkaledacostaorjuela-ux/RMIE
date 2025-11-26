@@ -115,10 +115,38 @@ class Provider {
     }
 
     public static function delete($conn, $id_proveedores) {
+        // Verificar dependencias antes de eliminar
+        $checkSql = "SELECT COUNT(*) as total FROM productos WHERE id_proveedores = ?";
+        $checkStmt = $conn->prepare($checkSql);
+        $checkStmt->bind_param("i", $id_proveedores);
+        $checkStmt->execute();
+        $result = $checkStmt->get_result();
+        $row = $result->fetch_assoc();
+        
+        if ($row['total'] > 0) {
+            // Si hay productos asociados, retornar un array con el error
+            return [
+                'success' => false,
+                'error' => 'dependencies',
+                'message' => 'No se puede eliminar el proveedor porque tiene ' . $row['total'] . ' producto(s) asociado(s).',
+                'productos_count' => $row['total']
+            ];
+        }
+        
+        // Si no hay dependencias, proceder con la eliminación
         $sql = "DELETE FROM proveedores WHERE id_proveedores = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_proveedores);
-        return $stmt->execute();
+        
+        if ($stmt->execute()) {
+            return ['success' => true];
+        } else {
+            return [
+                'success' => false,
+                'error' => 'sql_error',
+                'message' => 'Error al ejecutar la eliminación: ' . $conn->error
+            ];
+        }
     }
 
     // Obtener productos de un proveedor específico

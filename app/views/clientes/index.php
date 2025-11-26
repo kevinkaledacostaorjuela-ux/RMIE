@@ -1036,7 +1036,20 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
         document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const clienteNombre = this.closest('tr').querySelector('td:nth-child(2) strong').textContent;
+                
+                // Obtener nombre del cliente de forma segura
+                let clienteNombre = 'este cliente';
+                const tr = this.closest('tr');
+                
+                if (tr) {
+                    const strongElement = tr.querySelector('td:nth-child(2) strong');
+                    if (strongElement) {
+                        clienteNombre = strongElement.textContent;
+                    }
+                } else if (this.dataset.nombre) {
+                    clienteNombre = this.dataset.nombre;
+                }
+                
                 if (confirm(`¿Está seguro de eliminar el cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
                     window.location.href = this.href;
                 }

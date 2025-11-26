@@ -1451,7 +1451,20 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
         document.querySelectorAll('a[onclick*="confirm"]').forEach(function(link) {
             link.addEventListener('click', function(e) {
                 e.preventDefault();
-                const ventaId = this.closest('tr').querySelector('td:nth-child(1) strong').textContent;
+                
+                // Obtener ID de la venta de forma segura
+                let ventaId = 'esta venta';
+                const tr = this.closest('tr');
+                
+                if (tr) {
+                    const strongElement = tr.querySelector('td:nth-child(1) strong');
+                    if (strongElement) {
+                        ventaId = strongElement.textContent;
+                    }
+                } else if (this.dataset.id) {
+                    ventaId = 'ID ' + this.dataset.id;
+                }
+                
                 if (confirm(`¿Está seguro de eliminar la venta ${ventaId}?\n\nEsta acción no se puede deshacer.`)) {
                     window.location.href = this.href;
                 }
