@@ -215,15 +215,8 @@ class Client {
             $verificaciones[] = "$rutas ruta(s)";
         }
         
-        // Verificar alertas
-        $sql = "SELECT COUNT(*) as total FROM alertas WHERE id_clientes = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('i', $id);
-        $stmt->execute();
-        $alertas = $stmt->get_result()->fetch_assoc()['total'];
-        if ($alertas > 0) {
-            $verificaciones[] = "$alertas alerta(s)";
-        }
+        // Las alertas ahora están asociadas a proveedores, no a clientes
+        // por lo que no es necesario verificarlas aquí
         
         // Si hay registros asociados, lanzar excepción con mensaje claro
         if (!empty($verificaciones)) {

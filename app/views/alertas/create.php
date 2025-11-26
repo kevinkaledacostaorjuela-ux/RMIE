@@ -477,7 +477,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="cliente_stock" 
-                                    name="id_clientes" 
+                                    name="id_proveedores" 
                                     required>
                                 <option value="">Seleccione un proveedor</option>
                                 <?php if (isset($proveedores) && !empty($proveedores)): ?>
@@ -562,7 +562,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="cliente_expiration" 
-                                    name="id_clientes" 
+                                    name="id_proveedores" 
                                     required>
                                 <option value="">Seleccione un proveedor</option>
                                 <?php if (isset($proveedores) && !empty($proveedores)): ?>

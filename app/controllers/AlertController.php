@@ -65,20 +65,20 @@ class AlertController {
             $id_producto = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
             $cantidad_minima = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $fecha_caducidad = $_POST['fecha_caducidad'] ?? '';
-            $id_cliente = isset($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : 0;
+            $id_proveedor = isset($_POST['id_proveedores']) ? (int)$_POST['id_proveedores'] : 0;
             $tipo_alerta = $_POST['alert_type'] ?? 'stock'; // 'stock' o 'expiration'
 
-            if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_cliente) {
+            if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_proveedor) {
                 // Validar existencia en BD
                 $prod = Product::getById($conn, $id_producto);
-                $prov = Provider::getById($conn, $id_cliente);
+                $prov = Provider::getById($conn, $id_proveedor);
                 if (!$prod) {
                     $_SESSION['error'] = 'Producto no válido.';
                 } elseif (!$prov) {
                     $_SESSION['error'] = 'Proveedor no válido.';
                 } else {
                     try {
-                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_cliente, $tipo_alerta);
+                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_proveedor, $tipo_alerta);
                         if ($resultado) {
                             $_SESSION['success'] = '¡Alerta creada exitosamente!';
                             header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
@@ -113,27 +113,31 @@ class AlertController {
             $alerta['id_productos'] = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
             $alerta['cantidad_minima'] = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $alerta['fecha_caducidad'] = $_POST['fecha_caducidad'] ?? '';
-            $alerta['id_clientes'] = isset($_POST['id_clientes']) ? (int)$_POST['id_clientes'] : 0;
+            $alerta['id_proveedores'] = isset($_POST['id_proveedores']) ? (int)$_POST['id_proveedores'] : 0;
 
             if (empty($alerta['id_productos'])) $errors[] = 'El producto es obligatorio';
-            if (empty($alerta['cantidad_minima'])) $errors[] = 'La cantidad mínima es obligatoria';
+            if (empty($alerta['cantidad_minima']) || $alerta['cantidad_minima'] < 0) $errors[] = 'La cantidad mínima debe ser mayor o igual a 0';
             if (empty($alerta['fecha_caducidad'])) $errors[] = 'La fecha de caducidad es obligatoria';
-            if (empty($alerta['id_clientes'])) $errors[] = 'El proveedor es obligatorio';
+            if (empty($alerta['id_proveedores'])) $errors[] = 'El proveedor es obligatorio';
 
             if (empty($errors)) {
                 // Validar existencia en BD
                 if (!Product::getById($conn, $alerta['id_productos'])) {
                     $errors[] = 'Producto no válido';
                 }
-                if (!Provider::getById($conn, $alerta['id_clientes'])) {
+                if (!Provider::getById($conn, $alerta['id_proveedores'])) {
                     $errors[] = 'Proveedor no válido';
                 }
             }
 
             if (empty($errors)) {
                 $result = Alert::update($conn, (int)$id, $alerta);
-                if ($result) $success = 'Alerta actualizada exitosamente';
-                else $errors[] = 'Error al actualizar la alerta';
+                if ($result) {
+                    header('Location: /RMIE/app/controllers/AlertController.php?accion=index&success=updated');
+                    exit();
+                } else {
+                    $errors[] = 'Error al actualizar la alerta';
+                }
             }
         }
         include __DIR__ . '/../views/alertas/edit.php';

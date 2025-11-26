@@ -251,15 +251,8 @@ class ProviderController {
                     $mensaje = $resultado['message'] ?? 'Error desconocido';
                     
                     if ($resultado['error'] === 'dependencies') {
-                        // Mostrar mensaje específico sobre productos
-                        $count = $resultado['productos_count'] ?? 0;
-                        echo '<script>';
-                        echo 'if (confirm("' . addslashes($mensaje) . '\\n\\n¿Desea ver los productos asociados?")) {';
-                        echo '  window.location.href = "/RMIE/app/controllers/ProductController.php?accion=index&filter_proveedor=' . $id . '";';
-                        echo '} else {';
-                        echo '  window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";';
-                        echo '}';
-                        echo '</script>';
+                        // Mostrar mensaje específico sobre productos - solo alerta, sin redirección a productos
+                        echo '<script>alert("' . addslashes($mensaje) . '"); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
                     } else {
                         echo '<script>alert("' . addslashes($mensaje) . '"); window.location.href = "/RMIE/app/controllers/ProviderController.php?accion=index";</script>';
                     }

@@ -1258,10 +1258,11 @@ if (isset($ventas) && is_array($ventas)) {
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" 
+                                    <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>&t=<?= time() ?>" 
                                        class="btn btn-sm btn-modern btn-danger-modern" 
                                        title="Eliminar venta"
-                                       onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
+                                       data-id="<?= $venta->id_ventas ?>"
+                                       onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1387,10 +1388,11 @@ if (isset($ventas) && is_array($ventas)) {
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>" 
+                                        <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>&t=<?= time() ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar venta"
-                                           onclick="return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
+                                           data-id="<?= $venta->id_ventas ?>"
+                                           onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>

@@ -536,15 +536,15 @@ if (!isset($_SESSION['user'])) {
                             </div>
                             
                             <div class="form-group">
-                                <label for="id_clientes">
+                                <label for="id_proveedores">
                                     <i class="fas fa-truck"></i> Proveedor
                                 </label>
-                                <select class="form-select" id="id_clientes" name="id_clientes" required>
+                                <select class="form-select" id="id_proveedores" name="id_proveedores" required>
                                     <option value="">Seleccione un proveedor</option>
                                     <?php if (isset($proveedores) && !empty($proveedores) && is_array($proveedores)): ?>
                                         <?php foreach ($proveedores as $prov): ?>
                                             <option value="<?= htmlspecialchars($prov->id_proveedores) ?>" 
-                                                    <?= (isset($alerta['id_clientes']) && $alerta['id_clientes'] == $prov->id_proveedores) ? 'selected' : '' ?>>
+                                                    <?= (isset($alerta['id_proveedores']) && $alerta['id_proveedores'] == $prov->id_proveedores) ? 'selected' : '' ?>>
                                                 <?= htmlspecialchars($prov->nombre_distribuidor) ?>
                                             </option>
                                         <?php endforeach; ?>
@@ -603,9 +603,9 @@ if (!isset($_SESSION['user'])) {
                                 <span class="summary-label"><i class="fas fa-truck"></i> Proveedor:</span>
                                 <span class="summary-value" id="cliente-nombre">
                                     <?php 
-                                    if (isset($alerta['id_clientes']) && isset($proveedores)) {
+                                    if (isset($alerta['id_proveedores']) && isset($proveedores)) {
                                         foreach ($proveedores as $p) {
-                                            if ($p->id_proveedores == $alerta['id_clientes']) {
+                                            if ($p->id_proveedores == $alerta['id_proveedores']) {
                                                 echo htmlspecialchars($p->nombre_distribuidor);
                                                 break;
                                             }
@@ -661,7 +661,7 @@ if (!isset($_SESSION['user'])) {
         const productoSelect = document.getElementById('id_productos');
         const cantidadInput = document.getElementById('cantidad_minima');
         const fechaInput = document.getElementById('fecha_caducidad');
-        const clienteSelect = document.getElementById('id_clientes');
+        const proveedorSelect = document.getElementById('id_proveedores');
         const form = document.getElementById('formAlerta');
         
         function actualizarProducto() {
@@ -696,8 +696,8 @@ if (!isset($_SESSION['user'])) {
             }
         }
         
-        function actualizarCliente() {
-            const selectedOption = clienteSelect.options[clienteSelect.selectedIndex];
+        function actualizarProveedor() {
+            const selectedOption = proveedorSelect.options[proveedorSelect.selectedIndex];
             if (selectedOption.value) {
                 document.getElementById('cliente-nombre').textContent = selectedOption.text;
             } else {
@@ -708,7 +708,7 @@ if (!isset($_SESSION['user'])) {
         productoSelect.addEventListener('change', actualizarProducto);
         cantidadInput.addEventListener('input', actualizarCantidadMinima);
         fechaInput.addEventListener('change', actualizarFecha);
-        clienteSelect.addEventListener('change', actualizarCliente);
+        proveedorSelect.addEventListener('change', actualizarProveedor);
         
         form.addEventListener('submit', function(e) {
             if (!productoSelect.value) {
@@ -730,9 +730,9 @@ if (!isset($_SESSION['user'])) {
                 return;
             }
             
-            if (!clienteSelect.value) {
+            if (!proveedorSelect.value) {
                 e.preventDefault();
-                alert('Debe seleccionar un cliente');
+                alert('Debe seleccionar un proveedor');
                 return;
             }
         });

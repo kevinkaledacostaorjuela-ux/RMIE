@@ -235,6 +235,12 @@ class SaleController {
     }
 
     public function delete($id = null) {
+        // Headers anti-cache
+        header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
+        header("Cache-Control: post-check=0, pre-check=0", false);
+        header("Pragma: no-cache");
+        header("Expires: 0");
+        
         // Verificar sesión activa
         if (session_status() == PHP_SESSION_NONE) {
             session_start();
@@ -265,13 +271,13 @@ class SaleController {
             $resultado = Sale::delete($conn, $id);
             
             if ($resultado) {
-                header('Location: ' . $this->baseUrl . '?accion=index&success=deleted');
+                echo '<script>alert("Venta eliminada exitosamente."); window.location.href = "/RMIE/app/controllers/SaleController.php?accion=index";</script>';
             } else {
                 throw new Exception("Error al eliminar la venta");
             }
         } catch (Exception $e) {
             error_log("Error en SaleController::delete: " . $e->getMessage());
-            header('Location: ' . $this->baseUrl . '?accion=index&error=' . urlencode($e->getMessage()));
+            echo '<script>alert("Error: ' . addslashes($e->getMessage()) . '"); window.location.href = "/RMIE/app/controllers/SaleController.php?accion=index";</script>';
         }
         exit();
     }

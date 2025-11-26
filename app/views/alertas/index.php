@@ -850,10 +850,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 
                                 <div class="alerts-card-field">
                                     <div class="alerts-card-field-label">
-                                        <i class="fas fa-user"></i> Cliente
+                                        <i class="fas fa-truck"></i> Proveedor
                                     </div>
                                     <div class="alerts-card-field-value">
-                                        <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
+                                        <?= htmlspecialchars($alerta['proveedor_nombre'] ?? 'Proveedor #' . $alerta['id_proveedores']) ?>
                                     </div>
                                 </div>
                                 
@@ -954,7 +954,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <th><i class="fas fa-hashtag"></i> ID</th>
                             <th><i class="fas fa-bell"></i> Tipo</th>
                             <th><i class="fas fa-box"></i> Producto</th>
-                            <th><i class="fas fa-user"></i> Cliente</th>
+                            <th><i class="fas fa-truck"></i> Proveedor</th>
                             <th><i class="fas fa-sort-numeric-up"></i> Cantidad Mín.</th>
                             <th><i class="fas fa-calendar-alt"></i> Fecha Caducidad</th>
                             <th><i class="fas fa-traffic-light"></i> Estado</th>
@@ -1024,9 +1024,9 @@ unset($_SESSION['success'], $_SESSION['error']);
                                             <i class="fas fa-user text-warning"></i>
                                         </div>
                                         <div>
-                                            <?= htmlspecialchars($alerta['cliente_nombre'] ?? 'Cliente #' . $alerta['id_clientes']) ?>
+                                            <?= htmlspecialchars($alerta['proveedor_nombre'] ?? 'Proveedor #' . $alerta['id_proveedores']) ?>
                                             <br>
-                                            <small class="text-muted">ID: <?= $alerta['id_clientes'] ?></small>
+                                            <small class="text-muted">ID: <?= $alerta['id_proveedores'] ?></small>
                                         </div>
                                     </div>
                                 </td>

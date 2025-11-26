@@ -16,29 +16,27 @@ class Alert {
         $this->fecha_caducidad = $fecha_caducidad;
     }
 
-    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes, $tipo_alerta = 'stock_bajo') {
+    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores, $tipo_alerta = 'stock_bajo') {
         // Verificar si la columna tipo_alerta existe
         $check_column = $conn->query("SHOW COLUMNS FROM alertas LIKE 'tipo_alerta'");
         $column_exists = $check_column && $check_column->num_rows > 0;
         
         if ($column_exists) {
             // Si la columna existe, incluirla en el INSERT
-            $sql = "INSERT INTO alertas (tipo_alerta, id_productos, cantidad_minima, fecha_caducidad, id_clientes) VALUES (?, ?, ?, ?, ?)";
+            $sql = "INSERT INTO alertas (tipo_alerta, id_productos, cantidad_minima, fecha_caducidad, id_proveedores) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception('Error en prepare(): ' . $conn->error);
             }
-            if (!$stmt->bind_param('siisi', $tipo_alerta, $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes)) {
-                throw new Exception('Error en bind_param(): ' . $stmt->error);
-            }
+            $stmt->bind_param('siisi', $tipo_alerta, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores);
         } else {
             // Si no existe, usar el INSERT original sin tipo_alerta
-            $sql = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_clientes) VALUES (?, ?, ?, ?)";
+            $sql = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_proveedores) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception('Error en prepare(): ' . $conn->error);
             }
-            if (!$stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_clientes)) {
+            if (!$stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores)) {
                 throw new Exception('Error en bind_param(): ' . $stmt->error);
             }
         }
@@ -77,9 +75,9 @@ class Alert {
     }
 
     public static function update($conn, $id, $data) {
-        $sql = "UPDATE alertas SET id_productos = ?, cantidad_minima = ?, fecha_caducidad = ?, id_clientes = ? WHERE id_alertas = ?";
+        $sql = "UPDATE alertas SET id_productos = ?, cantidad_minima = ?, fecha_caducidad = ?, id_proveedores = ? WHERE id_alertas = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('iisii', $data['id_productos'], $data['cantidad_minima'], $data['fecha_caducidad'], $data['id_clientes'], $id);
+        $stmt->bind_param('iisii', $data['id_productos'], $data['cantidad_minima'], $data['fecha_caducidad'], $data['id_proveedores'], $id);
         return $stmt->execute();
     }
 
@@ -99,14 +97,14 @@ class Alert {
         $check_estado = $conn->query("SHOW COLUMNS FROM alertas LIKE 'estado'");
         $estado_exists = $check_estado && $check_estado->num_rows > 0;
         
-        $sql = "SELECT a.*, p.nombre AS producto_nombre, c.nombre AS cliente_nombre";
+        $sql = "SELECT a.*, p.nombre AS producto_nombre, prov.nombre_distribuidor AS proveedor_nombre";
         if ($tipo_exists) $sql .= ", a.tipo_alerta";
         if ($prioridad_exists) $sql .= ", a.prioridad";
         if ($estado_exists) $sql .= ", a.estado";
         
         $sql .= " FROM alertas a 
                  JOIN productos p ON a.id_productos = p.id_productos 
-                 LEFT JOIN clientes c ON a.id_clientes = c.id_clientes";
+                 LEFT JOIN proveedores prov ON a.id_proveedores = prov.id_proveedores";
         
         $params = [];
         $types = '';

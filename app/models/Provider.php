@@ -176,20 +176,17 @@ class Provider {
         return $stmt->execute();
     }
 
-    // Remover producto de proveedor (establecer a NULL o a un proveedor por defecto)
+    // Remover producto de proveedor (establecer a NULL)
     public static function removeProducto($conn, $id_proveedor, $id_producto) {
-        // Opción 1: Establecer a NULL si la columna lo permite
-        // Opción 2: Establecer a un proveedor por defecto (ID 13 = "Sin Proveedor")
-        $sql = "UPDATE productos SET id_proveedores = 13 WHERE id_proveedores = ? AND id_productos = ?";
+        $sql = "UPDATE productos SET id_proveedores = NULL WHERE id_proveedores = ? AND id_productos = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $id_proveedor, $id_producto);
         return $stmt->execute();
     }
 
-    // Remover todos los productos de un proveedor (establecer a proveedor por defecto)
+    // Remover todos los productos de un proveedor (establecer a NULL)
     public static function removeAllProductos($conn, $id_proveedor) {
-        // Establecer todos los productos de este proveedor al proveedor por defecto (ID 13)
-        $sql = "UPDATE productos SET id_proveedores = 13 WHERE id_proveedores = ?";
+        $sql = "UPDATE productos SET id_proveedores = NULL WHERE id_proveedores = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_proveedor);
         return $stmt->execute();
