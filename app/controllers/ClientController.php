@@ -87,6 +87,9 @@ class ClientController {
     public function create() {
         global $conn;
         
+        // Obtener locales para el formulario
+        $locales = Local::getAll($conn);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Validar datos requeridos
@@ -95,6 +98,11 @@ class ClientController {
                     if (empty($_POST[$field])) {
                         throw new Exception("El campo " . ucfirst($field) . " es requerido");
                     }
+                }
+                
+                // Validar que se hayan seleccionado locales
+                if (empty($_POST['id_locales']) || !is_array($_POST['id_locales'])) {
+                    throw new Exception("Debe seleccionar al menos un local");
                 }
                 
                 // Validar formato de correo
@@ -115,6 +123,11 @@ class ClientController {
                     'correo' => trim($_POST['correo']),
                     'estado' => $_POST['estado'] ?? 'activo'
                 ]);
+                
+                // Asignar locales
+                if ($clienteId) {
+                    Client::updateLocales($conn, $clienteId, $_POST['id_locales']);
+                }
                 
                 // Redirigir al index con mensaje de éxito
                 header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente creado exitosamente');
@@ -143,13 +156,22 @@ class ClientController {
                 throw new Exception("Cliente no encontrado");
             }
             
+            // Obtener locales asignados al cliente
+            $locales_asignados = Client::getLocales($conn, $id);
+            $locales_asignados_ids = array_map(function($l) { return $l->id_locales; }, $locales_asignados);
+            
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validar datos requeridos
-                $required_fields = ['nombre', 'correo', 'id_locales'];
+                $required_fields = ['nombre', 'correo'];
                 foreach ($required_fields as $field) {
                     if (empty($_POST[$field])) {
                         throw new Exception("El campo " . ucfirst($field) . " es requerido");
                     }
+                }
+                
+                // Validar que se hayan seleccionado locales
+                if (empty($_POST['id_locales']) || !is_array($_POST['id_locales'])) {
+                    throw new Exception("Debe seleccionar al menos un local");
                 }
                 
                 // Validar formato de correo
@@ -169,9 +191,11 @@ class ClientController {
                     'descripcion' => trim($_POST['descripcion'] ?? ''),
                     'cel_cliente' => trim($_POST['cel_cliente'] ?? ''),
                     'correo' => trim($_POST['correo']),
-                    'estado' => $_POST['estado'] ?? 'activo',
-                    'id_locales' => (int)$_POST['id_locales']
+                    'estado' => $_POST['estado'] ?? 'activo'
                 ]);
+                
+                // Actualizar locales asignados
+                Client::updateLocales($conn, $id, $_POST['id_locales']);
                 
                 // Redirigir al index con mensaje de éxito
                 header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente actualizado exitosamente');
@@ -180,6 +204,7 @@ class ClientController {
             
         } catch (Exception $e) {
             $error = $e->getMessage();
+            $locales_asignados_ids = $locales_asignados_ids ?? [];
         }
         
         // Obtener locales para el formulario

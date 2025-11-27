@@ -47,6 +47,11 @@ class SaleController {
             // Obtener ventas con filtros
             $ventas = Sale::getFiltered($conn, $filtrosModelo);
             
+            // Cargar productos para cada venta
+            foreach ($ventas as $venta) {
+                $venta->productos_asignados = Sale::getProductos($conn, $venta->id_ventas);
+            }
+            
             // Obtener datos para selectores
             $productos = Product::getAll($conn);
             $clientes = Client::getAll($conn);
@@ -67,7 +72,7 @@ class SaleController {
                 $fecha_venta = trim($_POST['fecha_venta'] ?? '');
                 $estado = trim($_POST['estado'] ?? 'pendiente');
                 $num_doc = trim($_POST['num_doc'] ?? '');
-                $productos = $_POST['productos'] ?? [];
+                $productos_ids = $_POST['id_productos'] ?? [];
                 
                 if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");
@@ -81,8 +86,8 @@ class SaleController {
                     throw new Exception("Debe seleccionar un usuario responsable");
                 }
                 
-                if (empty($productos) || !is_array($productos)) {
-                    throw new Exception("Debe agregar al menos un producto al carrito");
+                if (empty($productos_ids) || !is_array($productos_ids)) {
+                    throw new Exception("Debe seleccionar al menos un producto");
                 }
                 
                 global $conn;
@@ -91,33 +96,49 @@ class SaleController {
                 $conn->begin_transaction();
                 
                 try {
-                    // Crear una venta por cada producto en el carrito
-                    $ventasCreadas = 0;
+                    // Calcular total de la venta y preparar datos de productos
+                    $total_venta = 0;
+                    $productos_data = [];
                     
-                    foreach ($productos as $producto) {
-                        $id_productos = $producto['id'] ?? '';
-                        $cantidad = $producto['cantidad'] ?? 0;
-                        $precio_unitario = $producto['precio'] ?? 0;
-                        $total = $cantidad * $precio_unitario;
-                        
-                        if (empty($id_productos) || $cantidad <= 0 || $precio_unitario <= 0) {
-                            throw new Exception("Datos de producto inválidos en el carrito");
+                    foreach ($productos_ids as $id_producto) {
+                        // Obtener datos del producto
+                        $producto = Product::getById($conn, $id_producto);
+                        if ($producto) {
+                            $cantidad = 1; // Por defecto 1, puedes ajustar esto
+                            $precio = floatval($producto->precio_unitario ?? 0);
+                            $subtotal = $cantidad * $precio;
+                            $total_venta += $subtotal;
+                            
+                            $productos_data[] = [
+                                'id_productos' => $id_producto,
+                                'cantidad' => $cantidad,
+                                'precio_unitario' => $precio,
+                                'subtotal' => $subtotal
+                            ];
                         }
-                        
-                        // Crear la venta para este producto
-                        $resultado = Sale::create($conn, $id_productos, $id_clientes, $fecha_venta, $cantidad, $precio_unitario, $total, $estado, $num_doc);
-                        
-                        if (!$resultado) {
-                            throw new Exception("Error al crear la venta para el producto ID: $id_productos");
-                        }
-                        
-                        $ventasCreadas++;
                     }
+                    
+                    // Crear UNA sola venta (mantener compatibilidad con estructura antigua)
+                    $primer_producto = !empty($productos_ids) ? $productos_ids[0] : null;
+                    $cantidad_total = count($productos_ids);
+                    $precio_promedio = $total_venta / max($cantidad_total, 1);
+                    
+                    $resultado = Sale::create($conn, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
+                    
+                    if (!$resultado) {
+                        throw new Exception("Error al crear la venta");
+                    }
+                    
+                    // Obtener el ID de la venta recién creada
+                    $id_venta = $conn->insert_id;
+                    
+                    // Insertar productos en ventas_productos
+                    Sale::updateProductos($conn, $id_venta, $productos_data);
                     
                     // Confirmar transacción
                     $conn->commit();
                     
-                    $_SESSION['success'] = "Se crearon $ventasCreadas venta(s) exitosamente";
+                    $_SESSION['success'] = "Venta creada exitosamente con " . count($productos_ids) . " producto(s)";
                     header('Location: ' . $this->baseUrl . '?accion=index');
                     exit();
                     
@@ -166,49 +187,85 @@ class SaleController {
                 throw new Exception("Venta no encontrada");
             }
             
+            // Cargar productos asignados
+            $venta->productos_asignados = Sale::getProductos($conn, $id);
+            $productos_asignados_ids = array_column(array_map(function($p) {
+                return (array)$p;
+            }, $venta->productos_asignados), 'id_productos');
+            
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos
-                $id_productos = trim($_POST['id_productos'] ?? '');
                 $id_clientes = trim($_POST['id_clientes'] ?? '');
                 $fecha_venta = trim($_POST['fecha_venta'] ?? '');
-                $cantidad = trim($_POST['cantidad'] ?? '');
-                $precio_unitario = trim($_POST['precio_unitario'] ?? '');
-                $total = trim($_POST['total'] ?? '');
                 $estado = trim($_POST['estado'] ?? '');
                 $num_doc = trim($_POST['num_doc'] ?? '');
+                $productos_ids = $_POST['id_productos'] ?? [];
                 
-                if (empty($id_productos)) {
-                    throw new Exception("Debe seleccionar un producto");
-                }
-                  if (empty($id_clientes)) {
+                if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");
                 }
                 
                 if (empty($fecha_venta)) {
-                    // Si no se proporciona fecha, mantener la fecha actual de la venta o usar la fecha actual
                     $fecha_venta = $venta->fecha_venta ?? date('Y-m-d');
-                }
-                
-                if (empty($cantidad) || $cantidad <= 0) {
-                    throw new Exception("La cantidad debe ser mayor a 0");
-                }
-                
-                if (empty($precio_unitario) || $precio_unitario <= 0) {
-                    throw new Exception("El precio unitario debe ser mayor a 0");
                 }
                 
                 if (empty($num_doc)) {
                     throw new Exception("Debe seleccionar un usuario responsable");
                 }
                 
-                $resultado = Sale::update($conn, $id, $id_productos, $id_clientes, $fecha_venta, $cantidad, $precio_unitario, $total, $estado, $num_doc);
-                
-                if ($resultado) {
-                    header('Location: ' . $this->baseUrl . '?accion=index&success=updated');
-                } else {
-                    throw new Exception("Error al actualizar la venta");
+                if (empty($productos_ids) || !is_array($productos_ids)) {
+                    throw new Exception("Debe seleccionar al menos un producto");
                 }
-                exit();
+                
+                // Iniciar transacción
+                $conn->begin_transaction();
+                
+                try {
+                    // Calcular total de la venta
+                    $total_venta = 0;
+                    $productos_data = [];
+                    
+                    foreach ($productos_ids as $id_producto) {
+                        // Obtener datos del producto
+                        $producto = Product::getById($conn, $id_producto);
+                        if ($producto) {
+                            $cantidad = 1; // Por defecto 1, puedes ajustar esto
+                            $precio = floatval($producto->precio_unitario ?? 0);
+                            $subtotal = $cantidad * $precio;
+                            $total_venta += $subtotal;
+                            
+                            $productos_data[] = [
+                                'id_productos' => $id_producto,
+                                'cantidad' => $cantidad,
+                                'precio_unitario' => $precio,
+                                'subtotal' => $subtotal
+                            ];
+                        }
+                    }
+                    
+                    // Actualizar venta principal (mantener compatibilidad)
+                    $primer_producto = !empty($productos_ids) ? $productos_ids[0] : null;
+                    $cantidad_total = count($productos_ids);
+                    $precio_promedio = $total_venta / max($cantidad_total, 1);
+                    
+                    $resultado = Sale::update($conn, $id, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
+                    
+                    if (!$resultado) {
+                        throw new Exception("Error al actualizar la venta");
+                    }
+                    
+                    // Actualizar productos en ventas_productos
+                    Sale::updateProductos($conn, $id, $productos_data);
+                    
+                    $conn->commit();
+                    
+                    header('Location: ' . $this->baseUrl . '?accion=index&success=updated');
+                    exit();
+                    
+                } catch (Exception $e) {
+                    $conn->rollback();
+                    throw $e;
+                }
             }
             
             // Cargar datos necesarios para la vista

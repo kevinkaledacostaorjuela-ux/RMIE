@@ -9,8 +9,9 @@ class Client {
     public $id_locales;
     public $fecha_creacion;
     public $local_nombre;
+    public $locales_asignados; // Array de locales asignados
 
-    public function __construct($id_clientes, $nombre, $descripcion, $cel_cliente, $correo, $estado, $id_locales, $fecha_creacion = null, $local_nombre = null) {
+    public function __construct($id_clientes, $nombre, $descripcion, $cel_cliente, $correo, $estado, $id_locales, $fecha_creacion = null, $local_nombre = null, $locales_asignados = []) {
         $this->id_clientes = $id_clientes;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
@@ -20,6 +21,7 @@ class Client {
         $this->id_locales = $id_locales;
         $this->fecha_creacion = $fecha_creacion;
         $this->local_nombre = $local_nombre;
+        $this->locales_asignados = $locales_asignados;
     }
 
     public static function getAll($conn, $filtros = []) {
@@ -84,7 +86,7 @@ class Client {
         
         $clientes = [];
         while ($row = $result->fetch_assoc()) {
-            $clientes[] = new Client(
+            $cliente = new Client(
                 $row['id_clientes'],
                 $row['nombre'],
                 $row['descripcion'],
@@ -95,6 +97,10 @@ class Client {
                 $row['fecha_creacion'],
                 $row['local_nombre']
             );
+            
+            // Obtener locales asignados
+            $cliente->locales_asignados = self::getLocales($conn, $row['id_clientes']);
+            $clientes[] = $cliente;
         }
         return $clientes;
     }
@@ -111,7 +117,7 @@ class Client {
         $result = $stmt->get_result();
         
         if ($row = $result->fetch_assoc()) {
-            return new Client(
+            $cliente = new Client(
                 $row['id_clientes'],
                 $row['nombre'],
                 $row['descripcion'],
@@ -122,6 +128,10 @@ class Client {
                 $row['fecha_creacion'] ?? null,
                 $row['local_nombre']
             );
+            
+            // Obtener locales asignados
+            $cliente->locales_asignados = self::getLocales($conn, $row['id_clientes']);
+            return $cliente;
         }
         return null;
     }
@@ -173,22 +183,57 @@ class Client {
                 descripcion = ?, 
                 cel_cliente = ?, 
                 correo = ?, 
-                estado = ?, 
-                id_locales = ?
+                estado = ?
                 WHERE id_clientes = ?";
         
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('sssssii', 
+        $stmt->bind_param('sssssi', 
             $data['nombre'], 
             $data['descripcion'], 
             $data['cel_cliente'], 
             $data['correo'], 
-            $data['estado'], 
-            $data['id_locales'],
+            $data['estado'],
             $id
         );
         
         return $stmt->execute();
+    }
+
+    public static function getLocales($conn, $id_cliente) {
+        $sql = "SELECT l.* FROM locales l 
+                INNER JOIN clientes_locales cl ON l.id_locales = cl.id_locales 
+                WHERE cl.id_clientes = ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_cliente);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $locales = [];
+        while ($row = $result->fetch_assoc()) {
+            $locales[] = (object)$row;
+        }
+        return $locales;
+    }
+    
+    public static function updateLocales($conn, $id_cliente, $locales_ids) {
+        // Primero eliminar las asignaciones existentes
+        $sql = "DELETE FROM clientes_locales WHERE id_clientes = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_cliente);
+        $stmt->execute();
+        
+        // Luego insertar las nuevas asignaciones
+        if (!empty($locales_ids)) {
+            $sql = "INSERT INTO clientes_locales (id_clientes, id_locales) VALUES (?, ?)";
+            $stmt = $conn->prepare($sql);
+            
+            foreach ($locales_ids as $id_local) {
+                $stmt->bind_param('ii', $id_cliente, $id_local);
+                $stmt->execute();
+            }
+        }
+        return true;
     }
 
     public static function delete($conn, $id) {

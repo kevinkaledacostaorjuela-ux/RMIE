@@ -30,6 +30,7 @@ $stats = $statsQuery->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Productos - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
@@ -1085,7 +1086,7 @@ $stats = $statsQuery->fetch_assoc();
                             <th><i class="fas fa-dollar-sign"></i> Precio</th>
                             <th><i class="fas fa-warehouse"></i> Stock</th>
                             <th><i class="fas fa-truck"></i> Proveedor</th>
-                            <th><i class="fas fa-calendar-alt"></i> Fecha</th>
+                            <th><i class="fas fa-calendar-alt"></i> Fecha de creacion</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
                         </tr>
                     </thead>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrar Venta - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <!-- Bootstrap 5.3.0 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6.0.0 -->
@@ -705,43 +706,56 @@
                         <!-- Información del producto -->
                         <div class="form-section">
                             <h5 class="section-title">
-                                <i class="fas fa-box"></i> Agregar Productos a la Venta
+                                <i class="fas fa-box"></i> Seleccionar Productos para la Venta
                             </h5>
                             
                             <div class="form-group">
-                                <label for="id_productos">
-                                    <i class="fas fa-cubes"></i> Producto:
+                                <label>
+                                    <i class="fas fa-cubes"></i> Productos *
                                 </label>
-                                <select id="id_productos" class="form-select">
-                                    <option value="">Seleccione un producto</option>
+                                <div class="productos-info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; color: white;">
+                                    <i class="fas fa-info-circle"></i> Selecciona los productos para esta venta
+                                </div>
+                                <div class="productos-checkbox-container-create" style="max-height: 400px; overflow-y: auto; border: 2px solid #667eea; border-radius: 10px; padding: 1rem; background: white;">
                                     <?php if (isset($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $producto): ?>
-                                            <option value="<?= htmlspecialchars($producto->id_productos) ?>" 
-                                                    data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
-                                                    data-stock="<?= htmlspecialchars($producto->stock) ?>"
-                                                    data-nombre="<?= htmlspecialchars($producto->nombre) ?>">
-                                                <?= htmlspecialchars($producto->nombre) ?> - $<?= number_format($producto->precio_unitario, 2) ?> (Stock: <?= htmlspecialchars($producto->stock) ?>)
-                                            </option>
+                                            <div class="checkbox-item" style="margin-bottom: 0.8rem;">
+                                                <input type="checkbox" 
+                                                       class="checkbox-input-create" 
+                                                       id="producto_<?= $producto->id_productos ?>" 
+                                                       name="id_productos[]" 
+                                                       value="<?= htmlspecialchars($producto->id_productos) ?>"
+                                                       data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
+                                                       data-stock="<?= htmlspecialchars($producto->stock) ?>"
+                                                       data-nombre="<?= htmlspecialchars($producto->nombre) ?>"
+                                                       style="display: none;">
+                                                <label for="producto_<?= $producto->id_productos ?>" 
+                                                       class="checkbox-label-create"
+                                                       style="display: flex; align-items: center; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: white;">
+                                                    <span class="checkbox-custom-create" 
+                                                          style="width: 24px; height: 24px; border: 2px solid #667eea; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;">
+                                                        <i class="fas fa-check" style="color: white; font-size: 14px; display: none;"></i>
+                                                    </span>
+                                                    <span style="flex-grow: 1; font-weight: 500; color: #333;">
+                                                        <?= htmlspecialchars($producto->nombre) ?>
+                                                        <small style="display: block; color: #666; font-size: 0.85em;">
+                                                            Stock: <?= htmlspecialchars($producto->stock) ?> | 
+                                                            Precio: $<?= number_format($producto->precio_unitario, 2) ?>
+                                                        </small>
+                                                    </span>
+                                                </label>
+                                            </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
-                                </select>
+                                </div>
+                                <small class="text-muted" style="display: block; margin-top: 0.5rem;">
+                                    <span id="productos-seleccionados-count">0</span> producto(s) seleccionado(s)
+                                </small>
                             </div>
-
-                            <div class="form-group">
-                                <label for="cantidad_temp">
-                                    <i class="fas fa-sort-numeric-up"></i> Cantidad:
-                                </label>
-                                <input type="number" id="cantidad_temp" class="form-control" 
-                                       min="1" step="1" value="1">
-                            </div>
-
-                            <button type="button" id="btn-agregar-producto" class="btn btn-success w-100">
-                                <i class="fas fa-plus-circle"></i> Agregar al Carrito
-                            </button>
                         </div>
 
-                        <!-- Carrito de productos -->
-                        <div class="form-section">
+                        <!-- Sección eliminada: Carrito de productos -->
+                        <div class="form-section" style="display: none;">
                             <h5 class="section-title">
                                 <i class="fas fa-shopping-cart"></i> Carrito de Compras
                             </h5>
@@ -890,239 +904,100 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- JavaScript para carrito de compras -->
+    <!-- JavaScript simplificado con checkboxes -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Carrito de productos
-        let carrito = [];
-        
-        const productoSelect = document.getElementById('id_productos');
-        const cantidadTemp = document.getElementById('cantidad_temp');
-        const btnAgregar = document.getElementById('btn-agregar-producto');
-        const carritoItems = document.getElementById('carrito-items');
-        const carritoVacio = document.getElementById('carrito-vacio');
+        const checkboxes = document.querySelectorAll('.checkbox-input-create');
         const form = document.getElementById('formVenta');
+        const countSpan = document.getElementById('productos-seleccionados-count');
         const btnRegistrar = document.getElementById('btn-registrar');
         
-        // Agregar producto al carrito
-        btnAgregar.addEventListener('click', function() {
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            
-            if (!selectedOption.value) {
-                showCustomAlert('Debe seleccionar un producto', 'warning');
-                return;
-            }
-            
-            const cantidad = parseInt(cantidadTemp.value);
-            if (cantidad <= 0) {
-                showCustomAlert('La cantidad debe ser mayor a 0', 'warning');
-                return;
-            }
-            
-            const id = selectedOption.value;
-            const nombre = selectedOption.dataset.nombre;
-            const precio = parseFloat(selectedOption.dataset.precio);
-            const stock = parseInt(selectedOption.dataset.stock);
-            
-            // Validar stock
-            const itemExistente = carrito.find(item => item.id === id);
-            const cantidadTotal = itemExistente ? itemExistente.cantidad + cantidad : cantidad;
-            
-            if (cantidadTotal > stock) {
-                showCustomAlert(`Stock insuficiente. Disponible: ${stock}, Total en carrito: ${cantidadTotal}`, 'warning');
-                return;
-            }
-            
-            // Agregar o actualizar en carrito
-            if (itemExistente) {
-                itemExistente.cantidad += cantidad;
-            } else {
-                carrito.push({
-                    id: id,
-                    nombre: nombre,
-                    precio: precio,
-                    cantidad: cantidad,
-                    stock: stock
-                });
-            }
-            
-            // Limpiar selección
-            productoSelect.value = '';
-            cantidadTemp.value = 1;
-            
-            // Actualizar vista
-            actualizarCarrito();
-            showCustomAlert('Producto agregado al carrito', 'success');
-        });
+        // Verificar que los elementos existen
+        if (!form || !btnRegistrar) {
+            console.error('Elementos del formulario no encontrados');
+            return;
+        }
         
-        // Actualizar vista del carrito
-        function actualizarCarrito() {
-            if (carrito.length === 0) {
-                carritoVacio.style.display = 'block';
-                carritoItems.innerHTML = '';
-                actualizarResumen();
-                return;
+        // Estilo para checkboxes
+        const style = document.createElement('style');
+        style.textContent = `
+            .checkbox-input-create:checked + .checkbox-label-create {
+                border-color: #667eea !important;
+                background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%) !important;
+            }
+            .checkbox-input-create:checked + .checkbox-label-create .checkbox-custom-create {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-color: #667eea;
+            }
+            .checkbox-input-create:checked + .checkbox-label-create .checkbox-custom-create i {
+                display: block !important;
+            }
+            .checkbox-label-create:hover {
+                border-color: #667eea !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            }
+            .productos-checkbox-container-create::-webkit-scrollbar {
+                width: 8px;
+            }
+            .productos-checkbox-container-create::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            .productos-checkbox-container-create::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 10px;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Actualizar contador y resumen
+        function actualizarResumen() {
+            const checked = document.querySelectorAll('.checkbox-input-create:checked');
+            const count = checked.length;
+            
+            if (countSpan) {
+                countSpan.textContent = count;
             }
             
-            carritoVacio.style.display = 'none';
-            
-            let html = '';
-            carrito.forEach((item, index) => {
-                const subtotal = item.precio * item.cantidad;
-                html += `
-                    <div class="carrito-item" data-index="${index}">
-                        <div class="carrito-item-header">
-                            <strong>${item.nombre}</strong>
-                            <button type="button" class="btn-eliminar" onclick="eliminarItem(${index})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        <div class="carrito-item-body">
-                            <div class="carrito-item-info">
-                                <span><i class="fas fa-dollar-sign"></i> $${item.precio.toFixed(2)}</span>
-                                <span><i class="fas fa-warehouse"></i> Stock: ${item.stock}</span>
-                            </div>
-                            <div class="carrito-item-cantidad">
-                                <button type="button" class="btn-cantidad" onclick="cambiarCantidad(${index}, -1)">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <input type="number" class="cantidad-input" value="${item.cantidad}" 
-                                       min="1" max="${item.stock}" onchange="actualizarCantidad(${index}, this.value)">
-                                <button type="button" class="btn-cantidad" onclick="cambiarCantidad(${index}, 1)">
-                                    <i class="fas fa-plus"></i>
-                                </button>
-                            </div>
-                            <div class="carrito-item-subtotal">
-                                <strong>Subtotal:</strong>
-                                <span>$${subtotal.toFixed(2)}</span>
-                            </div>
-                        </div>
-                    </div>
-                `;
+            // Calcular total
+            let total = 0;
+            checked.forEach(checkbox => {
+                const precio = parseFloat(checkbox.dataset.precio || 0);
+                total += precio;
             });
             
-            carritoItems.innerHTML = html;
-            actualizarResumen();
+            const productosCount = document.getElementById('productos-count');
+            const itemsCount = document.getElementById('items-count');
+            const totalMostrar = document.getElementById('total-mostrar');
+            
+            if (productosCount) productosCount.textContent = count;
+            if (itemsCount) itemsCount.textContent = count;
+            if (totalMostrar) totalMostrar.textContent = '$' + total.toFixed(2);
         }
         
-        // Eliminar item del carrito
-        window.eliminarItem = function(index) {
-            carrito.splice(index, 1);
-            actualizarCarrito();
-            showCustomAlert('Producto eliminado del carrito', 'info');
-        };
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', actualizarResumen);
+        });
         
-        // Cambiar cantidad
-        window.cambiarCantidad = function(index, cambio) {
-            const item = carrito[index];
-            const nuevaCantidad = item.cantidad + cambio;
-            
-            if (nuevaCantidad <= 0) {
-                eliminarItem(index);
-                return;
-            }
-            
-            if (nuevaCantidad > item.stock) {
-                showCustomAlert(`Stock insuficiente. Disponible: ${item.stock}`, 'warning');
-                return;
-            }
-            
-            item.cantidad = nuevaCantidad;
-            actualizarCarrito();
-        };
-        
-        // Actualizar cantidad directamente
-        window.actualizarCantidad = function(index, valor) {
-            const item = carrito[index];
-            const nuevaCantidad = parseInt(valor);
-            
-            if (isNaN(nuevaCantidad) || nuevaCantidad <= 0) {
-                eliminarItem(index);
-                return;
-            }
-            
-            if (nuevaCantidad > item.stock) {
-                showCustomAlert(`Stock insuficiente. Disponible: ${item.stock}`, 'warning');
-                actualizarCarrito();
-                return;
-            }
-            
-            item.cantidad = nuevaCantidad;
-            actualizarCarrito();
-        };
-        
-        // Actualizar resumen
-        function actualizarResumen() {
-            const totalProductos = carrito.length;
-            const totalItems = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-            const totalPagar = carrito.reduce((sum, item) => sum + (item.precio * item.cantidad), 0);
-            
-            document.getElementById('productos-count').textContent = totalProductos;
-            document.getElementById('items-count').textContent = totalItems;
-            document.getElementById('total-mostrar').textContent = '$' + totalPagar.toFixed(2);
-        }
-        
-        // Mostrar alerta personalizada
-        function showCustomAlert(message, type = 'info') {
-            const existingAlerts = document.querySelectorAll('.custom-alert');
-            existingAlerts.forEach(alert => alert.remove());
-            
-            const colors = {
-                'success': { bg: 'rgba(40, 167, 69, 0.1)', border: '#28a745', icon: 'check-circle' },
-                'warning': { bg: 'rgba(255, 193, 7, 0.1)', border: '#ffc107', icon: 'exclamation-triangle' },
-                'info': { bg: 'rgba(23, 162, 184, 0.1)', border: '#17a2b8', icon: 'info-circle' }
-            };
-            
-            const color = colors[type] || colors.info;
-            
-            const alertDiv = document.createElement('div');
-            alertDiv.className = 'custom-alert';
-            alertDiv.style.cssText = `
-                background: ${color.bg};
-                border-left: 4px solid ${color.border};
-                backdrop-filter: blur(10px);
-                border-radius: 12px;
-                padding: 1rem 1.5rem;
-                margin-bottom: 1.5rem;
-                animation: slideInDown 0.3s ease-out;
-            `;
-            alertDiv.innerHTML = `
-                <i class="fas fa-${color.icon}" style="color: ${color.border}; margin-right: 0.7rem;"></i>
-                ${message}
-                <button type="button" class="btn-close" onclick="this.parentElement.remove()" style="position: absolute; top: 0.5rem; right: 0.5rem;"></button>
-            `;
-            
-            const formContent = document.querySelector('.form-content');
-            formContent.insertBefore(alertDiv, formContent.firstChild);
-            
-            setTimeout(() => {
-                if (alertDiv.parentNode) {
-                    alertDiv.style.opacity = '0';
-                    alertDiv.style.transform = 'translateY(-20px)';
-                    setTimeout(() => alertDiv.remove(), 300);
-                }
-            }, 5000);
-        }
-        
-        // Enviar formulario
+        // Validación del formulario
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const cliente = document.getElementById('id_clientes').value;
-            const fecha = document.getElementById('fecha_venta').value;
-            const estado = document.getElementById('estado').value;
-            const usuario = document.getElementById('num_doc').value;
+            const cliente = document.getElementById('id_clientes');
+            const fecha = document.getElementById('fecha_venta');
+            const usuario = document.getElementById('num_doc');
+            const productosSeleccionados = document.querySelectorAll('.checkbox-input-create:checked').length;
             
-            // Validaciones
             let errors = [];
             
-            if (!cliente) errors.push('Debe seleccionar un cliente');
-            if (!fecha) errors.push('Debe seleccionar una fecha');
-            if (!usuario) errors.push('Debe seleccionar un usuario responsable');
-            if (carrito.length === 0) errors.push('Debe agregar al menos un producto al carrito');
+            if (!cliente || !cliente.value) errors.push('Debe seleccionar un cliente');
+            if (!fecha || !fecha.value) errors.push('Debe seleccionar una fecha');
+            if (!usuario || !usuario.value) errors.push('Debe seleccionar un usuario responsable');
+            if (productosSeleccionados === 0) errors.push('Debe seleccionar al menos un producto');
             
             if (errors.length > 0) {
-                showCustomAlert(errors.join('<br>'), 'warning');
+                alert(errors.join('\\n'));
                 return;
             }
             
@@ -1130,30 +1005,12 @@
             btnRegistrar.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
             btnRegistrar.disabled = true;
             
-            // Crear campos ocultos para cada producto
-            carrito.forEach((item, index) => {
-                const inputId = document.createElement('input');
-                inputId.type = 'hidden';
-                inputId.name = `productos[${index}][id]`;
-                inputId.value = item.id;
-                form.appendChild(inputId);
-                
-                const inputCantidad = document.createElement('input');
-                inputCantidad.type = 'hidden';
-                inputCantidad.name = `productos[${index}][cantidad]`;
-                inputCantidad.value = item.cantidad;
-                form.appendChild(inputCantidad);
-                
-                const inputPrecio = document.createElement('input');
-                inputPrecio.type = 'hidden';
-                inputPrecio.name = `productos[${index}][precio]`;
-                inputPrecio.value = item.precio;
-                form.appendChild(inputPrecio);
-            });
-            
             // Enviar formulario
             form.submit();
         });
+        
+        // Inicializar resumen
+        actualizarResumen();
     });
     </script>
 

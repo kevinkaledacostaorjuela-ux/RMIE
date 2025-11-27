@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Eliminar Ruta</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link rel="stylesheet" href="/RMIE/public/css/styles.css">
 </head>
 <body>

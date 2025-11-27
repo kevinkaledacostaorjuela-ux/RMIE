@@ -10,6 +10,7 @@ if (!isset($cliente)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Cliente - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -211,6 +212,95 @@ if (!isset($cliente)) {
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
             outline: none;
+        }
+        
+        /* Estilos para checkboxes de locales */
+        .locales-checkbox-container {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            padding: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .checkbox-item {
+            margin-bottom: 10px;
+            transition: var(--transition);
+        }
+        
+        .checkbox-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .checkbox-input {
+            display: none;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            transition: var(--transition);
+            border: 2px solid transparent;
+        }
+        
+        .checkbox-label:hover {
+            background: rgba(255, 255, 255, 1);
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .checkbox-custom {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #667eea;
+            border-radius: 6px;
+            margin-right: 12px;
+            position: relative;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+        
+        .checkbox-input:checked + .checkbox-label .checkbox-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+        }
+        
+        .checkbox-input:checked + .checkbox-label .checkbox-custom::after {
+            content: '\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 14px;
+        }
+        
+        .checkbox-input:checked + .checkbox-label {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            border-color: #667eea;
+        }
+        
+        .checkbox-text {
+            color: #333;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+        
+        .checkbox-text i {
+            color: #667eea;
+            margin-right: 8px;
+        }
+        
+        .checkbox-input:checked + .checkbox-label .checkbox-text {
+            color: #667eea;
+            font-weight: 600;
         }
 
         .ventas-summary {
@@ -676,23 +766,53 @@ if (!isset($cliente)) {
                         
                         <div class="form-group">
                             <label for="id_locales">
-                                <i class="fas fa-store"></i> Local asignado:
+                                <i class="fas fa-store"></i> Locales asignados:
                                 <span class="required">*</span>
                             </label>
-                            <select id="id_locales" name="id_locales" required class="form-select">
-                                <option value="">Seleccione un local</option>
-                                <?php if (isset($locales) && is_array($locales)): ?>
+                            <div class="locales-checkbox-container">
+                                <?php if (isset($locales) && is_array($locales) && count($locales) > 0): ?>
                                     <?php foreach ($locales as $local): ?>
-                                        <option value="<?= $local->id_locales ?>" 
-                                                <?= ($cliente->id_locales == $local->id_locales) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($local->nombre_local) ?>
-                                        </option>
+                                        <div class="checkbox-item">
+                                            <input type="checkbox" 
+                                                   name="id_locales[]" 
+                                                   value="<?= $local->id_locales ?>" 
+                                                   id="local_<?= $local->id_locales ?>"
+                                                   class="checkbox-input"
+                                                   <?= in_array($local->id_locales, $locales_asignados_ids ?? []) ? 'checked' : '' ?>>
+                                            <label for="local_<?= $local->id_locales ?>" class="checkbox-label">
+                                                <span class="checkbox-custom"></span>
+                                                <span class="checkbox-text">
+                                                    <i class="fas fa-store"></i>
+                                                    <?= htmlspecialchars($local->nombre_local) ?>
+                                                </span>
+                                            </label>
+                                        </div>
                                     <?php endforeach; ?>
                                 <?php else: ?>
-                                    <option value="">No hay locales disponibles</option>
+                                    <p class="text-muted">No hay locales disponibles</p>
                                 <?php endif; ?>
-                            </select>
-                            <small class="form-text text-muted">Local actual: <strong><?= htmlspecialchars($cliente->local_nombre ?? 'No asignado') ?></strong></small>
+                            </div>
+                            <small class="form-text text-muted">
+                                <i class="fas fa-info-circle"></i> 
+                                Seleccione uno o más locales para asignar al cliente.
+                                <br>
+                                <strong>Locales actuales:</strong> 
+                                <?php 
+                                if (!empty($locales_asignados_ids)) {
+                                    $nombres_locales = array_map(function($l) use ($locales) {
+                                        foreach ($locales as $local) {
+                                            if ($local->id_locales == $l) {
+                                                return htmlspecialchars($local->nombre_local);
+                                            }
+                                        }
+                                        return '';
+                                    }, $locales_asignados_ids);
+                                    echo implode(', ', array_filter($nombres_locales));
+                                } else {
+                                    echo 'Sin locales asignados';
+                                }
+                                ?>
+                            </small>
                         </div>
                         
                         <div class="form-group">
@@ -930,10 +1050,17 @@ if (!isset($cliente)) {
                 phoneDiv.style.display = 'none';
             }
             
-            // Actualizar local
+            // Actualizar local/locales
+            const checkboxes = document.querySelectorAll('input[name="id_locales[]"]:checked');
             const localText = document.getElementById('previewLocalText');
-            if (localSelect.value && localSelect.options[localSelect.selectedIndex]) {
-                localText.textContent = localSelect.options[localSelect.selectedIndex].text;
+            if (checkboxes.length > 0) {
+                const localesNames = Array.from(checkboxes).map(cb => {
+                    const label = document.querySelector(`label[for="${cb.id}"] .checkbox-text`);
+                    return label ? label.textContent.trim().replace(/^\s*\S+\s*/, '') : '';
+                }).filter(name => name);
+                localText.textContent = localesNames.join(', ');
+            } else {
+                localText.textContent = 'Sin locales asignados';
             }
             
             // Actualizar estado
@@ -950,7 +1077,7 @@ if (!isset($cliente)) {
         }
         
         // Agregar listeners para vista previa y validación en tiempo real
-        ['nombre', 'correo', 'cel_cliente', 'id_locales', 'estado'].forEach(function(fieldId) {
+        ['nombre', 'correo', 'cel_cliente', 'estado'].forEach(function(fieldId) {
             const field = document.getElementById(fieldId);
             if (field) {
                 field.addEventListener('input', function() {
@@ -963,6 +1090,14 @@ if (!isset($cliente)) {
                 });
             }
         });
+        
+        // Agregar listeners a los checkboxes de locales
+        document.querySelectorAll('input[name="id_locales[]"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', actualizarVistaPrevia);
+        });
+        
+        // Inicializar vista previa
+        actualizarVistaPrevia();
         
         // Validación en tiempo real
         function validarCampoEnTiempoReal(field) {
@@ -983,9 +1118,6 @@ if (!isset($cliente)) {
                     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
                     isValid = emailPattern.test(value);
                     break;
-                case 'id_locales':
-                    isValid = value !== '';
-                    break;
                 default:
                     isValid = true;
             }
@@ -998,7 +1130,8 @@ if (!isset($cliente)) {
         form.addEventListener('submit', function(e) {
             const correo = document.getElementById('correo').value.trim();
             const nombre = document.getElementById('nombre').value.trim();
-            const local = document.getElementById('id_locales').value;
+            const checkboxes = document.querySelectorAll('input[name="id_locales[]"]:checked');
+            const selectedLocales = checkboxes.length;
             
             let errors = [];
             
@@ -1013,9 +1146,9 @@ if (!isset($cliente)) {
                 errors.push('Por favor ingrese un correo electrónico válido');
             }
             
-            // Validar local
-            if (!local) {
-                errors.push('Por favor seleccione un local');
+            // Validar locales
+            if (selectedLocales === 0) {
+                errors.push('Por favor seleccione al menos un local');
             }
             
             // Si hay errores, mostrarlos y prevenir envío
@@ -1028,8 +1161,9 @@ if (!isset($cliente)) {
                     document.getElementById('nombre').focus();
                 } else if (!emailPattern.test(correo)) {
                     document.getElementById('correo').focus();
-                } else if (!local) {
-                    document.getElementById('id_locales').focus();
+                } else if (selectedLocales === 0) {
+                    // Scroll a la sección de locales
+                    document.querySelector('.locales-checkbox-container').scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 return;
             }
@@ -1299,8 +1433,17 @@ if (!isset($cliente)) {
                 const estado = document.getElementById('estado').value;
                 const direccion = document.getElementById('direccion')?.value || '';
                 const ciudad = document.getElementById('ciudad')?.value || '';
-                const localSelect = document.getElementById('id_locales');
-                const localName = localSelect.options[localSelect.selectedIndex]?.text || 'No asignado';
+                
+                // Obtener locales seleccionados de los checkboxes
+                const checkboxes = document.querySelectorAll('input[name="id_locales[]"]:checked');
+                let localName = 'Sin locales asignados';
+                if (checkboxes.length > 0) {
+                    const localesNames = Array.from(checkboxes).map(cb => {
+                        const label = document.querySelector(`label[for="${cb.id}"] .checkbox-text`);
+                        return label ? label.textContent.trim().replace(/^\s*\S+\s*/, '') : '';
+                    }).filter(name => name);
+                    localName = localesNames.join(', ');
+                }
                 
                 // Actualizar elementos básicos
                 const previewName = document.getElementById('previewName') || document.querySelector('.preview-name');
@@ -1325,7 +1468,7 @@ if (!isset($cliente)) {
                 
                 // Actualizar local
                 if (previewLocal) {
-                    previewLocal.textContent = localName !== 'Seleccione un local' ? localName : 'No asignado';
+                    previewLocal.textContent = localName;
                 }
                 
                 // Actualizar avatar
@@ -1624,6 +1767,13 @@ if (!isset($cliente)) {
             
             // Inicializar vista previa
             updatePreview();
+            
+            // Agregar listeners a los checkboxes de locales para updatePreview
+            document.querySelectorAll('input[name="id_locales[]"]').forEach(function(checkbox) {
+                checkbox.addEventListener('change', function() {
+                    updatePreview();
+                });
+            });
             
             // Atajo de teclado para guardar (Ctrl+S)
             document.addEventListener('keydown', function(e) {

@@ -18,6 +18,7 @@ class Sale {
     public $producto_nombre;
     public $cliente_nombre;
     public $usuario_nombre;
+    public $productos_asignados = [];
 
     public function __construct($id_ventas, $nombre, $direccion, $cantidad, $fecha_venta, $id_clientes, $id_reportes = null, $id_ruta = null, $id_productos = null, $precio_unitario = null, $total = null, $estado = 'pendiente', $num_doc = null) {
         $this->id_ventas = $id_ventas;
@@ -241,6 +242,55 @@ class Sale {
         }
         
         return $ventas;
+    }
+
+    // Obtener productos asignados a una venta
+    public static function getProductos($conn, $id_ventas) {
+        $sql = "SELECT vp.*, p.nombre, p.descripcion, p.precio_unitario as precio_producto, p.stock 
+                FROM ventas_productos vp
+                INNER JOIN productos p ON vp.id_productos = p.id_productos
+                WHERE vp.id_ventas = ?
+                ORDER BY p.nombre";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_ventas);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        $productos = [];
+        while ($row = $result->fetch_assoc()) {
+            $productos[] = (object) $row;
+        }
+        
+        return $productos;
+    }
+
+    // Actualizar productos de una venta
+    public static function updateProductos($conn, $id_ventas, $productos_data) {
+        // Eliminar productos actuales
+        $sql = "DELETE FROM ventas_productos WHERE id_ventas = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("i", $id_ventas);
+        $stmt->execute();
+        
+        // Insertar nuevos productos
+        if (!empty($productos_data)) {
+            $sql = "INSERT INTO ventas_productos (id_ventas, id_productos, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            
+            foreach ($productos_data as $producto) {
+                $stmt->bind_param("iiidd", 
+                    $id_ventas, 
+                    $producto['id_productos'], 
+                    $producto['cantidad'], 
+                    $producto['precio_unitario'], 
+                    $producto['subtotal']
+                );
+                $stmt->execute();
+            }
+        }
+        
+        return true;
     }
 }
 ?>

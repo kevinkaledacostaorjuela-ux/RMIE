@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Venta - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <!-- Bootstrap 5.3.0 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6.0.0 -->
@@ -539,25 +540,52 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="id_productos">
-                                    <i class="fas fa-cubes"></i> Producto
+                                <label>
+                                    <i class="fas fa-cubes"></i> Productos *
                                 </label>
-                                <select class="form-select" id="id_productos" name="id_productos" required>
-                                    <option value="">Seleccione un producto</option>
+                                <div class="productos-info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; color: white;">
+                                    <i class="fas fa-info-circle"></i> Selecciona los productos para esta venta
+                                </div>
+                                <div class="productos-checkbox-container" style="max-height: 300px; overflow-y: auto; border: 2px solid #667eea; border-radius: 10px; padding: 1rem; background: white;">
                                     <?php if (isset($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $producto): ?>
-                                            <option value="<?= htmlspecialchars($producto->id_productos) ?>" 
-                                                    data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
-                                                    data-stock="<?= htmlspecialchars($producto->stock) ?>"
-                                                    <?= $venta->id_productos == $producto->id_productos ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($producto->nombre) ?> (Stock: <?= htmlspecialchars($producto->stock) ?>)
-                                            </option>
+                                            <div class="checkbox-item" style="margin-bottom: 0.8rem;">
+                                                <input type="checkbox" 
+                                                       class="checkbox-input" 
+                                                       id="producto_<?= $producto->id_productos ?>" 
+                                                       name="id_productos[]" 
+                                                       value="<?= htmlspecialchars($producto->id_productos) ?>"
+                                                       data-precio="<?= htmlspecialchars($producto->precio_unitario) ?>"
+                                                       data-stock="<?= htmlspecialchars($producto->stock) ?>"
+                                                       <?= in_array($producto->id_productos, $productos_asignados_ids ?? []) ? 'checked' : '' ?>
+                                                       style="display: none;">
+                                                <label for="producto_<?= $producto->id_productos ?>" 
+                                                       class="checkbox-label-edit"
+                                                       style="display: flex; align-items: center; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: white;">
+                                                    <span class="checkbox-custom-edit" 
+                                                          style="width: 24px; height: 24px; border: 2px solid #667eea; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;">
+                                                        <i class="fas fa-check" style="color: white; font-size: 14px; display: none;"></i>
+                                                    </span>
+                                                    <span style="flex-grow: 1; font-weight: 500; color: #333;">
+                                                        <?= htmlspecialchars($producto->nombre) ?>
+                                                        <small style="display: block; color: #666; font-size: 0.85em;">
+                                                            Stock: <?= htmlspecialchars($producto->stock) ?> | 
+                                                            Precio: $<?= number_format($producto->precio_unitario, 2) ?>
+                                                        </small>
+                                                    </span>
+                                                </label>
+                                            </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
-                                </select>
+                                </div>
+                                <small class="text-muted" style="display: block; margin-top: 0.5rem;">
+                                    <span id="productos-seleccionados-count">
+                                        <?= count($productos_asignados_ids ?? []) ?>
+                                    </span> producto(s) seleccionado(s)
+                                </small>
                             </div>
                             
-                            <div class="form-group">
+                            <div class="form-group" style="display: none;">
                                 <label for="cantidad">
                                     <i class="fas fa-sort-numeric-up"></i> Cantidad
                                 </label>
@@ -565,11 +593,9 @@
                                        class="form-control"
                                        id="cantidad" 
                                        name="cantidad" 
-                                       required 
                                        min="1"
                                        value="<?= htmlspecialchars($venta->cantidad) ?>"
                                        placeholder="Cantidad">
-                                <small class="text-muted">Original: <?= htmlspecialchars($venta->cantidad) ?></small>
                             </div>
                             
                             <div class="form-group">
@@ -706,7 +732,7 @@
                             <div style="margin-top: 1rem;">
                                 <strong><i class="fas fa-history"></i> Información Histórica:</strong>
                                 <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                                    <li>Creada: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_creacion))) ?></li>
+                                    <li>Fecha de Venta: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_venta))) ?></li>
                                     <li>ID: #<?= htmlspecialchars($venta->id_ventas) ?></li>
                                 </ul>
                             </div>
@@ -743,73 +769,54 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const productoSelect = document.getElementById('id_productos');
-        const cantidadInput = document.getElementById('cantidad');
-        const precioInput = document.getElementById('precio_unitario');
-        const totalInput = document.getElementById('total');
+        const checkboxes = document.querySelectorAll('.checkbox-input');
         const form = document.getElementById('formVenta');
-        const cantidadOriginal = <?= $venta->cantidad ?>;
+        const countSpan = document.getElementById('productos-seleccionados-count');
         
-        function actualizarProducto() {
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            
-            if (selectedOption.value) {
-                const precio = parseFloat(selectedOption.dataset.precio || 0);
-                const stock = parseInt(selectedOption.dataset.stock || 0);
-                const nombreProducto = selectedOption.text.split(' (Stock:')[0];
-                
-                document.getElementById('producto-nombre').textContent = nombreProducto;
-                document.getElementById('stock-disponible').textContent = stock + ' unidades';
-                
-                if (!precioInput.value || precioInput.value == '0') {
-                    precioInput.value = precio.toFixed(2);
-                }
-                
-                actualizarResumen();
-            } else {
-                document.getElementById('producto-nombre').textContent = '-';
-                document.getElementById('stock-disponible').textContent = '-';
+        // Estilo para checkboxes
+        const style = document.createElement('style');
+        style.textContent = `
+            .checkbox-input:checked + .checkbox-label-edit {
+                border-color: #667eea !important;
+                background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%) !important;
             }
-        }
-        
-        function actualizarResumen() {
-            const cantidad = parseInt(cantidadInput.value || 0);
-            const precio = parseFloat(precioInput.value || 0);
-            
-            document.getElementById('precio-mostrar').textContent = '$' + precio.toFixed(2);
-            document.getElementById('cantidad-mostrar').textContent = cantidad;
-            document.getElementById('total-mostrar').textContent = '$' + (cantidad * precio).toFixed(2);
-        }
-        
-        function calcularTotal() {
-            const cantidad = parseInt(cantidadInput.value || 0);
-            const precio = parseFloat(precioInput.value || 0);
-            totalInput.value = (cantidad * precio).toFixed(2);
-            actualizarResumen();
-        }
-        
-        function validarStock() {
-            const selectedOption = productoSelect.options[productoSelect.selectedIndex];
-            if (selectedOption.value) {
-                const stockActual = parseInt(selectedOption.dataset.stock || 0);
-                const cantidadNueva = parseInt(cantidadInput.value || 0);
-                const stockDisponible = stockActual + cantidadOriginal;
-                
-                if (cantidadNueva > stockDisponible) {
-                    alert(`La cantidad (${cantidadNueva}) excede el stock disponible (${stockDisponible})`);
-                    cantidadInput.value = stockDisponible;
-                    calcularTotal();
-                }
+            .checkbox-input:checked + .checkbox-label-edit .checkbox-custom-edit {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-color: #667eea;
             }
+            .checkbox-input:checked + .checkbox-label-edit .checkbox-custom-edit i {
+                display: block !important;
+            }
+            .checkbox-label-edit:hover {
+                border-color: #667eea !important;
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            }
+            .productos-checkbox-container::-webkit-scrollbar {
+                width: 8px;
+            }
+            .productos-checkbox-container::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            .productos-checkbox-container::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 10px;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Actualizar contador
+        function actualizarContador() {
+            const checked = document.querySelectorAll('.checkbox-input:checked').length;
+            countSpan.textContent = checked;
         }
         
-        productoSelect.addEventListener('change', actualizarProducto);
-        cantidadInput.addEventListener('input', function() {
-            calcularTotal();
-            validarStock();
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', actualizarContador);
         });
-        precioInput.addEventListener('input', calcularTotal);
         
+        // Validación del formulario
         form.addEventListener('submit', function(e) {
             if (!document.getElementById('id_clientes').value) {
                 e.preventDefault();
@@ -817,29 +824,15 @@
                 return;
             }
             
-            if (!productoSelect.value) {
+            const productosSeleccionados = document.querySelectorAll('.checkbox-input:checked').length;
+            if (productosSeleccionados === 0) {
                 e.preventDefault();
-                alert('Debe seleccionar un producto');
+                alert('Debe seleccionar al menos un producto');
                 return;
-            }
-            
-            const cantidad = parseInt(cantidadInput.value || 0);
-            if (cantidad <= 0) {
-                e.preventDefault();
-                alert('La cantidad debe ser mayor a 0');
-                return;
-            }
-            
-            if (cantidad !== cantidadOriginal) {
-                if (!confirm(`¿Cambiar cantidad de ${cantidadOriginal} a ${cantidad}?`)) {
-                    e.preventDefault();
-                    return;
-                }
             }
         });
         
-        actualizarProducto();
-        
+        // Ocultar alertas después de 5 segundos
         setTimeout(function() {
             const alerts = document.querySelectorAll('.alert-danger, .alert-success');
             alerts.forEach(alert => {

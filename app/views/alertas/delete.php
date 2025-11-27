@@ -13,6 +13,7 @@ if (!isset($_SESSION['user'])) {
 <head>
     <meta charset="UTF-8">
     <title>Eliminar Alerta - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
 </head>
 <body>

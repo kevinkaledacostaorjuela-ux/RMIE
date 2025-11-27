@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Nuevo Cliente - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -172,12 +173,230 @@
             background-size: 16px;
         }
         
+        .form-select-modern[multiple] {
+            min-height: 150px;
+            padding: 10px;
+            background-image: none;
+            appearance: auto;
+        }
+        
+        .form-select-modern[multiple] option {
+            padding: 10px;
+            margin: 3px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: transparent;
+        }
+        
+        .form-select-modern[multiple] option:hover {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .form-select-modern[multiple] option:checked {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            font-weight: 600;
+        }
+        
         .form-select-modern:focus {
             outline: none;
             border-color: rgba(255, 255, 255, 0.8);
             background: rgba(255, 255, 255, 0.95);
             box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
+        }
+        
+        /* Estilos para checkboxes de locales en create */
+        .locales-info-box {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.15) 0%, rgba(32, 201, 151, 0.15) 100%);
+            border: 2px solid rgba(40, 167, 69, 0.3);
+            border-radius: 12px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 0.95rem;
+        }
+        
+        .locales-info-box i {
+            font-size: 1.2rem;
+            color: #28a745;
+        }
+        
+        .locales-info-box .required {
+            color: #ff6b6b;
+            font-weight: 700;
+        }
+        
+        .locales-checkbox-container-create {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 15px;
+            max-height: 350px;
+            overflow-y: auto;
+            backdrop-filter: blur(10px);
+        }
+        
+        .locales-checkbox-container-create::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .locales-checkbox-container-create::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .locales-checkbox-container-create::-webkit-scrollbar-thumb {
+            background: rgba(40, 167, 69, 0.5);
+            border-radius: 10px;
+        }
+        
+        .locales-checkbox-container-create::-webkit-scrollbar-thumb:hover {
+            background: rgba(40, 167, 69, 0.7);
+        }
+        
+        .checkbox-item-create {
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .checkbox-item-create:last-child {
+            margin-bottom: 0;
+        }
+        
+        .checkbox-input-create {
+            display: none;
+        }
+        
+        .checkbox-label-create {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .checkbox-label-create::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(40, 167, 69, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        .checkbox-label-create:hover::before {
+            left: 100%;
+        }
+        
+        .checkbox-label-create:hover {
+            background: white;
+            border-color: #28a745;
+            transform: translateX(5px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(40, 167, 69, 0.25);
+        }
+        
+        .checkbox-custom-create {
+            width: 26px;
+            height: 26px;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            margin-right: 14px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+            background: white;
+        }
+        
+        .checkbox-input-create:checked + .checkbox-label-create .checkbox-custom-create {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border-color: #20c997;
+            transform: scale(1.1);
+        }
+        
+        .checkbox-input-create:checked + .checkbox-label-create .checkbox-custom-create::after {
+            content: '\\f00c';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(1);
+            color: white;
+            font-size: 14px;
+            animation: checkPop 0.3s ease-out;
+        }
+        
+        @keyframes checkPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+        }
+        
+        .checkbox-input-create:checked + .checkbox-label-create {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.2) 0%, rgba(32, 201, 151, 0.2) 100%);
+            border-color: #28a745;
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+        
+        .checkbox-text-create {
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-text-create i {
+            color: #28a745;
+            margin-right: 10px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .checkbox-input-create:checked + .checkbox-label-create .checkbox-text-create {
+            color: #28a745;
+            font-weight: 700;
+        }
+        
+        .checkbox-input-create:checked + .checkbox-label-create .checkbox-text-create i {
+            transform: scale(1.2);
+        }
+        
+        .no-locales-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .no-locales-message i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            display: block;
+        }
+        
+        .no-locales-message p {
+            font-size: 1.1rem;
+            margin: 0;
         }
         
         .form-textarea-modern {
@@ -591,6 +810,47 @@
                                     Estado Inicial
                                 </label>
                             </div>
+                            
+                        </div>
+                        
+                        <!-- Locales Asignados - Sección completa -->
+                        <div class="section-card">
+                            <div class="section-title">
+                                <i class="fas fa-store"></i>
+                                Locales Asignados
+                            </div>
+                            
+                            <div class="locales-info-box">
+                                <i class="fas fa-info-circle"></i>
+                                <span>Seleccione uno o más locales para asignar al cliente <span class="required">*</span></span>
+                            </div>
+                            
+                            <div class="locales-checkbox-container-create">
+                                <?php if (isset($locales) && is_array($locales) && count($locales) > 0): ?>
+                                    <?php foreach ($locales as $local): ?>
+                                        <div class="checkbox-item-create">
+                                            <input type="checkbox" 
+                                                   name="id_locales[]" 
+                                                   value="<?= $local->id_locales ?>" 
+                                                   id="local_create_<?= $local->id_locales ?>"
+                                                   class="checkbox-input-create"
+                                                   <?= (isset($_POST['id_locales']) && in_array($local->id_locales, $_POST['id_locales'])) ? 'checked' : '' ?>>
+                                            <label for="local_create_<?= $local->id_locales ?>" class="checkbox-label-create">
+                                                <span class="checkbox-custom-create"></span>
+                                                <span class="checkbox-text-create">
+                                                    <i class="fas fa-store"></i>
+                                                    <?= htmlspecialchars($local->nombre_local) ?>
+                                                </span>
+                                            </label>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="no-locales-message">
+                                        <i class="fas fa-store-slash"></i>
+                                        <p>No hay locales disponibles</p>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
                         </div>
 
                         <!-- Información de Contacto y Vista Previa -->
@@ -769,7 +1029,7 @@
             }
             
             // Agregar listeners para vista previa
-            ['nombre', 'correo', 'cel_cliente', 'estado'].forEach(function(fieldId) {
+            ['nombre', 'correo', 'cel_cliente', 'estado', 'id_locales'].forEach(function(fieldId) {
                 const field = document.getElementById(fieldId);
                 if (field) {
                     field.addEventListener('input', actualizarVistaPrevia);
@@ -781,6 +1041,8 @@
             form.addEventListener('submit', function(e) {
                 const correo = document.getElementById('correo').value;
                 const nombre = document.getElementById('nombre').value;
+                const checkboxes = document.querySelectorAll('input[name="id_locales[]"]:checked');
+                const selectedLocales = checkboxes.length;
                 
                 // Validar correo
                 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -796,6 +1058,14 @@
                     e.preventDefault();
                     alert('El nombre debe tener al menos 2 caracteres');
                     document.getElementById('nombre').focus();
+                    return;
+                }
+                
+                // Validar locales
+                if (selectedLocales === 0) {
+                    e.preventDefault();
+                    alert('Debe seleccionar al menos un local');
+                    document.querySelector('.locales-checkbox-container-create').scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
             });

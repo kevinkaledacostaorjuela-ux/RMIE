@@ -58,6 +58,7 @@ if (isset($ventas) && is_array($ventas)) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Ventas - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
@@ -1159,8 +1160,23 @@ if (isset($ventas) && is_array($ventas)) {
                                         <i class="fas fa-box"></i>
                                     </div>
                                     <div class="sales-info-content">
-                                        <div class="sales-info-label">Producto</div>
-                                        <div class="sales-info-value"><?= htmlspecialchars($venta->producto_nombre ?? 'Producto N/A') ?></div>
+                                        <div class="sales-info-label">Producto(s)</div>
+                                        <div class="sales-info-value">
+                                            <?php if (!empty($venta->productos_asignados)): ?>
+                                                <?php 
+                                                $nombres_productos = array_map(function($p) { 
+                                                    return htmlspecialchars($p->nombre); 
+                                                }, $venta->productos_asignados);
+                                                echo implode(', ', array_slice($nombres_productos, 0, 2));
+                                                if (count($nombres_productos) > 2): ?>
+                                                    <span class="badge bg-info ms-1" title="<?= implode(', ', array_slice($nombres_productos, 2)) ?>">
+                                                        +<?= count($nombres_productos) - 2 ?> más
+                                                    </span>
+                                                <?php endif; ?>
+                                            <?php else: ?>
+                                                Producto N/A
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -1326,9 +1342,21 @@ if (isset($ventas) && is_array($ventas)) {
                                     </span>
                                 </td>
                                 <td>
-                                    <span class="badge badge-modern badge-secondary">
-                                        <?= htmlspecialchars($venta->producto_nombre ?? 'Producto N/A') ?>
-                                    </span>
+                                    <?php if (!empty($venta->productos_asignados)): ?>
+                                        <?php foreach (array_slice($venta->productos_asignados, 0, 2) as $producto): ?>
+                                            <span class="badge badge-modern badge-secondary mb-1">
+                                                <?= htmlspecialchars($producto->nombre) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                        <?php if (count($venta->productos_asignados) > 2): ?>
+                                            <span class="badge badge-modern badge-info" 
+                                                  title="<?= implode(', ', array_map(function($p) { return $p->nombre; }, array_slice($venta->productos_asignados, 2))) ?>">
+                                                +<?= count($venta->productos_asignados) - 2 ?> más
+                                            </span>
+                                        <?php endif; ?>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">Producto N/A</span>
+                                    <?php endif; ?>
                                 </td>
                                 <td class="text-center">
                                     <strong class="fs-5"><?= htmlspecialchars($venta->cantidad ?? 0) ?></strong>

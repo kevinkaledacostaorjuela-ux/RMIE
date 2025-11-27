@@ -32,6 +32,7 @@ $stats = $statsQuery->fetch_assoc();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Clientes - RMIE</title>
+    <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
@@ -489,6 +490,12 @@ $stats = $statsQuery->fetch_assoc();
             font-size: 0.95rem;
             font-weight: 500;
             word-break: break-word;
+            line-height: 1.5;
+        }
+        
+        .client-info-value .badge {
+            margin: 2px;
+            display: inline-block;
         }
 
         .clients-card-footer {
@@ -813,14 +820,23 @@ $stats = $statsQuery->fetch_assoc();
                         </div>
                         <?php endif; ?>
 
-                        <?php if (!empty($cliente->local_nombre)): ?>
+                        <?php if (!empty($cliente->locales_asignados) && count($cliente->locales_asignados) > 0): ?>
                         <div class="client-info-item">
                             <div class="client-info-icon">
                                 <i class="fas fa-store"></i>
                             </div>
                             <div class="client-info-content">
-                                <div class="client-info-label">Local Asignado</div>
-                                <div class="client-info-value"><?= htmlspecialchars($cliente->local_nombre) ?></div>
+                                <div class="client-info-label">
+                                    <?= count($cliente->locales_asignados) === 1 ? 'Local Asignado' : 'Locales Asignados (' . count($cliente->locales_asignados) . ')' ?>
+                                </div>
+                                <div class="client-info-value">
+                                    <?php 
+                                    $nombres_locales = array_map(function($local) {
+                                        return htmlspecialchars($local->nombre_local);
+                                    }, $cliente->locales_asignados);
+                                    echo implode(', ', $nombres_locales);
+                                    ?>
+                                </div>
                             </div>
                         </div>
                         <?php endif; ?>
@@ -937,13 +953,31 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php endif; ?>
                                 </td>
                                 <td>
-                                    <?php if (!empty($cliente->local_nombre)): ?>
-                                        <span class="badge badge-modern badge-info">
-                                            <i class="fas fa-store"></i> <?= htmlspecialchars($cliente->local_nombre) ?>
-                                        </span>
+                                    <?php if (!empty($cliente->locales_asignados) && count($cliente->locales_asignados) > 0): ?>
+                                        <?php if (count($cliente->locales_asignados) === 1): ?>
+                                            <span class="badge badge-modern badge-info">
+                                                <i class="fas fa-store"></i> <?= htmlspecialchars($cliente->locales_asignados[0]->nombre_local) ?>
+                                            </span>
+                                        <?php else: ?>
+                                            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                                <?php foreach ($cliente->locales_asignados as $index => $local): ?>
+                                                    <?php if ($index < 2): ?>
+                                                        <span class="badge badge-modern badge-info" style="font-size: 0.75rem;">
+                                                            <i class="fas fa-store"></i> <?= htmlspecialchars($local->nombre_local) ?>
+                                                        </span>
+                                                    <?php endif; ?>
+                                                <?php endforeach; ?>
+                                                <?php if (count($cliente->locales_asignados) > 2): ?>
+                                                    <span class="badge badge-modern badge-secondary" style="font-size: 0.75rem;" 
+                                                          title="<?= implode(', ', array_map(function($l) { return htmlspecialchars($l->nombre_local); }, array_slice($cliente->locales_asignados, 2))) ?>">
+                                                        +<?= count($cliente->locales_asignados) - 2 ?> más
+                                                    </span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-minus"></i> Sin local
+                                            <i class="fas fa-minus"></i> Sin locales
                                         </span>
                                     <?php endif; ?>
                                 </td>
