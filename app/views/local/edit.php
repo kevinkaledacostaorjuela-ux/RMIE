@@ -575,6 +575,53 @@ unset($_SESSION['error'], $_SESSION['success']);
                                 </select>
                             </div>
                         </div>
+
+                        <!-- Sección Clientes -->
+                        <div class="form-section">
+                            <div class="section-title">
+                                <i class="fas fa-users"></i> Clientes Asignados
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="id_clientes">
+                                    <i class="fas fa-user-tie"></i> Clientes
+                                </label>
+                                <select class="form-select" id="id_clientes" name="id_clientes[]" multiple>
+                                    <?php if (isset($clientes) && !empty($clientes)): ?>
+                                        <?php foreach ($clientes as $cliente): ?>
+                                            <option value="<?= $cliente->id_clientes ?>" 
+                                                    <?php echo (in_array($cliente->id_clientes, $clientes_asignados ?? [])) ? 'selected' : ''; ?>>
+                                                <?= htmlspecialchars($cliente->nombre) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                                <small class="form-text text-muted" style="display: block; margin-top: 0.5rem;">
+                                    <i class="fas fa-info-circle"></i> Mantén presionado Ctrl (Cmd en Mac) para seleccionar múltiples clientes
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Información de clientes asignados -->
+                        <?php if (!empty($clientes_asignados)): ?>
+                            <div class="info-alert" style="margin-top: 1rem; border-left-color: #28a745; background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3);">
+                                <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                                <strong>Clientes Asignados (<?= count($clientes_asignados) ?>):</strong>
+                                <div style="margin-top: 0.5rem;">
+                                    <?php 
+                                    foreach ($clientes as $c) {
+                                        if (in_array($c->id_clientes, $clientes_asignados)) {
+                                            echo '<div style="margin-bottom: 0.5rem;"><i class="fas fa-check" style="color: #28a745;"></i> ' . htmlspecialchars($c->nombre);
+                                            if (!empty($c->cel_cliente)) {
+                                                echo ' - ' . htmlspecialchars($c->cel_cliente);
+                                            }
+                                            echo '</div>';
+                                        }
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- Columna Derecha: Resumen -->

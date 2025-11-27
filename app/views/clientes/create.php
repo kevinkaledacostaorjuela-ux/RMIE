@@ -822,7 +822,7 @@
                             
                             <div class="locales-info-box">
                                 <i class="fas fa-info-circle"></i>
-                                <span>Seleccione uno o más locales para asignar al cliente <span class="required">*</span></span>
+                                <span>Seleccione uno o más locales para asignar al cliente (Opcional)</span>
                             </div>
                             
                             <div class="locales-checkbox-container-create">
@@ -1058,14 +1058,6 @@
                     e.preventDefault();
                     alert('El nombre debe tener al menos 2 caracteres');
                     document.getElementById('nombre').focus();
-                    return;
-                }
-                
-                // Validar locales
-                if (selectedLocales === 0) {
-                    e.preventDefault();
-                    alert('Debe seleccionar al menos un local');
-                    document.querySelector('.locales-checkbox-container-create').scrollIntoView({ behavior: 'smooth', block: 'center' });
                     return;
                 }
             });

@@ -794,7 +794,7 @@ if (!isset($cliente)) {
                             </div>
                             <small class="form-text text-muted">
                                 <i class="fas fa-info-circle"></i> 
-                                Seleccione uno o más locales para asignar al cliente.
+                                Seleccione uno o más locales para asignar al cliente (Opcional).
                                 <br>
                                 <strong>Locales actuales:</strong> 
                                 <?php 

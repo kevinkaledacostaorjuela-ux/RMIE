@@ -24,6 +24,12 @@ class ProductController {
             require_once __DIR__ . '/../models/User.php';
             $usuarios = User::getAll($conn);
             
+            // Filtrar usuarios: excluir admins, solo dejar auxiliar y coordinador
+            $usuarios_filtrados = array_filter($usuarios, function($u) {
+                return $u->rol !== 'admin';
+            });
+            $usuarios = array_values($usuarios_filtrados); // Reindexar array
+            
             // Definir reglas de filtro
             $filterRules = [
                 'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
@@ -74,6 +80,12 @@ class ProductController {
         $proveedores = Provider::getAll($conn);
         require_once __DIR__ . '/../models/User.php';
         $usuarios = User::getAll($conn);
+        
+        // Filtrar usuarios: excluir admins, solo dejar auxiliar y coordinador
+        $usuarios_filtrados = array_filter($usuarios, function($u) {
+            return $u->rol !== 'admin';
+        });
+        $usuarios = array_values($usuarios_filtrados); // Reindexar array
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
@@ -137,6 +149,12 @@ class ProductController {
         $proveedores = Provider::getAll($conn);
         require_once __DIR__ . '/../models/User.php';
         $usuarios = User::getAll($conn);
+        
+        // Filtrar usuarios: excluir admins, solo dejar auxiliar y coordinador
+        $usuarios_filtrados = array_filter($usuarios, function($u) {
+            return $u->rol !== 'admin';
+        });
+        $usuarios = array_values($usuarios_filtrados); // Reindexar array
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre = $_POST['nombre'] ?? null;

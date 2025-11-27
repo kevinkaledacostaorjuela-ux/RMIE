@@ -4,12 +4,14 @@ class SubcategorySimple {
     public $nombre;
     public $descripcion;
     public $id_categoria;
+    public $fecha_creacion;
 
-    public function __construct($id_subcategoria, $nombre, $descripcion, $id_categoria) {
+    public function __construct($id_subcategoria, $nombre, $descripcion, $id_categoria, $fecha_creacion = null) {
         $this->id_subcategoria = $id_subcategoria;
         $this->nombre = $nombre;
         $this->descripcion = $descripcion;
         $this->id_categoria = $id_categoria;
+        $this->fecha_creacion = $fecha_creacion;
     }
 
     // Versión simple del create sin fecha_creacion
@@ -75,7 +77,7 @@ class SubcategorySimple {
             
             while ($row = $result->fetch_assoc()) {
                 $subcategorias[] = [
-                    'obj' => new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria']),
+                    'obj' => new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria'], $row['fecha_creacion'] ?? null),
                     'categoria_nombre' => $row['categoria_nombre']
                 ];
             }
@@ -130,7 +132,7 @@ class SubcategorySimple {
         
         while ($row = $result->fetch_assoc()) {
             $subcategorias[] = [
-                'obj' => new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria']),
+                'obj' => new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria'], $row['fecha_creacion'] ?? null),
                 'categoria_nombre' => $row['categoria_nombre']
             ];
         }
@@ -146,7 +148,7 @@ class SubcategorySimple {
         $result = $stmt->get_result();
         
         if ($row = $result->fetch_assoc()) {
-            return new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria']);
+            return new SubcategorySimple($row['id_subcategoria'], $row['nombre'], $row['descripcion'], $row['id_categoria'], $row['fecha_creacion'] ?? null);
         }
         return null;
     }

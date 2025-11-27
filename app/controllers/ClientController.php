@@ -100,11 +100,6 @@ class ClientController {
                     }
                 }
                 
-                // Validar que se hayan seleccionado locales
-                if (empty($_POST['id_locales']) || !is_array($_POST['id_locales'])) {
-                    throw new Exception("Debe seleccionar al menos un local");
-                }
-                
                 // Validar formato de correo
                 if (!filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL)) {
                     throw new Exception("El formato del correo electrónico no es válido");
@@ -124,8 +119,8 @@ class ClientController {
                     'estado' => $_POST['estado'] ?? 'activo'
                 ]);
                 
-                // Asignar locales
-                if ($clienteId) {
+                // Asignar locales si se seleccionaron (opcional)
+                if ($clienteId && !empty($_POST['id_locales']) && is_array($_POST['id_locales'])) {
                     Client::updateLocales($conn, $clienteId, $_POST['id_locales']);
                 }
                 
@@ -169,11 +164,6 @@ class ClientController {
                     }
                 }
                 
-                // Validar que se hayan seleccionado locales
-                if (empty($_POST['id_locales']) || !is_array($_POST['id_locales'])) {
-                    throw new Exception("Debe seleccionar al menos un local");
-                }
-                
                 // Validar formato de correo
                 if (!filter_var($_POST['correo'], FILTER_VALIDATE_EMAIL)) {
                     throw new Exception("El formato del correo electrónico no es válido");
@@ -194,8 +184,13 @@ class ClientController {
                     'estado' => $_POST['estado'] ?? 'activo'
                 ]);
                 
-                // Actualizar locales asignados
-                Client::updateLocales($conn, $id, $_POST['id_locales']);
+                // Actualizar locales asignados si se seleccionaron (opcional)
+                if (!empty($_POST['id_locales']) && is_array($_POST['id_locales'])) {
+                    Client::updateLocales($conn, $id, $_POST['id_locales']);
+                } else {
+                    // Si no se seleccionan locales, desasignar todos
+                    Client::updateLocales($conn, $id, []);
+                }
                 
                 // Redirigir al index con mensaje de éxito
                 header('Location: /RMIE/app/controllers/ClientController.php?accion=index&success=Cliente actualizado exitosamente');

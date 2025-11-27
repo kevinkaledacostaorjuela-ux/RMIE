@@ -173,6 +173,7 @@ class AuxiliarController {
             ];
             
             $usuarios = User::getAll($conn, $filtros);
+            
             $stats = User::getStats($conn);
             // Obtener roles únicos existentes en la base de datos
             $roles_existentes = [];
@@ -351,11 +352,17 @@ class AuxiliarController {
                 require_once __DIR__ . '/../models/User.php';
                 
                 $num_doc = $_SESSION['user'];
+                
+                // Obtener datos actuales del usuario primero
+                $usuario_actual = User::getById($conn, $num_doc);
+                
                 $datos = [
+                    'tipo_doc' => $usuario_actual->tipo_doc ?? 'CC',
                     'nombres' => $_POST['nombres'] ?? '',
                     'apellidos' => $_POST['apellidos'] ?? '',
                     'correo' => $_POST['correo'] ?? '',
-                    'num_cel' => $_POST['num_cel'] ?? ''
+                    'num_cel' => $_POST['num_cel'] ?? '',
+                    'rol' => $usuario_actual->rol ?? 'auxiliar'
                 ];
                 
                 // Validaciones básicas
@@ -372,15 +379,21 @@ class AuxiliarController {
                     if (strlen($_POST['nueva_contrasena']) < 6) {
                         throw new Exception("La contraseña debe tener al menos 6 caracteres");
                     }
-                    $datos['contrasena'] = password_hash($_POST['nueva_contrasena'], PASSWORD_DEFAULT);
+                    $datos['contrasena'] = $_POST['nueva_contrasena'];
                 }
                 
                 $resultado = User::update($conn, $num_doc, $datos);
                 
                 if ($resultado) {
+                    // Actualizar sesión con los nuevos datos
+                    $_SESSION['nombres'] = $datos['nombres'];
+                    $_SESSION['apellidos'] = $datos['apellidos'];
+                    $_SESSION['correo'] = $datos['correo'];
+                    $_SESSION['num_cel'] = $datos['num_cel'];
+                    
                     $success = "Perfil actualizado correctamente";
                 } else {
-                    $error = "Error al actualizar el perfil";
+                    throw new Exception("Error al actualizar el perfil");
                 }
                 
             } catch (Exception $e) {

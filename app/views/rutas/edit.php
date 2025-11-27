@@ -634,18 +634,23 @@
                                 
                                 <div class="form-group">
                                     <label for="nombre_local">
-                                        <i class="fas fa-store"></i> Nombre del Local *
+                                        <i class="fas fa-store"></i> Seleccionar Local *
                                     </label>
-                                    <input 
-                                        type="text" 
+                                    <select 
                                         name="nombre_local" 
                                         id="nombre_local" 
                                         required
-                                        minlength="2"
-                                        maxlength="100"
-                                        value="<?= htmlspecialchars($route['nombre_local']) ?>"
-                                        placeholder="Ej: Tienda El Éxito Centro"
-                                        class="form-control">
+                                        class="form-select">
+                                        <option value="">-- Selecciona un local --</option>
+                                        <?php if (isset($available_locals) && is_array($available_locals)): ?>
+                                            <?php foreach ($available_locals as $local): ?>
+                                                <option value="<?= htmlspecialchars($local['nombre_local']) ?>" 
+                                                    <?= ($route['nombre_local'] === $local['nombre_local']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($local['nombre_local']) ?> (<?= htmlspecialchars($local['localidad'] ?? '') ?>)
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
                                         Nombre comercial del establecimiento de destino
@@ -661,18 +666,23 @@
                                 
                                 <div class="form-group">
                                     <label for="nombre_cliente">
-                                        <i class="fas fa-user"></i> Nombre del Cliente *
+                                        <i class="fas fa-user"></i> Seleccionar Cliente *
                                     </label>
-                                    <input 
-                                        type="text" 
+                                    <select 
                                         name="nombre_cliente" 
                                         id="nombre_cliente" 
                                         required
-                                        minlength="2"
-                                        maxlength="100"
-                                        value="<?= htmlspecialchars($route['nombre_cliente']) ?>"
-                                        placeholder="Ej: Juan Pérez García"
-                                        class="form-control">
+                                        class="form-select">
+                                        <option value="">-- Selecciona un cliente --</option>
+                                        <?php if (isset($available_clients) && is_array($available_clients)): ?>
+                                            <?php foreach ($available_clients as $client): ?>
+                                                <option value="<?= htmlspecialchars($client['nombre']) ?>" 
+                                                    <?= ($route['nombre_cliente'] === $client['nombre']) ? 'selected' : '' ?>>
+                                                    <?= htmlspecialchars($client['nombre']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
                                         Nombre completo de la persona de contacto
@@ -900,6 +910,20 @@
 
                 localField.addEventListener('input', () => {
                     validateField(localField, 2, 100);
+                    showChanges();
+                });
+
+                clienteField.addEventListener('change', () => {
+                    // Buscar el cliente seleccionado para obtener su ID
+                    const clienteNombre = clienteField.value;
+                    const clientesData = <?= json_encode($available_clients) ?>;
+                    
+                    const clienteEncontrado = clientesData.find(c => c.nombre === clienteNombre);
+                    if (clienteEncontrado) {
+                        idClienteField.value = clienteEncontrado.id_clientes;
+                    }
+                    
+                    validateField(clienteField, 2, 100);
                     showChanges();
                 });
 

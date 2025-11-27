@@ -163,6 +163,10 @@ class RouteController {
                 exit;
             }
 
+            // Obtener datos para los selects
+            $available_clients = Route::getAvailableClients($conn);
+            $available_locals = Route::getAvailableLocals($conn);
+
             // Solo procesar datos POST si es una petición POST
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Validación de datos

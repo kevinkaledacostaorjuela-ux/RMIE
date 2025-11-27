@@ -260,7 +260,7 @@ if (empty($nombreCompleto)) {
                             </div>
                             <!-- Botones de acción -->
                             <div class="d-flex justify-content-between mt-4">
-                                <a href="/RMIE/app/controllers/AuxiliarController.php?accion=dashboard" 
+                                <a href="/RMIE/app/views/dashboard.php" 
                                    class="btn btn-outline-primary px-4" 
                                    style="border-radius: 10px; font-weight: 600;">
                                     <i class="fas fa-arrow-left me-2"></i>Volver al Dashboard

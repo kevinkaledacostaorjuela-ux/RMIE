@@ -107,6 +107,35 @@ class LocalController {
             
             // Crear local
             if (Local::create($conn, $data)) {
+                // Asignar cliente(s) al local si se seleccionaron
+                $clientes_a_asignar = isset($_POST['id_clientes']) ? (is_array($_POST['id_clientes']) ? $_POST['id_clientes'] : [$_POST['id_clientes']]) : [];
+                
+                // Filtrar: solo mantener valores válidos
+                $clientes_a_asignar = array_filter($clientes_a_asignar, function($id) {
+                    return !empty($id) && (int)$id > 0;
+                });
+                
+                if (!empty($clientes_a_asignar)) {
+                    $ultimo_id = $conn->insert_id;
+                    
+                    foreach ($clientes_a_asignar as $id_cliente) {
+                        $id_cliente = (int)$id_cliente;
+                        
+                        // Validar que el cliente existe
+                        $sql_check = "SELECT id_clientes FROM clientes WHERE id_clientes = ?";
+                        $stmt_check = $conn->prepare($sql_check);
+                        $stmt_check->bind_param("i", $id_cliente);
+                        $stmt_check->execute();
+                        $result_check = $stmt_check->get_result();
+                        
+                        if ($result_check->num_rows > 0) {
+                            $sql_insert = "INSERT INTO locales_clientes (id_locales, id_clientes) VALUES (?, ?)";
+                            $stmt = $conn->prepare($sql_insert);
+                            $stmt->bind_param("ii", $ultimo_id, $id_cliente);
+                            $stmt->execute();
+                        }
+                    }
+                }
                 $_SESSION['success'] = "Local '" . $data['nombre_local'] . "' creado exitosamente";
                 header('Location: /RMIE/app/controllers/LocalController.php?accion=index');
             } else {
@@ -158,6 +187,21 @@ class LocalController {
                 exit();
             }
             
+            // Obtener clientes para el selector
+            require_once __DIR__ . '/../models/Client.php';
+            $clientes = Client::getAll($conn);
+            
+            // Obtener clientes actualmente asignados a este local
+            $clientes_asignados = [];
+            $sql_clientes = "SELECT id_clientes FROM locales_clientes WHERE id_locales = ?";
+            $stmt = $conn->prepare($sql_clientes);
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            while ($row = $result->fetch_assoc()) {
+                $clientes_asignados[] = $row['id_clientes'];
+            }
+            
             // Debug: verificar si la vista existe
             $viewPath = __DIR__ . '/../views/local/edit.php';
             if (isset($_GET['debug'])) {
@@ -192,8 +236,14 @@ class LocalController {
                 'cel_local' => trim($_POST['telefono'] ?? ''), // telefono -> cel_local
                 'estado' => trim($_POST['estado'] ?? ''),
                 'localidad' => trim($_POST['localidad'] ?? ''),
-                'barrio' => trim($_POST['barrio'] ?? '')
+                'barrio' => trim($_POST['barrio'] ?? ''),
+                'id_clientes' => isset($_POST['id_clientes']) ? (is_array($_POST['id_clientes']) ? $_POST['id_clientes'] : [$_POST['id_clientes']]) : []
             ];
+            
+            // Filtrar array de clientes: solo mantener valores válidos (números > 0)
+            $data['id_clientes'] = array_filter($data['id_clientes'], function($id) {
+                return !empty($id) && (int)$id > 0;
+            });
             
             // Validaciones
             $errors = [];
@@ -218,6 +268,34 @@ class LocalController {
             
             // Actualizar local
             if (Local::update($conn, $id, $data)) {
+                // Primero, desasignar todos los clientes de este local
+                $sql_unassign = "DELETE FROM locales_clientes WHERE id_locales = ?";
+                $stmt = $conn->prepare($sql_unassign);
+                $stmt->bind_param("i", $id);
+                $stmt->execute();
+                
+                // Luego, asignar los nuevos clientes si se seleccionaron
+                if (!empty($data['id_clientes']) && count($data['id_clientes']) > 0) {
+                    foreach ($data['id_clientes'] as $id_cliente) {
+                        $id_cliente = (int)$id_cliente;
+                        if ($id_cliente > 0) {
+                            // Validar que el cliente existe
+                            $sql_check = "SELECT id_clientes FROM clientes WHERE id_clientes = ?";
+                            $stmt_check = $conn->prepare($sql_check);
+                            $stmt_check->bind_param("i", $id_cliente);
+                            $stmt_check->execute();
+                            $result_check = $stmt_check->get_result();
+                            
+                            if ($result_check->num_rows > 0) {
+                                $sql_insert = "INSERT INTO locales_clientes (id_locales, id_clientes) VALUES (?, ?)";
+                                $stmt = $conn->prepare($sql_insert);
+                                $stmt->bind_param("ii", $id, $id_cliente);
+                                $stmt->execute();
+                            }
+                        }
+                    }
+                }
+                
                 $_SESSION['success'] = "Local actualizado exitosamente";
                 header('Location: /RMIE/app/controllers/LocalController.php?accion=index');
             } else {

@@ -644,8 +644,8 @@ $local = [
                             <div class="form-floating-modern">
                                 <select class="form-select-modern" 
                                         id="id_clientes" 
-                                        name="id_clientes">
-                                    <option value="">Seleccione un cliente (Opcional)</option>
+                                        name="id_clientes[]"
+                                        multiple>
                                     <?php if (isset($clientes) && !empty($clientes)): ?>
                                         <?php foreach ($clientes as $cliente): ?>
                                             <option value="<?= $cliente->id_clientes ?>">
@@ -656,7 +656,7 @@ $local = [
                                 </select>
                                 <label for="id_clientes">
                                     <i class="fas fa-user-tie"></i>
-                                    Cliente Asignado
+                                    Clientes Asignados (Ctrl+Click para múltiples)
                                 </label>
                             </div>
 

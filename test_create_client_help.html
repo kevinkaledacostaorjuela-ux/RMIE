@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test - Crear Cliente sin Local</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .test-box { border: 1px solid #ddd; padding: 15px; margin: 10px 0; background: #f9f9f9; }
+        .success { color: green; font-weight: bold; }
+        .info { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Test: Crear Cliente sin Local</h1>
+    
+    <div class="test-box">
+        <h3>Instrucciones:</h3>
+        <ol>
+            <li>Abre: http://localhost/RMIE/app/controllers/ClientController.php?accion=create</li>
+            <li>Completa los campos (Nombre, Correo son obligatorios)</li>
+            <li><strong>NO selecciones ningún local</strong></li>
+            <li>Haz clic en "Guardar"</li>
+        </ol>
+    </div>
+    
+    <div class="test-box">
+        <h3 class="info">Resultado Esperado:</h3>
+        <p class="success">✓ El cliente debe crearse SIN error</p>
+        <p class="success">✓ Debe redirigirse a la lista de clientes con mensaje de éxito</p>
+        <p class="success">✓ El cliente debe aparecer en la lista sin locales asignados</p>
+    </div>
+    
+    <div class="test-box">
+        <h3>Cambios Realizados:</h3>
+        <p>✓ Eliminada validación obligatoria de locales en ClientController</p>
+        <p>✓ Removida validación JavaScript en create.php</p>
+        <p>✓ Actualizado mensaje a "(Opcional)"</p>
+    </div>
+</body>
+</html>

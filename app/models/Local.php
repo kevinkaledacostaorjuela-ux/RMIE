@@ -26,10 +26,11 @@ class Local {
 
     public static function getAll($conn, $filtros = []) {
         $sql = "SELECT l.*, 
-                       COUNT(c.id_clientes) as total_clientes,
+                       COUNT(lc.id_clientes) as total_clientes,
                        GROUP_CONCAT(c.nombre SEPARATOR ', ') as nombres_clientes
                 FROM locales l
-                LEFT JOIN clientes c ON l.id_locales = c.id_locales
+                LEFT JOIN locales_clientes lc ON l.id_locales = lc.id_locales
+                LEFT JOIN clientes c ON lc.id_clientes = c.id_clientes
                 WHERE 1=1";
         $params = [];
         $types = "";
@@ -136,16 +137,15 @@ class Local {
     }
     
     public static function create($conn, $data) {
-        $sql = "INSERT INTO locales (direccion, nombre_local, cel_local, estado, localidad, barrio, id_clientes) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $sql = "INSERT INTO locales (direccion, nombre_local, cel_local, estado, localidad, barrio) VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssssi", 
+        $stmt->bind_param("ssssss", 
             $data['direccion'],
             $data['nombre_local'],
             $data['cel_local'],
             $data['estado'],
             $data['localidad'],
-            $data['barrio'],
-            $data['id_clientes']
+            $data['barrio']
         );
         
         return $stmt->execute();

@@ -57,6 +57,11 @@ class SaleController {
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
             
+            // Filtrar usuarios: excluir admins
+            $usuarios = array_values(array_filter($usuarios, function($u) {
+                return $u->rol !== 'admin';
+            }));
+            
             include __DIR__ . '/../views/ventas/index.php';
         } catch (Exception $e) {
             error_log("Error en SaleController::index: " . $e->getMessage());
@@ -155,6 +160,11 @@ class SaleController {
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
             
+            // Filtrar usuarios: excluir admins
+            $usuarios = array_values(array_filter($usuarios, function($u) {
+                return $u->rol !== 'admin';
+            }));
+            
             include __DIR__ . '/../views/ventas/create.php';
         } catch (Exception $e) {
             error_log("Error en SaleController::create: " . $e->getMessage());
@@ -165,6 +175,11 @@ class SaleController {
             $productos = Product::getAll($conn);
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
+            
+            // Filtrar usuarios: excluir admins
+            $usuarios = array_values(array_filter($usuarios, function($u) {
+                return $u->rol !== 'admin';
+            }));
             
             include __DIR__ . '/../views/ventas/create.php';
         }
@@ -273,6 +288,11 @@ class SaleController {
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
             
+            // Filtrar usuarios: excluir admins
+            $usuarios = array_values(array_filter($usuarios, function($u) {
+                return $u->rol !== 'admin';
+            }));
+            
             include __DIR__ . '/../views/ventas/edit.php';
         } catch (Exception $e) {
             error_log("Error en SaleController::edit: " . $e->getMessage());
@@ -283,6 +303,12 @@ class SaleController {
                 $productos = Product::getAll($conn);
                 $clientes = Client::getAll($conn);
                 $usuarios = User::getAll($conn);
+                
+                // Filtrar usuarios: excluir admins
+                $usuarios = array_values(array_filter($usuarios, function($u) {
+                    return $u->rol !== 'admin';
+                }));
+                
                 include __DIR__ . '/../views/ventas/edit.php';
             } else {
                 header('Location: ' . $this->baseUrl . '?accion=index&error=' . urlencode($e->getMessage()));
