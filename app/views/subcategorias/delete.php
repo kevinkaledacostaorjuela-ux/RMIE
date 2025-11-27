@@ -228,17 +228,10 @@ $categoria = Category::getById($conn, $subcategoria['id_categoria']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('🔧 DEBUG: Página de eliminación cargada');
-            console.log('📋 DEBUG: ID Subcategoría: <?php echo $id_subcategoria; ?>');
-            console.log('📦 DEBUG: Tiene productos: <?php echo !empty($dependencies["productos"]) ? "Sí (" . $dependencies["productos"] . ")" : "No"; ?>');
-            console.log('🛒 DEBUG: Tiene ventas: <?php echo !empty($dependencies["ventas"]) ? "Sí (" . $dependencies["ventas"] . ")" : "No"; ?>');
-            
             // Verificar que los botones existen y tienen los enlaces correctos
             const deleteButtons = document.querySelectorAll('a[href*="delete"]');
-            console.log(`🔍 DEBUG: Se encontraron ${deleteButtons.length} enlaces de eliminación`);
             
             deleteButtons.forEach(function(button, index) {
-                console.log(`🔗 DEBUG: Enlace ${index + 1}: ${button.href}`);
                 
                 // Verificar que el enlace no esté vacío o malformado
                 if (!button.href || button.href.includes('undefined') || button.href === window.location.href + '#') {

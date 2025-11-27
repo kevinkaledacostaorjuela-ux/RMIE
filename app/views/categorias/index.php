@@ -790,7 +790,7 @@ if (isset($conn)) {
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            data-controller="CategoryController"
                                            title="Eliminar categoría"
-                                           onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                           onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -909,7 +909,7 @@ if (isset($conn)) {
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                data-controller="CategoryController"
                                                title="Eliminar categoría"
-                                               onclick="console.log('🗑️ Eliminando desde tabla móvil 2 ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                               onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'?\n\nEsta acción no se puede deshacer.');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>

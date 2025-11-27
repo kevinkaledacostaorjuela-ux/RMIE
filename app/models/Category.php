@@ -209,34 +209,7 @@ class Category {
     public static function checkDependencies($conn, $id_categoria) {
         $dependencies = [];
         
-        // Verificar productos
-        $sqlProductos = "SELECT COUNT(*) as count FROM productos WHERE id_categoria = ?";
-        $stmt = $conn->prepare($sqlProductos);
-        $stmt->bind_param("i", $id_categoria);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        $productos = $result->fetch_assoc()['count'];
-        
-        if ($productos > 0) {
-            $dependencies['productos'] = $productos;
-            
-            // Verificar ventas relacionadas con productos de esta categoría
-            $sqlVentas = "SELECT COUNT(DISTINCT v.id_ventas) as count 
-                         FROM ventas v 
-                         INNER JOIN productos p ON v.id_productos = p.id_productos 
-                         WHERE p.id_categoria = ?";
-            $stmt = $conn->prepare($sqlVentas);
-            $stmt->bind_param("i", $id_categoria);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $ventas = $result->fetch_assoc()['count'];
-            
-            if ($ventas > 0) {
-                $dependencies['ventas'] = $ventas;
-            }
-        }
-        
-        // Verificar subcategorías
+        // Verificar subcategorías (las cuales pertenecen a esta categoría)
         $sqlSubcategorias = "SELECT COUNT(*) as count FROM subcategorias WHERE id_categoria = ?";
         $stmt = $conn->prepare($sqlSubcategorias);
         $stmt->bind_param("i", $id_categoria);
@@ -246,6 +219,36 @@ class Category {
         
         if ($subcategorias > 0) {
             $dependencies['subcategorias'] = $subcategorias;
+        }
+        
+        // Verificar productos relacionados con subcategorías de esta categoría
+        $sqlProductos = "SELECT COUNT(*) as count FROM productos p 
+                        INNER JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
+                        WHERE s.id_categoria = ?";
+        $stmt = $conn->prepare($sqlProductos);
+        $stmt->bind_param("i", $id_categoria);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $productos = $result->fetch_assoc()['count'];
+        
+        if ($productos > 0) {
+            $dependencies['productos'] = $productos;
+            
+            // Verificar ventas relacionadas con productos de subcategorías de esta categoría
+            $sqlVentas = "SELECT COUNT(DISTINCT v.id_ventas) as count 
+                         FROM ventas v 
+                         INNER JOIN productos p ON v.id_productos = p.id_productos 
+                         INNER JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
+                         WHERE s.id_categoria = ?";
+            $stmt = $conn->prepare($sqlVentas);
+            $stmt->bind_param("i", $id_categoria);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $ventas = $result->fetch_assoc()['count'];
+            
+            if ($ventas > 0) {
+                $dependencies['ventas'] = $ventas;
+            }
         }
         
         return $dependencies;

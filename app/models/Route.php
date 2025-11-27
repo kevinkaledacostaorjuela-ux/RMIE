@@ -50,8 +50,7 @@ class Route {
                        rep.nombre as reporte_nombre
                 FROM rutas r 
                 LEFT JOIN clientes c ON r.id_clientes = c.id_clientes
-                LEFT JOIN locales_clientes lc ON c.id_clientes = lc.id_clientes
-                LEFT JOIN locales l ON lc.id_locales = l.id_locales
+                LEFT JOIN locales l ON r.nombre_local = l.nombre_local
                 LEFT JOIN ventas v ON r.id_ventas = v.id_ventas
                 LEFT JOIN reportes rep ON r.id_reportes = rep.id_reportes
                 WHERE 1=1";

@@ -173,7 +173,7 @@
 
         .ventas-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr;
             gap: 2rem;
             align-items: start;
         }
@@ -334,10 +334,13 @@
         .ventas-buttons {
             display: flex;
             justify-content: center;
-            gap: 1.5rem;
-            margin-top: 2.5rem;
+            gap: 2rem;
+            margin-top: 3rem;
             padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.2);
+            flex-wrap: wrap;
+            grid-column: 1 / -1;
+            width: 100%;
         }
 
         /* Info histórica */
@@ -438,6 +441,8 @@
             
             .ventas-buttons {
                 flex-direction: column;
+                justify-content: center;
+                gap: 1rem;
             }
             
             .btn {
@@ -506,34 +511,7 @@
                                 </select>
                             </div>
                             
-                            <div class="form-group">
-                                <label for="nombre">
-                                    <i class="fas fa-tag"></i> Nombre de la venta
-                                </label>
-                                <input type="text" 
-                                       class="form-control"
-                                       id="nombre" 
-                                       name="nombre" 
-                                       value="<?= htmlspecialchars($venta->nombre) ?>"
-                                       placeholder="Descripción de la venta"
-                                       maxlength="45">
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="direccion">
-                                    <i class="fas fa-map-marker-alt"></i> Dirección de entrega
-                                </label>
-                                <input type="text" 
-                                       class="form-control"
-                                       id="direccion" 
-                                       name="direccion" 
-                                       value="<?= htmlspecialchars($venta->direccion) ?>"
-                                       placeholder="Dirección de entrega"
-                                       maxlength="45">
-                            </div>
-                        </div>
-
-                        <!-- Sección Producto -->
+                            <!-- Sección Producto -->
                         <div class="form-section">
                             <div class="section-title">
                                 <i class="fas fa-box"></i> Información del Producto
@@ -678,75 +656,41 @@
                         </div>
                     </div>
 
-                    <!-- Columna Derecha: Resumen -->
-                    <div>
-                        <div class="ventas-summary">
-                            <div class="summary-header">
-                                <h5><i class="fas fa-chart-line"></i> Resumen de la Venta</h5>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Producto:</span>
-                                <span class="summary-value" id="producto-nombre">-</span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Stock disponible:</span>
-                                <span class="summary-value" id="stock-disponible">-</span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Precio unitario:</span>
-                                <span class="summary-value" id="precio-mostrar">$0.00</span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Cantidad:</span>
-                                <span class="summary-value" id="cantidad-mostrar">0</span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">Total a pagar:</span>
-                                <span class="summary-value" id="total-mostrar">$0.00</span>
-                            </div>
+                    <!-- Información Importante -->
+                    <div class="info-alert">
+                        <div class="current-status">
+                            <span class="label">Estado actual:</span>
+                            <span class="badge-status status-<?= strtolower($venta->estado) ?>">
+                                <?php
+                                $estados = [
+                                    'pendiente' => ['text' => 'Pendiente', 'icon' => 'fas fa-clock'],
+                                    'procesando' => ['text' => 'Procesando', 'icon' => 'fas fa-spinner'],
+                                    'completada' => ['text' => 'Completada', 'icon' => 'fas fa-check-circle'],
+                                    'cancelada' => ['text' => 'Cancelada', 'icon' => 'fas fa-times-circle']
+                                ];
+                                $estadoInfo = $estados[$venta->estado] ?? ['text' => $venta->estado, 'icon' => 'fas fa-question'];
+                                ?>
+                                <i class="<?= $estadoInfo['icon'] ?>"></i>
+                                <?= $estadoInfo['text'] ?>
+                            </span>
                         </div>
-
-                        <!-- Estado Actual -->
-                        <div class="info-alert">
-                            <div class="current-status">
-                                <span class="label">Estado actual:</span>
-                                <span class="badge-status status-<?= strtolower($venta->estado) ?>">
-                                    <?php
-                                    $estados = [
-                                        'pendiente' => ['text' => 'Pendiente', 'icon' => 'fas fa-clock'],
-                                        'procesando' => ['text' => 'Procesando', 'icon' => 'fas fa-spinner'],
-                                        'completada' => ['text' => 'Completada', 'icon' => 'fas fa-check-circle'],
-                                        'cancelada' => ['text' => 'Cancelada', 'icon' => 'fas fa-times-circle']
-                                    ];
-                                    $estadoInfo = $estados[$venta->estado] ?? ['text' => $venta->estado, 'icon' => 'fas fa-question'];
-                                    ?>
-                                    <i class="<?= $estadoInfo['icon'] ?>"></i>
-                                    <?= $estadoInfo['text'] ?>
-                                </span>
-                            </div>
-                            <div style="margin-top: 1rem;">
-                                <strong><i class="fas fa-history"></i> Información Histórica:</strong>
-                                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                                    <li>Fecha de Venta: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_venta))) ?></li>
-                                    <li>ID: #<?= htmlspecialchars($venta->id_ventas) ?></li>
-                                </ul>
-                            </div>
-                        </div>
-
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Importante:</strong>
+                        <div style="margin-top: 1rem;">
+                            <strong><i class="fas fa-history"></i> Información Histórica:</strong>
                             <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
-                                <li>Los cambios pueden afectar el inventario</li>
-                                <li>Verifique el stock antes de modificar</li>
-                                <li>Los cambios de estado pueden ser irreversibles</li>
+                                <li>Fecha de Venta: <?= htmlspecialchars(date('d/m/Y H:i', strtotime($venta->fecha_venta))) ?></li>
+                                <li>ID: #<?= htmlspecialchars($venta->id_ventas) ?></li>
                             </ul>
                         </div>
+                    </div>
+
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Importante:</strong>
+                        <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                            <li>Los cambios pueden afectar el inventario</li>
+                            <li>Verifique el stock antes de modificar</li>
+                            <li>Los cambios de estado pueden ser irreversibles</li>
+                        </ul>
                     </div>
                 </div>
 
