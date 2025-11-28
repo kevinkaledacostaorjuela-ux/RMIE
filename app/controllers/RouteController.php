@@ -68,73 +68,93 @@ class RouteController {
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Validación de datos
-                $id_locales = intval($_POST['id_locales'] ?? 0);
-                $id_clientes = intval($_POST['id_clientes'] ?? 0);
-                $id_ventas = intval($_POST['id_ventas'] ?? 0);
+                // Validación de datos - ahora son arrays
+                $id_locales_array = isset($_POST['id_locales']) ? array_map('intval', (array)$_POST['id_locales']) : [];
+                $id_clientes_array = isset($_POST['id_clientes']) ? array_map('intval', (array)$_POST['id_clientes']) : [];
+                $id_ventas_array = isset($_POST['id_ventas']) ? array_map('intval', (array)$_POST['id_ventas']) : [];
                 $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
 
                 // Validaciones básicas
-                if ($id_locales <= 0) {
-                    throw new Exception("Debe seleccionar un local válido.");
+                if (empty($id_locales_array)) {
+                    throw new Exception("Debe seleccionar al menos un local válido.");
                 }
-                if ($id_clientes <= 0) {
-                    throw new Exception("Debe seleccionar un cliente válido.");
+                if (empty($id_clientes_array)) {
+                    throw new Exception("Debe seleccionar al menos un cliente válido.");
                 }
-                if ($id_ventas <= 0) {
-                    throw new Exception("Debe seleccionar una venta válida.");
+                if (empty($id_ventas_array)) {
+                    throw new Exception("Debe seleccionar al menos una venta válida.");
                 }
 
                 // Validaciones de claves foráneas
-                if (!Route::clientExists($conn, $id_clientes)) {
-                    throw new Exception("El cliente seleccionado no existe en el sistema. Por favor, selecciona un cliente válido.");
+                foreach ($id_clientes_array as $id_cliente) {
+                    if (!Route::clientExists($conn, $id_cliente)) {
+                        throw new Exception("El cliente $id_cliente no existe en el sistema.");
+                    }
                 }
                 
-                if (!Route::saleExists($conn, $id_ventas)) {
-                    throw new Exception("La venta seleccionada no existe en el sistema. Por favor, selecciona una venta válida.");
+                foreach ($id_ventas_array as $id_venta) {
+                    if (!Route::saleExists($conn, $id_venta)) {
+                        throw new Exception("La venta $id_venta no existe en el sistema.");
+                    }
                 }
 
-                // Obtener nombre y dirección del local desde la base de datos
-                $localQuery = "SELECT nombre_local, direccion, localidad, barrio FROM locales WHERE id_locales = ?";
-                $stmt = $conn->prepare($localQuery);
-                $stmt->bind_param('i', $id_locales);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $localData = $result->fetch_assoc();
-                $nombre_local = $localData['nombre_local'] ?? '';
-                $direccion = $localData['direccion'] ?? '';
-                $localidad = $localData['localidad'] ?? '';
-                $barrio = $localData['barrio'] ?? '';
+                // Obtener nombres y direcciones de locales
+                $nombre_local = '';
+                $direccion_completa = '';
+                $locales_nombres = [];
+                $direcciones_array = [];
                 
-                // Construir dirección completa
-                if ($barrio) $direccion .= ', ' . $barrio;
-                if ($localidad) $direccion .= ', ' . $localidad;
-
-                if (empty($nombre_local)) {
-                    throw new Exception("El local seleccionado no existe.");
+                foreach ($id_locales_array as $id_local) {
+                    $localQuery = "SELECT nombre_local, direccion, localidad, barrio FROM locales WHERE id_locales = ?";
+                    $stmt = $conn->prepare($localQuery);
+                    $stmt->bind_param('i', $id_local);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $localData = $result->fetch_assoc();
+                    
+                    if (!$localData) {
+                        throw new Exception("El local $id_local no existe.");
+                    }
+                    
+                    $locales_nombres[] = $localData['nombre_local'];
+                    
+                    // Construir dirección completa para cada local
+                    $dir = $localData['direccion'] ?? '';
+                    if ($localData['barrio']) $dir .= ', ' . $localData['barrio'];
+                    if ($localData['localidad']) $dir .= ', ' . $localData['localidad'];
+                    $direcciones_array[] = $dir;
                 }
                 
-                if (empty($direccion)) {
-                    throw new Exception("El local seleccionado no tiene una dirección registrada.");
-                }
-
-                // Obtener nombre del cliente desde la base de datos
-                $clienteQuery = "SELECT nombre FROM clientes WHERE id_clientes = ?";
-                $stmtCliente = $conn->prepare($clienteQuery);
-                $stmtCliente->bind_param('i', $id_clientes);
-                $stmtCliente->execute();
-                $resultCliente = $stmtCliente->get_result();
-                $clienteData = $resultCliente->fetch_assoc();
-                $nombre_cliente = $clienteData['nombre'] ?? '';
-
-                if (empty($nombre_cliente)) {
-                    throw new Exception("El cliente seleccionado no existe.");
-                }
-
-                Route::create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado);
+                $nombre_local = implode(', ', $locales_nombres);
                 
-                // Mensaje de éxito y redirección
-                $_SESSION['success_message'] = "Ruta creada exitosamente.";
+                // Usar la primera dirección como dirección principal
+                $direccion = !empty($direcciones_array) ? $direcciones_array[0] : '';
+
+                // Obtener nombres de clientes
+                $clientes_nombres = [];
+                foreach ($id_clientes_array as $id_cliente) {
+                    $clienteQuery = "SELECT nombre FROM clientes WHERE id_clientes = ?";
+                    $stmtCliente = $conn->prepare($clienteQuery);
+                    $stmtCliente->bind_param('i', $id_cliente);
+                    $stmtCliente->execute();
+                    $resultCliente = $stmtCliente->get_result();
+                    $clienteData = $resultCliente->fetch_assoc();
+                    
+                    if (!$clienteData) {
+                        throw new Exception("El cliente $id_cliente no existe.");
+                    }
+                    
+                    $clientes_nombres[] = $clienteData['nombre'];
+                }
+                
+                $nombre_cliente = implode(', ', $clientes_nombres);
+
+                // Crear una sola ruta con todos los valores
+                Route::createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array);
+
+                $_SESSION['success_message'] = "Ruta creada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s) y " . count($id_ventas_array) . " venta(s).";
+                
+                // Redirección
                 header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
                 exit;
                 
@@ -176,42 +196,99 @@ class RouteController {
 
             // Solo procesar datos POST si es una petición POST
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                // Validación de datos
-                $direccion = trim($_POST['direccion'] ?? '');
-                $nombre_local = trim($_POST['nombre_local'] ?? '');
-                $nombre_cliente = trim($_POST['nombre_cliente'] ?? '');
-                $id_clientes = intval($_POST['id_clientes'] ?? 0);
-                $id_ventas = intval($_POST['id_ventas'] ?? 0);
-                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
-
-                // Validaciones solo para POST
-                if (empty($direccion) || strlen($direccion) < 5) {
-                    throw new Exception("La dirección debe tener al menos 5 caracteres.");
-                }
-                if (empty($nombre_local) || strlen($nombre_local) < 2) {
-                    throw new Exception("El nombre del local debe tener al menos 2 caracteres.");
-                }
-                if (empty($nombre_cliente) || strlen($nombre_cliente) < 2) {
-                    throw new Exception("El nombre del cliente debe tener al menos 2 caracteres.");
-                }
-                if ($id_clientes <= 0) {
-                    throw new Exception("El ID del cliente debe ser un número positivo.");
-                }
-                if ($id_ventas <= 0) {
-                    throw new Exception("El ID de la venta debe ser un número positivo.");
-                }
-
-                // Intentar actualizar la ruta (mantener id_reportes existente)
-                $id_reportes = $route['id_reportes']; // Mantener el valor existente
-                $success = Route::update($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $id_reportes, $estado);
+                // Debug: Log de los datos recibidos
+                error_log("DEBUG EDIT - POST recibido para ruta ID: $id");
+                error_log("DEBUG EDIT - Datos POST: " . json_encode($_POST));
                 
-                if ($success) {
-                    $_SESSION['success'] = "Ruta actualizada exitosamente.";
-                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
-                    exit;
-                } else {
-                    throw new Exception("No se pudo actualizar la ruta. Inténtalo de nuevo.");
+                // Validación de datos - ahora son arrays
+                $id_locales_array = isset($_POST['id_locales']) ? array_map('intval', (array)$_POST['id_locales']) : [];
+                
+                // Para clientes, manejar tanto el nuevo campo array como el legacy
+                $id_clientes_array = [];
+                if (isset($_POST['id_clientes']) && is_array($_POST['id_clientes'])) {
+                    $id_clientes_array = array_map('intval', $_POST['id_clientes']);
+                } elseif (isset($_POST['id_clientes_legacy'])) {
+                    $id_clientes_array = [intval($_POST['id_clientes_legacy'])];
+                } elseif (isset($_POST['id_clientes'])) {
+                    $id_clientes_array = [intval($_POST['id_clientes'])];
                 }
+                
+                // Manejar id_ventas como valor único (no array como los otros)
+                $id_ventas = isset($_POST['id_ventas']) ? intval($_POST['id_ventas']) : 0;
+                $id_ventas_array = $id_ventas > 0 ? [$id_ventas] : [];
+                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
+                
+                error_log("DEBUG EDIT - Arrays procesados:");
+                error_log("DEBUG EDIT - id_locales_array: " . json_encode($id_locales_array));
+                error_log("DEBUG EDIT - id_clientes_array: " . json_encode($id_clientes_array));
+                error_log("DEBUG EDIT - id_ventas_array: " . json_encode($id_ventas_array));
+
+                // Validaciones básicas
+                if (empty($id_locales_array)) {
+                    throw new Exception("Debe seleccionar al menos un local válido.");
+                }
+                if (empty($id_clientes_array)) {
+                    throw new Exception("Debe seleccionar al menos un cliente válido.");
+                }
+                if (empty($id_ventas_array)) {
+                    throw new Exception("Debe seleccionar al menos una venta válida.");
+                }
+
+                // Obtener nombres y direcciones de locales
+                $nombre_local = '';
+                $direccion_completa = '';
+                $locales_nombres = [];
+                $direcciones_array = [];
+                
+                foreach ($id_locales_array as $id_local) {
+                    $localQuery = "SELECT nombre_local, direccion, localidad, barrio FROM locales WHERE id_locales = ?";
+                    $stmt = $conn->prepare($localQuery);
+                    $stmt->bind_param('i', $id_local);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    $localData = $result->fetch_assoc();
+                    
+                    if (!$localData) {
+                        throw new Exception("El local $id_local no existe.");
+                    }
+                    
+                    $locales_nombres[] = $localData['nombre_local'];
+                    
+                    // Construir dirección completa para cada local
+                    $dir = $localData['direccion'] ?? '';
+                    if ($localData['barrio']) $dir .= ', ' . $localData['barrio'];
+                    if ($localData['localidad']) $dir .= ', ' . $localData['localidad'];
+                    $direcciones_array[] = $dir;
+                }
+                
+                $nombre_local = implode(', ', $locales_nombres);
+                $direccion = !empty($direcciones_array) ? $direcciones_array[0] : '';
+
+                // Obtener nombres de clientes
+                $clientes_nombres = [];
+                foreach ($id_clientes_array as $id_cliente) {
+                    $clienteQuery = "SELECT nombre FROM clientes WHERE id_clientes = ?";
+                    $stmtCliente = $conn->prepare($clienteQuery);
+                    $stmtCliente->bind_param('i', $id_cliente);
+                    $stmtCliente->execute();
+                    $resultCliente = $stmtCliente->get_result();
+                    $clienteData = $resultCliente->fetch_assoc();
+                    
+                    if (!$clienteData) {
+                        throw new Exception("El cliente $id_cliente no existe.");
+                    }
+                    
+                    $clientes_nombres[] = $clienteData['nombre'];
+                }
+                
+                $nombre_cliente = implode(', ', $clientes_nombres);
+
+                // Actualizar la ruta con datos JSON
+                Route::updateMultiple($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array);
+                
+                $_SESSION['success'] = "Ruta actualizada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s) y " . count($id_ventas_array) . " venta(s).";
+                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                exit;
             }
             
             // Si llegamos aquí y es GET, mostrar el formulario
@@ -264,6 +341,144 @@ class RouteController {
             exit;
         }
     }
+
+    public function complete($id) {
+        global $conn;
+        
+        // Validar ID
+        if (empty($id) || !is_numeric($id)) {
+            $_SESSION['error'] = 'ID de ruta inválido';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+
+        try {
+            // Actualizar el estado de la ruta a 'completada'
+            $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Ruta completada correctamente';
+            } else {
+                $_SESSION['error'] = 'Error al completar la ruta';
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al completar ruta: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al completar la ruta: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
+
+    public function completeAndDelete($id) {
+        global $conn;
+        
+        // Validar ID
+        if (empty($id) || !is_numeric($id)) {
+            $_SESSION['error'] = 'ID de ruta inválido';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+
+        try {
+            // Primero completar la ruta
+            $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            
+            // Luego eliminarla
+            $sql = "DELETE FROM rutas WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Ruta completada y eliminada correctamente';
+            } else {
+                $_SESSION['error'] = 'Error al eliminar la ruta';
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al completar y eliminar ruta: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al completar y eliminar la ruta: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
+
+    public function cleanCompleted() {
+        global $conn;
+
+        try {
+            // Primero contar cuántas rutas completadas hay
+            $countSql = "SELECT COUNT(*) as total FROM rutas WHERE estado = 'completada'";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalCompletadas = $countResult['total'];
+            
+            if ($totalCompletadas == 0) {
+                $_SESSION['error'] = 'No se encontraron rutas completadas para eliminar';
+            } else {
+                // Eliminar todas las rutas con estado 'completada'
+                $sql = "DELETE FROM rutas WHERE estado = 'completada'";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron {$deletedRows} rutas completadas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar las rutas completadas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar rutas completadas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar las rutas completadas: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
+
+    public function cleanAll() {
+        global $conn;
+
+        try {
+            // Contar todas las rutas
+            $countSql = "SELECT COUNT(*) as total FROM rutas";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalRutas = $countResult['total'];
+            
+            if ($totalRutas == 0) {
+                $_SESSION['error'] = 'No hay rutas para eliminar';
+            } else {
+                // Eliminar TODAS las rutas
+                $sql = "DELETE FROM rutas";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron TODAS las {$deletedRows} rutas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar todas las rutas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar todas las rutas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar todas las rutas: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
 }
 
 // Manejo de acciones por parámetro GET
@@ -291,6 +506,26 @@ if (isset($_GET['accion'])) {
             } else {
                 $controller->index();
             }
+            break;
+        case 'complete':
+            if (isset($_GET['id'])) {
+                $controller->complete($_GET['id']);
+            } else {
+                $controller->index();
+            }
+            break;
+        case 'complete_and_delete':
+            if (isset($_GET['id'])) {
+                $controller->completeAndDelete($_GET['id']);
+            } else {
+                $controller->index();
+            }
+            break;
+        case 'clean_completed':
+            $controller->cleanCompleted();
+            break;
+        case 'clean_all':
+            $controller->cleanAll();
             break;
         default:
             $controller->index();

@@ -753,6 +753,11 @@ $stats = $statsQuery->fetch_assoc();
                 <i class="fas fa-plus"></i> Nuevo Cliente
             </a>
             <?php endif; ?>
+            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+            <button class="btn btn-modern me-2" onclick="limpiarInactivos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
+                <i class="fas fa-broom"></i> Limpiar Inactivos
+            </button>
+            <?php endif; ?>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
@@ -1137,6 +1142,23 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                 }
             }
         })();
+
+        // Función para limpiar clientes inactivos
+        function limpiarInactivos() {
+            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en CLIENTES?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar clientes INACTIVOS\n2 - Eliminar TODOS los clientes\n3 - Cancelar`);
+            
+            if (opcion === '1') {
+                if (confirm('Se eliminarán solo los clientes con estado "inactivo".\n\n¿Continuar?')) {
+                    alert('Eliminando clientes inactivos...');
+                    window.location.href = '/RMIE/app/controllers/ClientController.php?accion=clean_inactive';
+                }
+            } else if (opcion === '2') {
+                if (confirm('¡ATENCIÓN! Esto eliminará TODOS los clientes de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                    alert('Eliminando todos los clientes...');
+                    window.location.href = '/RMIE/app/controllers/ClientController.php?accion=clean_all';
+                }
+            }
+        }
     </script>
 </body>
 </html>

@@ -338,6 +338,36 @@ if (isset($rutas) && is_array($rutas)) {
 
         .stat-label {
             color: rgba(255, 255, 255, 0.85);
+        }
+
+        /* Estilos mejorados para botones del modal */
+        .btn:hover {
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .btn-success:hover {
+            box-shadow: 0 6px 20px rgba(76,175,80,0.4) !important;
+        }
+
+        .btn-outline-light:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Estilo para botón de completar */
+        .btn-success-modern {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success-modern:hover {
+            background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40,167,69,0.4);
+        }
             font-size: 1rem;
             font-weight: 500;
             text-transform: uppercase;
@@ -909,8 +939,8 @@ if (isset($rutas) && is_array($rutas)) {
         }
 
         .quick-actions-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            display: flex;
+            justify-content: center;
             gap: 15px;
         }
 
@@ -1307,6 +1337,18 @@ if (isset($rutas) && is_array($rutas)) {
             color: white;
         }
 
+        .routes-btn-success {
+            background: linear-gradient(45deg, #4CAF50, #45A049);
+            color: white;
+            cursor: pointer;
+        }
+
+        .routes-btn-success:hover {
+            background: linear-gradient(45deg, #45A049, #4CAF50);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
         .routes-empty-state {
             text-align: center;
             padding: 60px 20px;
@@ -1565,14 +1607,16 @@ if (isset($rutas) && is_array($rutas)) {
                 <i class="fas fa-bolt"></i> Acciones Rápidas
             </div>
             <div class="quick-actions-grid">
-                <button class="quick-action-btn" onclick="crearRutaRapida()">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Nueva Ruta</span>
-                </button>
                 <button class="quick-action-btn" onclick="verMapa()">
                     <i class="fas fa-map"></i>
                     <span>Ver Mapa</span>
                 </button>
+                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                <button class="quick-action-btn" onclick="limpiarCompletadas();" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);">
+                    <i class="fas fa-broom"></i>
+                    <span>Limpiar Completadas</span>
+                </button>
+                <?php endif; ?>
             </div>
         </div>        <!-- Filtros modernos -->
         <style>
@@ -1825,7 +1869,10 @@ if (isset($rutas) && is_array($rutas)) {
                                             $estado = $ruta['estado'] ?? 'activa';
                                             $statusClass = 'routes-status-' . $estado;
                                             ?>
-                                            <span class="routes-card-status <?= $statusClass ?>">
+                                            <span class="routes-card-status <?= $statusClass ?>" <?= $estado === 'completada' ? 'style="opacity: 0.7;"' : '' ?>>
+                                                <?php if ($estado === 'completada'): ?>
+                                                    <i class="fas fa-check-circle me-1"></i>
+                                                <?php endif; ?>
                                                 <?= ucfirst($estado) ?>
                                             </span>
                                         </span>
@@ -1847,6 +1894,15 @@ if (isset($rutas) && is_array($rutas)) {
                                    title="Editar ruta">
                                     <i class="fas fa-edit"></i> Editar
                                 </a>
+                                
+                                <?php if (($ruta['estado'] ?? 'activa') !== 'completada'): ?>
+                                <button type="button" 
+                                        class="routes-card-btn routes-btn-success" 
+                                        title="Completar y finalizar ruta"
+                                        onclick="completarRuta(<?= $ruta['id_ruta'] ?? 0 ?>, '<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>');">
+                                    <i class="fas fa-check-circle"></i> Completar
+                                </button>
+                                <?php endif; ?>
                                 
                                 <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                 <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
@@ -1882,7 +1938,7 @@ if (isset($rutas) && is_array($rutas)) {
                             <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
                             <th><i class="fas fa-user"></i> Cliente</th>
                             <th><i class="fas fa-store"></i> Local</th>
-                            <th><i class="fas fa-shopping-cart"></i> Venta/Reporte</th>
+                            <th><i class="fas fa-shopping-cart"></i> Venta</th>
                             <th><i class="fas fa-traffic-light"></i> Estado</th>
                             <th><i class="fas fa-calendar-alt"></i> Fecha</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
@@ -1891,6 +1947,51 @@ if (isset($rutas) && is_array($rutas)) {
                     <tbody>
                         <?php if (isset($rutas) && is_array($rutas) && !empty($rutas)): ?>
                             <?php foreach ($rutas as $ruta): ?>
+                                <?php
+                                // Procesar datos JSON si existen
+                                $id_locales_array = !empty($ruta['id_locales_json']) ? json_decode($ruta['id_locales_json'], true) : [];
+                                $id_clientes_array = !empty($ruta['id_clientes_json']) ? json_decode($ruta['id_clientes_json'], true) : [];
+                                $id_ventas_array = !empty($ruta['id_ventas_json']) ? json_decode($ruta['id_ventas_json'], true) : [];
+                                $direcciones_array = !empty($ruta['direcciones_json']) ? json_decode($ruta['direcciones_json'], true) : [];
+                                
+                                // Obtener nombres de clientes desde los IDs
+                                $clientes_nombres = [];
+                                if (!empty($id_clientes_array)) {
+                                    foreach ($id_clientes_array as $id_cliente) {
+                                        $clienteQuery = "SELECT nombre FROM clientes WHERE id_clientes = " . intval($id_cliente);
+                                        $clienteResult = $conn->query($clienteQuery);
+                                        if ($clienteResult && $clienteData = $clienteResult->fetch_assoc()) {
+                                            $clientes_nombres[] = $clienteData['nombre'];
+                                        }
+                                    }
+                                }
+                                
+                                // Obtener nombres de locales desde los IDs
+                                $locales_nombres = [];
+                                if (!empty($id_locales_array)) {
+                                    foreach ($id_locales_array as $id_local) {
+                                        $localQuery = "SELECT nombre_local FROM locales WHERE id_locales = " . intval($id_local);
+                                        $localResult = $conn->query($localQuery);
+                                        if ($localResult && $localData = $localResult->fetch_assoc()) {
+                                            $locales_nombres[] = $localData['nombre_local'];
+                                        }
+                                    }
+                                }
+                                
+                                // Obtener nombres de ventas desde los IDs
+                                $ventas_display = [];
+                                if (!empty($id_ventas_array)) {
+                                    foreach ($id_ventas_array as $id_venta) {
+                                        $ventaQuery = "SELECT nombre, cantidad FROM ventas WHERE id_ventas = " . intval($id_venta);
+                                        $ventaResult = $conn->query($ventaQuery);
+                                        if ($ventaResult && $ventaData = $ventaResult->fetch_assoc()) {
+                                            $nombre_venta = !empty($ventaData['nombre']) ? $ventaData['nombre'] : 'Venta #' . $id_venta;
+                                            $cantidad = $ventaData['cantidad'] ?? 0;
+                                            $ventas_display[] = $nombre_venta . ' (Cant: ' . $cantidad . ')';
+                                        }
+                                    }
+                                }
+                                ?>
                             <tr>
                                 <td>
                                     <strong>#<?= htmlspecialchars($ruta['id_ruta'] ?? '') ?></strong>
@@ -1901,7 +2002,7 @@ if (isset($rutas) && is_array($rutas)) {
                                             <i class="fas fa-route"></i>
                                         </div>
                                         <div>
-                                            <strong><?= htmlspecialchars($ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></strong>
+                                            <strong><?= htmlspecialchars($ruta['nombre_local'] ?? $ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></strong>
                                             <br>
                                             <small class="text-muted">
                                                 <i class="fas fa-barcode"></i> ID: <?= $ruta['id_ruta'] ?? '' ?>
@@ -1910,25 +2011,63 @@ if (isset($rutas) && is_array($rutas)) {
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-modern badge-info">
-                                        <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?>
-                                    </span>
+                                    <?php if (!empty($direcciones_array)): ?>
+                                        <?php foreach ($direcciones_array as $idx => $dir): ?>
+                                            <span class="badge badge-modern badge-info" style="display: block; margin-bottom: 5px;">
+                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($dir) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge badge-modern badge-secondary">
-                                        <i class="fas fa-user"></i> <?= htmlspecialchars($ruta['cliente_nombre'] ?? 'Sin cliente') ?>
-                                    </span>
+                                    <?php if (!empty($clientes_nombres)): ?>
+                                        <?php foreach ($clientes_nombres as $cliente_name): ?>
+                                            <span class="badge badge-modern badge-secondary" style="display: block; margin-bottom: 3px;">
+                                                <i class="fas fa-user"></i> <?= htmlspecialchars($cliente_name) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-secondary">
+                                            <i class="fas fa-user"></i> <?= htmlspecialchars($ruta['nombre_cliente'] ?? $ruta['cliente_nombre'] ?? 'Sin cliente') ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
-                                    <span class="badge badge-modern badge-info">
-                                        <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['local_nombre'] ?? 'Sin local') ?>
-                                    </span>
+                                    <?php if (!empty($locales_nombres)): ?>
+                                        <?php foreach ($locales_nombres as $local_name): ?>
+                                            <span class="badge badge-modern badge-info" style="display: block; margin-bottom: 3px;">
+                                                <i class="fas fa-store"></i> <?= htmlspecialchars($local_name) ?>
+                                            </span>
+                                        <?php endforeach; ?>
+                                    <?php else: ?>
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['local_nombre'] ?? 'Sin local') ?>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="text-center">
-                                        <span class="badge badge-modern badge-secondary">
-                                            <i class="fas fa-shopping-cart"></i> Venta: <?= $ruta['id_ventas'] ?? 'N/A' ?>
-                                        </span>
+                                        <?php if (!empty($ventas_display)): ?>
+                                            <?php foreach ($ventas_display as $venta_name): ?>
+                                                <span class="badge badge-modern badge-secondary" style="display: block; margin-bottom: 3px;">
+                                                    <i class="fas fa-shopping-cart"></i> <?= htmlspecialchars($venta_name) ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <?php if (!empty($ruta['id_ventas'])): ?>
+                                                <span class="badge badge-modern badge-secondary">
+                                                    <i class="fas fa-shopping-cart"></i> Venta #<?= $ruta['id_ventas'] ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge badge-modern badge-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i> Sin venta asignada
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
                                         <?php if (!empty($ruta['id_reportes'])): ?>
                                             <br><small class="badge badge-modern badge-warning mt-1">
                                                 <i class="fas fa-file-alt"></i> Reporte: <?= $ruta['id_reportes'] ?>
@@ -1984,6 +2123,16 @@ if (isset($rutas) && is_array($rutas)) {
                                            title="Editar ruta">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        
+                                        <?php if (($ruta['estado'] ?? 'activa') !== 'completada'): ?>
+                                        <button type="button" 
+                                           class="btn btn-sm btn-modern btn-success-modern" 
+                                           title="Completar y finalizar ruta"
+                                           onclick="completarRuta(<?= $ruta['id_ruta'] ?? 0 ?>, '<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>');">
+                                            <i class="fas fa-check-circle"></i>
+                                        </button>
+                                        <?php endif; ?>
+                                        
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/RouteController.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
@@ -2164,6 +2313,383 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         function verMapa() {
             mostrarModal('mapa');
+            setTimeout(function() {
+                llenarListaRutas();
+            }, 100);
+        }
+
+        function abrirGoogleMapsDirecto() {
+            // Recopilar todas las direcciones de las rutas
+            const direcciones = [];
+            
+            // Buscar todas las direcciones en la tabla
+            document.querySelectorAll('tbody tr').forEach(function(row) {
+                const direccionCell = row.cells[2]; // Columna de dirección
+                if (direccionCell) {
+                    const badges = direccionCell.querySelectorAll('.badge');
+                    badges.forEach(function(badge) {
+                        const direccion = badge.textContent.replace(/🗺️|📍/g, '').trim();
+                        if (direccion && direccion !== 'Sin dirección') {
+                            direcciones.push(direccion);
+                        }
+                    });
+                }
+            });
+            
+            if (direcciones.length === 0) {
+                mostrarNotificacion('No se encontraron direcciones para mostrar en el mapa', 'warning');
+                return;
+            }
+            
+            // Crear URL de Google Maps con múltiples direcciones
+            let googleMapsUrl = 'https://www.google.com/maps/dir/';
+            
+            // Agregar cada dirección como punto de ruta
+            direcciones.slice(0, 10).forEach(function(direccion) { // Límite de 10 direcciones
+                googleMapsUrl += encodeURIComponent(direccion) + '/';
+            });
+            
+            // Abrir Google Maps en nueva pestaña
+            window.open(googleMapsUrl, '_blank');
+            
+            mostrarNotificacion(`Abriendo mapa con ${direcciones.length} ubicaciones`, 'success');
+        }
+
+        function verMapaExterno() {
+            // Seleccionar todas las rutas por defecto
+            seleccionarTodasRutas();
+            setTimeout(function() {
+                verMapaRutasSeleccionadas();
+            }, 100);
+        }
+
+        function verMapaEmbebido() {
+            // Recopilar direcciones
+            const direcciones = [];
+            document.querySelectorAll('tbody tr').forEach(function(row) {
+                const direccionCell = row.cells[2];
+                if (direccionCell) {
+                    const badges = direccionCell.querySelectorAll('.badge');
+                    badges.forEach(function(badge) {
+                        const direccion = badge.textContent.replace(/🗺️|📍/g, '').trim();
+                        if (direccion && direccion !== 'Sin dirección') {
+                            direcciones.push(direccion);
+                        }
+                    });
+                }
+            });
+
+            if (direcciones.length === 0) {
+                document.getElementById('mapaContainer').innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        No se encontraron direcciones para mostrar
+                    </div>
+                `;
+                return;
+            }
+
+            // Crear iframe con Google Maps embebido
+            const primeraUbicacion = encodeURIComponent(direcciones[0]);
+            const mapaEmbebido = `
+                <iframe 
+                    width="100%" 
+                    height="400" 
+                    frameborder="0" 
+                    style="border:0; border-radius: 8px;" 
+                    src="https://www.google.com/maps/embed/v1/place?key=AIzaSyD&q=${primeraUbicacion}" 
+                    allowfullscreen>
+                </iframe>
+                <div class="mt-2">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        Mostrando: ${direcciones[0]} (${direcciones.length} ubicaciones totales)
+                    </small>
+                </div>
+            `;
+            
+            // Si no hay API key, usar alternativa
+            const mapaAlternativo = `
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; min-height: 400px;">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-map-marked-alt fa-3x text-primary"></i>
+                        <h5 class="mt-2">Ubicaciones de Rutas</h5>
+                    </div>
+                    <div class="row">
+                        ${direcciones.slice(0, 6).map((dir, index) => `
+                            <div class="col-md-6 mb-2">
+                                <div class="card">
+                                    <div class="card-body py-2">
+                                        <small>
+                                            <i class="fas fa-map-pin text-danger"></i>
+                                            <strong>Ruta ${index + 1}:</strong><br>
+                                            ${dir}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${direcciones.length > 6 ? `<small class="text-muted">Y ${direcciones.length - 6} ubicaciones más...</small>` : ''}
+                </div>
+            `;
+
+            document.getElementById('mapaContainer').innerHTML = mapaAlternativo;
+        }
+
+        function llenarListaRutas() {
+            const listaRutas = document.getElementById('listaRutas');
+            let rutasHtml = '';
+            let todasDirecciones = [];
+            
+            // Obtener todas las filas de la tabla
+            document.querySelectorAll('tbody tr').forEach(function(row, index) {
+                const idRuta = row.cells[0]?.textContent?.trim() || `Ruta ${index + 1}`;
+                const nombreRuta = row.cells[1]?.textContent?.trim() || 'Sin nombre';
+                const direccionCell = row.cells[2];
+                
+                let direcciones = [];
+                if (direccionCell) {
+                    const badges = direccionCell.querySelectorAll('.badge');
+                    badges.forEach(function(badge) {
+                        const direccion = badge.textContent.replace(/🗺️|📍/g, '').trim();
+                        if (direccion && direccion !== 'Sin dirección') {
+                            direcciones.push(direccion);
+                            todasDirecciones.push(direccion);
+                        }
+                    });
+                }
+                
+                if (direcciones.length > 0) {
+                    rutasHtml += `
+                        <div class="form-check mb-3 p-3" style="background: rgba(255,255,255,0.1); border-radius: 8px; border: 1px solid rgba(255,255,255,0.2);">
+                            <input class="form-check-input ruta-checkbox" type="checkbox" 
+                                   id="ruta_${index}" value="${index}" 
+                                   data-direcciones='${JSON.stringify(direcciones)}'
+                                   style="margin-top: 0.5em; transform: scale(1.2);">
+                            <label class="form-check-label" for="ruta_${index}" style="color: white; font-size: 14px; line-height: 1.4; cursor: pointer; margin-left: 8px;">
+                                <div style="font-weight: bold; margin-bottom: 4px;">
+                                    <i class="fas fa-route" style="color: #4CAF50; margin-right: 6px;"></i>
+                                    ${idRuta} - ${nombreRuta.substring(0, 35)}${nombreRuta.length > 35 ? '...' : ''}
+                                </div>
+                                <div style="color: #E0E0E0; font-size: 13px;">
+                                    <i class="fas fa-map-marker-alt" style="color: #FF6B6B; margin-right: 6px;"></i>
+                                    ${direcciones[0].substring(0, 50)}${direcciones[0].length > 50 ? '...' : ''}
+                                    ${direcciones.length > 1 ? `<span style="color: #FFA726;"> (+${direcciones.length - 1} ubicación${direcciones.length > 2 ? 'es' : ''} más)</span>` : ''}
+                                </div>
+                            </label>
+                        </div>
+                    `;
+                }
+            });
+            
+            if (rutasHtml === '') {
+                rutasHtml = `
+                    <div class="text-center p-4" style="color: white; background: rgba(255,193,7,0.1); border-radius: 8px; border: 1px solid rgba(255,193,7,0.3);">
+                        <i class="fas fa-exclamation-triangle" style="color: #FFC107; font-size: 2rem; margin-bottom: 10px;"></i>
+                        <div style="font-size: 16px; font-weight: 500;">No hay rutas con direcciones válidas</div>
+                        <small style="color: #E0E0E0; margin-top: 5px; display: block;">Verifica que las rutas tengan direcciones configuradas</small>
+                    </div>
+                `;
+            }
+            
+            listaRutas.innerHTML = rutasHtml;
+            
+            // Sugerir ubicación de origen inteligente si el campo está vacío o es el valor por defecto
+            const origenInput = document.getElementById('ubicacionOrigen');
+            if (origenInput.value === 'Bogotá, Colombia' && todasDirecciones.length > 0) {
+                // Intentar detectar la ciudad más común en las direcciones
+                const ciudadMasComun = detectarCiudadComun(todasDirecciones);
+                if (ciudadMasComun) {
+                    origenInput.value = ciudadMasComun;
+                    origenInput.style.backgroundColor = '#e8f5e8';
+                    setTimeout(function() {
+                        origenInput.style.backgroundColor = '';
+                    }, 2000);
+                }
+            }
+        }
+        
+        function detectarCiudadComun(direcciones) {
+            // Palabras clave de ciudades comunes en Colombia
+            const ciudades = ['bogotá', 'medellín', 'cali', 'barranquilla', 'cartagena', 'bucaramanga', 'pereira', 'ibagué', 'santa marta', 'villavicencio', 'manizales', 'neiva', 'soledad', 'armenia', 'soacha', 'valledupar', 'montería', 'itagüí', 'pasto', 'buenaventura'];
+            const contadores = {};
+            
+            direcciones.forEach(direccion => {
+                const direccionLower = direccion.toLowerCase();
+                ciudades.forEach(ciudad => {
+                    if (direccionLower.includes(ciudad)) {
+                        contadores[ciudad] = (contadores[ciudad] || 0) + 1;
+                    }
+                });
+            });
+            
+            // Encontrar la ciudad más mencionada
+            let ciudadMasComun = null;
+            let maxCount = 0;
+            for (const ciudad in contadores) {
+                if (contadores[ciudad] > maxCount) {
+                    maxCount = contadores[ciudad];
+                    ciudadMasComun = ciudad.charAt(0).toUpperCase() + ciudad.slice(1) + ', Colombia';
+                }
+            }
+            
+            return ciudadMasComun;
+        }
+
+        function seleccionarTodasRutas() {
+            document.querySelectorAll('.ruta-checkbox').forEach(function(checkbox) {
+                checkbox.checked = true;
+            });
+        }
+
+        function limpiarSeleccionRutas() {
+            document.querySelectorAll('.ruta-checkbox').forEach(function(checkbox) {
+                checkbox.checked = false;
+            });
+        }
+
+        function obtenerRutasSeleccionadas() {
+            const rutasSeleccionadas = [];
+            document.querySelectorAll('.ruta-checkbox:checked').forEach(function(checkbox) {
+                const direcciones = JSON.parse(checkbox.dataset.direcciones);
+                rutasSeleccionadas.push(...direcciones);
+            });
+            return rutasSeleccionadas;
+        }
+
+        function verMapaRutasSeleccionadas() {
+            const direcciones = obtenerRutasSeleccionadas();
+            const origen = document.getElementById('ubicacionOrigen').value.trim();
+            
+            if (direcciones.length === 0) {
+                mostrarNotificacion('Selecciona al menos un destino para mostrar en el mapa', 'warning');
+                return;
+            }
+            
+            if (!origen) {
+                mostrarNotificacion('Ingresa una ubicación de origen', 'warning');
+                return;
+            }
+            
+            // Crear URL de Google Maps con ruta desde origen a destinos
+            let googleMapsUrl = 'https://www.google.com/maps/dir/';
+            
+            // Agregar punto de origen
+            googleMapsUrl += encodeURIComponent(origen) + '/';
+            
+            // Agregar destinos (máximo 9 para no exceder límite de Google Maps con el origen)
+            direcciones.slice(0, 9).forEach(function(direccion) {
+                googleMapsUrl += encodeURIComponent(direccion) + '/';
+            });
+            
+            // Agregar parámetros para optimizar la ruta
+            googleMapsUrl += '?travelmode=driving&optimize=true';
+            
+            window.open(googleMapsUrl, '_blank');
+            
+            const totalDestinos = direcciones.length;
+            const destinosEnMapa = Math.min(totalDestinos, 9);
+            let mensaje = `Abriendo ruta desde "${origen}" a ${destinosEnMapa} destino${destinosEnMapa > 1 ? 's' : ''}`;
+            
+            if (totalDestinos > 9) {
+                mensaje += ` (${totalDestinos - 9} destinos adicionales no mostrados por límite de Google Maps)`;
+            }
+            
+            mostrarNotificacion(mensaje, 'success');
+        }
+
+        function verMapaEmbebidoSeleccionadas() {
+            const direcciones = obtenerRutasSeleccionadas();
+            const origen = document.getElementById('ubicacionOrigen').value.trim();
+            
+            if (direcciones.length === 0) {
+                document.getElementById('mapaContainer').innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Selecciona al menos un destino para mostrar
+                    </div>
+                `;
+                return;
+            }
+
+            if (!origen) {
+                document.getElementById('mapaContainer').innerHTML = `
+                    <div class="alert alert-warning text-center">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Ingresa una ubicación de origen
+                    </div>
+                `;
+                return;
+            }
+
+            const mapaAlternativo = `
+                <div style="background: #f8f9fa; border-radius: 8px; padding: 20px; min-height: 300px;">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-route fa-3x text-success"></i>
+                        <h5 class="mt-2">Ruta de Entrega</h5>
+                        <p class="text-muted">Desde origen a ${direcciones.length} destino${direcciones.length > 1 ? 's' : ''}</p>
+                    </div>
+                    
+                    <!-- Punto de Origen -->
+                    <div class="card mb-3 border-success">
+                        <div class="card-body py-2">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="fas fa-home fa-2x text-success"></i>
+                                </div>
+                                <div>
+                                    <strong class="text-success">ORIGEN</strong><br>
+                                    <span>${origen}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Flecha de Dirección -->
+                    <div class="text-center mb-3">
+                        <i class="fas fa-arrow-down fa-2x text-primary"></i>
+                    </div>
+                    
+                    <!-- Destinos -->
+                    <h6 class="mb-3"><i class="fas fa-map-marker-alt text-danger"></i> Destinos de Entrega</h6>
+                    <div class="row">
+                        ${direcciones.slice(0, 6).map((dir, index) => `
+                            <div class="col-md-6 mb-2">
+                                <div class="card border-danger">
+                                    <div class="card-body py-2">
+                                        <small>
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-danger me-2">${index + 1}</span>
+                                                <div>
+                                                    <strong>Destino ${index + 1}:</strong><br>
+                                                    ${dir}
+                                                </div>
+                                            </div>
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    ${direcciones.length > 6 ? `
+                        <div class="text-center mt-3">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                Y ${direcciones.length - 6} destinos adicionales...
+                            </div>
+                        </div>
+                    ` : ''}
+                    
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-clock"></i> Ruta optimizada para el menor tiempo de viaje
+                        </small>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('mapaContainer').innerHTML = mapaAlternativo;
         }
 
         function reporteRapido() {
@@ -2220,18 +2746,77 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                     `
                 },
                 'mapa': {
-                    titulo: 'Vista de Mapa',
+                    titulo: 'Mapa de Rutas',
                     icono: 'fas fa-map',
                     contenido: `
-                        <div class="text-center">
-                            <i class="fas fa-map fa-4x mb-3 text-info"></i>
-                            <h5>Mapa Interactivo</h5>
-                            <p>Visualización geográfica de todas las rutas disponible próximamente.</p>
-                            <div class="mt-3">
-                                <div class="bg-secondary rounded p-3">
-                                    <small>Integración con Google Maps/OpenStreetMap en desarrollo</small>
+                        <div class="mb-3">
+                            <h6 class="text-white mb-3"><i class="fas fa-route"></i> Configurar Ruta de Entrega</h6>
+                            
+                            <!-- Ubicación de Origen -->
+                            <div class="mb-4" style="background: rgba(76,175,80,0.1); border-radius: 12px; padding: 20px; border: 1px solid rgba(76,175,80,0.3);">
+                                <label class="form-label text-white mb-2" style="font-size: 16px; font-weight: 600;">
+                                    <i class="fas fa-home" style="color: #4CAF50; margin-right: 8px;"></i> 
+                                    Ubicación de Origen
+                                </label>
+                                <input type="text" class="form-control" id="ubicacionOrigen" 
+                                       placeholder="Ej: Mi empresa, Calle 123 #45-67, Bogotá"
+                                       value="Bogotá, Colombia"
+                                       style="font-size: 14px; padding: 12px; border-radius: 8px; border: 1px solid #ddd;">
+                                <small style="color: #E0E0E0; margin-top: 8px; display: block;">
+                                    <i class="fas fa-info-circle" style="color: #4CAF50;"></i> 
+                                    Punto de partida de la ruta de entrega
+                                </small>
+                            </div>
+                            
+                            <!-- Selector de Destinos -->
+                            <div id="rutasSelector" class="mb-3" style="max-height: 250px; overflow-y: auto; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <label class="form-label text-white mb-0" style="font-size: 16px; font-weight: 600;">
+                                        <i class="fas fa-map-marker-alt" style="color: #FF6B6B; margin-right: 8px;"></i> 
+                                        Destinos de Entrega
+                                    </label>
+                                    <div>
+                                        <button type="button" class="btn btn-sm me-2" onclick="seleccionarTodasRutas()" 
+                                                style="background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%); color: white; border: none; border-radius: 20px; padding: 8px 15px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(76,175,80,0.3); transition: all 0.3s ease;">
+                                            <i class="fas fa-check-double" style="margin-right: 6px;"></i> Todas
+                                        </button>
+                                        <button type="button" class="btn btn-sm" onclick="limpiarSeleccionRutas()"
+                                                style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); color: white; border: none; border-radius: 20px; padding: 8px 15px; font-size: 13px; font-weight: 600; box-shadow: 0 2px 8px rgba(244,67,54,0.3); transition: all 0.3s ease;">
+                                            <i class="fas fa-times" style="margin-right: 6px;"></i> Ninguna
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="listaRutas" style="color: white;">
+                                    <!-- Se llena dinámicamente -->
                                 </div>
                             </div>
+                            <div class="text-center">
+                                <div class="d-grid gap-2" style="margin-top: 20px;">
+                                    <button type="button" class="btn btn-success btn-lg" onclick="verMapaRutasSeleccionadas()" 
+                                            style="border-radius: 12px; padding: 12px 20px; font-weight: 600; background: linear-gradient(135deg, #4CAF50 0%, #45A049 100%); border: none; box-shadow: 0 4px 15px rgba(76,175,80,0.3);">
+                                        <i class="fas fa-external-link-alt" style="margin-right: 10px;"></i> 
+                                        Abrir Ruta Optimizada en Google Maps
+                                    </button>
+                                    <button type="button" class="btn btn-outline-light btn-lg" onclick="verMapaEmbebidoSeleccionadas()"
+                                            style="border-radius: 12px; padding: 12px 20px; font-weight: 600; border: 2px solid #FFF; color: #FFF;">
+                                        <i class="fas fa-map" style="margin-right: 10px;"></i> 
+                                        Ver Vista Previa del Mapa
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="mapaContainer" style="min-height: 300px; background: rgba(0,0,0,0.2); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); padding: 40px;">
+                            <div class="text-center" style="color: #E0E0E0;">
+                                <div style="background: rgba(76,175,80,0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; border: 2px solid rgba(76,175,80,0.3);">
+                                    <i class="fas fa-route" style="font-size: 2.5rem; color: #4CAF50;"></i>
+                                </div>
+                                <h5 style="color: #FFF; margin-bottom: 10px; font-weight: 600;">Planificador de Rutas</h5>
+                                <p style="color: #B0B0B0; margin: 0; font-size: 14px;">
+                                    <i class="fas fa-info-circle" style="color: #4CAF50; margin-right: 6px;"></i>
+                                    Selecciona los destinos arriba para crear una ruta optimizada
+                                </p>
+                            </div>
+                        </div>
                         </div>
                     `
                 },
@@ -2371,7 +2956,6 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                             </div>
                             <div class="modal-footer border-secondary">
                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="button" class="btn btn-primary" onclick="ejecutarAccionModal('${tipo}')">Aplicar</button>
                             </div>
                         </div>
                     </div>
@@ -2382,6 +2966,228 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
         function ejecutarAccionModal(tipo) {
             mostrarNotificacion(`Acción '${tipo}' ejecutada correctamente`, 'success');
             bootstrap.Modal.getInstance(document.getElementById('modalDinamico')).hide();
+        }
+
+        // Función para completar y eliminar ruta (versión simple sin modal complejo)
+        function completarRuta(idRuta, nombreRuta) {
+            console.log('completarRuta llamada con:', idRuta, nombreRuta);
+            
+            // Usar confirmaciones nativas del navegador para evitar problemas de accesibilidad
+            const mensaje = `Completar la ruta: "${nombreRuta}"\n\n¿Qué deseas hacer?\n\n• Presiona ACEPTAR para completar y ELIMINAR la ruta\n• Presiona CANCELAR para solo completar (mantener en base de datos)`;
+            
+            const autoEliminar = confirm(mensaje);
+            
+            if (autoEliminar !== null) { // Si no presionó Escape
+                const accion = autoEliminar ? 'complete_and_delete' : 'complete';
+                const url = `/RMIE/app/controllers/RouteController.php?accion=${accion}&id=${idRuta}`;
+                
+                console.log('Ejecutando acción:', accion, 'para ruta ID:', idRuta);
+                
+                // Mostrar mensaje de procesamiento
+                const procesoMsg = autoEliminar ? 'Completando y eliminando ruta...' : 'Completando ruta...';
+                alert(procesoMsg);
+                
+                // Navegar directamente
+                window.location.href = url;
+            }
+        }
+        
+        // Función alternativa con modal mejorado (sin problemas de accesibilidad)
+        function completarRutaModal(idRuta, nombreRuta) {
+            console.log('completarRutaModal llamada con:', idRuta, nombreRuta);
+            
+            // Crear un overlay simple sin Bootstrap
+            const overlay = document.createElement('div');
+            overlay.id = 'completarRutaOverlay';
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.7);
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; margin: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);">
+                    <h3 style="color: #28a745; margin-bottom: 20px;">
+                        <i class="fas fa-check-circle"></i> Completar Ruta
+                    </h3>
+                    <p style="margin-bottom: 20px; color: #333;">
+                        <strong>Ruta:</strong> ${nombreRuta}
+                    </p>
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                        <label style="display: flex; align-items: center; cursor: pointer;">
+                            <input type="checkbox" id="autoEliminarSimple" checked style="margin-right: 10px;">
+                            <span style="color: #333;">Eliminar automáticamente después de completar</span>
+                        </label>
+                        <small style="color: #666; display: block; margin-top: 5px;">La ruta se borrará permanentemente</small>
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button onclick="cerrarOverlay()" style="background: #6c757d; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">
+                            Cancelar
+                        </button>
+                        <button onclick="ejecutarCompletarRutaSimple(${idRuta})" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 25px; cursor: pointer;">
+                            Completar Ruta
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // Funciones globales para el overlay
+            window.cerrarOverlay = function() {
+                if (document.getElementById('completarRutaOverlay')) {
+                    document.getElementById('completarRutaOverlay').remove();
+                }
+            };
+            
+            window.ejecutarCompletarRutaSimple = function(id) {
+                const autoElim = document.getElementById('autoEliminarSimple').checked;
+                const accion = autoElim ? 'complete_and_delete' : 'complete';
+                window.cerrarOverlay();
+                window.location.href = `/RMIE/app/controllers/RouteController.php?accion=${accion}&id=${id}`;
+            };
+        }
+        
+        function ejecutarCompletarRuta(idRuta) {
+            console.log('ejecutarCompletarRuta llamada con ID:', idRuta);
+            
+            const autoEliminar = document.getElementById('autoEliminar').checked;
+            console.log('Auto eliminar:', autoEliminar);
+            
+            // Mostrar indicador de carga
+            const modalContent = document.querySelector('#modalCompletarRuta .modal-content');
+            if (modalContent) {
+                modalContent.style.opacity = '0.7';
+            }
+            
+            // Realizar petición AJAX
+            const accion = autoEliminar ? 'complete_and_delete' : 'complete';
+            const url = `/RMIE/app/controllers/RouteController.php?accion=${accion}&id=${idRuta}`;
+            console.log('URL de petición:', url);
+            
+            fetch(url, {
+                method: 'GET'
+            })
+            .then(response => {
+                console.log('Respuesta recibida:', response.status);
+                return response.text();
+            })
+            .then(data => {
+                console.log('Datos recibidos:', data);
+                
+                // Cerrar modal
+                try {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('modalCompletarRuta'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                } catch (e) {
+                    console.log('Error cerrando modal:', e);
+                }
+                
+                // Mostrar notificación o alert simple
+                const mensaje = autoEliminar ? 'Ruta completada y eliminada correctamente' : 'Ruta completada correctamente';
+                
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion(mensaje, 'success');
+                } else {
+                    alert(mensaje);
+                }
+                
+                // Recargar página
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1000);
+            })
+            .catch(error => {
+                console.error('Error en la petición:', error);
+                
+                if (typeof mostrarNotificacion === 'function') {
+                    mostrarNotificacion('Error al completar la ruta', 'error');
+                } else {
+                    alert('Error al completar la ruta: ' + error.message);
+                }
+                
+                if (modalContent) {
+                    modalContent.style.opacity = '1';
+                }
+            });
+        }
+
+        // Función alternativa simple para completar ruta (sin modal)
+        function completarRutaSimple(idRuta, nombreRuta) {
+            const autoEliminar = confirm(`¿Completar la ruta "${nombreRuta}"?\n\nPresiona:\n- Aceptar: Completar y ELIMINAR la ruta\n- Cancelar: Solo completar (mantener en base de datos)`);
+            
+            const accion = autoEliminar ? 'complete_and_delete' : 'complete';
+            const url = `/RMIE/app/controllers/RouteController.php?accion=${accion}&id=${idRuta}`;
+            
+            console.log('Ejecutando acción:', accion, 'para ruta ID:', idRuta);
+            
+            // Usar window.location para navegar directamente
+            window.location.href = url;
+        }
+
+        // Función para limpiar todas las rutas completadas
+        function limpiarCompletadas() {
+            console.log('limpiarCompletadas() llamada');
+            
+            // Crear un modal de confirmación personalizado
+            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar rutas COMPLETADAS\n2 - Eliminar TODAS las rutas (completas e incompletas)\n3 - Cancelar`);
+            
+            if (opcion === '1') {
+                if (confirm('Se eliminarán solo las rutas con estado "completada".\n\n¿Continuar?')) {
+                    alert('Eliminando rutas completadas...');
+                    window.location.href = '/RMIE/app/controllers/RouteController.php?accion=clean_completed';
+                }
+            } else if (opcion === '2') {
+                if (confirm('¡ATENCIÓN! Esto eliminará TODAS las rutas de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                    alert('Eliminando todas las rutas...');
+                    window.location.href = '/RMIE/app/controllers/RouteController.php?accion=clean_all';
+                }
+            } else {
+                console.log('Operación cancelada');
+            }
+        }
+
+        // Función de prueba simple
+        function probarBoton() {
+            alert('¡El botón funciona!');
+            console.log('Función probarBoton ejecutada correctamente');
+            return false;
+        }
+
+        // Función alternativa con fetch mejorado
+        function limpiarCompletadasAjax() {
+            console.log('limpiarCompletadasAjax() llamada');
+            
+            if (confirm('¿Estás seguro de que quieres eliminar TODAS las rutas completadas?\n\nEsta acción no se puede deshacer y eliminará permanentemente todas las rutas con estado "completada".')) {
+                
+                alert('Eliminando rutas completadas...');
+                
+                fetch('/RMIE/app/controllers/RouteController.php?accion=clean_completed', {
+                    method: 'GET'
+                })
+                .then(response => {
+                    console.log('Respuesta:', response.status);
+                    return response.text();
+                })
+                .then(data => {
+                    console.log('Datos recibidos:', data);
+                    alert('Rutas completadas eliminadas correctamente');
+                    window.location.reload();
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al eliminar las rutas completadas: ' + error.message);
+                });
+            }
         }
 
         function mostrarNotificacion(mensaje, tipo = 'info') {

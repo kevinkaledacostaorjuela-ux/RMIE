@@ -7,6 +7,9 @@
     <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -477,6 +480,122 @@
                 transform: translateX(0);
             }
         }
+
+        /* Select2 Personalizados */
+        .select2-container--bootstrap-5 .select2-selection {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 15px !important;
+            padding: 10px 12px !important;
+            min-height: 55px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection:focus-within {
+            border-color: rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3) !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: rgba(255, 255, 255, 0.8) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            padding: 0 !important;
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 6px 12px !important;
+            color: white !important;
+            font-weight: 500 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin: 4px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove {
+            color: white !important;
+            margin-right: 6px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
+            opacity: 0.8 !important;
+        }
+
+        .select2-dropdown--below {
+            border-radius: 15px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            margin-top: 5px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown {
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 15px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option {
+            padding: 12px 15px !important;
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid rgba(255, 255, 255, 0.3) !important;
+            border-radius: 10px !important;
+            padding: 12px 15px !important;
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2) !important;
+        }
+
+        .select2-container--open .select2-dropdown--below {
+            border-top: none !important;
+            border-radius: 0 0 15px 15px !important;
+        }
+
+        /* Mejorar placeholders de búsqueda */
+        .select2-search__field::placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+        }
+        
+        .select2-search__field::-webkit-input-placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+        }
+        
+        .select2-search__field::-moz-placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+        }
+
+        /* Limpiar elementos duplicados */
+        .search-label,
+        .select2-search-helper,
+        .select2-dropdown .search-tooltip,
+        .select2-dropdown .search-overlay {
+            display: none !important;
+        }
     </style>
 </head>
 <body>
@@ -568,22 +687,12 @@
                             Información de Ubicación y Referencias del Sistema
                         </div>
                         
-                        <!-- Búsqueda de Local -->
-                        <div style="margin-bottom: 1rem;">
-                            <input type="text" 
-                                   id="buscar_local" 
-                                   class="form-control" 
-                                   placeholder="🔍 Buscar local por nombre..."
-                                   autocomplete="off"
-                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
-                        </div>
-
                         <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="id_locales" 
-                                    name="id_locales" 
+                                    name="id_locales[]" 
+                                    multiple
                                     required>
-                                <option value="">Seleccionar local...</option>
                                 <?php if (!empty($available_locals)): ?>
                                     <?php foreach ($available_locals as $local): ?>
                                         <option value="<?= htmlspecialchars($local['id_locales']) ?>"
@@ -602,30 +711,20 @@
                             </select>
                             <label for="id_locales">
                                 <i class="fas fa-store"></i>
-                                Local Existente <span class="required">*</span>
+                                Locales <span class="required">*</span>
                             </label>
                             <div class="form-help">
                                 <i class="fas fa-database"></i>
-                                Selecciona el local de destino registrado en el sistema
+                                Selecciona uno o más locales
                             </div>
                         </div>
                         
-                        <!-- Búsqueda de Cliente -->
-                        <div style="margin-bottom: 1rem;">
-                            <input type="text" 
-                                   id="buscar_cliente" 
-                                   class="form-control" 
-                                   placeholder="🔍 Buscar cliente por nombre..."
-                                   autocomplete="off"
-                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
-                        </div>
-                        
                         <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="id_clientes" 
-                                    name="id_clientes" 
+                                    name="id_clientes[]" 
+                                    multiple
                                     required>
-                                <option value="">Seleccionar cliente...</option>
                                 <?php if (!empty($available_clients)): ?>
                                     <?php foreach ($available_clients as $client): ?>
                                         <option value="<?= htmlspecialchars($client['id_clientes']) ?>">
@@ -637,31 +736,21 @@
                                 <?php endif; ?>
                             </select>
                             <label for="id_clientes">
-                                <i class="fas fa-users"></i>
-                                Cliente del Sistema <span class="required">*</span>
+                                <i class="fas fa-user"></i>
+                                Clientes <span class="required">*</span>
                             </label>
                             <div class="form-help">
                                 <i class="fas fa-database"></i>
-                                Cliente registrado en el sistema
+                                Selecciona uno o más clientes
                             </div>
                         </div>
 
-                        <!-- Búsqueda de Venta -->
-                        <div style="margin-bottom: 1rem;">
-                            <input type="text" 
-                                   id="buscar_venta" 
-                                   class="form-control" 
-                                   placeholder="🔍 Buscar venta..."
-                                   autocomplete="off"
-                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
-                        </div>
-
                         <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="id_ventas" 
-                                    name="id_ventas" 
+                                    name="id_ventas[]" 
+                                    multiple
                                     required>
-                                <option value="">Seleccionar venta...</option>
                                 <?php if (!empty($available_sales)): ?>
                                     <?php foreach ($available_sales as $sale): ?>
                                         <option value="<?= htmlspecialchars($sale['id_ventas']) ?>">
@@ -673,12 +762,12 @@
                                 <?php endif; ?>
                             </select>
                             <label for="id_ventas">
-                                <i class="fas fa-shopping-cart"></i>
-                                Venta Asociada <span class="required">*</span>
+                                <i class="fas fa-chart-line"></i>
+                                Ventas <span class="required">*</span>
                             </label>
                             <div class="form-help">
                                 <i class="fas fa-box"></i>
-                                Venta que se entregará en esta ruta
+                                Selecciona uno o más ventas para esta ruta
                             </div>
                         </div>
 
@@ -755,150 +844,188 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery (requerido por Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
+            // Inicializar Select2 en el campo de locales
+            $('#id_locales').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busca el local aquí...',
+                language: 'es',
+                allowClear: true,
+                width: '100%',
+                templateResult: formatOption,
+                templateSelection: formatSelection,
+                matcher: matchCustom
+            });
+
+            // Inicializar Select2 en el campo de clientes
+            $('#id_clientes').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busca el cliente aquí...',
+                language: 'es',
+                allowClear: true,
+                width: '100%',
+                templateResult: formatOption,
+                templateSelection: formatSelection,
+                matcher: matchCustom
+            });
+
+            // Inicializar Select2 en el campo de ventas
+            $('#id_ventas').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busca la venta aquí...',
+                language: 'es',
+                allowClear: true,
+                width: '100%',
+                templateResult: formatOption,
+                templateSelection: formatSelection,
+                matcher: matchCustom
+            });
+
+            // Configurar el placeholder del campo de búsqueda dentro del dropdown
+            $(document).on('select2:open', function(e) {
+                var $element = $(e.target);
+                var elementId = $element.attr('id');
+                
+                setTimeout(function() {
+                    var $dropdown = $element.data('select2').$dropdown;
+                    var $field = $dropdown.find('.select2-search__field');
+                    
+                    if ($field.length > 0) {
+                        var placeholder = '';
+                        
+                        if (elementId === 'id_locales') {
+                            placeholder = 'Búsqueda de local aquí';
+                        } else if (elementId === 'id_clientes') {
+                            placeholder = 'Búsqueda de cliente aquí';
+                        } else if (elementId === 'id_ventas') {
+                            placeholder = 'Búsqueda de venta aquí';
+                        }
+                        
+                        $field.attr('placeholder', placeholder);
+                        $field.focus();
+                    }
+                }, 50);
+            });
+
+            // Función para formatear opciones en el dropdown
+            function formatOption(data) {
+                if (!data.id) {
+                    return data.text;
+                }
+
+                const $option = $('<span>' + data.text + '</span>');
+                return $option;
+            }
+
+            // Función para formatear la selección
+            function formatSelection(data) {
+                if (!data.id) {
+                    return data.text;
+                }
+                return data.text;
+            }
+
+            // Función personalizada de búsqueda
+            function matchCustom(params, data) {
+                // Si no hay búsqueda, mostrar todo
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // Búsqueda en el texto
+                if (data.text.toLowerCase().indexOf(params.term.toLowerCase()) > -1) {
+                    return data;
+                }
+
+                return null;
+            }
+
             const form = document.getElementById('createRouteForm');
             const idLocalesField = document.getElementById('id_locales');
             const idClienteField = document.getElementById('id_clientes');
             const idVentaField = document.getElementById('id_ventas');
-            
-            // Campos de búsqueda
-            const buscarLocal = document.getElementById('buscar_local');
-            const buscarCliente = document.getElementById('buscar_cliente');
-            const buscarVenta = document.getElementById('buscar_venta');
-
-            // Función mejorada para filtrar opciones de un select
-            function filtrarSelect(buscarInput, selectElement) {
-                if (!buscarInput || !selectElement) return;
-                
-                buscarInput.addEventListener('input', function() {
-                    const textoBusqueda = this.value.toLowerCase().trim();
-                    const opciones = selectElement.options;
-                    let opcionesVisibles = 0;
-                    
-                    for (let i = 0; i < opciones.length; i++) {
-                        const opcion = opciones[i];
-                        const textoOpcion = opcion.text.toLowerCase();
-                        
-                        // No ocultar la primera opción (placeholder)
-                        if (i === 0) {
-                            opcion.style.display = '';
-                            continue;
-                        }
-                        
-                        // Filtrar por texto de búsqueda
-                        if (textoBusqueda === '' || textoOpcion.includes(textoBusqueda)) {
-                            opcion.style.display = '';
-                            opcionesVisibles++;
-                        } else {
-                            opcion.style.display = 'none';
-                        }
-                    }
-                    
-                    // Si no hay opciones visibles, mostrar mensaje
-                    if (opcionesVisibles === 0 && textoBusqueda !== '') {
-                        // Cambiar el placeholder temporalmente
-                        const placeholder = opciones[0];
-                        const textoOriginal = placeholder.text;
-                        placeholder.text = 'No se encontraron resultados';
-                        placeholder.style.color = '#999';
-                        
-                        setTimeout(() => {
-                            placeholder.text = textoOriginal;
-                            placeholder.style.color = '';
-                        }, 2000);
-                    }
-                });
-                
-                // Limpiar búsqueda cuando se selecciona una opción
-                selectElement.addEventListener('change', function() {
-                    if (this.value) {
-                        buscarInput.value = '';
-                        // Mostrar todas las opciones nuevamente
-                        for (let i = 1; i < this.options.length; i++) {
-                            this.options[i].style.display = '';
-                        }
-                    }
-                });
-            }
-            
-            // Aplicar filtros a los selects
-            filtrarSelect(buscarLocal, idLocalesField);
-            filtrarSelect(buscarCliente, idClienteField);
-            filtrarSelect(buscarVenta, idVentaField);
 
             // Vista previa en tiempo real
             function updatePreview() {
-                // Actualizar avatar con primera letra del local
                 const avatar = document.getElementById('previewAvatar');
-                const localSelect = idLocalesField;
-                const localNombre = localSelect ? localSelect.options[localSelect.selectedIndex]?.text : '';
+                const selectedLocales = $(idLocalesField).val() || [];
                 
-                if (localNombre && localNombre !== 'Seleccionar local...') {
-                    const firstChar = localNombre.charAt(0).toUpperCase();
+                if (selectedLocales.length > 0) {
+                    const firstLocalOption = $(idLocalesField).find('option[value="' + selectedLocales[0] + '"]');
+                    const firstLocalText = firstLocalOption.text();
+                    const firstChar = firstLocalText.charAt(0).toUpperCase();
                     avatar.innerHTML = firstChar;
                 } else {
                     avatar.innerHTML = '<i class="fas fa-route"></i>';
                 }
                 
-                // Actualizar dirección desde el local seleccionado
-                const selectedOption = localSelect.options[localSelect.selectedIndex];
-                const localDireccion = selectedOption?.getAttribute('data-direccion') || '';
-                const localidad = selectedOption?.getAttribute('data-localidad') || '';
-                const barrio = selectedOption?.getAttribute('data-barrio') || '';
+                // Actualizar dirección desde el primer local seleccionado
+                if (selectedLocales.length > 0) {
+                    const selectedOption = $(idLocalesField).find('option[value="' + selectedLocales[0] + '"]');
+                    const localDireccion = selectedOption.attr('data-direccion') || '';
+                    const localidad = selectedOption.attr('data-localidad') || '';
+                    const barrio = selectedOption.attr('data-barrio') || '';
+                    
+                    let direccionCompleta = localDireccion;
+                    if (barrio) direccionCompleta += ', ' + barrio;
+                    if (localidad) direccionCompleta += ', ' + localidad;
+                    
+                    document.getElementById('preview-direccion').textContent = 
+                        direccionCompleta || 'No especificada';
+                    
+                    const selectedLocalText = selectedOption.text();
+                    document.getElementById('preview-local').textContent = selectedLocalText;
+                } else {
+                    document.getElementById('preview-direccion').textContent = 'No especificada';
+                    document.getElementById('preview-local').textContent = 'No seleccionado';
+                }
                 
-                let direccionCompleta = localDireccion;
-                if (barrio) direccionCompleta += ', ' + barrio;
-                if (localidad) direccionCompleta += ', ' + localidad;
+                // Para clientes del sistema
+                const selectedClientes = $(idClienteField).val() || [];
+                const clientesTexto = selectedClientes.length > 0 
+                    ? $(idClienteField).find('option:selected').map(function() { return $(this).text(); }).get().join(', ')
+                    : 'No seleccionado';
+                document.getElementById('preview-id-cliente').textContent = clientesTexto;
                 
-                document.getElementById('preview-direccion').textContent = 
-                    direccionCompleta || 'No especificada';
-                
-                // Para local
-                const selectedLocalText = localSelect.options[localSelect.selectedIndex]?.text || 'No seleccionado';
-                document.getElementById('preview-local').textContent = 
-                    selectedLocalText !== 'Seleccionar local...' ? selectedLocalText : 'No seleccionado';
-                
-                // Para cliente del sistema
-                const clienteSelect = document.getElementById('id_clientes');
-                const selectedClienteText = clienteSelect.options[clienteSelect.selectedIndex]?.text || 'No seleccionado';
-                document.getElementById('preview-id-cliente').textContent = 
-                    selectedClienteText !== 'Seleccionar cliente...' ? selectedClienteText : 'No seleccionado';
-                
-                // Para venta
-                const ventaSelect = document.getElementById('id_ventas');
-                const selectedVentaText = ventaSelect.options[ventaSelect.selectedIndex]?.text || 'No seleccionada';
-                document.getElementById('preview-id-venta').textContent = 
-                    selectedVentaText !== 'Seleccionar venta...' ? selectedVentaText : 'No seleccionada';
+                // Para ventas
+                const selectedVentas = $(idVentaField).val() || [];
+                const ventasTexto = selectedVentas.length > 0 
+                    ? $(idVentaField).find('option:selected').map(function() { return $(this).text(); }).get().join(', ')
+                    : 'No seleccionada';
+                document.getElementById('preview-id-venta').textContent = ventasTexto;
             }
 
-            // Agregar listeners para vista previa
-            [idLocalesField, idClienteField, idVentaField].forEach(field => {
-                if (field) {
-                    field.addEventListener('input', updatePreview);
-                    field.addEventListener('change', updatePreview);
-                }
-            });
+            // Actualizar vista previa cuando cambia Select2
+            $(idLocalesField).on('change', updatePreview);
+            $(idClienteField).on('change', updatePreview);
+            $(idVentaField).on('change', updatePreview);
 
             // Validación del formulario
             form.addEventListener('submit', function(e) {
                 let isValid = true;
                 const errors = [];
 
-                // Validar local
-                if (!idLocalesField.value || idLocalesField.value === '') {
-                    errors.push('Debe seleccionar un local');
+                const selectedLocales = $(idLocalesField).val() || [];
+                const selectedClientes = $(idClienteField).val() || [];
+                const selectedVentas = $(idVentaField).val() || [];
+
+                if (selectedLocales.length === 0) {
+                    errors.push('Debe seleccionar al menos un local');
                     isValid = false;
                 }
 
-                // Validar selecciones
-                if (!idClienteField.value || idClienteField.value === '') {
-                    errors.push('Debe seleccionar un cliente del sistema');
+                if (selectedClientes.length === 0) {
+                    errors.push('Debe seleccionar al menos un cliente');
                     isValid = false;
                 }
 
-                if (!idVentaField.value || idVentaField.value === '') {
-                    errors.push('Debe seleccionar una venta');
+                if (selectedVentas.length === 0) {
+                    errors.push('Debe seleccionar al menos una venta');
                     isValid = false;
                 }
 
@@ -908,62 +1035,22 @@
                     return false;
                 }
 
-                // Confirmación antes de enviar
-                const localSelect = idLocalesField;
-                const localNombre = localSelect.options[localSelect.selectedIndex]?.text || '';
-                const clienteSelect = idClienteField;
-                const clienteNombre = clienteSelect.options[clienteSelect.selectedIndex]?.text || '';
-                
-                const confirmMessage = `¿Confirmas la creación de esta ruta?\n\n` +
-                    `Local: ${localNombre}\n` +
-                    `Cliente: ${clienteNombre}`;
-
-                if (!confirm(confirmMessage)) {
-                    e.preventDefault();
-                    return false;
-                }
-
-                // Mostrar estado de carga
                 const submitBtn = document.getElementById('submitBtn');
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> CREANDO...';
                 submitBtn.disabled = true;
             });
 
-            // Botón limpiar
             const resetBtn = document.getElementById('resetBtn');
             if (resetBtn) {
-                resetBtn.addEventListener('click', function() {
+                resetBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     form.reset();
+                    $(idLocalesField).val(null).trigger('change');
+                    $(idClienteField).val(null).trigger('change');
+                    $(idVentaField).val(null).trigger('change');
                     setTimeout(updatePreview, 10);
                 });
             }
-
-            // Efectos visuales
-            document.querySelectorAll('.form-control-modern, .form-select-modern, .form-textarea-modern').forEach(input => {
-                input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.02)';
-                });
-                
-                input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
-                });
-            });
-
-            // Manejo de labels para selects
-            document.querySelectorAll('.form-select-modern').forEach(select => {
-                select.addEventListener('change', function() {
-                    const label = this.parentElement.querySelector('label');
-                    if (this.value) {
-                        label.style.top = '2px';
-                        label.style.fontSize = '12px';
-                        label.style.color = '#667eea';
-                    } else {
-                        label.style.top = '12px';
-                        label.style.fontSize = '14px';
-                        label.style.color = 'rgba(102, 126, 234, 0.8)';
-                    }
-                });
-            });
 
             // Inicializar vista previa
             updatePreview();

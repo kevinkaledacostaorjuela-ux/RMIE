@@ -24,6 +24,9 @@ if (!isset($proveedores)) $proveedores = [];
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome 6.0.0 -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet">
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -437,6 +440,84 @@ if (!isset($proveedores)) $proveedores = [];
                 transform: translateY(0);
             }
         }
+
+        /* Select2 Custom Styles */
+        .select2-container--bootstrap-5 .select2-selection {
+            background: white !important;
+            border: 2px solid #667eea !important;
+            border-radius: 10px !important;
+            padding: 8px 12px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--focus .select2-selection {
+            border-color: #764ba2 !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection--single {
+            height: auto !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-dropdown {
+            border: 2px solid #667eea !important;
+            border-radius: 10px !important;
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.25) !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            background: white !important;
+            border: 2px solid #667eea !important;
+            border-radius: 10px !important;
+            padding: 14px 16px !important;
+            color: #2d3748 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            margin: 10px 0 !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25) !important;
+            transition: all 0.3s ease !important;
+            line-height: 1.6 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field::placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            font-size: 15px !important;
+            letter-spacing: 0.3px !important;
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #764ba2 !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25), 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            outline: none !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted[aria-selected] {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option[aria-selected=true] {
+            background: #667eea !important;
+            color: white !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__group {
+            color: #667eea !important;
+            font-weight: 600 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__clear {
+            color: #667eea !important;
+        }
     </style>
 </head>
 <body>
@@ -499,7 +580,7 @@ if (!isset($proveedores)) $proveedores = [];
                                 <label for="id_productos">
                                     <i class="fas fa-cubes"></i> Producto
                                 </label>
-                                <select class="form-select" id="id_productos" name="id_productos" required>
+                                <select class="form-select select2-search" id="id_productos" name="id_productos" required>
                                     <option value="">Seleccione un producto</option>
                                     <?php if (isset($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $prod): ?>
@@ -553,7 +634,7 @@ if (!isset($proveedores)) $proveedores = [];
                                 <label for="id_proveedores">
                                     <i class="fas fa-truck"></i> Proveedor
                                 </label>
-                                <select class="form-select" id="id_proveedores" name="id_proveedores" required>
+                                <select class="form-select select2-search" id="id_proveedores" name="id_proveedores" required>
                                     <option value="">Seleccione un proveedor</option>
                                     <?php if (isset($proveedores) && !empty($proveedores) && is_array($proveedores)): ?>
                                         <?php foreach ($proveedores as $prov): ?>
@@ -849,6 +930,57 @@ if (!isset($proveedores)) $proveedores = [];
             });
         }, 5000);
     });
+    </script>
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2 en los campos de producto y proveedor
+            $('#id_productos').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busque el producto aquí...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    searching: function() {
+                        return 'Buscando...';
+                    },
+                    noResults: function() {
+                        return 'No se encontraron resultados';
+                    }
+                }
+            });
+
+            $('#id_proveedores').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busque el proveedor aquí...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    searching: function() {
+                        return 'Buscando...';
+                    },
+                    noResults: function() {
+                        return 'No se encontraron resultados';
+                    }
+                }
+            });
+
+            // Configurar el placeholder del campo de búsqueda dentro del dropdown
+            $(document).on('select2:open', function(e) {
+                setTimeout(function() {
+                    var $field = $('.select2-search__field');
+                    if ($('#id_productos').hasClass('select2-hidden-accessible') && $('#id_productos').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Busque el producto aquí...').focus();
+                    } else if ($('#id_proveedores').hasClass('select2-hidden-accessible') && $('#id_proveedores').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Busque el proveedor aquí...').focus();
+                    }
+                }, 100);
+            });
+        });
     </script>
 </body>
 </html>

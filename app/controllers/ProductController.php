@@ -259,6 +259,191 @@ class ProductController {
         header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
         exit();
     }
+
+    public function cleanNoStock() {
+        global $conn;
+        
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+            exit;
+        }
+
+        try {
+            // Contar productos con stock = 0 que NO tienen ventas asociadas
+            $countSql = "SELECT COUNT(*) as total FROM productos p 
+                        LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                        WHERE p.stock = 0 AND v.id_productos IS NULL";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalSinStock = $countResult['total'];
+            
+            // Contar productos con stock = 0 que SÍ tienen ventas (no se pueden eliminar)
+            $countConVentasSql = "SELECT COUNT(*) as total FROM productos p 
+                                 INNER JOIN ventas v ON p.id_productos = v.id_productos 
+                                 WHERE p.stock = 0";
+            $countConVentasStmt = $conn->prepare($countConVentasSql);
+            $countConVentasStmt->execute();
+            $countConVentasResult = $countConVentasStmt->get_result()->fetch_assoc();
+            $totalConVentas = $countConVentasResult['total'];
+            
+            if ($totalSinStock == 0 && $totalConVentas == 0) {
+                $_SESSION['error'] = 'No se encontraron productos con stock cero para eliminar';
+            } else if ($totalSinStock == 0 && $totalConVentas > 0) {
+                $_SESSION['error'] = "Los {$totalConVentas} productos con stock cero no se pueden eliminar porque tienen ventas asociadas";
+            } else {
+                // Eliminar solo productos con stock = 0 que NO tienen ventas
+                $sql = "DELETE p FROM productos p 
+                       LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                       WHERE p.stock = 0 AND v.id_productos IS NULL";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $mensaje = "Se eliminaron {$deletedRows} productos con stock cero correctamente";
+                    if ($totalConVentas > 0) {
+                        $mensaje .= ". {$totalConVentas} productos con stock cero no se pudieron eliminar porque tienen ventas asociadas";
+                    }
+                    $_SESSION['success'] = $mensaje;
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar los productos con stock cero';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar productos sin stock: " . $e->getMessage());
+            $_SESSION['error'] = 'Error: Algunos productos no se pueden eliminar porque tienen ventas asociadas';
+        }
+        
+        header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+        exit;
+    }
+
+    public function cleanInactive() {
+        global $conn;
+        
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+            exit;
+        }
+
+        try {
+            // Contar productos inactivos que NO tienen ventas asociadas
+            $countSql = "SELECT COUNT(*) as total FROM productos p 
+                        LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                        WHERE p.estado = 'inactivo' AND v.id_productos IS NULL";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalInactivos = $countResult['total'];
+            
+            // Contar productos inactivos que SÍ tienen ventas
+            $countConVentasSql = "SELECT COUNT(*) as total FROM productos p 
+                                 INNER JOIN ventas v ON p.id_productos = v.id_productos 
+                                 WHERE p.estado = 'inactivo'";
+            $countConVentasStmt = $conn->prepare($countConVentasSql);
+            $countConVentasStmt->execute();
+            $countConVentasResult = $countConVentasStmt->get_result()->fetch_assoc();
+            $totalConVentas = $countConVentasResult['total'];
+            
+            if ($totalInactivos == 0 && $totalConVentas == 0) {
+                $_SESSION['error'] = 'No se encontraron productos inactivos para eliminar';
+            } else if ($totalInactivos == 0 && $totalConVentas > 0) {
+                $_SESSION['error'] = "Los {$totalConVentas} productos inactivos no se pueden eliminar porque tienen ventas asociadas";
+            } else {
+                // Eliminar solo productos inactivos que NO tienen ventas
+                $sql = "DELETE p FROM productos p 
+                       LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                       WHERE p.estado = 'inactivo' AND v.id_productos IS NULL";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $mensaje = "Se eliminaron {$deletedRows} productos inactivos correctamente";
+                    if ($totalConVentas > 0) {
+                        $mensaje .= ". {$totalConVentas} productos inactivos no se pudieron eliminar porque tienen ventas asociadas";
+                    }
+                    $_SESSION['success'] = $mensaje;
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar los productos inactivos';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar productos inactivos: " . $e->getMessage());
+            $_SESSION['error'] = 'Error: Algunos productos no se pueden eliminar porque tienen ventas asociadas';
+        }
+        
+        header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+        exit;
+    }
+
+    public function cleanAll() {
+        global $conn;
+        
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+            exit;
+        }
+
+        try {
+            // Contar productos que NO tienen ventas asociadas
+            $countSql = "SELECT COUNT(*) as total FROM productos p 
+                        LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                        WHERE v.id_productos IS NULL";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalSinVentas = $countResult['total'];
+            
+            // Contar productos que SÍ tienen ventas
+            $countConVentasSql = "SELECT COUNT(*) as total FROM productos p 
+                                 INNER JOIN ventas v ON p.id_productos = v.id_productos";
+            $countConVentasStmt = $conn->prepare($countConVentasSql);
+            $countConVentasStmt->execute();
+            $countConVentasResult = $countConVentasStmt->get_result()->fetch_assoc();
+            $totalConVentas = $countConVentasResult['total'];
+            
+            if ($totalSinVentas == 0 && $totalConVentas == 0) {
+                $_SESSION['error'] = 'No hay productos para eliminar';
+            } else if ($totalSinVentas == 0 && $totalConVentas > 0) {
+                $_SESSION['error'] = "No se pueden eliminar los {$totalConVentas} productos porque todos tienen ventas asociadas. Para eliminarlos, primero elimina las ventas correspondientes";
+            } else {
+                // Eliminar solo productos que NO tienen ventas
+                $sql = "DELETE p FROM productos p 
+                       LEFT JOIN ventas v ON p.id_productos = v.id_productos 
+                       WHERE v.id_productos IS NULL";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $mensaje = "Se eliminaron {$deletedRows} productos correctamente";
+                    if ($totalConVentas > 0) {
+                        $mensaje .= ". {$totalConVentas} productos no se pudieron eliminar porque tienen ventas asociadas";
+                    }
+                    $_SESSION['success'] = $mensaje;
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar los productos';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar todos los productos: " . $e->getMessage());
+            $_SESSION['error'] = 'Error: No se pueden eliminar productos que tienen ventas asociadas. Elimina primero las ventas correspondientes';
+        }
+        
+        header('Location: /RMIE/app/controllers/ProductController.php?accion=index');
+        exit;
+    }
 }
 
 // Manejo de acciones por parámetro GET
@@ -277,6 +462,15 @@ if (isset($_GET['accion'])) {
             if (isset($_GET['id'])) {
                 $controller->delete($_GET['id']);
             }
+            break;
+        case 'clean_no_stock':
+            $controller->cleanNoStock();
+            break;
+        case 'clean_inactive':
+            $controller->cleanInactive();
+            break;
+        case 'clean_all':
+            $controller->cleanAll();
             break;
         default:
             $controller->index();

@@ -622,6 +622,11 @@ if (isset($conn)) {
             <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                 <i class="fas fa-plus"></i> Nueva Categoría
             </a>
+            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+            <button class="btn btn-modern me-2" onclick="limpiarCategorias()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
+                <i class="fas fa-broom"></i> Limpiar Vacías
+            </button>
+            <?php endif; ?>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
@@ -1055,6 +1060,23 @@ if (isset($conn)) {
                 // console.log('✅ Todos los enlaces apuntan correctamente a CategoryController');
             }
         });
+
+        // Función para limpiar categorías vacías
+        function limpiarCategorias() {
+            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en CATEGORÍAS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar categorías SIN PRODUCTOS\n2 - Eliminar TODAS las categorías\n3 - Cancelar`);
+            
+            if (opcion === '1') {
+                if (confirm('Se eliminarán solo las categorías que no tengan productos asociados.\n\n¿Continuar?')) {
+                    alert('Eliminando categorías vacías...');
+                    window.location.href = '/RMIE/app/controllers/CategoryController.php?accion=clean_empty';
+                }
+            } else if (opcion === '2') {
+                if (confirm('¡ATENCIÓN! Esto eliminará TODAS las categorías de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                    alert('Eliminando todas las categorías...');
+                    window.location.href = '/RMIE/app/controllers/CategoryController.php?accion=clean_all';
+                }
+            }
+        }
     </script>
 </body>
 </html>

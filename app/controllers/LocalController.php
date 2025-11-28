@@ -129,9 +129,9 @@ class LocalController {
                         $result_check = $stmt_check->get_result();
                         
                         if ($result_check->num_rows > 0) {
-                            $sql_insert = "INSERT INTO locales_clientes (id_locales, id_clientes) VALUES (?, ?)";
+                            $sql_insert = "INSERT INTO clientes_locales (id_clientes, id_locales) VALUES (?, ?)";
                             $stmt = $conn->prepare($sql_insert);
-                            $stmt->bind_param("ii", $ultimo_id, $id_cliente);
+                            $stmt->bind_param("ii", $id_cliente, $ultimo_id);
                             $stmt->execute();
                         }
                     }
@@ -193,7 +193,7 @@ class LocalController {
             
             // Obtener clientes actualmente asignados a este local
             $clientes_asignados = [];
-            $sql_clientes = "SELECT id_clientes FROM locales_clientes WHERE id_locales = ?";
+            $sql_clientes = "SELECT id_clientes FROM clientes_locales WHERE id_locales = ?";
             $stmt = $conn->prepare($sql_clientes);
             $stmt->bind_param("i", $id);
             $stmt->execute();
@@ -269,7 +269,7 @@ class LocalController {
             // Actualizar local
             if (Local::update($conn, $id, $data)) {
                 // Primero, desasignar todos los clientes de este local
-                $sql_unassign = "DELETE FROM locales_clientes WHERE id_locales = ?";
+                $sql_unassign = "DELETE FROM clientes_locales WHERE id_locales = ?";
                 $stmt = $conn->prepare($sql_unassign);
                 $stmt->bind_param("i", $id);
                 $stmt->execute();
@@ -287,9 +287,9 @@ class LocalController {
                             $result_check = $stmt_check->get_result();
                             
                             if ($result_check->num_rows > 0) {
-                                $sql_insert = "INSERT INTO locales_clientes (id_locales, id_clientes) VALUES (?, ?)";
+                                $sql_insert = "INSERT INTO clientes_locales (id_clientes, id_locales) VALUES (?, ?)";
                                 $stmt = $conn->prepare($sql_insert);
-                                $stmt->bind_param("ii", $id, $id_cliente);
+                                $stmt->bind_param("ii", $id_cliente, $id);
                                 $stmt->execute();
                             }
                         }

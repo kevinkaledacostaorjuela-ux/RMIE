@@ -12,6 +12,9 @@ if (session_status() == PHP_SESSION_NONE) {
     <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <style>
         * {
             margin: 0;
@@ -434,6 +437,137 @@ if (session_status() == PHP_SESSION_NONE) {
                 transform: translateX(0);
             }
         }
+
+        /* Select2 Personalizados */
+        .select2-container--bootstrap-5 .select2-selection {
+            background: white !important;
+            border: 2px solid #ddd !important;
+            border-radius: 15px !important;
+            padding: 10px 12px !important;
+            min-height: 52px !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection:hover {
+            border-color: #667eea !important;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15) !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection:focus-within {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 5px 20px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15), 0 5px 20px rgba(102, 126, 234, 0.3) !important;
+            border-radius: 15px 15px 0 0 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            padding: 0 !important;
+            color: #2d3748 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            border-radius: 8px !important;
+            padding: 6px 12px !important;
+            color: white !important;
+            font-weight: 500 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            margin: 4px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove {
+            color: white !important;
+            margin-right: 6px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
+            opacity: 0.8 !important;
+        }
+
+        .select2-dropdown--below {
+            border-radius: 15px !important;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25) !important;
+            border: none !important;
+            margin-top: 8px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown {
+            background: white !important;
+            border-radius: 15px !important;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.25) !important;
+            border: none !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option {
+            padding: 14px 16px !important;
+            color: #2d3748 !important;
+            font-weight: 500 !important;
+            font-size: 15px !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option:last-child {
+            border-bottom: none !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+        }
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            background: white !important;
+            border: 2px solid #667eea !important;
+            border-radius: 10px !important;
+            padding: 14px 16px !important;
+            color: #2d3748 !important;
+            font-weight: 600 !important;
+            font-size: 15px !important;
+            width: 100% !important;
+            margin: 10px 0 !important;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.25) !important;
+            transition: all 0.3s ease !important;
+            line-height: 1.6 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field::placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            font-size: 15px !important;
+            letter-spacing: 0.3px !important;
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            border-color: #764ba2 !important;
+            background: white !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25), 0 4px 15px rgba(102, 126, 234, 0.4) !important;
+            outline: none !important;
+        }
+
+        .select2-search--dropdown {
+            padding: 8px 0 !important;
+            background: white !important;
+        }
+
+        .select2-container--open .select2-dropdown--below {
+            border-top: none !important;
+            border-radius: 0 0 15px 15px !important;
+        }
     </style>
 </head>
 <body>
@@ -494,22 +628,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
-                            <div class="search-input-wrapper">
-                                <input type="text" 
-                                       class="search-input-modern" 
-                                       id="search_producto_stock" 
-                                       placeholder=" "
-                                       autocomplete="off">
-                                <div class="search-options-list" id="options_producto_stock"></div>
-                            </div>
-                            <label for="search_producto_stock">
-                                <i class="fas fa-box"></i>
-                                Buscar Producto
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="producto_stock" 
                                     name="id_productos" 
                                     required>
@@ -558,22 +677,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         </div>
 
                         <div class="form-floating-modern">
-                            <div class="search-input-wrapper">
-                                <input type="text" 
-                                       class="search-input-modern" 
-                                       id="search_cliente_stock" 
-                                       placeholder=" "
-                                       autocomplete="off">
-                                <div class="search-options-list" id="options_cliente_stock"></div>
-                            </div>
-                            <label for="search_cliente_stock">
-                                <i class="fas fa-truck"></i>
-                                Buscar Proveedor
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="cliente_stock" 
                                     name="id_proveedores" 
                                     required>
@@ -608,22 +712,7 @@ if (session_status() == PHP_SESSION_NONE) {
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
-                            <div class="search-input-wrapper">
-                                <input type="text" 
-                                       class="search-input-modern" 
-                                       id="search_producto_expiration" 
-                                       placeholder=" "
-                                       autocomplete="off">
-                                <div class="search-options-list" id="options_producto_expiration"></div>
-                            </div>
-                            <label for="search_producto_expiration">
-                                <i class="fas fa-box"></i>
-                                Buscar Producto
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="producto_expiration" 
                                     name="id_productos" 
                                     required>
@@ -673,22 +762,7 @@ if (session_status() == PHP_SESSION_NONE) {
                         </div>
 
                         <div class="form-floating-modern">
-                            <div class="search-input-wrapper">
-                                <input type="text" 
-                                       class="search-input-modern" 
-                                       id="search_cliente_expiration" 
-                                       placeholder=" "
-                                       autocomplete="off">
-                                <div class="search-options-list" id="options_cliente_expiration"></div>
-                            </div>
-                            <label for="search_cliente_expiration">
-                                <i class="fas fa-truck"></i>
-                                Buscar Proveedor
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
+                            <select class="form-select-modern select2-search" 
                                     id="cliente_expiration" 
                                     name="id_proveedores" 
                                     required>
@@ -991,6 +1065,61 @@ if (session_status() == PHP_SESSION_NONE) {
                 if (e.key === 'Escape') {
                     optionsDiv.classList.remove('active');
                 }
+            });
+        });
+    </script>
+
+    <!-- jQuery (requerido por Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Inicializar Select2 en los campos de selección
+            $('#producto_stock, #producto_expiration').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Escriba el producto que quiere...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    searching: function() {
+                        return 'Buscando...';
+                    },
+                    noResults: function() {
+                        return 'No se encontraron resultados';
+                    }
+                }
+            });
+
+            $('#cliente_stock, #cliente_expiration').select2({
+                theme: 'bootstrap-5',
+                placeholder: 'Busque el proveedor aquí...',
+                allowClear: true,
+                width: '100%',
+                language: {
+                    searching: function() {
+                        return 'Buscando...';
+                    },
+                    noResults: function() {
+                        return 'No se encontraron resultados';
+                    }
+                }
+            });
+
+            // Configurar el placeholder del campo de búsqueda dentro del dropdown
+            $(document).on('select2:open', function(e) {
+                setTimeout(function() {
+                    var $field = $('.select2-search__field');
+                    if ($('#producto_stock').hasClass('select2-hidden-accessible') && $('#producto_stock').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Escriba el producto que quiere...').focus();
+                    } else if ($('#cliente_stock').hasClass('select2-hidden-accessible') && $('#cliente_stock').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Busque el proveedor aquí...').focus();
+                    } else if ($('#producto_expiration').hasClass('select2-hidden-accessible') && $('#producto_expiration').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Escriba el producto que quiere...').focus();
+                    } else if ($('#cliente_expiration').hasClass('select2-hidden-accessible') && $('#cliente_expiration').next().hasClass('select2-container--open')) {
+                        $field.attr('placeholder', 'Busque el proveedor aquí...').focus();
+                    }
+                }, 100);
             });
         });
     </script>

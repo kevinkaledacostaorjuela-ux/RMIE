@@ -1110,6 +1110,11 @@ if (isset($ventas) && is_array($ventas)) {
             <a href="/RMIE/app/controllers/SaleController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                 <i class="fas fa-plus"></i> Nueva Venta
             </a>
+            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+            <button class="btn btn-modern me-2" onclick="limpiarVentas()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
+                <i class="fas fa-broom"></i> Limpiar Procesadas
+            </button>
+            <?php endif; ?>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
@@ -1528,6 +1533,28 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
             const savedView = localStorage.getItem('ventasView') || 'cards';
             toggleSalesView(savedView);
         });
+
+        // Función para limpiar ventas procesadas
+        function limpiarVentas() {
+            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en VENTAS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar ventas PROCESADAS/ENTREGADAS\n2 - Eliminar ventas CANCELADAS\n3 - Eliminar TODAS las ventas\n4 - Cancelar`);
+            
+            if (opcion === '1') {
+                if (confirm('Se eliminarán solo las ventas con estado "procesada" o "entregada".\n\n¿Continuar?')) {
+                    alert('Eliminando ventas procesadas...');
+                    window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_processed';
+                }
+            } else if (opcion === '2') {
+                if (confirm('Se eliminarán las ventas con estado "cancelada".\n\n¿Continuar?')) {
+                    alert('Eliminando ventas canceladas...');
+                    window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_cancelled';
+                }
+            } else if (opcion === '3') {
+                if (confirm('¡ATENCIÓN! Esto eliminará TODAS las ventas de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                    alert('Eliminando todas las ventas...');
+                    window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_all';
+                }
+            }
+        }
     </script>
 </body>
 </html>

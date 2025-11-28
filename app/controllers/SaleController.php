@@ -382,6 +382,132 @@ class SaleController {
         }
         exit();
     }
+
+    public function cleanProcessed() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: ' . $this->baseUrl . '?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Contar ventas procesadas/entregadas
+            $countSql = "SELECT COUNT(*) as total FROM ventas WHERE estado IN ('procesada', 'entregada', 'completada')";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalProcesadas = $countResult['total'];
+            
+            if ($totalProcesadas == 0) {
+                $_SESSION['error'] = 'No se encontraron ventas procesadas para eliminar';
+            } else {
+                // Eliminar ventas procesadas/entregadas
+                $sql = "DELETE FROM ventas WHERE estado IN ('procesada', 'entregada', 'completada')";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron {$deletedRows} ventas procesadas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar las ventas procesadas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar ventas procesadas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar las ventas procesadas: ' . $e->getMessage();
+        }
+        
+        header('Location: ' . $this->baseUrl . '?accion=index');
+        exit;
+    }
+
+    public function cleanCancelled() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: ' . $this->baseUrl . '?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Contar ventas canceladas
+            $countSql = "SELECT COUNT(*) as total FROM ventas WHERE estado = 'cancelada'";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalCanceladas = $countResult['total'];
+            
+            if ($totalCanceladas == 0) {
+                $_SESSION['error'] = 'No se encontraron ventas canceladas para eliminar';
+            } else {
+                // Eliminar ventas canceladas
+                $sql = "DELETE FROM ventas WHERE estado = 'cancelada'";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron {$deletedRows} ventas canceladas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar las ventas canceladas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar ventas canceladas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar las ventas canceladas: ' . $e->getMessage();
+        }
+        
+        header('Location: ' . $this->baseUrl . '?accion=index');
+        exit;
+    }
+
+    public function cleanAll() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: ' . $this->baseUrl . '?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Contar todas las ventas
+            $countSql = "SELECT COUNT(*) as total FROM ventas";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalVentas = $countResult['total'];
+            
+            if ($totalVentas == 0) {
+                $_SESSION['error'] = 'No hay ventas para eliminar';
+            } else {
+                // Eliminar TODAS las ventas
+                $sql = "DELETE FROM ventas";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron TODAS las {$deletedRows} ventas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar todas las ventas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar todas las ventas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar todas las ventas: ' . $e->getMessage();
+        }
+        
+        header('Location: ' . $this->baseUrl . '?accion=index');
+        exit;
+    }
 }
 
 // Sistema de enrutamiento
@@ -403,6 +529,15 @@ if (isset($_GET['accion'])) {
         case 'delete':
             $id = $_GET['id'] ?? null;
             $controller->delete($id);
+            break;
+        case 'clean_processed':
+            $controller->cleanProcessed();
+            break;
+        case 'clean_cancelled':
+            $controller->cleanCancelled();
+            break;
+        case 'clean_all':
+            $controller->cleanAll();
             break;
         default:
             $controller->index();

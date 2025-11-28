@@ -32,6 +32,15 @@ class ClientController {
             case 'delete':
                 $this->delete();
                 break;
+            case 'clean_inactive':
+                $this->cleanInactive();
+                break;
+            case 'clean_no_sales':
+                $this->cleanNoSales();
+                break;
+            case 'clean_all':
+                $this->cleanAll();
+                break;
             default:
                 $this->index();
                 break;
@@ -275,6 +284,151 @@ class ClientController {
             header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
             exit;
         }
+    }
+
+    public function cleanInactive() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Contar clientes inactivos que no tienen ventas asociadas
+            $countSql = "SELECT COUNT(DISTINCT c.id_clientes) as total FROM clientes c 
+                        LEFT JOIN ventas v ON c.id_clientes = v.id_clientes 
+                        WHERE c.estado = 'inactivo' AND v.id_clientes IS NULL";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalInactivos = $countResult['total'];
+            
+            if ($totalInactivos == 0) {
+                $_SESSION['error'] = 'No se encontraron clientes inactivos sin ventas para eliminar';
+            } else {
+                // Eliminar clientes inactivos sin ventas
+                $sql = "DELETE c FROM clientes c 
+                       LEFT JOIN ventas v ON c.id_clientes = v.id_clientes 
+                       WHERE c.estado = 'inactivo' AND v.id_clientes IS NULL";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron {$deletedRows} clientes inactivos correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar los clientes inactivos';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar clientes inactivos: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar los clientes inactivos: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+        exit;
+    }
+
+    public function cleanNoSales() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Contar clientes sin ventas
+            $countSql = "SELECT COUNT(DISTINCT c.id_clientes) as total FROM clientes c 
+                        LEFT JOIN ventas v ON c.id_clientes = v.id_clientes 
+                        WHERE v.id_clientes IS NULL";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+            $countResult = $countStmt->get_result()->fetch_assoc();
+            $totalSinVentas = $countResult['total'];
+            
+            if ($totalSinVentas == 0) {
+                $_SESSION['error'] = 'No se encontraron clientes sin ventas para eliminar';
+            } else {
+                // Eliminar clientes sin ventas
+                $sql = "DELETE c FROM clientes c 
+                       LEFT JOIN ventas v ON c.id_clientes = v.id_clientes 
+                       WHERE v.id_clientes IS NULL";
+                $stmt = $conn->prepare($sql);
+                
+                if ($stmt->execute()) {
+                    $deletedRows = $stmt->affected_rows;
+                    $_SESSION['success'] = "Se eliminaron {$deletedRows} clientes sin ventas correctamente";
+                } else {
+                    $_SESSION['error'] = 'Error al eliminar los clientes sin ventas';
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar clientes sin ventas: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar los clientes sin ventas: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+        exit;
+    }
+
+    public function cleanAll() {
+        // Verificar permisos de admin
+        session_start();
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tienes permisos para realizar esta acción';
+            header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+            exit;
+        }
+
+        global $conn;
+        try {
+            // Primero verificar si hay clientes con ventas
+            $checkSql = "SELECT COUNT(DISTINCT c.id_clientes) as total_with_sales FROM clientes c 
+                        INNER JOIN ventas v ON c.id_clientes = v.id_clientes";
+            $checkStmt = $conn->prepare($checkSql);
+            $checkStmt->execute();
+            $checkResult = $checkStmt->get_result()->fetch_assoc();
+            
+            if ($checkResult['total_with_sales'] > 0) {
+                $_SESSION['error'] = 'No se pueden eliminar todos los clientes porque algunos tienen ventas asociadas. Elimina primero las ventas o usa otras opciones de limpieza.';
+            } else {
+                // Contar todos los clientes
+                $countSql = "SELECT COUNT(*) as total FROM clientes";
+                $countStmt = $conn->prepare($countSql);
+                $countStmt->execute();
+                $countResult = $countStmt->get_result()->fetch_assoc();
+                $totalClientes = $countResult['total'];
+                
+                if ($totalClientes == 0) {
+                    $_SESSION['error'] = 'No hay clientes para eliminar';
+                } else {
+                    // Eliminar TODOS los clientes (solo si no tienen ventas)
+                    $sql = "DELETE FROM clientes";
+                    $stmt = $conn->prepare($sql);
+                    
+                    if ($stmt->execute()) {
+                        $deletedRows = $stmt->affected_rows;
+                        $_SESSION['success'] = "Se eliminaron TODOS los {$deletedRows} clientes correctamente";
+                    } else {
+                        $_SESSION['error'] = 'Error al eliminar todos los clientes';
+                    }
+                }
+            }
+            
+        } catch (Exception $e) {
+            error_log("Error al limpiar todos los clientes: " . $e->getMessage());
+            $_SESSION['error'] = 'Error al limpiar todos los clientes: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/ClientController.php?accion=index');
+        exit;
     }
 }
 

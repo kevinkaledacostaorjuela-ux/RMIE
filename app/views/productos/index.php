@@ -964,6 +964,11 @@ $stats = $statsQuery->fetch_assoc();
                     <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                         <i class="fas fa-plus"></i> Nuevo Producto
                     </a>
+                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                    <button class="btn btn-modern me-2" onclick="limpiarProductos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
+                        <i class="fas fa-broom"></i> Limpiar Stock Cero
+                    </button>
+                    <?php endif; ?>
                     <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-info-modern">
                         <i class="fas fa-arrow-left"></i> Volver al Dashboard
                     </a>
@@ -1243,6 +1248,28 @@ $stats = $statsQuery->fetch_assoc();
                 setTimeout(() => alert.remove(), 500);
             });
         }, 5000);
+
+        // Función para limpiar productos con stock cero
+        function limpiarProductos() {
+            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en PRODUCTOS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar productos con STOCK CERO\n2 - Eliminar productos INACTIVOS\n3 - Eliminar TODOS los productos\n4 - Cancelar`);
+            
+            if (opcion === '1') {
+                if (confirm('Se eliminarán solo los productos con stock = 0.\n\n¿Continuar?')) {
+                    alert('Eliminando productos sin stock...');
+                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_no_stock';
+                }
+            } else if (opcion === '2') {
+                if (confirm('Se eliminarán los productos con estado "inactivo".\n\n¿Continuar?')) {
+                    alert('Eliminando productos inactivos...');
+                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_inactive';
+                }
+            } else if (opcion === '3') {
+                if (confirm('¡ATENCIÓN! Esto eliminará TODOS los productos de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                    alert('Eliminando todos los productos...');
+                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_all';
+                }
+            }
+        }
     </script>
 </body>
 </html>

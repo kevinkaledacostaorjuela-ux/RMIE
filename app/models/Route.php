@@ -90,20 +90,30 @@ class Route {
         return self::getAll($conn, $filtros);
     }
 
-    public static function create($conn, $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado) {
+    public static function createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array = []) {
         try {
-            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado) VALUES (?, ?, ?, ?, ?, ?)";
+            // Convertir arrays a JSON
+            $id_locales_json = json_encode($id_locales_array);
+            $id_clientes_json = json_encode($id_clientes_array);
+            $id_ventas_json = json_encode($id_ventas_array);
+            $direcciones_json = !empty($direcciones_array) ? json_encode($direcciones_array) : json_encode([]);
+            
+            // Usar el primer cliente y venta como valores por defecto para compatibilidad
+            $id_clientes = intval($id_clientes_array[0]);
+            $id_ventas = intval($id_ventas_array[0]);
+            
+            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado, id_locales_json, id_clientes_json, id_ventas_json, direcciones_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception("Error al preparar la consulta: " . $conn->error);
             }
-            $stmt->bind_param('sssiss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado);
+            $stmt->bind_param('sssissssss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json);
             if (!$stmt->execute()) {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
             return $conn->insert_id; // Retornar el ID de la nueva ruta creada
         } catch (Exception $e) {
-            error_log("Error al crear ruta: " . $e->getMessage());
+            error_log("Error al crear ruta múltiple: " . $e->getMessage());
             throw new Exception("Error al crear la ruta: " . $e->getMessage());
         }
     }
@@ -185,6 +195,34 @@ class Route {
             return true; // Retornar true en caso de éxito
         } catch (Exception $e) {
             error_log("ERROR al actualizar ruta ID $id: " . $e->getMessage());
+            throw new Exception("Error al actualizar la ruta: " . $e->getMessage());
+        }
+    }
+
+    public static function updateMultiple($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array = []) {
+        try {
+            // Convertir arrays a JSON
+            $id_locales_json = json_encode($id_locales_array);
+            $id_clientes_json = json_encode($id_clientes_array);
+            $id_ventas_json = json_encode($id_ventas_array);
+            $direcciones_json = !empty($direcciones_array) ? json_encode($direcciones_array) : json_encode([]);
+            
+            // Usar el primer cliente y venta como valores por defecto para compatibilidad
+            $id_clientes = intval($id_clientes_array[0]);
+            $id_ventas = intval($id_ventas_array[0]);
+            
+            $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, estado = ?, id_locales_json = ?, id_clientes_json = ?, id_ventas_json = ?, direcciones_json = ? WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $conn->error);
+            }
+            $stmt->bind_param('sssissssssi', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json, $id);
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+            return true;
+        } catch (Exception $e) {
+            error_log("Error al actualizar ruta múltiple: " . $e->getMessage());
             throw new Exception("Error al actualizar la ruta: " . $e->getMessage());
         }
     }

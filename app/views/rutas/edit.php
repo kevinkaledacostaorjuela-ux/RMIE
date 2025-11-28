@@ -9,6 +9,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -441,6 +444,98 @@
             border-top: 1px solid rgba(255, 255, 255, 0.2);
         }
 
+        /* Select2 con diseño limpio y ordenado */
+        .select2-container--bootstrap-5 .select2-dropdown {
+            border: 1px solid #dee2e6 !important;
+            border-radius: 8px !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            overflow: hidden !important;
+        }
+        
+        /* Campo de búsqueda limpio en la parte superior */
+        .select2-search--dropdown {
+            display: block !important;
+            padding: 16px !important;
+            background: #ffffff !important;
+            border-bottom: 1px solid #e9ecef !important;
+            position: relative !important;
+        }
+        
+        /* Ocultar elementos duplicados o no deseados */
+        .search-label,
+        .select2-search-helper,
+        .select2-search__field + .search-label {
+            display: none !important;
+        }
+        
+        .select2-search__field {
+            width: 100% !important;
+            padding: 12px 16px !important;
+            border: 1px solid #ced4da !important;
+            border-radius: 6px !important;
+            font-size: 14px !important;
+            background-color: #f8f9fa !important;
+            color: #495057 !important;
+            outline: none !important;
+        }
+        
+        .select2-search__field:focus {
+            border-color: #86b7fe !important;
+            box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25) !important;
+            background-color: #ffffff !important;
+        }
+        
+        .select2-search__field::placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+        }
+        
+        .select2-search__field::-webkit-input-placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+        }
+        
+        .select2-search__field::-moz-placeholder {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Lista de resultados ordenada */
+        .select2-results {
+            max-height: 300px !important;
+            overflow-y: auto !important;
+        }
+        
+        .select2-results__option {
+            padding: 12px 16px !important;
+            border-bottom: 1px solid #f1f3f4 !important;
+            font-size: 14px !important;
+            color: #495057 !important;
+        }
+        
+        .select2-results__option:last-child {
+            border-bottom: none !important;
+        }
+        
+        .select2-results__option--highlighted {
+            background-color: #f8f9fa !important;
+            color: #0d6efd !important;
+        }
+        
+        .select2-results__option--selected {
+            background-color: #e7f3ff !important;
+            color: #0d6efd !important;
+            font-weight: 500 !important;
+        }
+        
+        /* Ocultar elementos no deseados que pueden aparecer */
+        .select2-dropdown .select2-search__field:focus + *,
+        .select2-dropdown .search-tooltip,
+        .select2-dropdown .search-overlay {
+            display: none !important;
+        }
+
         /* Alerta informativa */
         .info-alert {
             background: rgba(23, 162, 184, 0.1);
@@ -520,6 +615,298 @@
             .form-header h1 {
                 font-size: 1.8rem;
             }
+        }
+
+        /* Select2 Personalizados */
+        .select2-container--bootstrap-5 .select2-selection {
+            background: white !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 8px !important;
+            padding: 8px 12px !important;
+            min-height: 44px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection:focus-within {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--open .select2-selection {
+            border-color: #667eea !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__rendered {
+            padding: 0 !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            padding: 4px 10px !important;
+            color: white !important;
+            font-weight: 500 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 6px !important;
+            margin: 3px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove {
+            color: white !important;
+            margin-right: 4px !important;
+            font-weight: bold !important;
+            cursor: pointer !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
+            opacity: 0.8 !important;
+        }
+
+        .select2-dropdown--below {
+            border-radius: 8px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2) !important;
+            border: 2px solid #e0e0e0 !important;
+            margin-top: 5px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-dropdown {
+            background: white !important;
+            border-radius: 8px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option {
+            padding: 10px 12px !important;
+            color: var(--text-primary) !important;
+            font-weight: 500 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-results__option--highlighted {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        /* Estilos para el dropdown de Select2 */
+        .select2-container {
+            z-index: 10000 !important;
+        }
+
+        .select2-container--open {
+            z-index: 10000 !important;
+        }
+
+        .select2-dropdown {
+            z-index: 10001 !important;
+            background-color: white !important;
+            border: 2px solid #667eea !important;
+            border-radius: 0 0 12px 12px !important;
+            padding: 0 !important;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3) !important;
+        }
+
+        .select2-dropdown--below {
+            border-top: none !important;
+            border-radius: 0 0 12px 12px !important;
+            top: auto !important;
+        }
+
+        /* Estilos para el campo de búsqueda en Select2 */
+        .select2-search--dropdown {
+            padding: 12px !important;
+            display: block !important;
+            visibility: visible !important;
+            border-bottom: 1px solid #f0f0f0 !important;
+        }
+
+        .select2-search--dropdown .select2-search__field {
+            background-color: #f8f9fa !important;
+            border: 2px solid #e0e0e0 !important;
+            border-radius: 8px !important;
+            padding: 12px 16px !important;
+            color: #1a1a1a !important;
+            font-weight: 500 !important;
+            font-size: 14px !important;
+            width: calc(100% - 4px) !important;
+            box-sizing: border-box !important;
+            display: block !important;
+            visibility: visible !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .select2-search--dropdown .select2-search__field::placeholder {
+            color: #667eea !important;
+            opacity: 1 !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+        }
+
+        /* Asegurar que el placeholder sea visible */
+        .select2-search__field {
+            -webkit-text-fill-color: unset !important;
+        }
+
+        .select2-search__field::placeholder {
+            -webkit-text-fill-color: #667eea !important;
+            color: #667eea !important;
+        }
+
+        /* Cuando el input está vacío, mostrar el placeholder */
+        .select2-search__field:placeholder-shown {
+            color: #667eea !important;
+        }
+
+        .select2-search__field::-webkit-input-placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+        }
+
+        .select2-search__field::-moz-placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+        }
+
+        .select2-search__field:-ms-input-placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+        }
+
+        .select2-search__field::-ms-input-placeholder {
+            color: #667eea !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+        }
+        }
+
+        .select2-search--dropdown .select2-search__field:focus {
+            outline: none !important;
+            border-color: #667eea !important;
+            background-color: white !important;
+            color: #1a1a1a !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+        }
+
+        /* Contenedor de resultados */
+        .select2-results {
+            display: block !important;
+            visibility: visible !important;
+            max-height: 300px !important;
+            overflow-y: auto !important;
+            padding: 8px 0 !important;
+        }
+
+        .select2-results__options {
+            display: block !important;
+        }
+
+        /* Estilos de las opciones */
+        .select2-results__option {
+            padding: 12px 16px !important;
+            color: #1a1a1a !important;
+            font-weight: 500 !important;
+            border-bottom: 1px solid #f5f5f5 !important;
+            transition: all 0.2s ease !important;
+            background-color: white !important;
+        }
+
+        .select2-results__option:hover {
+            background-color: #f8f9fa !important;
+        }
+
+        .select2-results__option--highlighted[aria-selected] {
+            background-color: #667eea !important;
+            color: white !important;
+        }
+
+        .select2-results__option[aria-selected=true] {
+            background-color: rgba(102, 126, 234, 0.1) !important;
+            color: #1a1a1a !important;
+            border-left: 4px solid #667eea !important;
+            padding-left: 12px !important;
+        }
+
+        /* Estilos mejorados para las selecciones múltiples */
+        .select2-container--bootstrap-5 .select2-selection__choice {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            border-color: transparent !important;
+            color: white !important;
+            font-weight: 600 !important;
+            padding: 8px 12px !important;
+            border-radius: 6px !important;
+            margin: 4px 4px !important;
+            font-size: 13px !important;
+            box-shadow: 0 2px 6px rgba(102, 126, 234, 0.3) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove {
+            color: white !important;
+            font-weight: 700 !important;
+            margin-right: 6px !important;
+            margin-left: 0 !important;
+            padding: 0 4px !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection__choice__remove:hover {
+            color: #fff !important;
+            opacity: 0.8 !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection {
+            padding: 8px 12px !important;
+            min-height: auto !important;
+            background-color: white !important;
+            border-color: #e0e0e0 !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .select2-container--bootstrap-5 .select2-selection:focus-within {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+        }
+
+        .select2-container--bootstrap-5.select2-container--focus .select2-selection {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+        }
+
+        /* Barra de desplazamiento personalizada */
+        .select2-results::-webkit-scrollbar {
+            width: 8px !important;
+        }
+
+        .select2-results::-webkit-scrollbar-track {
+            background: #f1f1f1 !important;
+        }
+
+        .select2-results::-webkit-scrollbar-thumb {
+            background: #667eea !important;
+            border-radius: 4px !important;
+        }
+
+        .select2-results::-webkit-scrollbar-thumb:hover {
+            background: #764ba2 !important;
+        }
+
+        /* Forzar visibilidad del dropdown */
+        .select2-dropdown.select2-dropdown--above,
+        .select2-dropdown.select2-dropdown--below {
+            display: block !important;
+            visibility: visible !important;
+            position: absolute !important;
+        }
+
+        body .select2-container--open .select2-dropdown {
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
     </style>
 </head>
@@ -633,19 +1020,23 @@
                                 </h3>
                                 
                                 <div class="form-group">
-                                    <label for="nombre_local">
-                                        <i class="fas fa-store"></i> Seleccionar Local *
+                                    <label for="id_locales">
+                                        <i class="fas fa-store"></i> Seleccionar Locales *
                                     </label>
                                     <select 
-                                        name="nombre_local" 
-                                        id="nombre_local" 
+                                        name="id_locales[]" 
+                                        id="id_locales" 
+                                        multiple
                                         required
-                                        class="form-select">
-                                        <option value="">-- Selecciona un local --</option>
+                                        class="form-select select2-search">
                                         <?php if (isset($available_locals) && is_array($available_locals)): ?>
                                             <?php foreach ($available_locals as $local): ?>
-                                                <option value="<?= htmlspecialchars($local['nombre_local']) ?>" 
-                                                    <?= ($route['nombre_local'] === $local['nombre_local']) ? 'selected' : '' ?>>
+                                                <?php 
+                                                $id_locales_json = !empty($route['id_locales_json']) ? json_decode($route['id_locales_json'], true) : [];
+                                                $is_selected = in_array($local['id_locales'], $id_locales_json);
+                                                ?>
+                                                <option value="<?= htmlspecialchars($local['id_locales']) ?>" 
+                                                    <?= $is_selected ? 'selected' : '' ?>>
                                                     <?= htmlspecialchars($local['nombre_local']) ?> (<?= htmlspecialchars($local['localidad'] ?? '') ?>)
                                                 </option>
                                             <?php endforeach; ?>
@@ -653,7 +1044,7 @@
                                     </select>
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
-                                        Nombre comercial del establecimiento de destino
+                                        Selecciona uno o más locales
                                     </small>
                                 </div>
                             </div>
@@ -665,19 +1056,23 @@
                                 </h3>
                                 
                                 <div class="form-group">
-                                    <label for="nombre_cliente">
-                                        <i class="fas fa-user"></i> Seleccionar Cliente *
+                                    <label for="id_clientes">
+                                        <i class="fas fa-user"></i> Seleccionar Clientes *
                                     </label>
                                     <select 
-                                        name="nombre_cliente" 
-                                        id="nombre_cliente" 
+                                        name="id_clientes[]" 
+                                        id="id_clientes" 
+                                        multiple
                                         required
-                                        class="form-select">
-                                        <option value="">-- Selecciona un cliente --</option>
+                                        class="form-select select2-search">
                                         <?php if (isset($available_clients) && is_array($available_clients)): ?>
                                             <?php foreach ($available_clients as $client): ?>
-                                                <option value="<?= htmlspecialchars($client['nombre']) ?>" 
-                                                    <?= ($route['nombre_cliente'] === $client['nombre']) ? 'selected' : '' ?>>
+                                                <?php 
+                                                $id_clientes_json = !empty($route['id_clientes_json']) ? json_decode($route['id_clientes_json'], true) : [];
+                                                $is_selected = in_array($client['id_clientes'], $id_clientes_json);
+                                                ?>
+                                                <option value="<?= htmlspecialchars($client['id_clientes']) ?>" 
+                                                    <?= $is_selected ? 'selected' : '' ?>>
                                                     <?= htmlspecialchars($client['nombre']) ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -685,7 +1080,7 @@
                                     </select>
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
-                                        Nombre completo de la persona de contacto
+                                        Selecciona uno o más clientes
                                     </small>
                                 </div>
                             </div>
@@ -697,18 +1092,20 @@
                                 </h3>
                                 
                                 <div class="form-group">
-                                    <label for="id_clientes">
-                                        <i class="fas fa-user-tag"></i> ID del Cliente *
+                                    <label for="id_clientes_reference">
+                                        <i class="fas fa-user-tag"></i> ID del Cliente (DESHABILITADO - DEBUG)
                                     </label>
                                     <input 
                                         type="number" 
-                                        name="id_clientes" 
-                                        id="id_clientes" 
-                                        required
+                                        name="id_clientes_legacy" 
+                                        id="id_clientes_reference" 
                                         min="1"
                                         value="<?= htmlspecialchars($route['id_clientes']) ?>"
                                         placeholder="Ej: 123"
-                                        class="form-control">
+                                        class="form-control"
+                                        disabled
+                                        style="background-color: #f8f9fa; color: #6c757d;"
+                                        title="Campo deshabilitado temporalmente para debugging">
                                     <small class="form-text">
                                         <i class="fas fa-info-circle"></i>
                                         Identificador único del cliente en el sistema
@@ -850,44 +1247,158 @@
         </div>
     </div>
 
+    <!-- jQuery (requerido por Select2) -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <!-- Select2 Bootstrap Theme CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5.min.css" rel="stylesheet" />
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        // Esperar a que jQuery esté completamente cargado
+        if (typeof jQuery !== 'undefined') {
+            jQuery(document).ready(function($) {
+                // Inicializar Select2 en ambos campos
+                setTimeout(function() {
+                    if ($('#id_locales').length) {
+                        $('#id_locales').select2({
+                            theme: 'bootstrap-5',
+                            placeholder: 'Selecciona uno o más locales',
+                            allowClear: true,
+                            width: '100%',
+                            dropdownAutoWidth: false,
+                            dropdownParent: $('body'),
+                            minimumInputLength: 0,
+                            language: {
+                                noResults: function() {
+                                    return 'No se encontraron locales';
+                                },
+                                searching: function() {
+                                    return 'Buscando...';
+                                }
+                            }
+                        });
+                    }
+
+                    if ($('#id_clientes').length) {
+                        // Verificar que el elemento tenga multiple antes de inicializar
+                        const clientesSelect = document.getElementById('id_clientes');
+                        
+                        $('#id_clientes').select2({
+                            theme: 'bootstrap-5',
+                            placeholder: 'Selecciona uno o más clientes',
+                            allowClear: true,
+                            width: '100%',
+                            dropdownAutoWidth: false,
+                            dropdownParent: $('body'),
+                            minimumInputLength: 0,
+                            multiple: true,
+                            closeOnSelect: false,
+                            language: {
+                                noResults: function() {
+                                    return 'No se encontraron clientes';
+                                },
+                                searching: function() {
+                                    return 'Buscando...';
+                                }
+                            }
+                        });
+                    }
+                    // Forzar que los select siempre tengan búsqueda visible
+                    setTimeout(function() {
+                        // Forzar la creación del campo de búsqueda en Select2
+                        $('#id_clientes, #id_locales').each(function() {
+                            var $this = $(this);
+                            if ($this.hasClass('select2-hidden-accessible')) {
+                                // Abrir y cerrar para forzar la creación del dropdown
+                                $this.select2('open').select2('close');
+                            }
+                        });
+                    }, 100);
+                }, 300);
+
+                // Configurar el placeholder del campo de búsqueda dentro del dropdown
+                // Mejorar experiencia de búsqueda
+                $(document).on('select2:open', function(e) {
+                    var $element = $(e.target);
+                    var elementId = $element.attr('id');
+                    
+                    setTimeout(function() {
+                        var $dropdown = $element.data('select2').$dropdown;
+                        
+                        if ($dropdown && $dropdown.length) {
+                            var placeholder = elementId === 'id_locales' ? 'Búsqueda de local aquí' : 'Búsqueda de cliente aquí';
+                            var labelText = elementId === 'id_locales' ? 'Búsqueda de local aquí' : 'Búsqueda de cliente aquí';
+                            
+                            // Limpiar cualquier elemento duplicado
+                            $dropdown.find('.search-label, .select2-search-helper').remove();
+                            
+                            var $search = $dropdown.find('input.select2-search__field');
+                            if ($search.length > 0) {
+                                $search.attr('placeholder', placeholder);
+                                $search.val('');
+                                
+                                // Remover cualquier evento o elemento que pueda causar duplicación
+                                $search.off('focus.searchHelper');
+                                
+                                setTimeout(function() {
+                                    $search.focus();
+                                }, 100);
+                            }
+                        }
+                    }, 50);
+                });
+            });
+        }
+    </script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             <?php if (isset($route) && $route): ?>
                 // Datos originales para comparación
                 const originalData = {
                     direccion: <?= json_encode($route['direccion']) ?>,
-                    nombre_local: <?= json_encode($route['nombre_local']) ?>,
-                    nombre_cliente: <?= json_encode($route['nombre_cliente']) ?>,
-                    id_clientes: <?= json_encode($route['id_clientes']) ?>,
-                    id_ventas: <?= json_encode($route['id_ventas']) ?>
+                    id_locales_json: <?= json_encode($route['id_locales_json']) ?>,
+                    id_clientes_json: <?= json_encode($route['id_clientes_json']) ?>,
+                    estado: <?= json_encode($route['estado']) ?>
                 };
 
                 // Referencias a elementos del formulario
                 const form = document.getElementById('editRouteForm');
                 const direccionField = document.getElementById('direccion');
-                const localField = document.getElementById('nombre_local');
-                const clienteField = document.getElementById('nombre_cliente');
-                const idClienteField = document.getElementById('id_clientes');
-                const idVentaField = document.getElementById('id_ventas');
+                const estadoField = document.getElementById('estado');
                 const submitBtn = document.getElementById('submitBtn');
 
                 // Contador de caracteres dinámico
-                direccionField.addEventListener('input', function() {
-                    const counter = document.getElementById('direccion-counter');
-                    const length = this.value.length;
-                    counter.textContent = length;
-                    
-                    if (length > 180) {
-                        counter.style.color = '#dc3545';
-                        counter.style.fontWeight = 'bold';
-                    } else if (length > 150) {
-                        counter.style.color = '#ffc107';
-                        counter.style.fontWeight = '600';
-                    } else {
-                        counter.style.color = '#28a745';
-                        counter.style.fontWeight = '500';
-                    }
-                });
+                if (direccionField) {
+                    direccionField.addEventListener('input', function() {
+                        const counter = document.getElementById('direccion-counter');
+                        if (counter) {
+                            const length = this.value.length;
+                            counter.textContent = length;
+                            
+                            if (length > 180) {
+                                counter.style.color = '#dc3545';
+                                counter.style.fontWeight = 'bold';
+                            } else if (length > 150) {
+                                counter.style.color = '#ffc107';
+                                counter.style.fontWeight = '600';
+                            } else {
+                                counter.style.color = '#28a745';
+                                counter.style.fontWeight = '500';
+                            }
+                        }
+                        showChanges();
+                    });
+
+                    // Validación en tiempo real
+                    direccionField.addEventListener('input', () => {
+                        validateField(direccionField, 5, 200);
+                        showChanges();
+                    });
+                }
 
                 // Validación en tiempo real
                 function validateField(field, minLength, maxLength) {
@@ -903,179 +1414,103 @@
                     }
                 }
 
-                direccionField.addEventListener('input', () => {
-                    validateField(direccionField, 5, 200);
-                    showChanges();
-                });
-
-                localField.addEventListener('input', () => {
-                    validateField(localField, 2, 100);
-                    showChanges();
-                });
-
-                clienteField.addEventListener('change', () => {
-                    // Buscar el cliente seleccionado para obtener su ID
-                    const clienteNombre = clienteField.value;
-                    const clientesData = <?= json_encode($available_clients) ?>;
-                    
-                    const clienteEncontrado = clientesData.find(c => c.nombre === clienteNombre);
-                    if (clienteEncontrado) {
-                        idClienteField.value = clienteEncontrado.id_clientes;
-                    }
-                    
-                    validateField(clienteField, 2, 100);
-                    showChanges();
-                });
-
-                clienteField.addEventListener('input', () => {
-                    validateField(clienteField, 2, 100);
-                    showChanges();
-                });
-
-                idClienteField.addEventListener('input', () => {
-                    const value = parseInt(idClienteField.value);
-                    idClienteField.classList.remove('is-valid', 'is-invalid');
-                    
-                    if (isNaN(value) || value <= 0) {
-                        idClienteField.classList.add('is-invalid');
-                    } else {
-                        idClienteField.classList.add('is-valid');
-                    }
-                    showChanges();
-                });
-
-                idVentaField.addEventListener('input', () => {
-                    const value = parseInt(idVentaField.value);
-                    idVentaField.classList.remove('is-valid', 'is-invalid');
-                    
-                    if (isNaN(value) || value <= 0) {
-                        idVentaField.classList.add('is-invalid');
-                    } else {
-                        idVentaField.classList.add('is-valid');
-                    }
-                    showChanges();
-                });
-
                 // Vista previa de cambios
                 function showChanges() {
                     const changes = [];
                     const changesContainer = document.getElementById('changesPreview');
+                    
+                    if (!changesContainer) return;
 
-                    const fieldChanges = [
-                        { field: 'Dirección', current: direccionField.value, original: originalData.direccion, icon: 'fas fa-map-marker-alt' },
-                        { field: 'Local', current: localField.value, original: originalData.nombre_local, icon: 'fas fa-store' },
-                        { field: 'Cliente', current: clienteField.value, original: originalData.nombre_cliente, icon: 'fas fa-user' },
-                        { field: 'ID Cliente', current: idClienteField.value, original: originalData.id_clientes, icon: 'fas fa-user-tag' },
-                        { field: 'ID Venta', current: idVentaField.value, original: originalData.id_ventas, icon: 'fas fa-shopping-cart' }
-                    ];
+                    // Comparar dirección
+                    if (direccionField && direccionField.value !== originalData.direccion) {
+                        changes.push({
+                            field: 'Dirección',
+                            icon: 'fas fa-map-marker-alt',
+                            original: originalData.direccion,
+                            current: direccionField.value
+                        });
+                    }
 
-                    fieldChanges.forEach(item => {
-                        if (item.current != item.original) {
-                            changes.push(item);
-                        }
-                    });
+                    // Comparar estado
+                    if (estadoField && estadoField.value !== originalData.estado) {
+                        changes.push({
+                            field: 'Estado',
+                            icon: 'fas fa-toggle-on',
+                            original: originalData.estado,
+                            current: estadoField.value
+                        });
+                    }
 
                     if (changes.length === 0) {
                         changesContainer.innerHTML = `
-                            <div class="alert alert-info">
-                                <i class="fas fa-info-circle"></i>
-                                <strong>Sin cambios detectados.</strong><br>
-                                Modifica los campos para ver una vista previa.
+                            <div style="text-align: center; color: var(--text-secondary); padding: 1rem;">
+                                <i class="fas fa-check-circle" style="font-size: 2rem; margin-bottom: 0.5rem; display: block;"></i>
+                                <p>Modifica los campos para ver los cambios aquí.</p>
                             </div>
                         `;
-                        submitBtn.disabled = true;
-                        submitBtn.style.opacity = '0.6';
-                    } else {
-                        let changesHtml = `
-                            <div class="alert alert-warning">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                <strong>Cambios detectados (${changes.length}):</strong>
-                            </div>
-                        `;
-
-                        changes.forEach((change, index) => {
-                            changesHtml += `
-                                <div class="change-item" style="animation-delay: ${index * 0.1}s;">
-                                    <i class="${change.icon}" style="color: #667eea;"></i>
-                                    <strong>${change.field}:</strong><br>
-                                    <div style="margin-left: 20px; margin-top: 5px;">
-                                        <span class="old-value">
-                                            <i class="fas fa-arrow-right"></i> 
-                                            Actual: "${change.original}"
-                                        </span><br>
-                                        <span class="new-value">
-                                            <i class="fas fa-arrow-right"></i> 
-                                            Nuevo: "${change.current}"
-                                        </span>
-                                    </div>
-                                </div>
-                            `;
-                        });
-
-                        changesContainer.innerHTML = changesHtml;
-                        submitBtn.disabled = false;
-                        submitBtn.style.opacity = '1';
+                        return;
                     }
+
+                    let html = '<div style="padding: 1rem;">';
+                    changes.forEach(change => {
+                        html += `
+                            <div style="margin-bottom: 1rem; padding: 1rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; border-left: 4px solid #667eea;">
+                                <div style="font-weight: 600; margin-bottom: 0.5rem;">
+                                    <i class="${change.icon}" style="margin-right: 0.5rem;"></i> ${change.field}
+                                </div>
+                                <div style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem;">
+                                    <strong>Original:</strong> ${change.original || 'N/A'}
+                                </div>
+                                <div style="font-size: 0.9rem; color: #28a745; font-weight: 600;">
+                                    <strong>Nuevo:</strong> ${change.current || 'N/A'}
+                                </div>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    changesContainer.innerHTML = html;
                 }
 
-                // Botón de restaurar
-                document.getElementById('resetBtn').addEventListener('click', function() {
-                    if (confirm('¿Deseas restaurar todos los valores originales?')) {
-                        direccionField.value = originalData.direccion;
-                        localField.value = originalData.nombre_local;
-                        clienteField.value = originalData.nombre_cliente;
-                        idClienteField.value = originalData.id_clientes;
-                        idVentaField.value = originalData.id_ventas;
-                        
-                        [direccionField, localField, clienteField, idClienteField, idVentaField].forEach(field => {
-                            field.classList.remove('is-valid', 'is-invalid');
-                        });
-                        
-                        showChanges();
-                    }
+                // Event listeners para los nuevos campos
+                if (direccionField) {
+                    direccionField.addEventListener('input', showChanges);
+                }
+
+                if (estadoField) {
+                    estadoField.addEventListener('change', showChanges);
+                }
+
+                // Listeners para Select2
+                $(document).on('select2:select select2:unselect', function() {
+                    showChanges();
                 });
 
-                // Validación del formulario
-                form.addEventListener('submit', function(e) {
-                    const direccion = direccionField.value.trim();
-                    const local = localField.value.trim();
-                    const cliente = clienteField.value.trim();
-                    const idCliente = parseInt(idClienteField.value);
-                    const idVenta = parseInt(idVentaField.value);
+                // Form submission handling
+                if (form) {
+                    form.addEventListener('submit', function(e) {
+                        // Verificar y corregir valores antes del envío
+                        const clientesSelect = document.getElementById('id_clientes');
+                        
+                        if (clientesSelect) {
+                            const selectedValues = $(clientesSelect).val();
+                            
+                            // Si Select2 devuelve null o no es array, verificar opciones seleccionadas
+                            if (!Array.isArray(selectedValues)) {
+                                const manualValues = Array.from(clientesSelect.selectedOptions).map(function(opt) { return opt.value; });
+                                
+                                // Forzar los valores si es necesario
+                                if (manualValues.length > 0) {
+                                    $(clientesSelect).val(manualValues).trigger('change');
+                                }
+                            }
+                        }
+                        
+                        // Envío normal del formulario (sin pausa)
+                    });
+                }
 
-                    if (direccion.length < 5) {
-                        alert('La dirección debe tener al menos 5 caracteres');
-                        e.preventDefault();
-                        return false;
-                    }
-                    
-                    if (local.length < 2) {
-                        alert('El nombre del local debe tener al menos 2 caracteres');
-                        e.preventDefault();
-                        return false;
-                    }
-                    
-                    if (cliente.length < 2) {
-                        alert('El nombre del cliente debe tener al menos 2 caracteres');
-                        e.preventDefault();
-                        return false;
-                    }
-
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
-                    submitBtn.disabled = true;
-                    
-                    return true;
-                });
-
-                // Inicialización
+                // Mostrar cambios al inicio
                 showChanges();
-                
-                setTimeout(() => {
-                    validateField(direccionField, 5, 200);
-                    validateField(localField, 2, 100);
-                    validateField(clienteField, 2, 100);
-                }, 500);
-                
             <?php endif; ?>
         });
     </script>
