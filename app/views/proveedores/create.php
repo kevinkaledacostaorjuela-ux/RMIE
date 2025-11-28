@@ -319,6 +319,150 @@
             box-shadow: 0 5px 15px rgba(255, 193, 7, 0.3);
         }
         
+        /* CSS para grupo de checkboxes de productos */
+        .productos-checkbox-group {
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border: 2px solid rgba(255, 255, 255, 0.6) !important;
+            border-radius: 12px !important;
+            padding: 15px !important;
+            min-height: 120px !important;
+            max-height: 350px !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+        }
+
+        .productos-checkbox-group:hover {
+            border-color: rgba(255, 255, 255, 0.8) !important;
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2) !important;
+        }
+
+        .productos-checkbox-group:focus-within {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3), 0 5px 15px rgba(102, 126, 234, 0.2) !important;
+        }
+
+        .producto-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 8px 10px !important;
+            border-radius: 8px !important;
+            transition: all 0.2s ease !important;
+            cursor: pointer !important;
+        }
+
+        .producto-item:hover {
+            background-color: rgba(102, 126, 234, 0.08) !important;
+        }
+
+        .producto-checkbox {
+            position: absolute !important;
+            opacity: 0 !important;
+            cursor: pointer !important;
+            width: 0 !important;
+            height: 0 !important;
+        }
+
+        .producto-label {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+            flex: 1 !important;
+            user-select: none !important;
+        }
+
+        .checkbox-custom {
+            width: 22px !important;
+            height: 22px !important;
+            border: 2px solid #667eea !important;
+            border-radius: 6px !important;
+            background-color: white !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .producto-checkbox:checked + .producto-label .checkbox-custom {
+            background-color: #667eea !important;
+            border-color: #667eea !important;
+            box-shadow: inset 0 0 0 3px white !important;
+        }
+
+        .producto-checkbox:checked + .producto-label .checkbox-custom::after {
+            content: '✓' !important;
+            color: white !important;
+            font-size: 14px !important;
+            font-weight: bold !important;
+        }
+
+        .producto-nombre {
+            font-weight: 500 !important;
+            color: #333 !important;
+            font-size: 14px !important;
+        }
+
+        .producto-id {
+            font-size: 12px !important;
+            color: #999 !important;
+        }
+
+        .producto-checkbox:checked + .producto-label .producto-nombre {
+            color: #667eea !important;
+            font-weight: 600 !important;
+        }
+
+        .productos-count {
+            font-size: 12px !important;
+            color: rgba(102, 126, 234, 0.7) !important;
+            font-weight: 400 !important;
+            margin-left: 8px !important;
+        }
+
+        .producto-item.hidden {
+            display: none !important;
+        }
+
+        .producto-item.visible {
+            display: flex !important;
+        }
+
+        #buscarProducto {
+            transition: all 0.3s ease !important;
+        }
+
+        #buscarProducto:focus {
+            outline: none !important;
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        #buscarProducto::placeholder {
+            color: #999 !important;
+        }
+
+        .no-results-message {
+            text-align: center;
+            padding: 30px 15px;
+            color: #999;
+            font-size: 14px;
+            display: none;
+        }
+
+        .no-results-message.show {
+            display: block;
+        }
+            margin: 0 4px;
+            border: 1px solid rgba(0, 0, 0, 0.2);
+        }
+        
         .info-panel {
             background: rgba(255, 193, 7, 0.2);
             border: 1px solid rgba(255, 193, 7, 0.4);
@@ -628,24 +772,51 @@
                                 </div>
                             </div>
 
-                            <div class="form-floating-modern">
-                                <label for="productos" style="left:15px; top:12px;"> 
+                            <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 30px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <h5 style="color: white; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
                                     <i class="fas fa-boxes"></i>
-                                    Productos a asociar (opcional)
-                                </label>
-                                <select class="form-select-modern" id="productos" name="productos[]" multiple size="6">
+                                    Productos a asociar <span class="productos-count" id="productosCount" style="font-size: 12px; color: rgba(102, 126, 234, 0.7); font-weight: 400; margin-left: 8px;">(0 seleccionados)</span>
+                                </h5>
+                                
+                                <div style="margin-bottom: 15px;">
+                                    <input type="text" 
+                                           id="buscarProducto" 
+                                           placeholder="🔍 Buscar productos por nombre..." 
+                                           class="form-control-modern"
+                                           style="width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px; font-size: 14px; color: #333;">
+                                </div>
+                                
+                                <div class="productos-checkbox-group">
                                     <?php if (!empty($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $prod): ?>
-                                            <?php $selected = (isset($_POST['productos']) && is_array($_POST['productos']) && in_array($prod->id_productos, array_map('intval', $_POST['productos']))) ? 'selected' : ''; ?>
-                                            <option value="<?= htmlspecialchars($prod->id_productos) ?>" <?= $selected ?>><?= htmlspecialchars($prod->nombre) ?> (ID: <?= htmlspecialchars($prod->id_productos) ?>)</option>
+                                            <?php $selected = (isset($_POST['productos']) && is_array($_POST['productos']) && in_array($prod->id_productos, array_map('intval', $_POST['productos']))) ? 'checked' : ''; ?>
+                                            <div class="producto-item visible" data-nombre="<?= strtolower(htmlspecialchars($prod->nombre)) ?>">
+                                                <input type="checkbox" 
+                                                       id="prod_<?= $prod->id_productos ?>" 
+                                                       name="productos[]" 
+                                                       value="<?= $prod->id_productos ?>" 
+                                                       class="producto-checkbox"
+                                                       <?= $selected ?>>
+                                                <label for="prod_<?= $prod->id_productos ?>" class="producto-label">
+                                                    <span class="checkbox-custom"></span>
+                                                    <span class="producto-nombre"><?= htmlspecialchars($prod->nombre) ?></span>
+                                                    <span class="producto-id">(ID: <?= $prod->id_productos ?>)</span>
+                                                </label>
+                                            </div>
                                         <?php endforeach; ?>
+                                        <div class="no-results-message" id="noResultsMessage">
+                                            <i class="fas fa-search" style="font-size: 24px; opacity: 0.5; margin-bottom: 10px;"></i>
+                                            <p>No se encontraron productos que coincidan con tu búsqueda</p>
+                                        </div>
                                     <?php else: ?>
-                                        <option value="">No hay productos disponibles</option>
+                                        <div class="alert-modern" style="margin: 0; padding: 15px;">
+                                            <i class="fas fa-info-circle"></i> No hay productos disponibles
+                                        </div>
                                     <?php endif; ?>
-                                </select>
-                                <div class="form-help">
+                                </div>
+                                <div class="form-help" style="margin-top: 15px;">
                                     <i class="fas fa-info-circle"></i>
-                                    Seleccione uno o varios productos para vincularlos a este proveedor.
+                                    Seleccione los productos que este proveedor suministra. Puede seleccionar uno o varios productos.
                                 </div>
                             </div>
 
@@ -711,6 +882,9 @@
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('formProveedor');
             
+            // El select nativo se maneja automáticamente por el navegador
+            // No necesita JavaScript adicional
+            
             // Contadores de caracteres
             function setupCharacterCount(inputId, countId, maxLength) {
                 const input = document.getElementById(inputId);
@@ -732,6 +906,63 @@
             setupCharacterCount('correo', 'correo-count', 100);
             setupCharacterCount('cel_proveedor', 'cel_proveedor-count', 20);
             setupCharacterCount('ubicacion', 'ubicacion-count', 255);
+            
+            // Contador de productos seleccionados
+            const productosCheckboxes = document.querySelectorAll('.producto-checkbox');
+            const productosCount = document.getElementById('productosCount');
+            
+            if (productosCheckboxes && productosCount) {
+                function updateProductosCount() {
+                    const selectedCount = Array.from(productosCheckboxes).filter(cb => cb.checked).length;
+                    productosCount.textContent = `(${selectedCount} seleccionado${selectedCount !== 1 ? 's' : ''})`;
+                    
+                    // Cambiar color según selección
+                    if (selectedCount > 0) {
+                        productosCount.style.color = '#667eea';
+                    } else {
+                        productosCount.style.color = 'rgba(102, 126, 234, 0.5)';
+                    }
+                }
+                
+                productosCheckboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', updateProductosCount);
+                });
+                updateProductosCount(); // Inicializar
+            }
+            
+            // Filtro de búsqueda de productos
+            const buscarProductoInput = document.getElementById('buscarProducto');
+            const productoItems = document.querySelectorAll('.producto-item');
+            const noResultsMessage = document.getElementById('noResultsMessage');
+            
+            if (buscarProductoInput && productoItems.length > 0) {
+                buscarProductoInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    let visibleCount = 0;
+                    
+                    productoItems.forEach(item => {
+                        const nombreProducto = item.getAttribute('data-nombre') || '';
+                        
+                        if (searchTerm === '' || nombreProducto.includes(searchTerm)) {
+                            item.classList.remove('hidden');
+                            item.classList.add('visible');
+                            visibleCount++;
+                        } else {
+                            item.classList.remove('visible');
+                            item.classList.add('hidden');
+                        }
+                    });
+                    
+                    // Mostrar/ocultar mensaje de "no hay resultados"
+                    if (noResultsMessage) {
+                        if (visibleCount === 0 && searchTerm !== '') {
+                            noResultsMessage.classList.add('show');
+                        } else {
+                            noResultsMessage.classList.remove('show');
+                        }
+                    }
+                });
+            }
             
             // Vista previa en tiempo real
             function actualizarVistaPrevia() {

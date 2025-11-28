@@ -176,6 +176,132 @@ unset($_SESSION['error'], $_SESSION['success']);
             font-size: 1.4rem;
         }
 
+        /* CSS para checkboxes de clientes en edición */
+        .clientes-checkbox-group-edit {
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .cliente-item-edit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .cliente-item-edit.hidden {
+            display: none !important;
+        }
+
+        .cliente-item-edit.visible {
+            display: flex !important;
+        }
+
+        .cliente-item-edit:hover {
+            background-color: rgba(102, 126, 234, 0.05);
+        }
+
+        .cliente-checkbox-edit {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+            width: 0;
+            height: 0;
+        }
+
+        .cliente-label-edit {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 0;
+            flex: 1;
+            user-select: none;
+        }
+
+        .checkbox-custom-edit {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #667eea;
+            border-radius: 4px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        .cliente-checkbox-edit:checked + .cliente-label-edit .checkbox-custom-edit {
+            background-color: #667eea;
+            border-color: #667eea;
+            box-shadow: inset 0 0 0 2px white;
+        }
+
+        .cliente-checkbox-edit:checked + .cliente-label-edit .checkbox-custom-edit::after {
+            content: '✓';
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .cliente-nombre-edit {
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .cliente-checkbox-edit:checked + .cliente-label-edit .cliente-nombre-edit {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .clientes-count-edit {
+            font-size: 12px !important;
+            color: rgba(102, 126, 234, 0.7) !important;
+            font-weight: 400 !important;
+            margin-left: 8px !important;
+        }
+
+        #buscarClienteEdit {
+            transition: all 0.3s ease !important;
+        }
+
+        #buscarClienteEdit:focus {
+            outline: none !important;
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
+            background: white !important;
+        }
+
+        #buscarClienteEdit::placeholder {
+            color: #999 !important;
+        }
+
+        .no-clientes-found-edit {
+            text-align: center;
+            padding: 30px 15px;
+            color: #999;
+            font-size: 14px;
+            display: none;
+        }
+
+        .no-clientes-found-edit.show {
+            display: block !important;
+        }
+
         .locales-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -579,25 +705,48 @@ unset($_SESSION['error'], $_SESSION['success']);
                         <!-- Sección Clientes -->
                         <div class="form-section">
                             <div class="section-title">
-                                <i class="fas fa-users"></i> Clientes Asignados
+                                <i class="fas fa-users"></i> Clientes Asignados <span class="clientes-count-edit" id="clientesCountEdit" style="font-size: 12px; color: rgba(102, 126, 234, 0.7); font-weight: 400; margin-left: 8px;">(0 seleccionados)</span>
                             </div>
                             
                             <div class="form-group">
-                                <label for="id_clientes">
+                                <label for="buscarClienteEdit">
                                     <i class="fas fa-user-tie"></i> Clientes
                                 </label>
-                                <select class="form-select" id="id_clientes" name="id_clientes[]" multiple>
-                                    <?php if (isset($clientes) && !empty($clientes)): ?>
+                                
+                                <!-- Input de búsqueda -->
+                                <input type="text" 
+                                       id="buscarClienteEdit" 
+                                       placeholder="🔍 Buscar clientes por nombre..." 
+                                       class="form-control"
+                                       style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; margin-bottom: 15px;">
+                                
+                                <div class="clientes-checkbox-group-edit">
+                                    <?php if (isset($clientes) && is_array($clientes) && count($clientes) > 0): ?>
                                         <?php foreach ($clientes as $cliente): ?>
-                                            <option value="<?= $cliente->id_clientes ?>" 
-                                                    <?php echo (in_array($cliente->id_clientes, $clientes_asignados ?? [])) ? 'selected' : ''; ?>>
-                                                <?= htmlspecialchars($cliente->nombre) ?>
-                                            </option>
+                                            <div class="cliente-item-edit visible" data-nombre="<?= strtolower(htmlspecialchars($cliente->nombre)) ?>">
+                                                <input type="checkbox" 
+                                                       id="cliente_edit_<?= $cliente->id_clientes ?>" 
+                                                       name="id_clientes[]" 
+                                                       value="<?= $cliente->id_clientes ?>" 
+                                                       class="cliente-checkbox-edit"
+                                                       <?= (in_array($cliente->id_clientes, $clientes_asignados ?? [])) ? 'checked' : '' ?>>
+                                                <label for="cliente_edit_<?= $cliente->id_clientes ?>" class="cliente-label-edit">
+                                                    <span class="checkbox-custom-edit"></span>
+                                                    <span class="cliente-nombre-edit"><?= htmlspecialchars($cliente->nombre) ?></span>
+                                                </label>
+                                            </div>
                                         <?php endforeach; ?>
+                                        <div class="no-clientes-found-edit" id="noClientesEditMessage" style="display: none; text-align: center; padding: 30px 15px; color: #999; font-size: 14px;">
+                                            <i class="fas fa-search" style="font-size: 24px; opacity: 0.5; margin-bottom: 10px;"></i>
+                                            <p>No se encontraron clientes que coincidan con tu búsqueda</p>
+                                        </div>
+                                    <?php else: ?>
+                                        <p class="text-muted">No hay clientes disponibles</p>
                                     <?php endif; ?>
-                                </select>
+                                </div>
+                                
                                 <small class="form-text text-muted" style="display: block; margin-top: 0.5rem;">
-                                    <i class="fas fa-info-circle"></i> Mantén presionado Ctrl (Cmd en Mac) para seleccionar múltiples clientes
+                                    <i class="fas fa-info-circle"></i> Selecciona uno o varios clientes para asignar a este local
                                 </small>
                             </div>
                         </div>
@@ -703,6 +852,64 @@ unset($_SESSION['error'], $_SESSION['success']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Filtro de búsqueda de clientes
+        const buscarClienteInput = document.getElementById('buscarClienteEdit');
+        const clienteItems = document.querySelectorAll('.cliente-item-edit');
+        const noClientesMessage = document.getElementById('noClientesEditMessage');
+        const clientesCheckboxes = document.querySelectorAll('.cliente-checkbox-edit');
+        const clientesCount = document.getElementById('clientesCountEdit');
+        
+        if (buscarClienteInput && clienteItems.length > 0) {
+            buscarClienteInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase().trim();
+                let visibleCount = 0;
+                
+                clienteItems.forEach(item => {
+                    const nombreCliente = item.getAttribute('data-nombre') || '';
+                    
+                    if (searchTerm === '' || nombreCliente.includes(searchTerm)) {
+                        item.classList.remove('hidden');
+                        item.classList.add('visible');
+                        visibleCount++;
+                    } else {
+                        item.classList.remove('visible');
+                        item.classList.add('hidden');
+                    }
+                });
+                
+                // Mostrar/ocultar mensaje de "no hay resultados"
+                if (noClientesMessage) {
+                    if (visibleCount === 0 && searchTerm !== '') {
+                        noClientesMessage.classList.add('show');
+                        noClientesMessage.style.display = 'block';
+                    } else {
+                        noClientesMessage.classList.remove('show');
+                        noClientesMessage.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Contador de clientes seleccionados
+        if (clientesCheckboxes && clientesCount) {
+            function updateClientesCount() {
+                const selectedCount = Array.from(clientesCheckboxes).filter(cb => cb.checked).length;
+                clientesCount.textContent = `(${selectedCount} seleccionado${selectedCount !== 1 ? 's' : ''})`;
+                
+                // Cambiar color según selección
+                if (selectedCount > 0) {
+                    clientesCount.style.color = '#667eea';
+                } else {
+                    clientesCount.style.color = 'rgba(102, 126, 234, 0.5)';
+                }
+            }
+            
+            clientesCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateClientesCount);
+            });
+            updateClientesCount(); // Inicializar
+        }
+
         const nombreInput = document.getElementById('nombre');
         const direccionInput = document.getElementById('direccion');
         const telefonoInput = document.getElementById('telefono');

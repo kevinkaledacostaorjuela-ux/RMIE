@@ -6,6 +6,12 @@ if (!isset($_SESSION['user'])) {
     header('Location: /RMIE/index.php');
     exit();
 }
+
+// Inicializar variables si no existen
+if (!isset($errors)) $errors = [];
+if (!isset($alerta)) $alerta = [];
+if (!isset($productos)) $productos = [];
+if (!isset($proveedores)) $proveedores = [];
 ?>
 <!DOCTYPE html>
 <head>
@@ -471,6 +477,13 @@ if (!isset($_SESSION['user'])) {
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($debug_info)): ?>
+                <div class="alert alert-info" style="background: rgba(13, 110, 253, 0.1); border: 1px solid rgba(13, 110, 253, 0.3); color: #0d6efd; padding: 12px; margin-bottom: 1rem; border-radius: 8px;">
+                    <i class="fas fa-bug"></i> <strong>DEBUG:</strong>
+                    <pre style="margin-top: 8px; margin-bottom: 0; white-space: pre-wrap; word-break: break-all;"><?= htmlspecialchars($debug_info) ?></pre>
+                </div>
+            <?php endif; ?>
+
             <form method="POST" action="/RMIE/app/controllers/AlertController.php?action=edit&id=<?= urlencode($alerta['id_alertas']) ?>" id="formAlerta">
                 <!-- Grid Principal -->
                 <div class="alertas-grid">
@@ -553,6 +566,30 @@ if (!isset($_SESSION['user'])) {
                                 </select>
                                 <small class="text-muted">Proveedor al que se notificará sobre esta alerta</small>
                             </div>
+
+                            <div class="form-group">
+                                <label for="estado_alerta">
+                                    <i class="fas fa-toggle-on"></i> Estado de la Alerta
+                                </label>
+                                <select class="form-select" id="estado_alerta" name="estado_alerta" required>
+                                    <option value="Activo" <?= (isset($alerta['estado']) && $alerta['estado'] === 'Activo') || !isset($alerta['estado']) ? 'selected' : '' ?>>
+                                        Activo
+                                    </option>
+                                    <option value="Vencida" <?= (isset($alerta['estado']) && $alerta['estado'] === 'Vencida') ? 'selected' : '' ?>>
+                                        Vencida
+                                    </option>
+                                    <option value="Crítica" <?= (isset($alerta['estado']) && $alerta['estado'] === 'Crítica') ? 'selected' : '' ?>>
+                                        Crítica
+                                    </option>
+                                    <option value="Próxima" <?= (isset($alerta['estado']) && $alerta['estado'] === 'Próxima') ? 'selected' : '' ?>>
+                                        Próxima
+                                    </option>
+                                    <option value="Normal" <?= (isset($alerta['estado']) && $alerta['estado'] === 'Normal') ? 'selected' : '' ?>>
+                                        Normal
+                                    </option>
+                                </select>
+                                <small class="text-muted">Seleccione el estado actual de la alerta</small>
+                            </div>
                         </div>
                     </div>
 
@@ -634,9 +671,36 @@ if (!isset($_SESSION['user'])) {
                             <i class="fas fa-chart-line" style="color: #17a2b8;"></i>
                             <strong>Estado de la alerta:</strong>
                             <div style="margin-top: 0.5rem;">
-                                <span class="status-badge">
+                                <span class="status-badge" id="estado-badge">
                                     <i class="fas fa-bell"></i>
-                                    Alerta activa
+                                    <?php 
+                                    $estado_actual = isset($alerta['estado']) ? htmlspecialchars($alerta['estado']) : 'Activo';
+                                    $icono_estado = '';
+                                    $clase_estado = '';
+                                    
+                                    switch ($estado_actual) {
+                                        case 'Vencida':
+                                            $icono_estado = '<i class="fas fa-times-circle"></i>';
+                                            $clase_estado = 'text-danger';
+                                            break;
+                                        case 'Crítica':
+                                            $icono_estado = '<i class="fas fa-exclamation-triangle"></i>';
+                                            $clase_estado = 'text-warning';
+                                            break;
+                                        case 'Próxima':
+                                            $icono_estado = '<i class="fas fa-hourglass-end"></i>';
+                                            $clase_estado = 'text-warning';
+                                            break;
+                                        case 'Normal':
+                                            $icono_estado = '<i class="fas fa-check-circle"></i>';
+                                            $clase_estado = 'text-success';
+                                            break;
+                                        default:
+                                            $icono_estado = '<i class="fas fa-bell"></i>';
+                                            $clase_estado = 'text-info';
+                                    }
+                                    echo $icono_estado . ' ' . $estado_actual;
+                                    ?>
                                 </span>
                             </div>
                         </div>
@@ -737,6 +801,42 @@ if (!isset($_SESSION['user'])) {
                 return;
             }
         });
+        
+        // Actualizar badge del estado cuando cambia el select
+        const estadoSelect = document.getElementById('estado_alerta');
+        if (estadoSelect) {
+            estadoSelect.addEventListener('change', function() {
+                const estadoBadge = document.getElementById('estado-badge');
+                const estado = this.value;
+                let icono = '';
+                let clase = '';
+                
+                switch (estado) {
+                    case 'Vencida':
+                        icono = '<i class="fas fa-times-circle"></i>';
+                        clase = 'text-danger';
+                        break;
+                    case 'Crítica':
+                        icono = '<i class="fas fa-exclamation-triangle"></i>';
+                        clase = 'text-warning';
+                        break;
+                    case 'Próxima':
+                        icono = '<i class="fas fa-hourglass-end"></i>';
+                        clase = 'text-warning';
+                        break;
+                    case 'Normal':
+                        icono = '<i class="fas fa-check-circle"></i>';
+                        clase = 'text-success';
+                        break;
+                    default:
+                        icono = '<i class="fas fa-bell"></i>';
+                        clase = 'text-info';
+                }
+                
+                estadoBadge.innerHTML = icono + ' ' + estado;
+                estadoBadge.className = 'status-badge ' + clase;
+            });
+        }
         
         actualizarProducto();
         

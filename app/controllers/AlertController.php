@@ -47,6 +47,21 @@ class AlertController {
             'vencidas' => $alertas_vencidas
         ];
         
+        // Obtener tipos dinámicamente de las alertas registradas
+        $tipos_disponibles = array();
+        
+        $sql_tipos = "SELECT DISTINCT tipo_alerta FROM alertas WHERE tipo_alerta IS NOT NULL AND tipo_alerta != ''";
+        $result = $conn->query($sql_tipos);
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $tipos_disponibles[] = $row['tipo_alerta'];
+            }
+        }
+        
+        // Para prioridad y estado, usamos valores fijos ya que no existen en la BD
+        $prioridades_disponibles = array('Alta', 'Media', 'Baja');
+        $estados_disponibles = array('Activo', 'Vencida', 'Crítica', 'Próxima', 'Normal');
+        
         include __DIR__ . '/../views/alertas/index.php';
     }
 
@@ -67,6 +82,7 @@ class AlertController {
             $fecha_caducidad = $_POST['fecha_caducidad'] ?? '';
             $id_proveedor = isset($_POST['id_proveedores']) ? (int)$_POST['id_proveedores'] : 0;
             $tipo_alerta = $_POST['alert_type'] ?? 'stock'; // 'stock' o 'expiration'
+            $estado_alerta = $_POST['estado_alerta'] ?? 'Activo'; // Nuevo campo de estado
 
             if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_proveedor) {
                 // Validar existencia en BD
@@ -78,7 +94,7 @@ class AlertController {
                     $_SESSION['error'] = 'Proveedor no válido.';
                 } else {
                     try {
-                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_proveedor, $tipo_alerta);
+                        $resultado = Alert::create($conn, $id_producto, $cantidad_minima, $fecha_caducidad, $id_proveedor, $tipo_alerta, $estado_alerta);
                         if ($resultado) {
                             $_SESSION['success'] = '¡Alerta creada exitosamente!';
                             header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
@@ -98,10 +114,17 @@ class AlertController {
     }
 
     public function edit() {
+        // Iniciar sesión si no está activa
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         global $conn;
         $id = $_GET['id'] ?? 0;
         $errors = [];
         $success = '';
+        $debug_info = '';
+        
         $alerta = Alert::getById($conn, $id);
         if (!$alerta) {
             header('Location: /RMIE/app/controllers/AlertController.php?action=index');
@@ -109,11 +132,18 @@ class AlertController {
         }
         $productos = Product::getAll($conn);
         $proveedores = Provider::getAll($conn);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            // Debug: mostrar qué se recibió
+            $debug_info = "POST recibido. Datos: " . json_encode($_POST);
+            
             $alerta['id_productos'] = isset($_POST['id_productos']) ? (int)$_POST['id_productos'] : 0;
             $alerta['cantidad_minima'] = isset($_POST['cantidad_minima']) ? (int)$_POST['cantidad_minima'] : 0;
             $alerta['fecha_caducidad'] = $_POST['fecha_caducidad'] ?? '';
             $alerta['id_proveedores'] = isset($_POST['id_proveedores']) ? (int)$_POST['id_proveedores'] : 0;
+            $alerta['estado'] = $_POST['estado_alerta'] ?? 'Activo';
+            
+            $debug_info .= "\n Estado en POST: " . (isset($_POST['estado_alerta']) ? $_POST['estado_alerta'] : 'NO ENVIADO');
 
             if (empty($alerta['id_productos'])) $errors[] = 'El producto es obligatorio';
             if (empty($alerta['cantidad_minima']) || $alerta['cantidad_minima'] < 0) $errors[] = 'La cantidad mínima debe ser mayor o igual a 0';
@@ -133,10 +163,14 @@ class AlertController {
             if (empty($errors)) {
                 $result = Alert::update($conn, (int)$id, $alerta);
                 if ($result) {
+                    $_SESSION['success'] = '¡Alerta actualizada exitosamente!';
+                    // Agregar log para debug
+                    error_log("Alert actualizada: ID=" . $id . ", Estado=" . $alerta['estado']);
                     header('Location: /RMIE/app/controllers/AlertController.php?accion=index&success=updated');
                     exit();
                 } else {
-                    $errors[] = 'Error al actualizar la alerta';
+                    $errors[] = 'Error al actualizar la alerta: ' . $conn->error;
+                    error_log("Error al actualizar alerta: " . $conn->error);
                 }
             }
         }

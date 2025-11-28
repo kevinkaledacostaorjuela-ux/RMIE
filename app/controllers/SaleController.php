@@ -160,6 +160,12 @@ class SaleController {
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
             
+            // Cargar categorías y subcategorías para los filtros
+            require_once __DIR__ . '/../models/Category.php';
+            require_once __DIR__ . '/../models/Subcategory.php';
+            $categorias = Category::getAll($conn);
+            $subcategorias = Subcategory::getAll($conn);
+            
             // Filtrar usuarios: excluir admins
             $usuarios = array_values(array_filter($usuarios, function($u) {
                 return $u->rol !== 'admin';
@@ -175,6 +181,12 @@ class SaleController {
             $productos = Product::getAll($conn);
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
+            
+            // Cargar categorías y subcategorías para los filtros
+            require_once __DIR__ . '/../models/Category.php';
+            require_once __DIR__ . '/../models/Subcategory.php';
+            $categorias = Category::getAll($conn);
+            $subcategorias = Subcategory::getAll($conn);
             
             // Filtrar usuarios: excluir admins
             $usuarios = array_values(array_filter($usuarios, function($u) {
@@ -287,6 +299,12 @@ class SaleController {
             $productos = Product::getAll($conn);
             $clientes = Client::getAll($conn);
             $usuarios = User::getAll($conn);
+            
+            // Cargar categorías y subcategorías para los filtros
+            require_once __DIR__ . '/../models/Category.php';
+            require_once __DIR__ . '/../models/Subcategory.php';
+            $categorias = Category::getAll($conn);
+            $subcategorias = Subcategory::getAll($conn);
             
             // Filtrar usuarios: excluir admins
             $usuarios = array_values(array_filter($usuarios, function($u) {

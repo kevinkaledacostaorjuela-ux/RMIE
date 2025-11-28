@@ -709,6 +709,32 @@
                                 <i class="fas fa-box"></i> Seleccionar Productos para la Venta
                             </h5>
                             
+                            <!-- Filtros en cascada: Categoría → Subcategoría -->
+                            <div class="form-group">
+                                <label for="filtro_categoria">
+                                    <i class="fas fa-filter"></i> Filtrar por Categoría
+                                </label>
+                                <select id="filtro_categoria" class="form-select">
+                                    <option value="">Todas las categorías</option>
+                                    <?php if (isset($categorias) && is_array($categorias)): ?>
+                                        <?php foreach ($categorias as $categoria): ?>
+                                            <option value="<?= htmlspecialchars($categoria->id_categoria) ?>">
+                                                <?= htmlspecialchars($categoria->nombre) ?>
+                                            </option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="filtro_subcategoria">
+                                    <i class="fas fa-filter"></i> Filtrar por Subcategoría
+                                </label>
+                                <select id="filtro_subcategoria" class="form-select" disabled>
+                                    <option value="">Seleccione primero una categoría</option>
+                                </select>
+                            </div>
+                            
                             <div class="form-group">
                                 <label>
                                     <i class="fas fa-cubes"></i> Productos *
@@ -716,10 +742,22 @@
                                 <div class="productos-info-box" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%); padding: 1rem; border-radius: 10px; margin-bottom: 1rem; color: white;">
                                     <i class="fas fa-info-circle"></i> Selecciona los productos para esta venta
                                 </div>
+                                
+                                <!-- Búsqueda por nombre -->
+                                <div style="margin-bottom: 1rem;">
+                                    <input type="text" 
+                                           id="buscar_producto" 
+                                           class="form-control" 
+                                           placeholder="🔍 Buscar producto por nombre..."
+                                           autocomplete="off">
+                                </div>
                                 <div class="productos-checkbox-container-create" style="max-height: 400px; overflow-y: auto; border: 2px solid #667eea; border-radius: 10px; padding: 1rem; background: white;">
                                     <?php if (isset($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $producto): ?>
-                                            <div class="checkbox-item" style="margin-bottom: 0.8rem;">
+                                            <div class="checkbox-item producto-item" 
+                                                 data-categoria-id="<?= htmlspecialchars($producto->id_categoria ?? '') ?>"
+                                                 data-subcategoria-id="<?= htmlspecialchars($producto->id_subcategoria ?? '') ?>"
+                                                 style="margin-bottom: 0.8rem;">
                                                 <input type="checkbox" 
                                                        class="checkbox-input-create" 
                                                        id="producto_<?= $producto->id_productos ?>" 
@@ -904,6 +942,33 @@
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Datos para filtros en cascada -->
+    <script>
+    // Preparar datos de subcategorías por categoría
+    const subcategoriasPorCategoria = {
+        <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+            <?php 
+            $subcats_by_cat = [];
+            foreach ($subcategorias as $subcat_data) {
+                $subcat = $subcat_data['obj'] ?? null;
+                if ($subcat && isset($subcat->id_categoria)) {
+                    $cat_id = $subcat->id_categoria;
+                    if (!isset($subcats_by_cat[$cat_id])) {
+                        $subcats_by_cat[$cat_id] = [];
+                    }
+                    $subcats_by_cat[$cat_id][] = [
+                        'id' => $subcat->id_subcategoria,
+                        'nombre' => $subcat->nombre
+                    ];
+                }
+            }
+            foreach ($subcats_by_cat as $cat_id => $subcats): ?>
+                '<?= $cat_id ?>': <?= json_encode($subcats) ?>,
+            <?php endforeach; ?>
+        <?php endif; ?>
+    };
+    </script>
+    
     <!-- JavaScript simplificado con checkboxes -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -912,10 +977,120 @@
         const countSpan = document.getElementById('productos-seleccionados-count');
         const btnRegistrar = document.getElementById('btn-registrar');
         
+        // Elementos de filtros
+        const buscarProducto = document.getElementById('buscar_producto');
+        const filtroCategoria = document.getElementById('filtro_categoria');
+        const filtroSubcategoria = document.getElementById('filtro_subcategoria');
+        const productosItems = document.querySelectorAll('.producto-item');
+        
         // Verificar que los elementos existen
         if (!form || !btnRegistrar) {
             console.error('Elementos del formulario no encontrados');
             return;
+        }
+        
+        // FILTRADO EN CASCADA: Búsqueda → Categoría → Subcategoría → Productos
+        
+        // Cuando se escribe en el buscador
+        if (buscarProducto) {
+            buscarProducto.addEventListener('input', function() {
+                aplicarFiltros();
+            });
+        }
+        
+        // Cuando cambia la categoría
+        if (filtroCategoria) {
+            filtroCategoria.addEventListener('change', function() {
+                const categoriaId = this.value;
+                
+                // Limpiar y resetear subcategorías
+                filtroSubcategoria.innerHTML = '<option value="">Todas las subcategorías</option>';
+                
+                if (categoriaId) {
+                    // Habilitar subcategorías y cargar las correspondientes
+                    filtroSubcategoria.disabled = false;
+                    
+                    const subcategorias = subcategoriasPorCategoria[categoriaId] || [];
+                    subcategorias.forEach(subcat => {
+                        const option = document.createElement('option');
+                        option.value = subcat.id;
+                        option.textContent = subcat.nombre;
+                        filtroSubcategoria.appendChild(option);
+                    });
+                } else {
+                    // Si no hay categoría seleccionada, deshabilitar subcategorías
+                    filtroSubcategoria.disabled = true;
+                    filtroSubcategoria.innerHTML = '<option value="">Seleccione primero una categoría</option>';
+                }
+                
+                // Aplicar filtro de productos
+                aplicarFiltros();
+            });
+        }
+        
+        // Cuando cambia la subcategoría
+        if (filtroSubcategoria) {
+            filtroSubcategoria.addEventListener('change', function() {
+                aplicarFiltros();
+            });
+        }
+        
+        // Función para aplicar filtros a los productos
+        function aplicarFiltros() {
+            const textoBusqueda = buscarProducto ? buscarProducto.value.toLowerCase().trim() : '';
+            const categoriaId = filtroCategoria ? filtroCategoria.value : '';
+            const subcategoriaId = filtroSubcategoria ? filtroSubcategoria.value : '';
+            
+            let productosVisibles = 0;
+            
+            productosItems.forEach(item => {
+                const itemCategoriaId = item.dataset.categoriaId || '';
+                const itemSubcategoriaId = item.dataset.subcategoriaId || '';
+                const checkbox = item.querySelector('.checkbox-input-create');
+                const nombreProducto = checkbox ? (checkbox.dataset.nombre || '').toLowerCase() : '';
+                
+                let mostrar = true;
+                
+                // Filtrar por búsqueda de texto
+                if (textoBusqueda && !nombreProducto.includes(textoBusqueda)) {
+                    mostrar = false;
+                }
+                
+                // Filtrar por categoría
+                if (categoriaId && itemCategoriaId !== categoriaId) {
+                    mostrar = false;
+                }
+                
+                // Filtrar por subcategoría
+                if (subcategoriaId && itemSubcategoriaId !== subcategoriaId) {
+                    mostrar = false;
+                }
+                
+                // Mostrar u ocultar el producto
+                if (mostrar) {
+                    item.style.display = '';
+                    productosVisibles++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Mostrar mensaje si no hay productos
+            const container = document.querySelector('.productos-checkbox-container-create');
+            let mensajeNoProductos = container.querySelector('.no-productos-mensaje');
+            
+            if (productosVisibles === 0) {
+                if (!mensajeNoProductos) {
+                    mensajeNoProductos = document.createElement('div');
+                    mensajeNoProductos.className = 'no-productos-mensaje text-center text-muted py-4';
+                    mensajeNoProductos.innerHTML = '<i class="fas fa-box-open fa-3x mb-3"></i><p>No hay productos en esta categoría/subcategoría</p>';
+                    container.appendChild(mensajeNoProductos);
+                }
+            } else {
+                if (mensajeNoProductos) {
+                    mensajeNoProductos.remove();
+                }
+            }
         }
         
         // Estilo para checkboxes

@@ -265,9 +265,43 @@
             transition: all 0.3s ease;
             animation: slideIn 0.3s ease-out;
         }
+
+        .checkbox-item-create.hidden {
+            display: none !important;
+        }
+
+        .checkbox-item-create.visible {
+            display: block !important;
+        }
         
         .checkbox-item-create:last-child {
             margin-bottom: 0;
+        }
+
+        #buscarLocal {
+            transition: all 0.3s ease !important;
+        }
+
+        #buscarLocal:focus {
+            outline: none !important;
+            border-color: #28a745 !important;
+            box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.2) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+        }
+
+        #buscarLocal::placeholder {
+            color: #999 !important;
+        }
+
+        .no-locales-found-message {
+            text-align: center;
+            padding: 30px 15px;
+            color: #999;
+            font-size: 14px;
+        }
+
+        .no-locales-found-message.show {
+            display: block;
         }
         
         .checkbox-input-create {
@@ -825,10 +859,19 @@
                                 <span>Seleccione uno o más locales para asignar al cliente (Opcional)</span>
                             </div>
                             
+                            <!-- Input de búsqueda -->
+                            <div style="margin-bottom: 15px;">
+                                <input type="text" 
+                                       id="buscarLocal" 
+                                       placeholder="🔍 Buscar locales por nombre..." 
+                                       class="form-control-modern"
+                                       style="width: 100%; padding: 12px 15px; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px; font-size: 14px; color: #333;">
+                            </div>
+                            
                             <div class="locales-checkbox-container-create">
                                 <?php if (isset($locales) && is_array($locales) && count($locales) > 0): ?>
                                     <?php foreach ($locales as $local): ?>
-                                        <div class="checkbox-item-create">
+                                        <div class="checkbox-item-create local-item-search visible" data-nombre="<?= strtolower(htmlspecialchars($local->nombre_local)) ?>">
                                             <input type="checkbox" 
                                                    name="id_locales[]" 
                                                    value="<?= $local->id_locales ?>" 
@@ -844,6 +887,10 @@
                                             </label>
                                         </div>
                                     <?php endforeach; ?>
+                                    <div class="no-locales-found-message" id="noLocalesMessage" style="display: none; text-align: center; padding: 30px 15px; color: #999; font-size: 14px;">
+                                        <i class="fas fa-search" style="font-size: 24px; opacity: 0.5; margin-bottom: 10px;"></i>
+                                        <p>No se encontraron locales que coincidan con tu búsqueda</p>
+                                    </div>
                                 <?php else: ?>
                                     <div class="no-locales-message">
                                         <i class="fas fa-store-slash"></i>
@@ -982,6 +1029,42 @@
             setupCharacterCount('descripcion', 'descripcion-count', 255);
             setupCharacterCount('correo', 'correo-count', 100);
             setupCharacterCount('cel_cliente', 'cel_cliente-count', 20);
+            
+            // Filtro de búsqueda de locales
+            const buscarLocalInput = document.getElementById('buscarLocal');
+            const localItems = document.querySelectorAll('.local-item-search');
+            const noLocalesMessage = document.getElementById('noLocalesMessage');
+            
+            if (buscarLocalInput && localItems.length > 0) {
+                buscarLocalInput.addEventListener('input', function() {
+                    const searchTerm = this.value.toLowerCase().trim();
+                    let visibleCount = 0;
+                    
+                    localItems.forEach(item => {
+                        const nombreLocal = item.getAttribute('data-nombre') || '';
+                        
+                        if (searchTerm === '' || nombreLocal.includes(searchTerm)) {
+                            item.classList.remove('hidden');
+                            item.classList.add('visible');
+                            visibleCount++;
+                        } else {
+                            item.classList.remove('visible');
+                            item.classList.add('hidden');
+                        }
+                    });
+                    
+                    // Mostrar/ocultar mensaje de "no hay resultados"
+                    if (noLocalesMessage) {
+                        if (visibleCount === 0 && searchTerm !== '') {
+                            noLocalesMessage.classList.add('show');
+                            noLocalesMessage.style.display = 'block';
+                        } else {
+                            noLocalesMessage.classList.remove('show');
+                            noLocalesMessage.style.display = 'none';
+                        }
+                    }
+                });
+            }
             
             // Vista previa en tiempo real
             function actualizarVistaPrevia() {

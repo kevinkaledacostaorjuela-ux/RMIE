@@ -121,6 +121,13 @@ class ProviderController {
             global $conn;
             require_once __DIR__ . '/../models/Product.php';
             $productos = Product::getAll($conn);
+            
+            // Debug: verificar si hay productos
+            error_log("DEBUG: Productos count = " . (is_array($productos) ? count($productos) : 'no es array'));
+            if (is_array($productos) && count($productos) > 0) {
+                error_log("DEBUG: Primer producto = " . $productos[0]->nombre);
+            }
+            
             include __DIR__ . '/../views/proveedores/create.php';
         } catch (Exception $e) {
             error_log("Error en ProviderController::create: " . $e->getMessage());

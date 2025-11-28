@@ -561,168 +561,168 @@
                                             </div>
                                         </div>
                     
-                    <div class="form-row form-row-2">
-                        <!-- Información de Ubicación -->
-                        <div class="section-card">
-                            <div class="section-title">
-                                <i class="fas fa-map-marker-alt"></i>
-                                Información de Ubicación
-                            </div>
-                            
-                            <div class="form-floating-modern">
-                                <textarea class="form-textarea-modern" 
-                                          id="direccion" 
-                                          name="direccion" 
-                                          placeholder=" "
-                                          maxlength="200"
-                                          required></textarea>
-                                <label for="direccion">
-                                    <i class="fas fa-map-marker-alt"></i>
-                                    Dirección Completa <span class="required">*</span>
-                                </label>
-                                <div class="character-count">
-                                    <span id="direccion-count">0</span>/200
-                                </div>
-                                <div class="form-help">
-                                    <i class="fas fa-info-circle"></i>
-                                    Incluye calle, número, barrio y ciudad (mínimo 5 caracteres)
-                                </div>
-                            </div>
+                    <!-- Panel Unificado -->
+                    <div class="section-card">
+                        <div class="section-title">
+                            <i class="fas fa-map-marker-alt"></i>
+                            Información de Ubicación y Referencias del Sistema
+                        </div>
+                        
+                        <!-- Búsqueda de Local -->
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" 
+                                   id="buscar_local" 
+                                   class="form-control" 
+                                   placeholder="🔍 Buscar local por nombre..."
+                                   autocomplete="off"
+                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
+                        </div>
 
-                            <div class="form-floating-modern">
-                                <select class="form-select-modern" 
-                                        id="id_locales" 
-                                        name="id_locales" 
-                                        required>
-                                    <option value="">Seleccionar local...</option>
-                                    <?php if (!empty($available_locals)): ?>
-                                        <?php foreach ($available_locals as $local): ?>
-                                            <option value="<?= htmlspecialchars($local['id_locales']) ?>"
-                                                    data-direccion="<?= htmlspecialchars($local['direccion']) ?>"
-                                                    data-localidad="<?= htmlspecialchars($local['localidad'] ?? '') ?>"
-                                                    data-barrio="<?= htmlspecialchars($local['barrio'] ?? '') ?>">
-                                                <?= htmlspecialchars($local['nombre_local']) ?>
-                                                <?php if (!empty($local['localidad'])): ?>
-                                                    - <?= htmlspecialchars($local['localidad']) ?>
-                                                <?php endif; ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <option value="" disabled>No hay locales disponibles</option>
-                                    <?php endif; ?>
-                                </select>
-                                <label for="id_locales">
-                                    <i class="fas fa-store"></i>
-                                    Local Existente <span class="required">*</span>
-                                </label>
-                                <div class="form-help">
-                                    <i class="fas fa-database"></i>
-                                    Selecciona el local de destino registrado en el sistema
-                                </div>
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="id_locales" 
+                                    name="id_locales" 
+                                    required>
+                                <option value="">Seleccionar local...</option>
+                                <?php if (!empty($available_locals)): ?>
+                                    <?php foreach ($available_locals as $local): ?>
+                                        <option value="<?= htmlspecialchars($local['id_locales']) ?>"
+                                                data-direccion="<?= htmlspecialchars($local['direccion']) ?>"
+                                                data-localidad="<?= htmlspecialchars($local['localidad'] ?? '') ?>"
+                                                data-barrio="<?= htmlspecialchars($local['barrio'] ?? '') ?>">
+                                            <?= htmlspecialchars($local['nombre_local']) ?>
+                                            <?php if (!empty($local['localidad'])): ?>
+                                                - <?= htmlspecialchars($local['localidad']) ?>
+                                            <?php endif; ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="" disabled>No hay locales disponibles</option>
+                                <?php endif; ?>
+                            </select>
+                            <label for="id_locales">
+                                <i class="fas fa-store"></i>
+                                Local Existente <span class="required">*</span>
+                            </label>
+                            <div class="form-help">
+                                <i class="fas fa-database"></i>
+                                Selecciona el local de destino registrado en el sistema
+                            </div>
+                        </div>
+                        
+                        <!-- Búsqueda de Cliente -->
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" 
+                                   id="buscar_cliente" 
+                                   class="form-control" 
+                                   placeholder="🔍 Buscar cliente por nombre..."
+                                   autocomplete="off"
+                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
+                        </div>
+                        
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="id_clientes" 
+                                    name="id_clientes" 
+                                    required>
+                                <option value="">Seleccionar cliente...</option>
+                                <?php if (!empty($available_clients)): ?>
+                                    <?php foreach ($available_clients as $client): ?>
+                                        <option value="<?= htmlspecialchars($client['id_clientes']) ?>">
+                                            <?= htmlspecialchars($client['nombre']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="" disabled>No hay clientes disponibles</option>
+                                <?php endif; ?>
+                            </select>
+                            <label for="id_clientes">
+                                <i class="fas fa-users"></i>
+                                Cliente del Sistema <span class="required">*</span>
+                            </label>
+                            <div class="form-help">
+                                <i class="fas fa-database"></i>
+                                Cliente registrado en el sistema
                             </div>
                         </div>
 
-                        <!-- Referencias y Vista Previa -->
-                        <div class="section-card">
-                            <div class="section-title">
-                                <i class="fas fa-link"></i>
-                                Referencias del Sistema
+                        <!-- Búsqueda de Venta -->
+                        <div style="margin-bottom: 1rem;">
+                            <input type="text" 
+                                   id="buscar_venta" 
+                                   class="form-control" 
+                                   placeholder="🔍 Buscar venta..."
+                                   autocomplete="off"
+                                   style="background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 12px; padding: 14px 18px; color: #2d3748; font-weight: 500;">
+                        </div>
+
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="id_ventas" 
+                                    name="id_ventas" 
+                                    required>
+                                <option value="">Seleccionar venta...</option>
+                                <?php if (!empty($available_sales)): ?>
+                                    <?php foreach ($available_sales as $sale): ?>
+                                        <option value="<?= htmlspecialchars($sale['id_ventas']) ?>">
+                                            <?= htmlspecialchars($sale['descripcion']) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="" disabled>No hay ventas disponibles</option>
+                                <?php endif; ?>
+                            </select>
+                            <label for="id_ventas">
+                                <i class="fas fa-shopping-cart"></i>
+                                Venta Asociada <span class="required">*</span>
+                            </label>
+                            <div class="form-help">
+                                <i class="fas fa-box"></i>
+                                Venta que se entregará en esta ruta
+                            </div>
+                        </div>
+
+                        <!-- Vista Previa -->
+                        <div class="preview-section">
+                            <div style="text-align: center; margin-bottom: 20px;">
+                                <div class="route-avatar-large" id="previewAvatar">
+                                    <i class="fas fa-route"></i>
+                                </div>
+                                <h6 style="color: rgba(255, 255, 255, 0.9); margin: 0;">
+                                    Vista Previa de la Ruta
+                                </h6>
                             </div>
                             
-                            <div class="form-floating-modern">
-                                <select class="form-select-modern" 
-                                        id="id_clientes" 
-                                        name="id_clientes" 
-                                        required>
-                                    <option value="">Seleccionar cliente...</option>
-                                    <?php if (!empty($available_clients)): ?>
-                                        <?php foreach ($available_clients as $client): ?>
-                                            <option value="<?= htmlspecialchars($client['id_clientes']) ?>">
-                                                <?= htmlspecialchars($client['nombre']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <option value="" disabled>No hay clientes disponibles</option>
-                                    <?php endif; ?>
-                                </select>
-                                <label for="id_clientes">
+                            <div class="preview-item">
+                                <span class="preview-label">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    Dirección:
+                                </span>
+                                <span class="preview-value" id="preview-direccion">No especificada</span>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <span class="preview-label">
+                                    <i class="fas fa-store"></i>
+                                    Local:
+                                </span>
+                                <span class="preview-value" id="preview-local">No especificado</span>
+                            </div>
+                            
+                            <div class="preview-item">
+                                <span class="preview-label">
                                     <i class="fas fa-users"></i>
-                                    Cliente del Sistema <span class="required">*</span>
-                                </label>
-                                <div class="form-help">
-                                    <i class="fas fa-database"></i>
-                                    Cliente registrado en el sistema
-                                </div>
+                                    Cliente Sistema:
+                                </span>
+                                <span class="preview-value" id="preview-id-cliente">No seleccionado</span>
                             </div>
-
-                            <div class="form-floating-modern">
-                                <select class="form-select-modern" 
-                                        id="id_ventas" 
-                                        name="id_ventas" 
-                                        required>
-                                    <option value="">Seleccionar venta...</option>
-                                    <?php if (!empty($available_sales)): ?>
-                                        <?php foreach ($available_sales as $sale): ?>
-                                            <option value="<?= htmlspecialchars($sale['id_ventas']) ?>">
-                                                <?= htmlspecialchars($sale['descripcion']) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php else: ?>
-                                        <option value="" disabled>No hay ventas disponibles</option>
-                                    <?php endif; ?>
-                                </select>
-                                <label for="id_ventas">
+                            
+                            <div class="preview-item">
+                                <span class="preview-label">
                                     <i class="fas fa-shopping-cart"></i>
-                                    Venta Asociada <span class="required">*</span>
-                                </label>
-                                <div class="form-help">
-                                    <i class="fas fa-box"></i>
-                                    Venta que se entregará en esta ruta
-                                </div>
-                            </div>
-
-                            <!-- Vista Previa -->
-                            <div class="preview-section">
-                                <div style="text-align: center; margin-bottom: 20px;">
-                                    <div class="route-avatar-large" id="previewAvatar">
-                                        <i class="fas fa-route"></i>
-                                    </div>
-                                    <h6 style="color: rgba(255, 255, 255, 0.9); margin: 0;">
-                                        Vista Previa de la Ruta
-                                    </h6>
-                                </div>
-                                
-                                <div class="preview-item">
-                                    <span class="preview-label">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        Dirección:
-                                    </span>
-                                    <span class="preview-value" id="preview-direccion">No especificada</span>
-                                </div>
-                                
-                                <div class="preview-item">
-                                    <span class="preview-label">
-                                        <i class="fas fa-store"></i>
-                                        Local:
-                                    </span>
-                                    <span class="preview-value" id="preview-local">No especificado</span>
-                                </div>
-                                
-                                <div class="preview-item">
-                                    <span class="preview-label">
-                                        <i class="fas fa-users"></i>
-                                        Cliente Sistema:
-                                    </span>
-                                    <span class="preview-value" id="preview-id-cliente">No seleccionado</span>
-                                </div>
-                                
-                                <div class="preview-item">
-                                    <span class="preview-label">
-                                        <i class="fas fa-shopping-cart"></i>
-                                        Venta:
-                                    </span>
-                                    <span class="preview-value" id="preview-id-venta">No seleccionada</span>
-                                </div>
+                                    Venta:
+                                </span>
+                                <span class="preview-value" id="preview-id-venta">No seleccionada</span>
                             </div>
                         </div>
                     </div>
@@ -758,66 +758,101 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.getElementById('createRouteForm');
-            const direccionField = document.getElementById('direccion');
             const idLocalesField = document.getElementById('id_locales');
             const idClienteField = document.getElementById('id_clientes');
             const idVentaField = document.getElementById('id_ventas');
+            
+            // Campos de búsqueda
+            const buscarLocal = document.getElementById('buscar_local');
+            const buscarCliente = document.getElementById('buscar_cliente');
+            const buscarVenta = document.getElementById('buscar_venta');
 
-            // Contadores de caracteres
-            function setupCharacterCount(inputId, countId, maxLength) {
-                const input = document.getElementById(inputId);
-                const counter = document.getElementById(countId);
+            // Función mejorada para filtrar opciones de un select
+            function filtrarSelect(buscarInput, selectElement) {
+                if (!buscarInput || !selectElement) return;
                 
-                if (input && counter) {
-                    function updateCount() {
-                        const count = input.value.length;
-                        counter.textContent = count;
-                        counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                buscarInput.addEventListener('input', function() {
+                    const textoBusqueda = this.value.toLowerCase().trim();
+                    const opciones = selectElement.options;
+                    let opcionesVisibles = 0;
+                    
+                    for (let i = 0; i < opciones.length; i++) {
+                        const opcion = opciones[i];
+                        const textoOpcion = opcion.text.toLowerCase();
+                        
+                        // No ocultar la primera opción (placeholder)
+                        if (i === 0) {
+                            opcion.style.display = '';
+                            continue;
+                        }
+                        
+                        // Filtrar por texto de búsqueda
+                        if (textoBusqueda === '' || textoOpcion.includes(textoBusqueda)) {
+                            opcion.style.display = '';
+                            opcionesVisibles++;
+                        } else {
+                            opcion.style.display = 'none';
+                        }
                     }
                     
-                    input.addEventListener('input', updateCount);
-                    updateCount(); // Inicializar
-                }
-            }
-            
-            setupCharacterCount('direccion', 'direccion-count', 200);
-
-            // Autocompletar dirección cuando se selecciona un local
-            if (idLocalesField) {
-                idLocalesField.addEventListener('change', function() {
-                    const selectedOption = this.options[this.selectedIndex];
-                    const localDireccion = selectedOption.getAttribute('data-direccion');
-                    const localidad = selectedOption.getAttribute('data-localidad');
-                    const barrio = selectedOption.getAttribute('data-barrio');
-                    
-                    if (localDireccion && direccionField.value.trim() === '') {
-                        let direccionCompleta = localDireccion;
-                        if (barrio) direccionCompleta += ', ' + barrio;
-                        if (localidad) direccionCompleta += ', ' + localidad;
-                        direccionField.value = direccionCompleta;
-                        updatePreview();
+                    // Si no hay opciones visibles, mostrar mensaje
+                    if (opcionesVisibles === 0 && textoBusqueda !== '') {
+                        // Cambiar el placeholder temporalmente
+                        const placeholder = opciones[0];
+                        const textoOriginal = placeholder.text;
+                        placeholder.text = 'No se encontraron resultados';
+                        placeholder.style.color = '#999';
+                        
+                        setTimeout(() => {
+                            placeholder.text = textoOriginal;
+                            placeholder.style.color = '';
+                        }, 2000);
+                    }
+                });
+                
+                // Limpiar búsqueda cuando se selecciona una opción
+                selectElement.addEventListener('change', function() {
+                    if (this.value) {
+                        buscarInput.value = '';
+                        // Mostrar todas las opciones nuevamente
+                        for (let i = 1; i < this.options.length; i++) {
+                            this.options[i].style.display = '';
+                        }
                     }
                 });
             }
+            
+            // Aplicar filtros a los selects
+            filtrarSelect(buscarLocal, idLocalesField);
+            filtrarSelect(buscarCliente, idClienteField);
+            filtrarSelect(buscarVenta, idVentaField);
 
             // Vista previa en tiempo real
             function updatePreview() {
-                // Actualizar avatar con primera letra de dirección
+                // Actualizar avatar con primera letra del local
                 const avatar = document.getElementById('previewAvatar');
-                const direccion = direccionField.value;
                 const localSelect = idLocalesField;
                 const localNombre = localSelect ? localSelect.options[localSelect.selectedIndex]?.text : '';
                 
-                if (direccion || localNombre) {
-                    const firstChar = (localNombre || direccion).charAt(0).toUpperCase();
+                if (localNombre && localNombre !== 'Seleccionar local...') {
+                    const firstChar = localNombre.charAt(0).toUpperCase();
                     avatar.innerHTML = firstChar;
                 } else {
                     avatar.innerHTML = '<i class="fas fa-route"></i>';
                 }
                 
-                // Actualizar vista previa
+                // Actualizar dirección desde el local seleccionado
+                const selectedOption = localSelect.options[localSelect.selectedIndex];
+                const localDireccion = selectedOption?.getAttribute('data-direccion') || '';
+                const localidad = selectedOption?.getAttribute('data-localidad') || '';
+                const barrio = selectedOption?.getAttribute('data-barrio') || '';
+                
+                let direccionCompleta = localDireccion;
+                if (barrio) direccionCompleta += ', ' + barrio;
+                if (localidad) direccionCompleta += ', ' + localidad;
+                
                 document.getElementById('preview-direccion').textContent = 
-                    direccionField.value || 'No especificada';
+                    direccionCompleta || 'No especificada';
                 
                 // Para local
                 const selectedLocalText = localSelect.options[localSelect.selectedIndex]?.text || 'No seleccionado';
@@ -838,7 +873,7 @@
             }
 
             // Agregar listeners para vista previa
-            [direccionField, idLocalesField, idClienteField, idVentaField].forEach(field => {
+            [idLocalesField, idClienteField, idVentaField].forEach(field => {
                 if (field) {
                     field.addEventListener('input', updatePreview);
                     field.addEventListener('change', updatePreview);
@@ -849,12 +884,6 @@
             form.addEventListener('submit', function(e) {
                 let isValid = true;
                 const errors = [];
-
-                // Validar dirección
-                if (direccionField.value.trim().length < 5) {
-                    errors.push('La dirección debe tener al menos 5 caracteres');
-                    isValid = false;
-                }
 
                 // Validar local
                 if (!idLocalesField.value || idLocalesField.value === '') {
@@ -882,10 +911,12 @@
                 // Confirmación antes de enviar
                 const localSelect = idLocalesField;
                 const localNombre = localSelect.options[localSelect.selectedIndex]?.text || '';
+                const clienteSelect = idClienteField;
+                const clienteNombre = clienteSelect.options[clienteSelect.selectedIndex]?.text || '';
                 
                 const confirmMessage = `¿Confirmas la creación de esta ruta?\n\n` +
-                    `Dirección: ${direccionField.value}\n` +
-                    `Local: ${localNombre}`;
+                    `Local: ${localNombre}\n` +
+                    `Cliente: ${clienteNombre}`;
 
                 if (!confirm(confirmMessage)) {
                     e.preventDefault();

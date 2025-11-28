@@ -69,16 +69,12 @@ class RouteController {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 // Validación de datos
-                $direccion = trim($_POST['direccion'] ?? '');
                 $id_locales = intval($_POST['id_locales'] ?? 0);
                 $id_clientes = intval($_POST['id_clientes'] ?? 0);
                 $id_ventas = intval($_POST['id_ventas'] ?? 0);
                 $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
 
                 // Validaciones básicas
-                if (empty($direccion) || strlen($direccion) < 5) {
-                    throw new Exception("La dirección debe tener al menos 5 caracteres.");
-                }
                 if ($id_locales <= 0) {
                     throw new Exception("Debe seleccionar un local válido.");
                 }
@@ -98,17 +94,28 @@ class RouteController {
                     throw new Exception("La venta seleccionada no existe en el sistema. Por favor, selecciona una venta válida.");
                 }
 
-                // Obtener nombre del local desde la base de datos
-                $localQuery = "SELECT nombre_local FROM locales WHERE id_locales = ?";
+                // Obtener nombre y dirección del local desde la base de datos
+                $localQuery = "SELECT nombre_local, direccion, localidad, barrio FROM locales WHERE id_locales = ?";
                 $stmt = $conn->prepare($localQuery);
                 $stmt->bind_param('i', $id_locales);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 $localData = $result->fetch_assoc();
                 $nombre_local = $localData['nombre_local'] ?? '';
+                $direccion = $localData['direccion'] ?? '';
+                $localidad = $localData['localidad'] ?? '';
+                $barrio = $localData['barrio'] ?? '';
+                
+                // Construir dirección completa
+                if ($barrio) $direccion .= ', ' . $barrio;
+                if ($localidad) $direccion .= ', ' . $localidad;
 
                 if (empty($nombre_local)) {
                     throw new Exception("El local seleccionado no existe.");
+                }
+                
+                if (empty($direccion)) {
+                    throw new Exception("El local seleccionado no tiene una dirección registrada.");
                 }
 
                 // Obtener nombre del cliente desde la base de datos

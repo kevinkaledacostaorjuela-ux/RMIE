@@ -356,6 +356,73 @@ if (session_status() == PHP_SESSION_NONE) {
             }
         }
         
+        /* Estilos para búsqueda con filtro */
+        .search-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input-modern {
+            width: 100%;
+            padding: 18px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            font-size: 16px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .search-input-modern:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .search-options-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: none;
+            border-radius: 0 0 15px 15px;
+            display: none;
+            z-index: 1000;
+            margin-top: -2px;
+        }
+
+        .search-options-list.active {
+            display: block;
+        }
+
+        .search-option-item {
+            padding: 12px 15px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .search-option-item:last-child {
+            border-bottom: none;
+        }
+
+        .search-option-item:hover {
+            background: rgba(102, 126, 234, 0.2);
+            padding-left: 25px;
+        }
+
+        .search-option-item.selected {
+            background: rgba(102, 126, 234, 0.3);
+            font-weight: 600;
+            color: #667eea;
+        }
+
         /* Animaciones */
         @keyframes slideIn {
             from {
@@ -427,6 +494,21 @@ if (session_status() == PHP_SESSION_NONE) {
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
+                            <div class="search-input-wrapper">
+                                <input type="text" 
+                                       class="search-input-modern" 
+                                       id="search_producto_stock" 
+                                       placeholder=" "
+                                       autocomplete="off">
+                                <div class="search-options-list" id="options_producto_stock"></div>
+                            </div>
+                            <label for="search_producto_stock">
+                                <i class="fas fa-box"></i>
+                                Buscar Producto
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="producto_stock" 
                                     name="id_productos" 
@@ -441,7 +523,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="producto_stock">
-                                <i class="fas fa-box"></i>
+                                <i class="fas fa-list"></i>
                                 Producto a Monitorear
                             </label>
                         </div>
@@ -476,6 +558,21 @@ if (session_status() == PHP_SESSION_NONE) {
                         </div>
 
                         <div class="form-floating-modern">
+                            <div class="search-input-wrapper">
+                                <input type="text" 
+                                       class="search-input-modern" 
+                                       id="search_cliente_stock" 
+                                       placeholder=" "
+                                       autocomplete="off">
+                                <div class="search-options-list" id="options_cliente_stock"></div>
+                            </div>
+                            <label for="search_cliente_stock">
+                                <i class="fas fa-truck"></i>
+                                Buscar Proveedor
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="cliente_stock" 
                                     name="id_proveedores" 
@@ -490,7 +587,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="cliente_stock">
-                                <i class="fas fa-truck"></i>
+                                <i class="fas fa-list"></i>
                                 Proveedor Responsable
                             </label>
                         </div>
@@ -511,6 +608,21 @@ if (session_status() == PHP_SESSION_NONE) {
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
+                            <div class="search-input-wrapper">
+                                <input type="text" 
+                                       class="search-input-modern" 
+                                       id="search_producto_expiration" 
+                                       placeholder=" "
+                                       autocomplete="off">
+                                <div class="search-options-list" id="options_producto_expiration"></div>
+                            </div>
+                            <label for="search_producto_expiration">
+                                <i class="fas fa-box"></i>
+                                Buscar Producto
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="producto_expiration" 
                                     name="id_productos" 
@@ -525,7 +637,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="producto_expiration">
-                                <i class="fas fa-box"></i>
+                                <i class="fas fa-list"></i>
                                 Producto a Monitorear
                             </label>
                         </div>
@@ -561,6 +673,21 @@ if (session_status() == PHP_SESSION_NONE) {
                         </div>
 
                         <div class="form-floating-modern">
+                            <div class="search-input-wrapper">
+                                <input type="text" 
+                                       class="search-input-modern" 
+                                       id="search_cliente_expiration" 
+                                       placeholder=" "
+                                       autocomplete="off">
+                                <div class="search-options-list" id="options_cliente_expiration"></div>
+                            </div>
+                            <label for="search_cliente_expiration">
+                                <i class="fas fa-truck"></i>
+                                Buscar Proveedor
+                            </label>
+                        </div>
+
+                        <div class="form-floating-modern">
                             <select class="form-select-modern" 
                                     id="cliente_expiration" 
                                     name="id_proveedores" 
@@ -575,7 +702,7 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="cliente_expiration">
-                                <i class="fas fa-truck"></i>
+                                <i class="fas fa-list"></i>
                                 Proveedor Responsable
                             </label>
                         </div>
@@ -584,6 +711,33 @@ if (session_status() == PHP_SESSION_NONE) {
                     <div class="info-panel">
                         <h6><i class="fas fa-info-circle"></i> Información</h6>
                         <p>Esta alerta se activará antes de la fecha de caducidad especificada. El sistema notificará al proveedor responsable con suficiente antelación para tomar las medidas necesarias.</p>
+                    </div>
+                </div>
+
+                <!-- Estado de la Alerta (campo común) -->
+                <div class="form-section-card active" style="margin-top: 20px; border-top: 2px solid rgba(255, 255, 255, 0.2); padding-top: 30px;">
+                    <div class="section-title">
+                        <i class="fas fa-toggle-on"></i>
+                        Estado de la Alerta
+                    </div>
+                    
+                    <div class="form-row form-row-1">
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" 
+                                    id="estado_alerta" 
+                                    name="estado_alerta" 
+                                    required>
+                                <option value="Activo">Activo</option>
+                                <option value="Vencida">Vencida</option>
+                                <option value="Crítica">Crítica</option>
+                                <option value="Próxima">Próxima</option>
+                                <option value="Normal">Normal</option>
+                            </select>
+                            <label for="estado_alerta">
+                                <i class="fas fa-traffic-light"></i>
+                                Seleccione el estado inicial
+                            </label>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -609,54 +763,56 @@ if (session_status() == PHP_SESSION_NONE) {
             card.addEventListener('click', function() {
                 // Remover selección anterior
                 document.querySelectorAll('.alert-type-card').forEach(c => c.classList.remove('selected'));
-                document.querySelectorAll('.form-section-card').forEach(f => f.classList.remove('active'));
-                
+                // Remover active solo de los formularios específicos (NO del estado)
+                document.getElementById('stock-form').classList.remove('active');
+                document.getElementById('expiration-form').classList.remove('active');
+
                 // Seleccionar nueva opción
                 this.classList.add('selected');
                 const type = this.dataset.type;
                 document.getElementById('alert_type').value = type;
-                
+
                 // Mostrar formulario correspondiente
                 if (type === 'stock') {
                     document.getElementById('stock-form').classList.add('active');
                     // Deshabilitar campos del otro formulario
+                    document.getElementById('search_producto_expiration').disabled = true;
                     document.getElementById('producto_expiration').removeAttribute('required');
-                    document.getElementById('producto_expiration').disabled = true;
                     document.getElementById('cantidad_minima_exp').removeAttribute('required');
                     document.getElementById('cantidad_minima_exp').disabled = true;
                     document.getElementById('fecha_caducidad').removeAttribute('required');
                     document.getElementById('fecha_caducidad').disabled = true;
+                    document.getElementById('search_cliente_expiration').disabled = true;
                     document.getElementById('cliente_expiration').removeAttribute('required');
-                    document.getElementById('cliente_expiration').disabled = true;
                     // Habilitar campos de este formulario
+                    document.getElementById('search_producto_stock').disabled = false;
                     document.getElementById('producto_stock').setAttribute('required', '');
-                    document.getElementById('producto_stock').disabled = false;
                     document.getElementById('cantidad_minima').setAttribute('required', '');
                     document.getElementById('cantidad_minima').disabled = false;
                     document.getElementById('fecha_caducidad_stock').setAttribute('required', '');
                     document.getElementById('fecha_caducidad_stock').disabled = false;
+                    document.getElementById('search_cliente_stock').disabled = false;
                     document.getElementById('cliente_stock').setAttribute('required', '');
-                    document.getElementById('cliente_stock').disabled = false;
                 } else if (type === 'expiration') {
                     document.getElementById('expiration-form').classList.add('active');
                     // Deshabilitar campos del otro formulario
+                    document.getElementById('search_producto_stock').disabled = true;
                     document.getElementById('producto_stock').removeAttribute('required');
-                    document.getElementById('producto_stock').disabled = true;
                     document.getElementById('cantidad_minima').removeAttribute('required');
                     document.getElementById('cantidad_minima').disabled = true;
                     document.getElementById('fecha_caducidad_stock').removeAttribute('required');
                     document.getElementById('fecha_caducidad_stock').disabled = true;
+                    document.getElementById('search_cliente_stock').disabled = true;
                     document.getElementById('cliente_stock').removeAttribute('required');
-                    document.getElementById('cliente_stock').disabled = true;
                     // Habilitar campos de este formulario
+                    document.getElementById('search_producto_expiration').disabled = false;
                     document.getElementById('producto_expiration').setAttribute('required', '');
-                    document.getElementById('producto_expiration').disabled = false;
                     document.getElementById('cantidad_minima_exp').setAttribute('required', '');
                     document.getElementById('cantidad_minima_exp').disabled = false;
                     document.getElementById('fecha_caducidad').setAttribute('required', '');
                     document.getElementById('fecha_caducidad').disabled = false;
+                    document.getElementById('search_cliente_expiration').disabled = false;
                     document.getElementById('cliente_expiration').setAttribute('required', '');
-                    document.getElementById('cliente_expiration').disabled = false;
                 }
             });
         });
@@ -690,7 +846,7 @@ if (session_status() == PHP_SESSION_NONE) {
         });
 
         // Efectos visuales
-        document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
+        document.querySelectorAll('.form-control-modern, .form-select-modern, .search-input-modern').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'scale(1.02)';
             });
@@ -700,18 +856,21 @@ if (session_status() == PHP_SESSION_NONE) {
             });
         });
 
-        // Manejo de labels para selects
-        document.querySelectorAll('.form-select-modern').forEach(select => {
-            select.addEventListener('change', function() {
-                const label = this.parentElement.querySelector('label');
-                if (this.value) {
-                    label.style.top = '2px';
-                    label.style.fontSize = '12px';
-                    label.style.color = '#667eea';
-                } else {
-                    label.style.top = '12px';
-                    label.style.fontSize = '14px';
-                    label.style.color = 'rgba(102, 126, 234, 0.8)';
+        // Manejo de labels para inputs de búsqueda
+        Object.keys(searchableItems).forEach(searchInputId => {
+            const searchInput = document.getElementById(searchInputId);
+            searchInput.addEventListener('input', function() {
+                const label = this.parentElement.parentElement.querySelector('label');
+                if (label) {
+                    if (this.value) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    } else {
+                        label.style.top = '12px';
+                        label.style.fontSize = '14px';
+                        label.style.color = 'rgba(102, 126, 234, 0.8)';
+                    }
                 }
             });
         });
@@ -720,6 +879,120 @@ if (session_status() == PHP_SESSION_NONE) {
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         document.getElementById('fecha_caducidad').min = tomorrow.toISOString().split('T')[0];
+
+        // Sistema de búsqueda y filtro para productos y proveedores
+        const searchableItems = {
+            search_producto_stock: {
+                selectInput: 'producto_stock',
+                optionsDiv: 'options_producto_stock',
+                items: <?= json_encode($productos ?? []) ?>,
+                labelField: 'nombre',
+                valueField: 'id_productos'
+            },
+            search_cliente_stock: {
+                selectInput: 'cliente_stock',
+                optionsDiv: 'options_cliente_stock',
+                items: <?= json_encode($proveedores ?? []) ?>,
+                labelField: 'nombre_distribuidor',
+                valueField: 'id_proveedores'
+            },
+            search_producto_expiration: {
+                selectInput: 'producto_expiration',
+                optionsDiv: 'options_producto_expiration',
+                items: <?= json_encode($productos ?? []) ?>,
+                labelField: 'nombre',
+                valueField: 'id_productos'
+            },
+            search_cliente_expiration: {
+                selectInput: 'cliente_expiration',
+                optionsDiv: 'options_cliente_expiration',
+                items: <?= json_encode($proveedores ?? []) ?>,
+                labelField: 'nombre_distribuidor',
+                valueField: 'id_proveedores'
+            }
+        };
+
+        // Función para renderizar las opciones filtradas
+        function renderOptions(searchInputId) {
+            const config = searchableItems[searchInputId];
+            const searchInput = document.getElementById(searchInputId);
+            const optionsDiv = document.getElementById(config.optionsDiv);
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            optionsDiv.innerHTML = '';
+
+            if (!searchTerm) {
+                optionsDiv.classList.remove('active');
+                return;
+            }
+
+            const filteredItems = config.items.filter(item => 
+                String(item[config.labelField]).toLowerCase().includes(searchTerm)
+            );
+
+            if (filteredItems.length === 0) {
+                optionsDiv.innerHTML = '<div class="search-option-item" style="color: #999;">No se encontraron resultados</div>';
+                optionsDiv.classList.add('active');
+                return;
+            }
+
+            filteredItems.slice(0, 10).forEach(item => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'search-option-item';
+                optionDiv.textContent = item[config.labelField];
+                optionDiv.dataset.value = item[config.valueField];
+                
+                optionDiv.addEventListener('click', function() {
+                    // Establecer valor en el selector
+                    document.getElementById(config.selectInput).value = this.dataset.value;
+                    searchInput.value = item[config.labelField];
+                    optionsDiv.classList.remove('active');
+                    
+                    // Actualizar label position
+                    const label = searchInput.parentElement.parentElement.querySelector('label');
+                    if (label) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    }
+                });
+
+                optionsDiv.appendChild(optionDiv);
+            });
+
+            optionsDiv.classList.add('active');
+        }
+
+        // Event listeners para cada input de búsqueda
+        Object.keys(searchableItems).forEach(searchInputId => {
+            const searchInput = document.getElementById(searchInputId);
+            const config = searchableItems[searchInputId];
+            const optionsDiv = document.getElementById(config.optionsDiv);
+
+            // Input event para filtrado en tiempo real
+            searchInput.addEventListener('input', () => renderOptions(searchInputId));
+
+            // Focus event para mostrar opciones
+            searchInput.addEventListener('focus', () => {
+                if (searchInput.value) {
+                    renderOptions(searchInputId);
+                }
+            });
+
+            // Click fuera para cerrar opciones
+            document.addEventListener('click', (e) => {
+                if (e.target !== searchInput && e.target !== optionsDiv && !optionsDiv.contains(e.target)) {
+                    optionsDiv.classList.remove('active');
+                }
+            });
+
+            // Tecla Escape para cerrar
+            searchInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    optionsDiv.classList.remove('active');
+                }
+            });
+        });
     </script>
 </body>
 </html>

@@ -728,8 +728,16 @@ unset($_SESSION['success'], $_SESSION['error']);
                             </label>
                             <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
                                 <option value="">Todos</option>
-                                <option value="1" <?= (isset($_GET['tipo']) && $_GET['tipo'] == '1') ? 'selected' : '' ?>>Alerta</option>
-                                <option value="2" <?= (isset($_GET['tipo']) && $_GET['tipo'] == '2') ? 'selected' : '' ?>>Recordatorio</option>
+                                <?php if (isset($tipos_disponibles) && is_array($tipos_disponibles) && count($tipos_disponibles) > 0): ?>
+                                    <?php foreach ($tipos_disponibles as $tipo): ?>
+                                        <option value="<?= htmlspecialchars($tipo) ?>" <?= (isset($_GET['tipo']) && $_GET['tipo'] == $tipo) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($tipo) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="stock" <?= (isset($_GET['tipo']) && $_GET['tipo'] == 'stock') ? 'selected' : '' ?>>Stock Bajo</option>
+                                    <option value="expiration" <?= (isset($_GET['tipo']) && $_GET['tipo'] == 'expiration') ? 'selected' : '' ?>>Vencimiento</option>
+                                <?php endif; ?>
                             </select>
                         </div>
                         <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
@@ -738,9 +746,17 @@ unset($_SESSION['success'], $_SESSION['error']);
                             </label>
                             <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
                                 <option value="">Todas las prioridades</option>
-                                <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
-                                <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
-                                <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
+                                <?php if (isset($prioridades_disponibles) && is_array($prioridades_disponibles) && count($prioridades_disponibles) > 0): ?>
+                                    <?php foreach ($prioridades_disponibles as $prioridad): ?>
+                                        <option value="<?= htmlspecialchars($prioridad) ?>" <?= ($_GET['prioridad'] ?? '') === $prioridad ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($prioridad) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
+                                    <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
+                                    <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
+                                <?php endif; ?>
                             </select>
                         </div>
                         <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
@@ -749,8 +765,19 @@ unset($_SESSION['success'], $_SESSION['error']);
                             </label>
                             <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
                                 <option value="">Todos los estados</option>
-                                <option value="activo" <?= ($_GET['estado'] ?? '') === 'activo' ? 'selected' : '' ?>>Activo</option>
-                                <option value="inactivo" <?= ($_GET['estado'] ?? '') === 'inactivo' ? 'selected' : '' ?>>Inactivo</option>
+                                <?php if (isset($estados_disponibles) && is_array($estados_disponibles) && count($estados_disponibles) > 0): ?>
+                                    <?php foreach ($estados_disponibles as $estado): ?>
+                                        <option value="<?= htmlspecialchars($estado) ?>" <?= ($_GET['estado'] ?? '') === $estado ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($estado) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <option value="Activo" <?= ($_GET['estado'] ?? '') === 'Activo' ? 'selected' : '' ?>>Activo</option>
+                                    <option value="Vencida" <?= ($_GET['estado'] ?? '') === 'Vencida' ? 'selected' : '' ?>>Vencida</option>
+                                    <option value="Crítica" <?= ($_GET['estado'] ?? '') === 'Crítica' ? 'selected' : '' ?>>Crítica</option>
+                                    <option value="Próxima" <?= ($_GET['estado'] ?? '') === 'Próxima' ? 'selected' : '' ?>>Próxima</option>
+                                    <option value="Normal" <?= ($_GET['estado'] ?? '') === 'Normal' ? 'selected' : '' ?>>Normal</option>
+                                <?php endif; ?>
                             </select>
                         </div>
                         <div style="display: flex; gap: 12px; align-items: end;">
@@ -808,7 +835,31 @@ unset($_SESSION['success'], $_SESSION['error']);
                         $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
                         $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
                         
-                        if ($dias_restantes !== null) {
+                        // Si existe un estado guardado en BD, usarlo. De lo contrario, calcularlo
+                        if (!empty($alerta['estado'])) {
+                            $estado = $alerta['estado'];
+                            // Asignar clase y ícono según el estado
+                            switch ($estado) {
+                                case 'Vencida':
+                                    $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
+                                    break;
+                                case 'Crítica':
+                                    $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
+                                    break;
+                                case 'Próxima':
+                                    $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
+                                    break;
+                                case 'Normal':
+                                    $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
+                                    break;
+                                case 'Activo':
+                                    $badge_class = 'badge-info'; $icono = 'fas fa-bell';
+                                    break;
+                                default:
+                                    $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
+                            }
+                        } elseif ($dias_restantes !== null) {
+                            // Si no hay estado en BD, calcularlo
                             if ($dias_restantes < 0) {
                                 $estado = 'Vencida'; $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
                             } elseif ($dias_restantes <= 7) {
@@ -969,23 +1020,48 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 $fecha_caducidad = $alerta['fecha_caducidad'];
                                 $dias_restantes = (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24);
                                 
-                                // Determinar estado y badge
-                                if ($dias_restantes < 0) {
-                                    $estado = 'Vencida';
-                                    $badge_class = 'badge-danger';
-                                    $icono = 'fas fa-times-circle';
-                                } elseif ($dias_restantes <= 7) {
-                                    $estado = 'Crítica';
-                                    $badge_class = 'badge-danger';
-                                    $icono = 'fas fa-exclamation-triangle';
-                                } elseif ($dias_restantes <= 30) {
-                                    $estado = 'Próxima';
-                                    $badge_class = 'badge-warning';
-                                    $icono = 'fas fa-exclamation-circle';
+                                // Determinar estado y badge: primero verificar si existe en BD
+                                if (!empty($alerta['estado'])) {
+                                    $estado = $alerta['estado'];
+                                    // Asignar clase y ícono según el estado
+                                    switch ($estado) {
+                                        case 'Vencida':
+                                            $badge_class = 'badge-danger'; $icono = 'fas fa-times-circle';
+                                            break;
+                                        case 'Crítica':
+                                            $badge_class = 'badge-danger'; $icono = 'fas fa-exclamation-triangle';
+                                            break;
+                                        case 'Próxima':
+                                            $badge_class = 'badge-warning'; $icono = 'fas fa-exclamation-circle';
+                                            break;
+                                        case 'Normal':
+                                            $badge_class = 'badge-success'; $icono = 'fas fa-check-circle';
+                                            break;
+                                        case 'Activo':
+                                            $badge_class = 'badge-info'; $icono = 'fas fa-bell';
+                                            break;
+                                        default:
+                                            $badge_class = 'badge-secondary'; $icono = 'fas fa-question-circle';
+                                    }
                                 } else {
-                                    $estado = 'Normal';
-                                    $badge_class = 'badge-success';
-                                    $icono = 'fas fa-check-circle';
+                                    // Si no hay estado en BD, calcularlo basado en la fecha
+                                    if ($dias_restantes < 0) {
+                                        $estado = 'Vencida';
+                                        $badge_class = 'badge-danger';
+                                        $icono = 'fas fa-times-circle';
+                                    } elseif ($dias_restantes <= 7) {
+                                        $estado = 'Crítica';
+                                        $badge_class = 'badge-danger';
+                                        $icono = 'fas fa-exclamation-triangle';
+                                    } elseif ($dias_restantes <= 30) {
+                                        $estado = 'Próxima';
+                                        $badge_class = 'badge-warning';
+                                        $icono = 'fas fa-exclamation-circle';
+                                    } else {
+                                        $estado = 'Normal';
+                                        $badge_class = 'badge-success';
+                                        $icono = 'fas fa-check-circle';
+                                    }
                                 }
                             ?>
                             <tr>

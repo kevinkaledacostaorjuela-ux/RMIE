@@ -16,13 +16,24 @@ class Alert {
         $this->fecha_caducidad = $fecha_caducidad;
     }
 
-    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores, $tipo_alerta = 'stock_bajo') {
-        // Verificar si la columna tipo_alerta existe
-        $check_column = $conn->query("SHOW COLUMNS FROM alertas LIKE 'tipo_alerta'");
-        $column_exists = $check_column && $check_column->num_rows > 0;
+    public static function create($conn, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores, $tipo_alerta = 'stock_bajo', $estado = 'Activo') {
+        // Verificar si las columnas existen
+        $check_tipo = $conn->query("SHOW COLUMNS FROM alertas LIKE 'tipo_alerta'");
+        $tipo_exists = $check_tipo && $check_tipo->num_rows > 0;
         
-        if ($column_exists) {
-            // Si la columna existe, incluirla en el INSERT
+        $check_estado = $conn->query("SHOW COLUMNS FROM alertas LIKE 'estado'");
+        $estado_exists = $check_estado && $check_estado->num_rows > 0;
+        
+        if ($tipo_exists && $estado_exists) {
+            // Si existen ambas columnas
+            $sql = "INSERT INTO alertas (tipo_alerta, estado, id_productos, cantidad_minima, fecha_caducidad, id_proveedores) VALUES (?, ?, ?, ?, ?, ?)";
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception('Error en prepare(): ' . $conn->error);
+            }
+            $stmt->bind_param('ssiisi', $tipo_alerta, $estado, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores);
+        } elseif ($tipo_exists) {
+            // Si solo existe tipo_alerta
             $sql = "INSERT INTO alertas (tipo_alerta, id_productos, cantidad_minima, fecha_caducidad, id_proveedores) VALUES (?, ?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
@@ -30,15 +41,13 @@ class Alert {
             }
             $stmt->bind_param('siisi', $tipo_alerta, $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores);
         } else {
-            // Si no existe, usar el INSERT original sin tipo_alerta
+            // Si no existen las columnas opcionales
             $sql = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_proveedores) VALUES (?, ?, ?, ?)";
             $stmt = $conn->prepare($sql);
             if (!$stmt) {
                 throw new Exception('Error en prepare(): ' . $conn->error);
             }
-            if (!$stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores)) {
-                throw new Exception('Error en bind_param(): ' . $stmt->error);
-            }
+            $stmt->bind_param('iisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores);
         }
         
         if (!$stmt->execute()) {
@@ -75,9 +84,20 @@ class Alert {
     }
 
     public static function update($conn, $id, $data) {
-        $sql = "UPDATE alertas SET id_productos = ?, cantidad_minima = ?, fecha_caducidad = ?, id_proveedores = ? WHERE id_alertas = ?";
+        $sql = "UPDATE alertas SET id_productos = ?, cantidad_minima = ?, fecha_caducidad = ?, id_proveedores = ?, estado = ? WHERE id_alertas = ?";
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param('iisii', $data['id_productos'], $data['cantidad_minima'], $data['fecha_caducidad'], $data['id_proveedores'], $id);
+        if (!$stmt) {
+            throw new Exception('Error en prepare(): ' . $conn->error);
+        }
+        $estado = isset($data['estado']) ? $data['estado'] : 'Activo';
+        $id_productos = $data['id_productos'];
+        $cantidad_minima = $data['cantidad_minima'];
+        $fecha_caducidad = $data['fecha_caducidad'];
+        $id_proveedores = $data['id_proveedores'];
+        
+        if (!$stmt->bind_param('iisisi', $id_productos, $cantidad_minima, $fecha_caducidad, $id_proveedores, $estado, $id)) {
+            throw new Exception('Error en bind_param(): ' . $stmt->error);
+        }
         return $stmt->execute();
     }
 
