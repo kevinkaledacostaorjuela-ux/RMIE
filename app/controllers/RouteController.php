@@ -1,5 +1,8 @@
 <?php
-session_start();
+// Iniciar sesión solo si no está ya iniciada
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -30,7 +33,8 @@ class RouteController {
             'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
             'local' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'estado' => ['type' => 'text', 'options' => ['max_length' => 20]],
-            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
+            'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]],
+            'dia' => ['type' => 'text', 'options' => ['max_length' => 20]]
         ];
         
         // Procesar filtros del GET
@@ -48,8 +52,20 @@ class RouteController {
         $available_clients = Route::getAvailableClients($conn);
         $available_locals = Route::getAvailableLocals($conn);
 
-        // Días predeterminados (Lunes a Sábado)
-        $dias_predeterminados = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+        // Días de la semana para planificación de rutas
+        $dias_predeterminados = [
+            'Lunes' => 'Lunes',
+            'Martes' => 'Martes', 
+            'Miercoles' => 'Miércoles',
+            'Jueves' => 'Jueves',
+            'Viernes' => 'Viernes',
+            'Sabado' => 'Sábado'
+        ];
+        
+        // Día actual para destacar en la vista
+        $dia_actual = date('N'); // 1=Lunes, 2=Martes, etc.
+        $nombres_dias = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+        $dia_hoy = $nombres_dias[$dia_actual] ?? 'Lunes';
 
         // Reset manual de asignaciones
         if (isset($_GET['reset_asignaciones'])) {
@@ -57,7 +73,7 @@ class RouteController {
                 RouteSchedule::resetUserAssignments($conn, intval($_SESSION['user']));
             }
             unset($_SESSION['asignaciones_clientes']);
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         }
 
@@ -89,8 +105,8 @@ class RouteController {
             if ($usuarioActual) {
                 RouteSchedule::saveAssignments($conn, $usuarioActual, $nuevas);
             }
-            $_SESSION['success'] = 'Asignaciones guardadas correctamente';
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            $_SESSION['success'] = 'Planificación de rutas guardada correctamente para la semana';
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         }
 
@@ -103,9 +119,10 @@ class RouteController {
         // Obtener rutas con filtros existentes (mantiene compatibilidad)
         $rutas = Route::getAll($conn, $filtros);
 
-        // Filtro adicional por día usando asignaciones si parametro GET dia
-        if (isset($_GET['dia']) && in_array($_GET['dia'], $dias_predeterminados) && !empty($asignaciones_clientes[$_GET['dia']])) {
-            $idsFiltro = $asignaciones_clientes[$_GET['dia']];
+        // Filtro por día seleccionado - mostrar solo clientes asignados a ese día
+        $dia_seleccionado = $_GET['dia'] ?? $dia_hoy;
+        if (isset($asignaciones_clientes[$dia_seleccionado]) && !empty($asignaciones_clientes[$dia_seleccionado])) {
+            $idsFiltro = $asignaciones_clientes[$dia_seleccionado];
             $rutas = array_filter($rutas, function($ruta) use ($idsFiltro) {
                 // Decodificar clientes asociados a la ruta (json) si existe
                 if (!empty($ruta['id_clientes_json'])) {
@@ -120,14 +137,67 @@ class RouteController {
                 }
                 return false;
             });
+        } elseif (isset($_GET['dia']) && $_GET['dia'] !== 'todos') {
+            // Si se selecciona un día sin asignaciones, mostrar array vacío
+            $rutas = [];
         }
 
         // Asegurarse de que $rutas sea un array válido
         if (!is_array($rutas)) {
             $rutas = [];
         }
+        
+        // Estadísticas por día para la vista
+        $estadisticas_dia = [];
+        foreach ($dias_predeterminados as $key => $nombre) {
+            $clientes_dia = $asignaciones_clientes[$key] ?? [];
+            $estadisticas_dia[$key] = [
+                'nombre' => $nombre,
+                'total_clientes' => count($clientes_dia),
+                'es_hoy' => ($key === $dia_hoy),
+                'clientes_nombres' => []
+            ];
+            
+            // Obtener nombres de clientes para este día
+            foreach ($clientes_dia as $cliente_id) {
+                if (isset($mapa_clientes[$cliente_id])) {
+                    $estadisticas_dia[$key]['clientes_nombres'][] = $mapa_clientes[$cliente_id];
+                }
+            }
+        }
 
         include __DIR__ . '/../views/rutas/index.php';
+    }
+    
+    // Método específico para obtener rutas del día actual
+    public function rutasDelDia($dia = null) {
+        global $conn;
+        
+        if (!$dia) {
+            $dia_actual = date('N');
+            $nombres_dias = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            $dia = $nombres_dias[$dia_actual] ?? 'Lunes';
+        }
+        
+        $usuarioActual = isset($_SESSION['user']) ? intval($_SESSION['user']) : null;
+        if (!$usuarioActual) return [];
+        
+        $asignaciones = RouteSchedule::getAssignmentsByUser($conn, $usuarioActual);
+        $clientesDelDia = $asignaciones[$dia] ?? [];
+        
+        if (empty($clientesDelDia)) return [];
+        
+        // Obtener rutas filtradas por los clientes del día
+        $rutas = Route::getAll($conn);
+        return array_filter($rutas, function($ruta) use ($clientesDelDia) {
+            if (!empty($ruta['id_clientes_json'])) {
+                $lista = json_decode($ruta['id_clientes_json'], true);
+                if (is_array($lista)) {
+                    return count(array_intersect($lista, $clientesDelDia)) > 0;
+                }
+            }
+            return isset($ruta['id_clientes']) && in_array(intval($ruta['id_clientes']), $clientesDelDia);
+        });
     }
 
     public function create() {
@@ -137,30 +207,46 @@ class RouteController {
         $available_clients = Route::getAvailableClients($conn);
         $available_sales = Route::getAvailableSales($conn);
         $available_locals = Route::getAvailableLocals($conn);
-        // Planificación existente para sugerencias por día
+        
+        // Planificación por días
         require_once __DIR__ . '/../models/RouteSchedule.php';
-        $dias_predeterminados = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+        $dias_predeterminados = [
+            'Lunes' => 'Lunes',
+            'Martes' => 'Martes', 
+            'Miercoles' => 'Miércoles',
+            'Jueves' => 'Jueves',
+            'Viernes' => 'Viernes',
+            'Sabado' => 'Sábado'
+        ];
+        
         $usuarioActual = isset($_SESSION['user']) ? intval($_SESSION['user']) : null;
         $planificacion_usuario = $usuarioActual ? RouteSchedule::getAssignmentsByUser($conn, $usuarioActual) : [];
         
+        // Día actual y sugerido
+        $dia_actual = date('N');
+        $nombres_dias = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+        $dia_sugerido = $nombres_dias[$dia_actual] ?? 'Lunes';
+        
+        // Clientes sugeridos para el día actual
+        $clientes_sugeridos = $planificacion_usuario[$dia_sugerido] ?? [];
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                $dia_seleccionado = isset($_POST['dia_plan']) && in_array($_POST['dia_plan'], $dias_predeterminados) ? $_POST['dia_plan'] : null;
-                // Validación de datos - ahora son arrays
+                // Obtener día seleccionado para la ruta
+                $dia_seleccionado = isset($_POST['dia_plan']) && array_key_exists($_POST['dia_plan'], $dias_predeterminados) ? $_POST['dia_plan'] : $dia_sugerido;
+                
+                // Validación de datos - arrays múltiples
                 $id_locales_array = isset($_POST['id_locales']) ? array_map('intval', (array)$_POST['id_locales']) : [];
                 $id_clientes_array = isset($_POST['id_clientes']) ? array_map('intval', (array)$_POST['id_clientes']) : [];
                 $id_ventas_array = isset($_POST['id_ventas']) ? array_map('intval', (array)$_POST['id_ventas']) : [];
-                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
-
+                $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente', 'completada']) ? $_POST['estado'] : 'activa';
+                
                 // Validaciones básicas
                 if (empty($id_locales_array)) {
                     throw new Exception("Debe seleccionar al menos un local válido.");
                 }
                 if (empty($id_clientes_array)) {
                     throw new Exception("Debe seleccionar al menos un cliente válido.");
-                }
-                if (empty($id_ventas_array)) {
-                    throw new Exception("Debe seleccionar al menos una venta válida.");
                 }
 
                 // Validaciones de claves foráneas
@@ -227,14 +313,14 @@ class RouteController {
                 
                 $nombre_cliente = implode(', ', $clientes_nombres);
 
-                // Crear una sola ruta con todos los valores
-                Route::createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array);
+                // Crear una sola ruta con todos los valores incluyendo el día
+                Route::createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array, $dia_seleccionado);
 
-                $extra = $dia_seleccionado ? " Día: $dia_seleccionado." : '';
-                $_SESSION['success_message'] = "Ruta creada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s) y " . count($id_ventas_array) . " venta(s)." . $extra;
+                $extra = $dia_seleccionado ? " para el día: " . $dias_predeterminados[$dia_seleccionado] : '';
+                $_SESSION['success'] = "Ruta creada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s) y " . count($id_ventas_array) . " venta(s)" . $extra . ". Los clientes pueden asignarse a múltiples días.";
                 
-                // Redirección
-                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                // Redirección al nuevo punto de entrada
+                header('Location: /RMIE/rutas.php?accion=index&dia=' . urlencode($dia_seleccionado));
                 exit;
                 
             } catch (Exception $e) {
@@ -256,6 +342,13 @@ class RouteController {
     public function edit($id) {
         global $conn;
         
+        // DEBUG: Log del método y ID recibido
+        error_log("DEBUG EDIT - Método: " . $_SERVER['REQUEST_METHOD'] . ", ID recibido: " . $id);
+        error_log("DEBUG EDIT - GET params: " . json_encode($_GET));
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            error_log("DEBUG EDIT - POST params: " . json_encode($_POST));
+        }
+        
         // Limpiar cualquier error residual de sesión cuando se carga por primera vez
         if ($_SERVER['REQUEST_METHOD'] === 'GET' && !isset($_GET['from_post'])) {
             unset($_SESSION['error']);
@@ -265,23 +358,67 @@ class RouteController {
             $route = Route::getById($conn, $id);
             if (!$route) {
                 $_SESSION['error'] = "Ruta no encontrada.";
-                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                header('Location: /RMIE/rutas.php?accion=index');
                 exit;
             }
 
             // Obtener datos para los selects
             $available_clients = Route::getAvailableClients($conn);
             $available_locals = Route::getAvailableLocals($conn);
+            $available_sales = Route::getAvailableSales($conn);
+            
+            // Planificación por días
             require_once __DIR__ . '/../models/RouteSchedule.php';
-            $dias_predeterminados = ['Lunes','Martes','Miercoles','Jueves','Viernes','Sabado'];
+            $dias_predeterminados = [
+                'Lunes' => 'Lunes',
+                'Martes' => 'Martes', 
+                'Miercoles' => 'Miércoles',
+                'Jueves' => 'Jueves',
+                'Viernes' => 'Viernes',
+                'Sabado' => 'Sábado'
+            ];
+            
             $usuarioActual = isset($_SESSION['user']) ? intval($_SESSION['user']) : null;
             $planificacion_usuario = $usuarioActual ? RouteSchedule::getAssignmentsByUser($conn, $usuarioActual) : [];
+            
+            // Determinar el día asociado con esta ruta desde la base de datos
+            $dia_ruta = Route::getDayFromRoute($conn, $id);
+            
+            // Si no se encuentra en la BD, usar la planificación del usuario como fallback
+            if (!$dia_ruta && !empty($route['id_clientes'])) {
+                foreach ($planificacion_usuario as $dia => $clientes) {
+                    if (in_array($route['id_clientes'], $clientes)) {
+                        $dia_ruta = $dia;
+                        break;
+                    }
+                }
+            }
+            
+            // Si la ruta no tiene día almacenado y encontramos uno, actualizarlo en la BD
+            if ($dia_ruta && !Route::hasStoredDay($conn, $id)) {
+                Route::updateDay($conn, $id, $dia_ruta);
+            }
+            
+            // DEBUG: Log del día determinado
+            error_log("DEBUG EDIT - Día determinado para ruta existente desde BD: " . ($dia_ruta ?? 'NULL'));
+            
+            // Día actual para referencia
+            $dia_actual = date('N');
+            $nombres_dias = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            $dia_hoy = $nombres_dias[$dia_actual] ?? 'Lunes';
 
             // Solo procesar datos POST si es una petición POST
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 // Debug: Log de los datos recibidos
                 error_log("DEBUG EDIT - POST recibido para ruta ID: $id");
                 error_log("DEBUG EDIT - Datos POST: " . json_encode($_POST));
+                
+                // Obtener día seleccionado para la edición - usar día original si está disponible
+                $dia_original = isset($_POST['dia_original']) ? $_POST['dia_original'] : $dia_ruta;
+                $dia_seleccionado = isset($_POST['dia_plan']) && array_key_exists($_POST['dia_plan'], $dias_predeterminados) ? $_POST['dia_plan'] : $dia_original;
+                
+                error_log("DEBUG EDIT - Día original: " . ($dia_original ?? 'NULL'));
+                error_log("DEBUG EDIT - Día seleccionado final: " . ($dia_seleccionado ?? 'NULL'));
                 
                 // Validación de datos - ahora son arrays
                 $id_locales_array = isset($_POST['id_locales']) ? array_map('intval', (array)$_POST['id_locales']) : [];
@@ -296,15 +433,17 @@ class RouteController {
                     $id_clientes_array = [intval($_POST['id_clientes'])];
                 }
                 
-                // Manejar id_ventas como valor único (no array como los otros)
-                $id_ventas = isset($_POST['id_ventas']) ? intval($_POST['id_ventas']) : 0;
-                $id_ventas_array = $id_ventas > 0 ? [$id_ventas] : [];
+                // Manejar estado
                 $estado = isset($_POST['estado']) && in_array($_POST['estado'], ['activa', 'pendiente']) ? $_POST['estado'] : 'activa';
                 
                 error_log("DEBUG EDIT - Arrays procesados:");
                 error_log("DEBUG EDIT - id_locales_array: " . json_encode($id_locales_array));
                 error_log("DEBUG EDIT - id_clientes_array: " . json_encode($id_clientes_array));
-                error_log("DEBUG EDIT - id_ventas_array: " . json_encode($id_ventas_array));
+                error_log("DEBUG EDIT - Cliente principal original: " . ($cliente_principal_original ?? 'NULL'));
+                error_log("DEBUG EDIT - Estado: " . $estado);
+                
+                // Permitir clientes duplicados - no eliminar duplicados del array
+                // Esto permite que un cliente esté en múltiples días si es necesario
 
                 // Validaciones básicas
                 if (empty($id_locales_array)) {
@@ -312,9 +451,6 @@ class RouteController {
                 }
                 if (empty($id_clientes_array)) {
                     throw new Exception("Debe seleccionar al menos un cliente válido.");
-                }
-                if (empty($id_ventas_array)) {
-                    throw new Exception("Debe seleccionar al menos una venta válida.");
                 }
 
                 // Obtener nombres y direcciones de locales
@@ -366,11 +502,24 @@ class RouteController {
                 
                 $nombre_cliente = implode(', ', $clientes_nombres);
 
-                // Actualizar la ruta con datos JSON
-                Route::updateMultiple($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array);
+                // Usar la venta actual de la ruta (mantener la existente)
+                $id_ventas_actual = isset($route['id_ventas']) ? [$route['id_ventas']] : [];
                 
-                $_SESSION['success'] = "Ruta actualizada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s) y " . count($id_ventas_array) . " venta(s).";
-                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                // Mantener el cliente principal original para preservar el día
+                $cliente_principal_original = isset($route['id_clientes']) ? intval($route['id_clientes']) : null;
+                
+                // Permitir múltiples clientes sin restricciones - no forzar el cliente original
+                // El cliente principal original se mantiene solo para el campo id_clientes principal
+                // Los clientes seleccionados se guardan en el array JSON sin restricciones
+                
+                // Actualizar la ruta con datos JSON manteniendo el cliente principal original y el día
+                Route::updateMultiplePreservingDay($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_actual, $estado, $direcciones_array, $cliente_principal_original, $dia_seleccionado);
+                
+                $extra_dia = $dia_seleccionado ? " (Día: " . $dias_predeterminados[$dia_seleccionado] . ")" : "";
+                $_SESSION['success'] = "Ruta actualizada exitosamente con " . count($id_locales_array) . " local(es), " . count($id_clientes_array) . " cliente(s)" . $extra_dia . ". Los clientes pueden repetirse en múltiples días.";
+                
+                // Redirigir sin parámetro de día para evitar problemas de filtrado
+                header('Location: /RMIE/rutas.php?accion=index');
                 exit;
             }
             
@@ -381,7 +530,7 @@ class RouteController {
             $_SESSION['error'] = $e->getMessage();
             // Si es POST, redirigir para evitar reenvío del formulario
             if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                header('Location: /RMIE/app/controllers/RouteController.php?accion=edit&id=' . $id . '&from_post=1');
+                header('Location: /RMIE/rutas.php?accion=edit&id=' . $id . '&from_post=1');
                 exit;
             } else {
                 // Si es GET y hay error, mostrar el formulario con el error
@@ -404,7 +553,7 @@ class RouteController {
         
         // Verificar si el rol es coordinador y restringir eliminación
         if ($_SESSION['rol'] === 'coordinador') {
-            echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/app/controllers/RouteController.php?accion=index";</script>';
+            echo '<script>alert("El rol de coordinador no tiene permisos para eliminar registros por políticas de seguridad."); window.location.href = "/RMIE/rutas.php?accion=index";</script>';
             exit();
         }
         
@@ -416,11 +565,12 @@ class RouteController {
             }
             
             Route::delete($conn, $id);
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            $_SESSION['success'] = 'Ruta eliminada exitosamente.';
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         } catch (Exception $e) {
-            echo "<div class='alert alert-error'><i class='fas fa-exclamation-triangle'></i> Error: " . $e->getMessage() . "</div>";
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            $_SESSION['error'] = 'Error al eliminar ruta: ' . $e->getMessage();
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         }
     }
@@ -431,7 +581,7 @@ class RouteController {
         // Validar ID
         if (empty($id) || !is_numeric($id)) {
             $_SESSION['error'] = 'ID de ruta inválido';
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         }
 
@@ -452,7 +602,7 @@ class RouteController {
             $_SESSION['error'] = 'Error al completar la ruta: ' . $e->getMessage();
         }
         
-        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        header('Location: /RMIE/rutas.php?accion=index');
         exit;
     }
 
@@ -462,7 +612,7 @@ class RouteController {
         // Validar ID
         if (empty($id) || !is_numeric($id)) {
             $_SESSION['error'] = 'ID de ruta inválido';
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            header('Location: /RMIE/rutas.php?accion=index');
             exit;
         }
 
@@ -524,7 +674,7 @@ class RouteController {
             $_SESSION['error'] = 'Error al limpiar las rutas completadas: ' . $e->getMessage();
         }
         
-        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        header('Location: /RMIE/rutas.php?accion=index');
         exit;
     }
 
@@ -559,64 +709,29 @@ class RouteController {
             $_SESSION['error'] = 'Error al limpiar todas las rutas: ' . $e->getMessage();
         }
         
-        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        header('Location: /RMIE/rutas.php?accion=index');
         exit;
     }
 }
 
-// Manejo de acciones por parámetro GET
-if (isset($_GET['accion'])) {
-    $controller = new RouteController();
-    $action = $_GET['accion'];
-    
-    switch ($action) {
-        case 'index':
-            $controller->index();
-            break;
-        case 'create':
-            $controller->create();
-            break;
-        case 'edit':
-            if (isset($_GET['id'])) {
-                $controller->edit($_GET['id']);
-            } else {
-                $controller->index();
-            }
-            break;
-        case 'delete':
-            if (isset($_GET['id'])) {
-                $controller->delete($_GET['id']);
-            } else {
-                $controller->index();
-            }
-            break;
-        case 'complete':
-            if (isset($_GET['id'])) {
-                $controller->complete($_GET['id']);
-            } else {
-                $controller->index();
-            }
-            break;
-        case 'complete_and_delete':
-            if (isset($_GET['id'])) {
-                $controller->completeAndDelete($_GET['id']);
-            } else {
-                $controller->index();
-            }
-            break;
-        case 'clean_completed':
-            $controller->cleanCompleted();
-            break;
-        case 'clean_all':
-            $controller->cleanAll();
-            break;
-        default:
-            $controller->index();
-            break;
+// NOTA: Este controlador ha sido migrado a /RMIE/rutas.php
+// El código de compatibilidad solo se ejecuta si se accede directamente al controlador
+
+if (basename($_SERVER['PHP_SELF']) === 'RouteController.php') {
+    // Solo ejecutar redirecciones si se accede directamente al controlador
+    if (isset($_GET['accion']) || !empty($_GET)) {
+        // Construir la nueva URL con todos los parámetros
+        $newUrl = '/RMIE/rutas.php?' . http_build_query($_GET);
+        
+        // Redireccionar permanentemente al nuevo punto de entrada
+        header('HTTP/1.1 301 Moved Permanently');
+        header('Location: ' . $newUrl);
+        exit;
+    } else {
+        // Redirección por defecto al índice del nuevo punto de entrada
+        header('HTTP/1.1 301 Moved Permanently');
+        header('Location: /RMIE/rutas.php?accion=index');
+        exit;
     }
-} else {
-    // Si no hay acción, redirigir al login o mostrar índice
-    $controller = new RouteController();
-    $controller->index();
 }
 ?>

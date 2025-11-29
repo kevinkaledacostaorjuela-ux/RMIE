@@ -90,33 +90,7 @@ class Route {
         return self::getAll($conn, $filtros);
     }
 
-    public static function createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array = []) {
-        try {
-            // Convertir arrays a JSON
-            $id_locales_json = json_encode($id_locales_array);
-            $id_clientes_json = json_encode($id_clientes_array);
-            $id_ventas_json = json_encode($id_ventas_array);
-            $direcciones_json = !empty($direcciones_array) ? json_encode($direcciones_array) : json_encode([]);
-            
-            // Usar el primer cliente y venta como valores por defecto para compatibilidad
-            $id_clientes = intval($id_clientes_array[0]);
-            $id_ventas = intval($id_ventas_array[0]);
-            
-            $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado, id_locales_json, id_clientes_json, id_ventas_json, direcciones_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            if (!$stmt) {
-                throw new Exception("Error al preparar la consulta: " . $conn->error);
-            }
-            $stmt->bind_param('sssissssss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json);
-            if (!$stmt->execute()) {
-                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-            }
-            return $conn->insert_id; // Retornar el ID de la nueva ruta creada
-        } catch (Exception $e) {
-            error_log("Error al crear ruta múltiple: " . $e->getMessage());
-            throw new Exception("Error al crear la ruta: " . $e->getMessage());
-        }
-    }
+
 
     public static function getById($conn, $id) {
         $sql = "SELECT * FROM rutas WHERE id_ruta = ?";
@@ -209,7 +183,7 @@ class Route {
             
             // Usar el primer cliente y venta como valores por defecto para compatibilidad
             $id_clientes = intval($id_clientes_array[0]);
-            $id_ventas = intval($id_ventas_array[0]);
+            $id_ventas = !empty($id_ventas_array) ? intval($id_ventas_array[0]) : null;
             
             $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, estado = ?, id_locales_json = ?, id_clientes_json = ?, id_ventas_json = ?, direcciones_json = ? WHERE id_ruta = ?";
             $stmt = $conn->prepare($sql);
@@ -227,11 +201,174 @@ class Route {
         }
     }
 
+    public static function updateMultiplePreservingDay($conn, $id, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array = [], $cliente_principal_original = null, $dia_semana = null) {
+        try {
+            error_log("DEBUG UPDATE - Iniciando actualización para ruta ID: $id");
+            error_log("DEBUG UPDATE - Cliente principal original: " . ($cliente_principal_original ?? 'NULL'));
+            error_log("DEBUG UPDATE - Nuevos clientes: " . json_encode($id_clientes_array));
+            
+            // Convertir arrays a JSON
+            $id_locales_json = json_encode($id_locales_array);
+            $id_clientes_json = json_encode($id_clientes_array);
+            $id_ventas_json = json_encode($id_ventas_array);
+            $direcciones_json = !empty($direcciones_array) ? json_encode($direcciones_array) : json_encode([]);
+            
+            // Mantener el cliente principal original para preservar el día, o usar el primero si no se especifica
+            $id_clientes = $cliente_principal_original ?? (!empty($id_clientes_array) ? intval($id_clientes_array[0]) : null);
+            $id_ventas = !empty($id_ventas_array) ? intval($id_ventas_array[0]) : null;
+            
+            error_log("DEBUG UPDATE - Cliente principal final: " . ($id_clientes ?? 'NULL'));
+            error_log("DEBUG UPDATE - Día a actualizar: " . ($dia_semana ?? 'NULL'));
+            
+            // Construir SQL con día si está especificado
+            if ($dia_semana) {
+                $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, estado = ?, id_locales_json = ?, id_clientes_json = ?, id_ventas_json = ?, direcciones_json = ?, dia_semana = ? WHERE id_ruta = ?";
+            } else {
+                $sql = "UPDATE rutas SET direccion = ?, nombre_local = ?, nombre_cliente = ?, id_clientes = ?, id_ventas = ?, estado = ?, id_locales_json = ?, id_clientes_json = ?, id_ventas_json = ?, direcciones_json = ? WHERE id_ruta = ?";
+            }
+            
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $conn->error);
+            }
+            
+            if ($dia_semana) {
+                $stmt->bind_param('sssisssssssi', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json, $dia_semana, $id);
+            } else {
+                $stmt->bind_param('sssissssssi', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json, $id);
+            }
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+            
+            error_log("DEBUG UPDATE - Ruta actualizada exitosamente. Filas afectadas: " . $stmt->affected_rows);
+            return true;
+        } catch (Exception $e) {
+            error_log("Error al actualizar ruta múltiple preservando día: " . $e->getMessage());
+            throw new Exception("Error al actualizar la ruta: " . $e->getMessage());
+        }
+    }
+
     public static function delete($conn, $id) {
         $sql = "DELETE FROM rutas WHERE id_ruta = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param('i', $id);
         $stmt->execute();
+    }
+    
+    // Obtener el día de una ruta directamente de la tabla rutas
+    public static function getDayFromRoute($conn, $route_id) {
+        try {
+            // Primero intentar obtener el día directamente de la tabla rutas
+            $sql = "SELECT dia_semana FROM rutas WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $route_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($row = $result->fetch_assoc()) {
+                if ($row['dia_semana']) {
+                    return $row['dia_semana'];
+                }
+            }
+            
+            // Si no hay día almacenado, obtener la ruta y buscar basándose en el cliente
+            $route = self::getById($conn, $route_id);
+            if (!$route || !$route['id_clientes']) {
+                return null;
+            }
+            
+            $cliente_id = intval($route['id_clientes']);
+            
+            // Buscar en qué día está asignado este cliente en ruta_clientes_semanales
+            $sql = "SELECT dia_semana FROM ruta_clientes_semanales WHERE cliente_id = ? LIMIT 1";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $cliente_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($row = $result->fetch_assoc()) {
+                return $row['dia_semana'];
+            }
+            
+            return null;
+        } catch (Exception $e) {
+            error_log("Error al obtener día de ruta: " . $e->getMessage());
+            return null;
+        }
+    }
+    
+    // Verificar si una ruta tiene día almacenado
+    public static function hasStoredDay($conn, $route_id) {
+        try {
+            $sql = "SELECT dia_semana FROM rutas WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $route_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            if ($row = $result->fetch_assoc()) {
+                return !empty($row['dia_semana']);
+            }
+            return false;
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    // Actualizar el día de una ruta
+    public static function updateDay($conn, $route_id, $dia_semana) {
+        try {
+            $sql = "UPDATE rutas SET dia_semana = ? WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('si', $dia_semana, $route_id);
+            return $stmt->execute();
+        } catch (Exception $e) {
+            error_log("Error al actualizar día de ruta: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // Crear una nueva ruta con múltiples locales y clientes
+    public static function createMultiple($conn, $direccion, $nombre_local, $nombre_cliente, $id_locales_array, $id_clientes_array, $id_ventas_array, $estado, $direcciones_array = [], $dia_semana = null) {
+        try {
+            // Convertir arrays a JSON
+            $id_locales_json = json_encode($id_locales_array);
+            $id_clientes_json = json_encode($id_clientes_array);
+            $id_ventas_json = json_encode($id_ventas_array);
+            $direcciones_json = !empty($direcciones_array) ? json_encode($direcciones_array) : json_encode([]);
+            
+            // Usar el primer cliente como cliente principal
+            $id_clientes = !empty($id_clientes_array) ? intval($id_clientes_array[0]) : null;
+            $id_ventas = !empty($id_ventas_array) ? intval($id_ventas_array[0]) : null;
+            
+            // Construir SQL con día si está especificado
+            if ($dia_semana) {
+                $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado, id_locales_json, id_clientes_json, id_ventas_json, direcciones_json, dia_semana) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            } else {
+                $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_ventas, estado, id_locales_json, id_clientes_json, id_ventas_json, direcciones_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            }
+            
+            $stmt = $conn->prepare($sql);
+            if (!$stmt) {
+                throw new Exception("Error al preparar la consulta: " . $conn->error);
+            }
+            
+            if ($dia_semana) {
+                $stmt->bind_param('sssisssssss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json, $dia_semana);
+            } else {
+                $stmt->bind_param('sssissssss', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_ventas, $estado, $id_locales_json, $id_clientes_json, $id_ventas_json, $direcciones_json);
+            }
+            
+            if (!$stmt->execute()) {
+                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+            }
+            
+            return $conn->insert_id;
+        } catch (Exception $e) {
+            error_log("Error al crear ruta múltiple: " . $e->getMessage());
+            throw new Exception("Error al crear la ruta: " . $e->getMessage());
+        }
     }
 
     // Métodos para obtener datos relacionados

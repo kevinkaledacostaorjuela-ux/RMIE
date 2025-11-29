@@ -148,6 +148,105 @@
 
         .form-section:hover {
             transform: translateY(-2px);
+        }
+        
+        .cliente-item {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .cliente-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .cliente-nombre {
+            font-size: 1.1rem;
+        }
+        
+        .btn-remove-cliente {
+            background: rgba(220, 53, 69, 0.8);
+            border: none;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-remove-cliente:hover {
+            background: rgba(220, 53, 69, 1);
+        }
+        
+        .locales-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 0.75rem;
+        }
+        
+        .local-checkbox {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .local-checkbox:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .local-checkbox input[type="checkbox"] {
+            margin-right: 0.75rem;
+            transform: scale(1.2);
+        }
+        
+        .local-info {
+            flex: 1;
+        }
+        
+        .local-nombre {
+            font-weight: 600;
+            color: white;
+            margin-bottom: 0.25rem;
+        }
+        
+        .local-direccion {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        #filtro_cliente {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        #filtro_cliente:focus {
+            background: rgba(255, 255, 255, 0.25);
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        #filtro_cliente::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .row .col-md-6 {
+            margin-bottom: 1rem;
+        }
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
         }
 
@@ -969,202 +1068,86 @@
                 <div class="rutas-grid">
                     <!-- Columna izquierda: Formulario -->
                     <div>
-                        <form action="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= $route['id_ruta'] ?>" method="POST" id="editRouteForm">
-                            <div class="form-section">
-                                <h3 class="section-title"><i class="fas fa-calendar-day"></i> Día Planificado (Opcional)</h3>
-                                <div class="form-group">
-                                    <label for="dia_plan"><i class="fas fa-calendar-week"></i> Día sugerido</label>
-                                    <select class="form-select" id="dia_plan" name="dia_plan">
-                                        <option value="">-- Sin especificar --</option>
-                                        <?php if(isset($dias_predeterminados)): ?>
-                                            <?php foreach($dias_predeterminados as $d): ?>
-                                                <option value="<?= $d ?>" <?= (($_POST['dia_plan'] ?? '') === $d) ? 'selected' : '' ?>><?= $d ?></option>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </select>
-                                    <small class="form-text"><i class="fas fa-info-circle"></i> Selecciona un día para resaltar clientes según tu planificación guardada.</small>
-                                    <small class="form-text"><i class="fas fa-lightbulb"></i> Usa el botón inferior para cargar clientes del día.</small>
-                                </div>
-                            </div>
-
-                                                        <div class="form-group">
-                                                            <label for="estado">
-                                                                <i class="fas fa-toggle-on"></i> Estado de la Ruta *
-                                                            </label>
-                                                            <select name="estado" id="estado" class="form-control" required>
-                                                                <option value="activa" <?= (($route['estado'] ?? 'activa') === 'activa') ? 'selected' : '' ?>>Activa</option>
-                                                                <option value="pendiente" <?= (($route['estado'] ?? 'activa') === 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
-                                                            </select>
-                                                            <small class="form-text">
-                                                                <i class="fas fa-info-circle"></i>
-                                                                Selecciona el estado de la ruta
-                                                            </small>
-                                                        </div>
+                        <form action="rutas.php?accion=edit&id=<?= $route['id_ruta'] ?>" method="POST" id="editRouteForm">
+                            <!-- Campo oculto para ID de ruta -->
+                            <input type="hidden" name="id_ruta" value="<?= $route['id_ruta'] ?>">
+                            <!-- Campo oculto para preservar el día original de la ruta -->
+                            <input type="hidden" name="dia_original" value="<?= $dia_ruta ?>">
                             
-                            <!-- Sección: Información de Ubicación -->
+                            <!-- Sección: Clientes y Locales Dinámicos -->
                             <div class="form-section">
                                 <h3 class="section-title">
-                                    <i class="fas fa-map-marker-alt"></i> Información de Ubicación
+                                    <i class="fas fa-users"></i> Clientes y Locales
                                 </h3>
                                 
-                                <div class="form-group">
-                                    <label for="direccion">
-                                        <i class="fas fa-map-marker-alt"></i> Dirección Completa *
-                                    </label>
-                                    <textarea 
-                                        name="direccion" 
-                                        id="direccion" 
-                                        required
-                                        maxlength="200"
-                                        placeholder="Ej: Calle 123 # 45-67, Barrio Centro, Bogotá"
-                                        class="form-control"
-                                        rows="3"><?= htmlspecialchars($route['direccion']) ?></textarea>
-                                    <small class="form-text">
+                                <!-- Filtro y selector de cliente -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="filtro_cliente">
+                                                <i class="fas fa-search"></i> Buscar Cliente
+                                            </label>
+                                            <input 
+                                                type="text" 
+                                                id="filtro_cliente" 
+                                                class="form-control"
+                                                placeholder="Escribe para buscar por nombre..."
+                                                autocomplete="off">
+                                            <small class="form-text">
+                                                <i class="fas fa-info-circle"></i>
+                                                Filtra los clientes por nombre
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="cliente_selector">
+                                                <i class="fas fa-user-plus"></i> Seleccionar Cliente
+                                            </label>
+                                            <select id="cliente_selector" class="form-select">
+                                                <option value="">-- Selecciona un cliente para agregar --</option>
+                                                <?php if (isset($available_clients) && is_array($available_clients)): ?>
+                                                    <?php foreach ($available_clients as $client): ?>
+                                                        <option value="<?= htmlspecialchars($client['id_clientes']) ?>" data-nombre="<?= htmlspecialchars($client['nombre']) ?>">
+                                                            <?= htmlspecialchars($client['nombre']) ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </select>
+                                            <small class="form-text">
+                                                <i class="fas fa-info-circle"></i>
+                                                Selecciona un cliente para ver y agregar sus locales
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lista dinámica de clientes y locales seleccionados -->
+                                <div class="clientes-locales-container">
+                                    <div class="alert alert-info" id="no-selection-message">
                                         <i class="fas fa-info-circle"></i>
-                                        Incluye calle, número, barrio y ciudad (mínimo 5 caracteres)
-                                    </small>
-                                    <div class="char-counter">
-                                        <span id="direccion-counter"><?= strlen($route['direccion']) ?></span>/200 caracteres
+                                        No hay clientes seleccionados. Usa el selector de arriba para agregar clientes y sus locales.
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Sección: Información del Local -->
+                            <!-- Sección: Estado -->
                             <div class="form-section">
                                 <h3 class="section-title">
-                                    <i class="fas fa-store"></i> Información del Local
+                                    <i class="fas fa-flag"></i> Estado de la Ruta
                                 </h3>
-                                
-                                <div class="form-group">
-                                    <label for="id_locales">
-                                        <i class="fas fa-store"></i> Seleccionar Locales *
-                                    </label>
-                                    <select 
-                                        name="id_locales[]" 
-                                        id="id_locales" 
-                                        multiple
-                                        required
-                                        class="form-select select2-search">
-                                        <?php if (isset($available_locals) && is_array($available_locals)): ?>
-                                            <?php foreach ($available_locals as $local): ?>
-                                                <?php 
-                                                $id_locales_json = !empty($route['id_locales_json']) ? json_decode($route['id_locales_json'], true) : [];
-                                                $is_selected = in_array($local['id_locales'], $id_locales_json);
-                                                ?>
-                                                <option value="<?= htmlspecialchars($local['id_locales']) ?>" 
-                                                    <?= $is_selected ? 'selected' : '' ?>>
-                                                    <?= htmlspecialchars($local['nombre_local']) ?> (<?= htmlspecialchars($local['localidad'] ?? '') ?>)
-                                                </option>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </select>
-                                    <small class="form-text">
-                                        <i class="fas fa-info-circle"></i>
-                                        Selecciona uno o más locales
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Sección: Información del Cliente -->
-                            <div class="form-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-user"></i> Información del Cliente
-                                </h3>
-                                
-                                <div class="form-group">
-                                    <label for="id_clientes">
-                                        <i class="fas fa-user"></i> Seleccionar Clientes *
-                                    </label>
-                                    <select 
-                                        name="id_clientes[]" 
-                                        id="id_clientes" 
-                                        multiple
-                                        required
-                                        class="form-select select2-search">
-                                        <?php if (isset($available_clients) && is_array($available_clients)): ?>
-                                            <?php foreach ($available_clients as $client): ?>
-                                                <?php 
-                                                    $id_clientes_json = !empty($route['id_clientes_json']) ? json_decode($route['id_clientes_json'], true) : [];
-                                                    $is_selected = in_array($client['id_clientes'], $id_clientes_json);
-                                                    $resaltado = '';
-                                                    if (!empty($planificacion_usuario) && !empty($_POST['dia_plan']) && isset($planificacion_usuario[$_POST['dia_plan']])) {
-                                                        if (in_array($client['id_clientes'], $planificacion_usuario[$_POST['dia_plan']])) {
-                                                            $resaltado = 'class="cliente-dia"';
-                                                        }
-                                                    }
-                                                ?>
-                                                <option value="<?= htmlspecialchars($client['id_clientes']) ?>" <?= $is_selected ? 'selected' : '' ?> <?= $resaltado ?>>
-                                                    <?= htmlspecialchars($client['nombre']) ?>
-                                                </option>
-                                            <?php endforeach; ?>
-                                        <?php endif; ?>
-                                    </select>
-                                    <small class="form-text">
-                                        <i class="fas fa-info-circle"></i>
-                                        Selecciona uno o más clientes
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Sección: Referencias del Sistema -->
-                            <div class="form-section">
-                                <h3 class="section-title">
-                                    <i class="fas fa-link"></i> Referencias del Sistema
-                                </h3>
-                                
-                                <div class="form-group">
-                                    <label for="id_clientes_reference">
-                                        <i class="fas fa-user-tag"></i> ID del Cliente (DESHABILITADO - DEBUG)
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        name="id_clientes_legacy" 
-                                        id="id_clientes_reference" 
-                                        min="1"
-                                        value="<?= htmlspecialchars($route['id_clientes']) ?>"
-                                        placeholder="Ej: 123"
-                                        class="form-control"
-                                        disabled
-                                        style="background-color: #f8f9fa; color: #6c757d;"
-                                        title="Campo deshabilitado temporalmente para debugging">
-                                    <small class="form-text">
-                                        <i class="fas fa-info-circle"></i>
-                                        Identificador único del cliente en el sistema
-                                    </small>
-                                </div>
-
-                                <div class="form-group">
-                                    <label for="id_ventas">
-                                        <i class="fas fa-shopping-cart"></i> ID de la Venta *
-                                    </label>
-                                    <input 
-                                        type="number" 
-                                        name="id_ventas" 
-                                        id="id_ventas" 
-                                        required
-                                        min="1"
-                                        value="<?= htmlspecialchars($route['id_ventas']) ?>"
-                                        placeholder="Ej: 456"
-                                        class="form-control">
-                                    <small class="form-text">
-                                        <i class="fas fa-info-circle"></i>
-                                        Número de venta asociada a esta ruta de entrega
-                                    </small>
-                                </div>
-
-                                <!-- Estado de la Ruta -->
-                                <div class="form-group">
-                                    <label for="estado">
-                                        <i class="fas fa-traffic-light"></i> Estado de la Ruta *
-                                    </label>
-                                    <select name="estado" id="estado" class="form-select" required>
-                                        <option value="activo" <?= (isset($route['estado']) && $route['estado'] === 'activo') ? 'selected' : '' ?>>Activo</option>
-                                        <option value="pendiente" <?= (isset($route['estado']) && $route['estado'] === 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
-                                    </select>
-                                    <small class="form-text">
-                                        <i class="fas fa-info-circle"></i>
-                                        Selecciona si la ruta estará activa o pendiente
-                                    </small>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="estado" class="form-label">
+                                                <i class="fas fa-flag"></i> Estado
+                                            </label>
+                                            <select name="estado" id="estado" class="form-select">
+                                                <option value="activa" <?= (isset($route['estado']) && $route['estado'] == 'activa') ? 'selected' : '' ?>>Activa</option>
+                                                <option value="pendiente" <?= (isset($route['estado']) && $route['estado'] == 'pendiente') ? 'selected' : '' ?>>Pendiente</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -1185,47 +1168,7 @@
 
                     <!-- Columna derecha: Resumen e información -->
                     <div>
-                        <!-- Resumen de información actual -->
-                        <div class="rutas-summary">
-                            <div class="summary-header">
-                                <h5><i class="fas fa-info-circle"></i> Información Actual</h5>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">
-                                    <i class="fas fa-hashtag"></i> ID de Ruta
-                                </span>
-                                <span class="summary-value">#<?= htmlspecialchars($route['id_ruta']) ?></span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">
-                                    <i class="fas fa-store"></i> Local
-                                </span>
-                                <span class="summary-value"><?= htmlspecialchars($route['nombre_local']) ?></span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">
-                                    <i class="fas fa-user"></i> Cliente
-                                </span>
-                                <span class="summary-value"><?= htmlspecialchars($route['nombre_cliente']) ?></span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">
-                                    <i class="fas fa-user-tag"></i> ID Cliente
-                                </span>
-                                <span class="summary-value">#<?= htmlspecialchars($route['id_clientes']) ?></span>
-                            </div>
-                            
-                            <div class="summary-item">
-                                <span class="summary-label">
-                                    <i class="fas fa-shopping-cart"></i> ID Venta
-                                </span>
-                                <span class="summary-value">#<?= htmlspecialchars($route['id_ventas']) ?></span>
-                            </div>
-                        </div>
+
 
                         <!-- Vista previa de cambios -->
                         <div class="form-section" style="margin-top: 2rem;">
@@ -1281,48 +1224,64 @@
         // Esperar a que jQuery esté completamente cargado
         if (typeof jQuery !== 'undefined') {
             jQuery(document).ready(function($) {
-                // Inicializar Select2 en ambos campos
+                // Inicializar Select2 en ambos campos con configuración optimizada
                 setTimeout(function() {
+                    // Configuración común para ambos Select2
+                    const commonConfig = {
+                        theme: 'bootstrap-5',
+                        allowClear: true,
+                        width: '100%',
+                        dropdownAutoWidth: false,
+                        dropdownParent: $('body'),
+                        minimumInputLength: 0,
+                        language: {
+                            noResults: function() {
+                                return 'No se encontraron resultados';
+                            },
+                            searching: function() {
+                                return 'Buscando...';
+                            },
+                            loadingMore: function() {
+                                return 'Cargando más resultados...';
+                            }
+                        }
+                    };
+                    
+                    // Inicializar Select2 para locales
                     if ($('#id_locales').length) {
                         $('#id_locales').select2({
-                            theme: 'bootstrap-5',
+                            ...commonConfig,
                             placeholder: 'Selecciona uno o más locales',
-                            allowClear: true,
-                            width: '100%',
-                            dropdownAutoWidth: false,
-                            dropdownParent: $('body'),
-                            minimumInputLength: 0,
+                            multiple: true,
+                            closeOnSelect: false,
+                            maximumSelectionLength: 5, // Límite razonable
                             language: {
+                                ...commonConfig.language,
                                 noResults: function() {
                                     return 'No se encontraron locales';
                                 },
-                                searching: function() {
-                                    return 'Buscando...';
+                                maximumSelected: function() {
+                                    return 'Solo puedes seleccionar hasta 5 locales';
                                 }
                             }
                         });
                     }
 
+                    // Inicializar Select2 para clientes  
                     if ($('#id_clientes').length) {
-                        // Verificar que el elemento tenga multiple antes de inicializar
-                        const clientesSelect = document.getElementById('id_clientes');
-                        
                         $('#id_clientes').select2({
-                            theme: 'bootstrap-5',
+                            ...commonConfig,
                             placeholder: 'Selecciona uno o más clientes',
-                            allowClear: true,
-                            width: '100%',
-                            dropdownAutoWidth: false,
-                            dropdownParent: $('body'),
-                            minimumInputLength: 0,
                             multiple: true,
                             closeOnSelect: false,
+                            maximumSelectionLength: 10, // Límite razonable
                             language: {
+                                ...commonConfig.language,
                                 noResults: function() {
                                     return 'No se encontraron clientes';
                                 },
-                                searching: function() {
-                                    return 'Buscando...';
+                                maximumSelected: function() {
+                                    return 'Solo puedes seleccionar hasta 10 clientes';
                                 }
                             }
                         });
@@ -1388,71 +1347,286 @@
 
                 // Referencias a elementos del formulario
                 const form = document.getElementById('editRouteForm');
-                const diaPlanField = document.getElementById('dia_plan');
-                window.PLANIFICACION = <?= json_encode($planificacion_usuario ?? []) ?>;
-                function resaltarClientesDia() {
-                    const dia = diaPlanField.value;
-                    const options = document.querySelectorAll('#id_clientes option');
-                    options.forEach(o => o.classList.remove('cliente-dia'));
-                    if (dia && window.PLANIFICACION[dia]) {
-                        window.PLANIFICACION[dia].forEach(id => {
-                            const opt = document.querySelector('#id_clientes option[value="'+id+'"]');
-                            if (opt) opt.classList.add('cliente-dia');
-                        });
-                    }
-                }
-                diaPlanField.addEventListener('change', resaltarClientesDia);
-                resaltarClientesDia();
-                const styleTag = document.createElement('style');
-                styleTag.innerHTML = '#id_clientes option.cliente-dia {background: linear-gradient(135deg,#43e97b,#38f9d7)!important;color:#fff;font-weight:600;}';
-                document.head.appendChild(styleTag);
-                const helperBtn = document.createElement('button');
-                helperBtn.type = 'button';
-                helperBtn.className = 'btn btn-sm btn-success mt-2';
-                helperBtn.innerHTML = '<i class="fas fa-magic"></i> Usar clientes del día';
-                document.getElementById('id_clientes').parentElement.appendChild(helperBtn);
-                helperBtn.addEventListener('click', function(){
-                    const dia = diaPlanField.value;
-                    if (dia && window.PLANIFICACION[dia]) {
-                        const valores = window.PLANIFICACION[dia].map(String);
-                        const options = document.querySelectorAll('#id_clientes option');
-                        options.forEach(o => { o.selected = valores.includes(o.value); });
-                    } else {
-                        alert('Selecciona un día con clientes asignados.');
-                    }
-                });
-                const direccionField = document.getElementById('direccion');
-                const estadoField = document.getElementById('estado');
                 const submitBtn = document.getElementById('submitBtn');
-
-                // Contador de caracteres dinámico
-                if (direccionField) {
-                    direccionField.addEventListener('input', function() {
-                        const counter = document.getElementById('direccion-counter');
-                        if (counter) {
-                            const length = this.value.length;
-                            counter.textContent = length;
-                            
-                            if (length > 180) {
-                                counter.style.color = '#dc3545';
-                                counter.style.fontWeight = 'bold';
-                            } else if (length > 150) {
-                                counter.style.color = '#ffc107';
-                                counter.style.fontWeight = '600';
-                            } else {
-                                counter.style.color = '#28a745';
-                                counter.style.fontWeight = '500';
+                const clienteSelector = document.getElementById('cliente_selector');
+                const filtroCliente = document.getElementById('filtro_cliente');
+                const clientesLocalesContainer = document.querySelector('.clientes-locales-container');
+                const noSelectionMessage = document.getElementById('no-selection-message');
+                
+                // Almacenar todas las opciones originales del select
+                let todasLasOpciones = [];
+                if (clienteSelector) {
+                    todasLasOpciones = Array.from(clienteSelector.options).slice(1); // Excluir la primera opción "-- Selecciona..."
+                }
+                
+                // Datos de clientes y sus locales
+                let clientesData = {};
+                let clientesSeleccionados = new Map();
+                
+                // Cargar datos de clientes y locales iniciales
+                <?php 
+                $clientes_con_locales = [];
+                if (isset($available_clients) && is_array($available_clients)) {
+                    foreach ($available_clients as $cliente) {
+                        $cliente_locales = [];
+                        // Obtener locales del cliente
+                        $query_locales = "SELECT l.id_locales, l.nombre_local, l.direccion 
+                                         FROM locales l 
+                                         INNER JOIN clientes_locales cl ON l.id_locales = cl.id_locales 
+                                         WHERE cl.id_clientes = " . intval($cliente['id_clientes']);
+                        $result_locales = $conn->query($query_locales);
+                        if ($result_locales) {
+                            while ($local = $result_locales->fetch_assoc()) {
+                                $cliente_locales[] = $local;
                             }
                         }
-                        showChanges();
-                    });
+                        $clientes_con_locales[$cliente['id_clientes']] = [
+                            'nombre' => $cliente['nombre'],
+                            'locales' => $cliente_locales
+                        ];
+                    }
+                }
+                ?>
+                clientesData = <?= json_encode($clientes_con_locales) ?>;
+                
+                // Cargar datos existentes de la ruta
+                const routeData = {
+                    clientes: <?= json_encode(!empty($route['id_clientes_json']) ? json_decode($route['id_clientes_json'], true) : []) ?>,
+                    locales: <?= json_encode(!empty($route['id_locales_json']) ? json_decode($route['id_locales_json'], true) : []) ?>,
+                    // Fallback: usar cliente principal si no hay JSON
+                    clientePrincipal: <?= json_encode($route['id_clientes'] ?? null) ?>
+                };
+                
 
-                    // Validación en tiempo real
-                    direccionField.addEventListener('input', () => {
-                        validateField(direccionField, 5, 200);
-                        showChanges();
+
+                // Funciones para manejar clientes y locales
+                function actualizarVistaClientes() {
+                    if (clientesSeleccionados.size === 0) {
+                        noSelectionMessage.style.display = 'block';
+                        return;
+                    }
+                    
+                    noSelectionMessage.style.display = 'none';
+                    let html = '';
+                    
+                    clientesSeleccionados.forEach((localesSeleccionados, clienteId) => {
+                        const cliente = clientesData[clienteId];
+                        if (!cliente) return;
+                        
+                        html += `
+                            <div class="cliente-item" data-cliente-id="${clienteId}">
+                                <div class="cliente-header">
+                                    <span class="cliente-nombre">
+                                        <i class="fas fa-user"></i> ${cliente.nombre}
+                                    </span>
+                                    <button type="button" class="btn-remove-cliente" onclick="removerCliente('${clienteId}')">
+                                        <i class="fas fa-times"></i> Remover
+                                    </button>
+                                </div>
+                                <div class="locales-grid">
+                        `;
+                        
+                        cliente.locales.forEach(local => {
+                            const localIdStr = local.id_locales.toString();
+                            const isChecked = localesSeleccionados.has(localIdStr);
+                            
+
+                            
+                            html += `
+                                <label class="local-checkbox">
+                                    <input type="checkbox" 
+                                           name="id_locales[]" 
+                                           value="${local.id_locales}"
+                                           ${isChecked ? 'checked' : ''}
+                                           onchange="toggleLocal('${clienteId}', '${local.id_locales}', this.checked)">
+                                    <div class="local-info">
+                                        <div class="local-nombre">${local.nombre_local}</div>
+                                        <div class="local-direccion">${local.direccion || 'Sin dirección'}</div>
+                                    </div>
+                                </label>
+                            `;
+                        });
+                        
+                        html += `
+                                </div>
+                                <input type="hidden" name="id_clientes[]" value="${clienteId}">
+                            </div>
+                        `;
+                    });
+                    
+                    // Reemplazar todo el contenido excepto el mensaje de "no selection"
+                    const existingItems = clientesLocalesContainer.querySelectorAll('.cliente-item');
+                    existingItems.forEach(item => item.remove());
+                    clientesLocalesContainer.insertAdjacentHTML('beforeend', html);
+                }
+                
+                function agregarCliente(clienteId) {
+                    if (!clienteId || clientesSeleccionados.has(clienteId)) return;
+                    
+                    const cliente = clientesData[clienteId];
+                    if (!cliente) return;
+                    
+                    // Agregar cliente con todos sus locales seleccionados por defecto
+                    const localesSet = new Set();
+                    cliente.locales.forEach(local => {
+                        localesSet.add(local.id_locales.toString());
+                    });
+                    
+                    clientesSeleccionados.set(clienteId, localesSet);
+                    actualizarVistaClientes();
+                    
+                    // Resetear selector
+                    clienteSelector.value = '';
+                }
+                
+                function removerCliente(clienteId) {
+                    clientesSeleccionados.delete(clienteId);
+                    actualizarVistaClientes();
+                }
+                
+                function toggleLocal(clienteId, localId, isChecked) {
+                    const localesSet = clientesSeleccionados.get(clienteId);
+                    if (!localesSet) return;
+                    
+                    if (isChecked) {
+                        localesSet.add(localId.toString());
+                    } else {
+                        localesSet.delete(localId.toString());
+                    }
+                }
+                
+                // Función para filtrar clientes
+                function filtrarClientes(termino) {
+                    // Limpiar el select (mantener solo la primera opción)
+                    clienteSelector.innerHTML = '<option value="">-- Selecciona un cliente para agregar --</option>';
+                    
+                    if (termino.trim() === '') {
+                        // Si no hay término de búsqueda, mostrar todos los clientes
+                        todasLasOpciones.forEach(opcion => {
+                            clienteSelector.appendChild(opcion.cloneNode(true));
+                        });
+                    } else {
+                        // Filtrar opciones por nombre
+                        const terminoLower = termino.toLowerCase();
+                        const opcionesFiltradas = todasLasOpciones.filter(opcion => {
+                            const nombre = opcion.getAttribute('data-nombre').toLowerCase();
+                            return nombre.includes(terminoLower);
+                        });
+                        
+                        // Agregar opciones filtradas
+                        opcionesFiltradas.forEach(opcion => {
+                            clienteSelector.appendChild(opcion.cloneNode(true));
+                        });
+                        
+                        // Mostrar mensaje si no hay resultados
+                        if (opcionesFiltradas.length === 0) {
+                            const noResultOption = document.createElement('option');
+                            noResultOption.value = '';
+                            noResultOption.textContent = 'No se encontraron clientes';
+                            noResultOption.disabled = true;
+                            clienteSelector.appendChild(noResultOption);
+                        }
+                    }
+                }
+                
+                // Event listener para el filtro de búsqueda
+                if (filtroCliente) {
+                    filtroCliente.addEventListener('input', function() {
+                        filtrarClientes(this.value);
+                    });
+                    
+                    // Limpiar filtro cuando se hace clic en el campo
+                    filtroCliente.addEventListener('focus', function() {
+                        if (this.value) {
+                            this.select(); // Seleccionar todo el texto para fácil reemplazo
+                        }
                     });
                 }
+                
+                // Event listener para el selector de cliente
+                if (clienteSelector) {
+                    clienteSelector.addEventListener('change', function() {
+                        if (this.value) {
+                            agregarCliente(this.value);
+                            // Limpiar filtro después de seleccionar
+                            if (filtroCliente) {
+                                filtroCliente.value = '';
+                                filtrarClientes(''); // Mostrar todos los clientes de nuevo
+                            }
+                        }
+                    });
+                }
+                
+                // Cargar datos existentes al inicio
+                if (routeData.clientes && routeData.clientes.length > 0) {
+                    
+                    routeData.clientes.forEach(clienteId => {
+                        const localesSet = new Set();
+                        const clienteIdStr = clienteId.toString();
+                        
+
+                        
+                        const cliente = clientesData[clienteIdStr];
+                        if (cliente) {
+                            // Si hay locales específicos en JSON, usarlos
+                            if (routeData.locales && routeData.locales.length > 0) {
+                                
+                                cliente.locales.forEach(local => {
+                                    const localId = parseInt(local.id_locales);
+                                    const localIdStr = local.id_locales.toString();
+                                    
+                                    if (routeData.locales.includes(localId) || routeData.locales.includes(localIdStr)) {
+                                        localesSet.add(localIdStr);
+                                    }
+                                });
+                            } else {
+                                // Si no hay locales JSON, buscar el local específico por nombre_local de la ruta
+                                const nombreLocalRuta = <?= json_encode($route['nombre_local'] ?? '') ?>;
+                                
+                                if (nombreLocalRuta) {
+                                    cliente.locales.forEach(local => {
+                                        const localIdStr = local.id_locales.toString();
+                                        // Solo marcar el local que coincida con el nombre_local de la ruta
+                                        if (local.nombre_local === nombreLocalRuta) {
+                                            localesSet.add(localIdStr);
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                        
+                        clientesSeleccionados.set(clienteIdStr, localesSet);
+                    });
+                    actualizarVistaClientes();
+                } else if (routeData.clientePrincipal) {
+                    // Fallback: usar cliente principal si existe
+                    const clienteIdStr = routeData.clientePrincipal.toString();
+                    const cliente = clientesData[clienteIdStr];
+                    const nombreLocalRuta = <?= json_encode($route['nombre_local'] ?? '') ?>;
+                    
+                    if (cliente) {
+                        const localesSet = new Set();
+                        
+                        if (nombreLocalRuta) {
+                            // Solo marcar el local específico que coincida con nombre_local
+                            cliente.locales.forEach(local => {
+                                const localIdStr = local.id_locales.toString();
+                                if (local.nombre_local === nombreLocalRuta) {
+                                    localesSet.add(localIdStr);
+                                }
+                            });
+                        }
+                        
+                        clientesSeleccionados.set(clienteIdStr, localesSet);
+                        actualizarVistaClientes();
+                    }
+                }
+                
+                // Exponer funciones al scope global
+                window.removerCliente = removerCliente;
+                window.toggleLocal = toggleLocal;
+
+
 
                 // Validación en tiempo real
                 function validateField(field, minLength, maxLength) {
@@ -1474,24 +1648,39 @@
                     const changesContainer = document.getElementById('changesPreview');
                     
                     if (!changesContainer) return;
-
-                    // Comparar dirección
-                    if (direccionField && direccionField.value !== originalData.direccion) {
+                    
+                    // Comparar clientes y locales seleccionados dinámicamente
+                    const currentClientes = Array.from(clientesSeleccionados.keys()).map(id => parseInt(id));
+                    const originalClientes = JSON.parse(originalData.id_clientes_json || '[]');
+                    
+                    if (JSON.stringify(currentClientes.sort()) !== JSON.stringify(originalClientes.sort())) {
+                        const clientesNames = currentClientes.map(id => {
+                            const cliente = clientesData[id.toString()];
+                            return cliente ? cliente.nombre : 'Cliente #' + id;
+                        });
                         changes.push({
-                            field: 'Dirección',
-                            icon: 'fas fa-map-marker-alt',
-                            original: originalData.direccion,
-                            current: direccionField.value
+                            field: 'Clientes',
+                            icon: 'fas fa-users',
+                            original: originalClientes.length + ' clientes seleccionados',
+                            current: currentClientes.length + ' clientes (' + clientesNames.join(', ') + ')'
                         });
                     }
-
-                    // Comparar estado
-                    if (estadoField && estadoField.value !== originalData.estado) {
+                    
+                    // Comparar locales seleccionados
+                    const currentLocales = [];
+                    clientesSeleccionados.forEach((localesSet, clienteId) => {
+                        localesSet.forEach(localId => {
+                            currentLocales.push(parseInt(localId));
+                        });
+                    });
+                    const originalLocales = JSON.parse(originalData.id_locales_json || '[]');
+                    
+                    if (JSON.stringify(currentLocales.sort()) !== JSON.stringify(originalLocales.sort())) {
                         changes.push({
-                            field: 'Estado',
-                            icon: 'fas fa-toggle-on',
-                            original: originalData.estado,
-                            current: estadoField.value
+                            field: 'Locales',
+                            icon: 'fas fa-store',
+                            original: originalLocales.length + ' locales seleccionados',
+                            current: currentLocales.length + ' locales seleccionados'
                         });
                     }
 
@@ -1525,14 +1714,7 @@
                     changesContainer.innerHTML = html;
                 }
 
-                // Event listeners para los nuevos campos
-                if (direccionField) {
-                    direccionField.addEventListener('input', showChanges);
-                }
 
-                if (estadoField) {
-                    estadoField.addEventListener('change', showChanges);
-                }
 
                 // Listeners para Select2
                 $(document).on('select2:select select2:unselect', function() {
@@ -1542,24 +1724,100 @@
                 // Form submission handling
                 if (form) {
                     form.addEventListener('submit', function(e) {
-                        // Verificar y corregir valores antes del envío
-                        const clientesSelect = document.getElementById('id_clientes');
+                        // Prevenir el envío automático para hacer validaciones primero
+                        e.preventDefault();
                         
-                        if (clientesSelect) {
-                            const selectedValues = $(clientesSelect).val();
-                            
-                            // Si Select2 devuelve null o no es array, verificar opciones seleccionadas
-                            if (!Array.isArray(selectedValues)) {
-                                const manualValues = Array.from(clientesSelect.selectedOptions).map(function(opt) { return opt.value; });
-                                
-                                // Forzar los valores si es necesario
-                                if (manualValues.length > 0) {
-                                    $(clientesSelect).val(manualValues).trigger('change');
-                                }
-                            }
+                        let hasErrors = false;
+                        
+                        // Validar selección de clientes
+                        if (clientesSeleccionados.size === 0) {
+                            alert('Debes seleccionar al menos un cliente');
+                            hasErrors = true;
                         }
                         
-                        // Envío normal del formulario (sin pausa)
+                        // Validar selección de locales
+                        let totalLocales = 0;
+                        clientesSeleccionados.forEach((localesSet) => {
+                            totalLocales += localesSet.size;
+                        });
+                        
+                        if (totalLocales === 0) {
+                            alert('Debes seleccionar al menos un local');
+                            hasErrors = true;
+                        }
+                        
+                        if (hasErrors) {
+                            return false;
+                        }
+                        
+                        // Limpiar campos hidden existentes
+                        const existingHiddenInputs = form.querySelectorAll('input[name="id_clientes[]"], input[name="id_locales[]"]');
+                        existingHiddenInputs.forEach(input => input.remove());
+                        
+                        // Agregar campos hidden para clientes y locales seleccionados
+                        clientesSeleccionados.forEach((localesSet, clienteId) => {
+                            // Agregar input para el cliente
+                            const clienteInput = document.createElement('input');
+                            clienteInput.type = 'hidden';
+                            clienteInput.name = 'id_clientes[]';
+                            clienteInput.value = clienteId;
+                            form.appendChild(clienteInput);
+                            
+                            // Agregar inputs para cada local seleccionado
+                            localesSet.forEach(localId => {
+                                const localInput = document.createElement('input');
+                                localInput.type = 'hidden';
+                                localInput.name = 'id_locales[]';
+                                localInput.value = localId;
+                                form.appendChild(localInput);
+                            });
+                        });
+                        
+
+                        
+                        // Mostrar indicador de carga
+                        const submitBtn = document.getElementById('submitBtn');
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Actualizando...';
+                        }
+                        
+                        // Enviar el formulario manualmente después de agregar los campos
+                        setTimeout(() => {
+                            form.submit();
+                        }, 100);
+                    });
+                }
+
+                // Botón restaurar funcionalidad
+                const resetBtn = document.getElementById('resetBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', function() {
+                        if (confirm('¿Estás seguro de que quieres restaurar todos los campos a sus valores originales?')) {
+                            
+                            // Restaurar clientes y locales
+                            clientesSeleccionados.clear();
+                            const originalClientes = JSON.parse(originalData.id_clientes_json || '[]');
+                            const originalLocales = JSON.parse(originalData.id_locales_json || '[]');
+                            
+                            originalClientes.forEach(clienteId => {
+                                const localesSet = new Set();
+                                const cliente = clientesData[clienteId.toString()];
+                                if (cliente) {
+                                    cliente.locales.forEach(local => {
+                                        if (originalLocales.includes(parseInt(local.id_locales))) {
+                                            localesSet.add(local.id_locales.toString());
+                                        }
+                                    });
+                                }
+                                clientesSeleccionados.set(clienteId.toString(), localesSet);
+                            });
+                            
+                            actualizarVistaClientes();
+                            
+                            // Actualizar vista previa
+                            showChanges();
+                        }
                     });
                 }
 

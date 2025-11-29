@@ -1,5 +1,4 @@
 <?php
-// Versión 2.7 - Selectores específicos de estado, protección total de botones
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
@@ -1492,6 +1491,14 @@ if (isset($rutas) && is_array($rutas)) {
                 50% { opacity: 1; }
             }
         }
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
 
         .planificacion-header {
             text-align: center;
@@ -2011,30 +2018,7 @@ if (isset($rutas) && is_array($rutas)) {
             <!-- Contenedor de Tarjetas -->
             <div id="rutasCardsContainer" class="routes-grid" style="display: none;">
                 <?php if (isset($rutas) && is_array($rutas) && !empty($rutas)): ?>
-                    <?php 
-                    // Aplicar el mismo ordenamiento para las tarjetas
-                    if (!function_exists('obtenerDiaSemana')) {
-                        function obtenerDiaSemanaCards($descripcion) {
-                            if (stripos($descripcion, 'lunes') !== false) return 1;
-                            if (stripos($descripcion, 'martes') !== false) return 2;
-                            if (stripos($descripcion, 'miércoles') !== false || stripos($descripcion, 'miercoles') !== false) return 3;
-                            if (stripos($descripcion, 'jueves') !== false) return 4;
-                            if (stripos($descripcion, 'viernes') !== false) return 5;
-                            if (stripos($descripcion, 'sábado') !== false || stripos($descripcion, 'sabado') !== false) return 6;
-                            if (stripos($descripcion, 'domingo') !== false) return 7;
-                            return 8;
-                        }
-                    }
-                    
-                    // Crear copia para ordenar (evitar modificar el array original dos veces)
-                    $rutasOrdenadas = $rutas;
-                    usort($rutasOrdenadas, function($a, $b) {
-                        $diaA = obtenerDiaSemanaCards($a['direccion'] ?? '');
-                        $diaB = obtenerDiaSemanaCards($b['direccion'] ?? '');
-                        return $diaA - $diaB;
-                    });
-                    ?>
-                    <?php foreach ($rutasOrdenadas as $ruta): ?>
+                    <?php foreach ($rutas as $ruta): ?>
                         <div class="routes-card">
                             <div class="routes-card-header">
                                 <div class="routes-card-icon">
@@ -2076,6 +2060,13 @@ if (isset($rutas) && is_array($rutas)) {
                                         </span>
                                     </div>
                                     
+                                    <div class="routes-card-field">
+                                        <i class="fas fa-shopping-cart"></i>
+                                        <span class="routes-card-label">Venta ID:</span>
+                                        <span class="routes-card-value">
+                                            <?= $ruta['id_ventas'] ?? 'N/A' ?>
+                                        </span>
+                                    </div>
                                     
                                     <?php if (!empty($ruta['id_reportes'])): ?>
                                     <div class="routes-card-field">
@@ -2164,6 +2155,7 @@ if (isset($rutas) && is_array($rutas)) {
                             <th><i class="fas fa-map-marker-alt"></i> Dirección</th>
                             <th><i class="fas fa-user"></i> Cliente</th>
                             <th><i class="fas fa-store"></i> Local</th>
+                            <th><i class="fas fa-shopping-cart"></i> Venta</th>
                             <th><i class="fas fa-traffic-light"></i> Estado</th>
                             <th><i class="fas fa-calendar-alt"></i> Fecha</th>
                             <th><i class="fas fa-cogs"></i> Acciones</th>
@@ -2171,76 +2163,6 @@ if (isset($rutas) && is_array($rutas)) {
                     </thead>
                     <tbody>
                         <?php if (isset($rutas) && is_array($rutas) && !empty($rutas)): ?>
-                            <?php 
-                            // Cargar planificación del usuario una sola vez
-                            $usuarioActual = isset($_SESSION['user']) ? intval($_SESSION['user']) : null;
-                            $planificacion_usuario = [];
-                            if ($usuarioActual) {
-                                require_once __DIR__ . '/../../models/RouteSchedule.php';
-                                $planificacion_usuario = RouteSchedule::getAssignmentsByUser($conn, $usuarioActual);
-                            }
-                            
-                            // Función para obtener el día de la semana - priorizar dirección sobre planificación
-                            function obtenerDiaSemanaFromPlanificacion($id_clientes, $planificacion_usuario, $direccion = '') {
-                                $dias_orden = ['lunes' => 1, 'martes' => 2, 'miercoles' => 3, 'jueves' => 4, 'viernes' => 5, 'sabado' => 6, 'domingo' => 7];
-                                
-                                // Priorizar la dirección de la ruta (más confiable para detectar todos los días)
-                                if (!empty($direccion)) {
-                                    if (stripos($direccion, 'lunes') !== false) return 1;
-                                    if (stripos($direccion, 'martes') !== false) return 2;
-                                    if (stripos($direccion, 'miércoles') !== false || stripos($direccion, 'miercoles') !== false) return 3;
-                                    if (stripos($direccion, 'jueves') !== false) return 4;
-                                    if (stripos($direccion, 'viernes') !== false) return 5;
-                                    if (stripos($direccion, 'sábado') !== false || stripos($direccion, 'sabado') !== false) return 6;
-                                    if (stripos($direccion, 'domingo') !== false) return 7;
-                                }
-                                
-                                // Fallback: usar planificación si no hay día en la dirección
-                                if (!empty($id_clientes) && !empty($planificacion_usuario)) {
-                                    $cliente_principal = intval($id_clientes);
-                                    foreach ($planificacion_usuario as $dia => $clientes) {
-                                        if (in_array($cliente_principal, $clientes)) {
-                                            return $dias_orden[strtolower($dia)] ?? 8;
-                                        }
-                                    }
-                                }
-                                
-                                return 8; // Sin día específico
-                            }
-                            
-                            // Función para obtener el nombre del día - priorizar dirección sobre planificación
-                            function obtenerNombreDia($id_clientes, $planificacion_usuario, $direccion = '') {
-                                // Priorizar la dirección de la ruta (más confiable para detectar todos los días)
-                                if (!empty($direccion)) {
-                                    if (stripos($direccion, 'lunes') !== false) return 'Lunes';
-                                    if (stripos($direccion, 'martes') !== false) return 'Martes';
-                                    if (stripos($direccion, 'miércoles') !== false || stripos($direccion, 'miercoles') !== false) return 'Miércoles';
-                                    if (stripos($direccion, 'jueves') !== false) return 'Jueves';
-                                    if (stripos($direccion, 'viernes') !== false) return 'Viernes';
-                                    if (stripos($direccion, 'sábado') !== false || stripos($direccion, 'sabado') !== false) return 'Sábado';
-                                    if (stripos($direccion, 'domingo') !== false) return 'Domingo';
-                                }
-                                
-                                // Fallback: usar planificación si no hay día en la dirección
-                                if (!empty($id_clientes) && !empty($planificacion_usuario)) {
-                                    $cliente_principal = intval($id_clientes);
-                                    foreach ($planificacion_usuario as $dia => $clientes) {
-                                        if (in_array($cliente_principal, $clientes)) {
-                                            return ucfirst($dia);
-                                        }
-                                    }
-                                }
-                                
-                                return 'Sin día';
-                            }
-                            
-                            // Ordenar rutas por día de la semana basándose en planificación con fallback
-                            usort($rutas, function($a, $b) use ($planificacion_usuario) {
-                                $diaA = obtenerDiaSemanaFromPlanificacion($a['id_clientes'] ?? '', $planificacion_usuario, $a['direccion'] ?? '');
-                                $diaB = obtenerDiaSemanaFromPlanificacion($b['id_clientes'] ?? '', $planificacion_usuario, $b['direccion'] ?? '');
-                                return $diaA - $diaB;
-                            });
-                            ?>
                             <?php foreach ($rutas as $ruta): ?>
                                 <?php
                                 // Procesar datos JSON si existen
@@ -2248,22 +2170,6 @@ if (isset($rutas) && is_array($rutas)) {
                                 $id_clientes_array = !empty($ruta['id_clientes_json']) ? json_decode($ruta['id_clientes_json'], true) : [];
                                 $id_ventas_array = !empty($ruta['id_ventas_json']) ? json_decode($ruta['id_ventas_json'], true) : [];
                                 $direcciones_array = !empty($ruta['direcciones_json']) ? json_decode($ruta['direcciones_json'], true) : [];
-                                
-                                // Fallback mejorado: Si no hay locales JSON, usar los locales de la dirección o el local específico de la ruta
-                                if (empty($id_locales_array)) {
-                                    // Primero intentar obtener el local específico si está definido en la ruta
-                                    if (!empty($ruta['id_locales'])) {
-                                        // Si hay un campo id_locales específico, úsalo
-                                        $id_locales_array = [intval($ruta['id_locales'])];
-                                    } elseif (!empty($ruta['nombre_local'])) {
-                                        // Si hay nombre_local, buscar su ID
-                                        $localPorNombreQuery = "SELECT id_locales FROM locales WHERE nombre_local = '" . $conn->real_escape_string($ruta['nombre_local']) . "'";
-                                        $localPorNombreResult = $conn->query($localPorNombreQuery);
-                                        if ($localPorNombreResult && $localData = $localPorNombreResult->fetch_assoc()) {
-                                            $id_locales_array = [intval($localData['id_locales'])];
-                                        }
-                                    }
-                                }
                                 
                                 // Obtener nombres de clientes desde los IDs
                                 $clientes_nombres = [];
@@ -2287,11 +2193,6 @@ if (isset($rutas) && is_array($rutas)) {
                                             $locales_nombres[] = $localData['nombre_local'];
                                         }
                                     }
-                                } else {
-                                    // Si no hay array de locales, usar el nombre_local directo de la ruta
-                                    if (!empty($ruta['nombre_local'])) {
-                                        $locales_nombres[] = $ruta['nombre_local'];
-                                    }
                                 }
                                 
                                 // Obtener nombres de ventas desde los IDs
@@ -2313,87 +2214,41 @@ if (isset($rutas) && is_array($rutas)) {
                                     <strong>#<?= htmlspecialchars($ruta['id_ruta'] ?? '') ?></strong>
                                 </td>
                                 <td>
-                                    <div class="text-center">
-                                        <?php 
-                                        // Usar la función para obtener el nombre del día con fallback integrado
-                                        $dia_semana = obtenerNombreDia($ruta['id_clientes'] ?? '', $planificacion_usuario, $ruta['direccion'] ?? '');
-                                        ?>
-                                        <div class="badge badge-modern badge-primary" style="font-size: 1rem; padding: 10px; background: #2c3e50; color: white; border: 2px solid #3498db;">
-                                            <i class="fas fa-calendar-day" style="color: #3498db;"></i><br>
-                                            <strong style="color: white; font-weight: 700;"><?= htmlspecialchars($dia_semana) ?></strong>
+                                    <div class="d-flex align-items-center">
+                                        <div class="route-icon">
+                                            <i class="fas fa-route"></i>
                                         </div>
-                                        <br><small class="text-muted">ID: <?= $ruta['id_ruta'] ?? '' ?></small>
+                                        <div>
+                                            <strong><?= htmlspecialchars($ruta['nombre_local'] ?? $ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?></strong>
+                                            <br>
+                                            <small class="text-muted">
+                                                <i class="fas fa-barcode"></i> ID: <?= $ruta['id_ruta'] ?? '' ?>
+                                            </small>
+                                        </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <?php 
-                                    // Obtener direcciones reales de los locales asignados
-                                    $direcciones_reales = [];
-                                    if (!empty($id_locales_array)) {
-                                        foreach ($id_locales_array as $id_local) {
-                                            $localQuery = "SELECT direccion FROM locales WHERE id_locales = " . intval($id_local);
-                                            $localResult = $conn->query($localQuery);
-                                            if ($localResult && $localData = $localResult->fetch_assoc()) {
-                                                if (!empty($localData['direccion'])) {
-                                                    $direcciones_reales[] = $localData['direccion'];
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
-                                    // También obtener direcciones de clientes si no hay locales
-                                    if (empty($direcciones_reales) && !empty($id_clientes_array)) {
-                                        foreach ($id_clientes_array as $id_cliente) {
-                                            // Obtener locales del cliente
-                                            $clienteLocalQuery = "SELECT l.direccion FROM locales l 
-                                                                INNER JOIN clientes_locales cl ON l.id_locales = cl.id_locales 
-                                                                WHERE cl.id_clientes = " . intval($id_cliente);
-                                            $clienteLocalResult = $conn->query($clienteLocalQuery);
-                                            while ($clienteLocalResult && $clienteLocalData = $clienteLocalResult->fetch_assoc()) {
-                                                if (!empty($clienteLocalData['direccion'])) {
-                                                    $direcciones_reales[] = $clienteLocalData['direccion'];
-                                                }
-                                            }
-                                        }
-                                    }
-                                    ?>
-                                    
-                                    <?php if (!empty($direcciones_reales)): ?>
-                                        <?php foreach (array_unique($direcciones_reales) as $dir_real): ?>
-                                            <div class="mb-2">
-                                                <span class="badge badge-modern badge-info" style="background: #17a2b8; color: white; font-weight: 600;">
-                                                    <i class="fas fa-map-marker-alt"></i> 
-                                                    <?= htmlspecialchars($dir_real) ?>
-                                                </span>
-                                            </div>
-                                        <?php endforeach; ?>
-                                    <?php elseif (!empty($direcciones_array)): ?>
-                                        <?php foreach ($direcciones_array as $dir): ?>
-                                            <div class="mb-2">
-                                                <span class="badge badge-modern badge-info" style="background: #17a2b8; color: white; font-weight: 600;">
-                                                    <i class="fas fa-map-marker-alt"></i> 
-                                                    <?= htmlspecialchars($dir) ?>
-                                                </span>
-                                            </div>
+                                    <?php if (!empty($direcciones_array)): ?>
+                                        <?php foreach ($direcciones_array as $idx => $dir): ?>
+                                            <span class="badge badge-modern badge-info" style="display: block; margin-bottom: 5px;">
+                                                <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($dir) ?>
+                                            </span>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-warning" style="background: #ffc107; color: #212529; font-weight: 600;">
-                                            <i class="fas fa-exclamation-triangle"></i> 
-                                            Sin dirección asignada
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-map-marker-alt"></i> <?= htmlspecialchars($ruta['direccion'] ?? 'Sin dirección') ?>
                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td>
                                     <?php if (!empty($clientes_nombres)): ?>
                                         <?php foreach ($clientes_nombres as $cliente_name): ?>
-                                            <div class="mb-2">
-                                                <span class="badge badge-modern badge-secondary" style="background: #6c757d; color: white; font-weight: 600;">
-                                                    <i class="fas fa-user"></i> <?= htmlspecialchars($cliente_name) ?>
-                                                </span>
-                                            </div>
+                                            <span class="badge badge-modern badge-secondary" style="display: block; margin-bottom: 3px;">
+                                                <i class="fas fa-user"></i> <?= htmlspecialchars($cliente_name) ?>
+                                            </span>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary" style="background: #6c757d; color: white; font-weight: 600;">
+                                        <span class="badge badge-modern badge-secondary">
                                             <i class="fas fa-user"></i> <?= htmlspecialchars($ruta['nombre_cliente'] ?? $ruta['cliente_nombre'] ?? 'Sin cliente') ?>
                                         </span>
                                     <?php endif; ?>
@@ -2401,17 +2256,41 @@ if (isset($rutas) && is_array($rutas)) {
                                 <td>
                                     <?php if (!empty($locales_nombres)): ?>
                                         <?php foreach ($locales_nombres as $local_name): ?>
-                                            <div class="mb-2">
-                                                <span class="badge badge-modern badge-info" style="background: #28a745; color: white; font-weight: 600;">
-                                                    <i class="fas fa-store"></i> <?= htmlspecialchars($local_name) ?>
-                                                </span>
-                                            </div>
+                                            <span class="badge badge-modern badge-info" style="display: block; margin-bottom: 3px;">
+                                                <i class="fas fa-store"></i> <?= htmlspecialchars($local_name) ?>
+                                            </span>
                                         <?php endforeach; ?>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-info" style="background: #28a745; color: white; font-weight: 600;">
-                                            <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['nombre_local'] ?? $ruta['local_nombre'] ?? 'Sin local') ?>
+                                        <span class="badge badge-modern badge-info">
+                                            <i class="fas fa-store"></i> <?= htmlspecialchars($ruta['local_nombre'] ?? 'Sin local') ?>
                                         </span>
                                     <?php endif; ?>
+                                </td>
+                                <td>
+                                    <div class="text-center">
+                                        <?php if (!empty($ventas_display)): ?>
+                                            <?php foreach ($ventas_display as $venta_name): ?>
+                                                <span class="badge badge-modern badge-secondary" style="display: block; margin-bottom: 3px;">
+                                                    <i class="fas fa-shopping-cart"></i> <?= htmlspecialchars($venta_name) ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        <?php else: ?>
+                                            <?php if (!empty($ruta['id_ventas'])): ?>
+                                                <span class="badge badge-modern badge-secondary">
+                                                    <i class="fas fa-shopping-cart"></i> Venta #<?= $ruta['id_ventas'] ?>
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="badge badge-modern badge-warning">
+                                                    <i class="fas fa-exclamation-triangle"></i> Sin venta asignada
+                                                </span>
+                                            <?php endif; ?>
+                                        <?php endif; ?>
+                                        <?php if (!empty($ruta['id_reportes'])): ?>
+                                            <br><small class="badge badge-modern badge-warning mt-1">
+                                                <i class="fas fa-file-alt"></i> Reporte: <?= $ruta['id_reportes'] ?>
+                                            </small>
+                                        <?php endif; ?>
+                                    </div>
                                 </td>
                                 <td>
                                     <?php
@@ -2456,17 +2335,16 @@ if (isset($rutas) && is_array($rutas)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-
                                         <a href="/RMIE/rutas.php?accion=edit&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-warning-modern" 
                                            title="Editar ruta">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         
-                                        <?php if (($ruta['estado'] ?? 'activa') === 'activa'): ?>
+                                        <?php if (($ruta['estado'] ?? 'activa') !== 'completada'): ?>
                                         <button type="button" 
-                                           class="btn btn-sm btn-modern btn-info-modern" 
-                                           title="Marcar como completada"
+                                           class="btn btn-sm btn-modern btn-success-modern" 
+                                           title="Completar y finalizar ruta"
                                            onclick="completarRuta(<?= $ruta['id_ruta'] ?? 0 ?>, '<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>');">
                                             <i class="fas fa-check-circle"></i>
                                         </button>
@@ -2480,8 +2358,6 @@ if (isset($rutas) && is_array($rutas)) {
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
-                                        
-
                                     </div>
                                 </td>
                             </tr>
@@ -2657,40 +2533,6 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             setTimeout(function() {
                 llenarListaRutas();
             }, 100);
-        }
-
-        // Función para completar una ruta (v2.0)
-        async function completarRuta(idRuta, nombreRuta) {
-            if (!confirm(`Completar la ruta: "${nombreRuta}"\n\n¿Qué deseas hacer?\n\n• Presiona ACEPTAR si ya completaste la ruta\n• Presiona CANCELAR si no ha completado la ruta`)) {
-                return;
-            }
-
-            try {
-                const response = await fetch('/RMIE/completar_ruta.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        id_ruta: idRuta
-                    })
-                });
-
-                const result = await response.json();
-                
-                if (result.success) {
-                    mostrarNotificacion('Ruta marcada como completada exitosamente', 'success');
-                    // Recargar la página para mostrar el cambio
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    mostrarNotificacion('Error: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                mostrarNotificacion('Error al completar la ruta', 'error');
-            }
         }
 
         function abrirGoogleMapsDirecto() {
@@ -3343,133 +3185,28 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             bootstrap.Modal.getInstance(document.getElementById('modalDinamico')).hide();
         }
 
-        // Función para completar ruta con actualización instantánea
+        // Función para completar y eliminar ruta (versión simple sin modal complejo)
         function completarRuta(idRuta, nombreRuta) {
-            // Confirmación simple para completar la ruta
-            const mensaje = `Completar la ruta: "${nombreRuta}"\n\n• Presiona ACEPTAR si ya completaste la ruta\n• Presiona CANCELAR si no ha completado la ruta`;
+            console.log('completarRuta llamada con:', idRuta, nombreRuta);
             
-            if (confirm(mensaje)) {
-                // Actualizar INMEDIATAMENTE la interfaz (optimistic update)
-                actualizarInterfazCompletada(idRuta);
+            // Usar confirmaciones nativas del navegador para evitar problemas de accesibilidad
+            const mensaje = `Completar la ruta: "${nombreRuta}"\n\n¿Qué deseas hacer?\n\n• Presiona ACEPTAR para completar y ELIMINAR la ruta\n• Presiona CANCELAR para solo completar (mantener en base de datos)`;
+            
+            const autoEliminar = confirm(mensaje);
+            
+            if (autoEliminar !== null) { // Si no presionó Escape
+                const accion = autoEliminar ? 'complete_and_delete' : 'complete';
+                const url = `/RMIE/rutas.php?accion=${accion}&id=${idRuta}`;
                 
-                // Luego enviar al servidor
-                const xhr = new XMLHttpRequest();
-                xhr.open('POST', '/RMIE/completar_ruta.php', true);
-                xhr.setRequestHeader('Content-Type', 'application/json');
+                console.log('Ejecutando acción:', accion, 'para ruta ID:', idRuta);
                 
-                xhr.onreadystatechange = function() {
-                    if (xhr.readyState === 4) {
-                        if (xhr.status === 200) {
-                            try {
-                                const response = JSON.parse(xhr.responseText);
-                                if (response.success) {
-                                    alert('Ruta completada exitosamente');
-                                } else {
-                                    // Revertir cambios si hay error
-                                    revertirInterfazCompletada(idRuta);
-                                    alert('Error: ' + (response.message || 'No se pudo completar la ruta'));
-                                }
-                            } catch (e) {
-                                // Revertir cambios si hay error
-                                revertirInterfazCompletada(idRuta);
-                                alert('Error al procesar la respuesta del servidor');
-                            }
-                        } else {
-                            // Revertir cambios si hay error
-                            revertirInterfazCompletada(idRuta);
-                            alert('Error de conexión al servidor');
-                        }
-                    }
-                };
+                // Mostrar mensaje de procesamiento
+                const procesoMsg = autoEliminar ? 'Completando y eliminando ruta...' : 'Completando ruta...';
+                alert(procesoMsg);
                 
-                // Enviar datos JSON como espera el endpoint
-                xhr.send(JSON.stringify({id_ruta: idRuta}));
+                // Navegar directamente
+                window.location.href = url;
             }
-        }
-        
-        // Función para actualizar la interfaz inmediatamente
-        function actualizarInterfazCompletada(idRuta) {
-            // 1. Buscar y ocultar TODOS los botones "Completar" para esta ruta
-            const botonesCompletar = document.querySelectorAll(`button[onclick*="completarRuta(${idRuta}"]`);
-            botonesCompletar.forEach((boton) => {
-                boton.style.display = 'none';
-                
-                // Agregar badge verde de "Completada"
-                if (!boton.nextElementSibling || !boton.nextElementSibling.hasAttribute('data-ruta-completed')) {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge bg-success ms-2';
-                    badge.innerHTML = '<i class="fas fa-check-circle me-1"></i>Completada';
-                    badge.setAttribute('data-ruta-completed', idRuta);
-                    boton.parentNode.insertBefore(badge, boton.nextSibling);
-                }
-            });
-            
-            // 2. Actualizar SOLO los elementos de ESTADO específicos (no los botones) que muestren "ACTIVA"
-            
-            // Buscar SOLO elementos de estado con clases específicas
-            const elementosEstado = document.querySelectorAll('.routes-card-status, .badge-modern, .badge:not(.bg-success)');
-            elementosEstado.forEach(elemento => {
-                // EXCLUIR completamente cualquier elemento que ya contenga "Completada"
-                if (elemento.textContent && elemento.textContent.includes('Completada')) {
-                    return; // No tocar NINGÚN elemento que ya diga "Completada"
-                }
-                
-                // Solo procesar si el elemento contiene "ACTIVA" o "Activa"
-                if (elemento.textContent && (elemento.textContent.trim() === 'ACTIVA' || elemento.textContent.trim() === 'Activa')) {
-                    // Verificar si este elemento pertenece a la ruta correcta
-                    let tarjetaPadre = elemento.closest('.routes-card');
-                    let filaPadre = elemento.closest('tr');
-                    
-                    let esLaRutaCorrecta = false;
-                    
-                    if (tarjetaPadre) {
-                        const idText = tarjetaPadre.querySelector('.routes-card-id');
-                        if (idText && idText.textContent.includes('ID: ' + idRuta)) {
-                            esLaRutaCorrecta = true;
-                        }
-                    }
-                    
-                    if (filaPadre) {
-                        const celdaId = filaPadre.querySelector('td:first-child strong');
-                        if (celdaId && celdaId.textContent.includes('#' + idRuta)) {
-                            esLaRutaCorrecta = true;
-                        }
-                    }
-                    
-                    if (esLaRutaCorrecta) {
-                        // Cambiar el texto y agregar el ícono
-                        elemento.innerHTML = '<i class="fas fa-check-circle me-1"></i>Completada';
-                        
-                        // Cambiar las clases para el estilo correcto
-                        if (elemento.classList.contains('routes-status-activa')) {
-                            elemento.classList.remove('routes-status-activa');
-                            elemento.classList.add('routes-status-completada');
-                            elemento.style.opacity = '0.7';
-                        }
-                        
-                        if (elemento.classList.contains('badge-success')) {
-                            elemento.classList.remove('badge-success');
-                            elemento.classList.add('badge-info');
-                        }
-                    }
-                }
-            });
-        }
-        
-        // Función para revertir cambios si hay error
-        function revertirInterfazCompletada(idRuta) {
-            // Revertir botones
-            const botonesCompletar = document.querySelectorAll(`button[onclick*="completarRuta(${idRuta}"]`);
-            botonesCompletar.forEach(boton => {
-                boton.style.display = '';
-            });
-            
-            // Eliminar badges añadidos
-            const badges = document.querySelectorAll(`[data-ruta-completed="${idRuta}"]`);
-            badges.forEach(badge => badge.remove());
-            
-            // Recargar la página como fallback para restaurar el estado original
-            location.reload();
         }
         
         // Función alternativa con modal mejorado (sin problemas de accesibilidad)
@@ -3603,7 +3340,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         // Función alternativa simple para completar ruta (sin modal)
         function completarRutaSimple(idRuta, nombreRuta) {
-            const autoEliminar = confirm(`Completar la ruta: "${nombreRuta}"\n\n¿Qué deseas hacer?\n\n• Presiona ACEPTAR si ya completaste la ruta\n• Presiona CANCELAR si no ha completado la ruta`);
+            const autoEliminar = confirm(`¿Completar la ruta "${nombreRuta}"?\n\nPresiona:\n- Aceptar: Completar y ELIMINAR la ruta\n- Cancelar: Solo completar (mantener en base de datos)`);
             
             const accion = autoEliminar ? 'complete_and_delete' : 'complete';
             const url = `/RMIE/rutas.php?accion=${accion}&id=${idRuta}`;
@@ -3830,7 +3567,17 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         // (Eliminada función duplicada limpiarFiltros, solo se mantiene la de redirección base)
 
+        // =============== FUNCIONES PARA PLANIFICACIÓN SEMANAL ===============
 
+        let planificacionData = {};
+        const diasSemana = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+
+        // Inicializar planificación semanal
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarPlanificacion();
+        });
+
+        // Cargar planificación desde el servidor
         async function cargarPlanificacion() {
             mostrarCargandoPlanificacion(true);
             
@@ -4497,6 +4244,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                 <td style="${estiloNuevo}">${ruta.direccion}</td>
                 <td style="${estiloNuevo}">${ruta.nombre_cliente}</td>
                 <td style="${estiloNuevo}">${ruta.nombre_local}</td>
+                <td style="${estiloNuevo}">-</td>
                 <td style="${estiloNuevo}">
                     <span class="badge badge-success">${ruta.estado}</span>
                 </td>
