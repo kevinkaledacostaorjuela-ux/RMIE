@@ -664,6 +664,33 @@
             <!-- Form -->
             <div class="form-section">
                 <form action="/RMIE/app/controllers/RouteController.php?accion=create" method="POST" id="createRouteForm">
+                    <div class="section-card" style="margin-bottom:30px;">
+                        <div class="section-title">
+                            <i class="fas fa-calendar-day"></i>
+                            Día Planificado (Opcional)
+                        </div>
+                        <div class="form-floating-modern">
+                            <select class="form-select-modern" id="dia_plan" name="dia_plan">
+                                <option value="">-- Sin especificar --</option>
+                                <?php if(isset($dias_predeterminados)): ?>
+                                    <?php foreach($dias_predeterminados as $d): ?>
+                                        <option value="<?= $d ?>" <?= (($_POST['dia_plan'] ?? '') === $d) ? 'selected' : '' ?>><?= $d ?></option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                            <label for="dia_plan">
+                                <i class="fas fa-calendar-week"></i>
+                                Día sugerido
+                            </label>
+                            <div class="form-help">
+                                <i class="fas fa-info-circle"></i>
+                                Selecciona un día para sugerir clientes según tu planificación guardada.
+                            </div>
+                        </div>
+                        <div class="form-help" style="margin-top:10px; font-size:0.75rem; color:#fff;">
+                            <i class="fas fa-lightbulb"></i> Al elegir un día se resaltarán en el listado los clientes asignados a ese día.
+                        </div>
+                    </div>
 
                                         <div class="form-floating-modern">
                                             <select class="form-select-modern" id="estado" name="estado" required>
@@ -727,7 +754,15 @@
                                     required>
                                 <?php if (!empty($available_clients)): ?>
                                     <?php foreach ($available_clients as $client): ?>
-                                        <option value="<?= htmlspecialchars($client['id_clientes']) ?>">
+                                        <?php
+                                            $resaltado = '';
+                                            if (!empty($planificacion_usuario) && !empty($_POST['dia_plan']) && isset($planificacion_usuario[$_POST['dia_plan']])) {
+                                                if (in_array($client['id_clientes'], $planificacion_usuario[$_POST['dia_plan']])) {
+                                                    $resaltado = 'data-resaltado="1"';
+                                                }
+                                            }
+                                        ?>
+                                        <option value="<?= htmlspecialchars($client['id_clientes']) ?>" <?= $resaltado ?>>
                                             <?= htmlspecialchars($client['nombre']) ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -949,6 +984,54 @@
             const idLocalesField = document.getElementById('id_locales');
             const idClienteField = document.getElementById('id_clientes');
             const idVentaField = document.getElementById('id_ventas');
+            const diaPlanField = document.getElementById('dia_plan');
+
+            // Resaltar clientes asignados al día seleccionado
+            function resaltarClientesDia() {
+                const dia = diaPlanField.value;
+                // Limpiar clases anteriores
+                $('#id_clientes option').each(function(){
+                    $(this).removeClass('cliente-dia');
+                });
+                if (dia && window.PLANIFICACION && window.PLANIFICACION[dia]) {
+                    const ids = window.PLANIFICACION[dia];
+                    ids.forEach(id => {
+                        $('#id_clientes option[value="'+id+'"]').addClass('cliente-dia');
+                    });
+                }
+                // Forzar refresco visual en Select2
+                $('#id_clientes').trigger('change.select2');
+            }
+
+            // Inyectar planificación desde PHP
+            window.PLANIFICACION = <?= json_encode($planificacion_usuario ?? []) ?>;
+
+            // Listener cambio día
+            diaPlanField.addEventListener('change', function(){
+                resaltarClientesDia();
+            });
+
+            // Estilo para clientes resaltados
+            const styleTag = document.createElement('style');
+            styleTag.innerHTML = '.select2-results__option.cliente-dia, #id_clientes option.cliente-dia {background: linear-gradient(135deg,#43e97b,#38f9d7)!important;color:#fff!important;font-weight:600;}';
+            document.head.appendChild(styleTag);
+
+            // Botón para preseleccionar todos los clientes del día
+            const helperDiv = document.createElement('div');
+            helperDiv.style.marginTop = '10px';
+            helperDiv.innerHTML = '<button type="button" id="btnPreselectDia" class="btn btn-sm btn-success" style="border-radius:8px;"><i class="fas fa-magic"></i> Usar clientes del día</button>';
+            $('#id_clientes').parent().append(helperDiv);
+            document.getElementById('btnPreselectDia').addEventListener('click', function(){
+                const dia = diaPlanField.value;
+                if (dia && window.PLANIFICACION && window.PLANIFICACION[dia]) {
+                    $('#id_clientes').val(window.PLANIFICACION[dia].map(String)).trigger('change');
+                } else {
+                    alert('No hay clientes asignados para el día seleccionado o no has elegido un día.');
+                }
+            });
+
+            // Inicial al cargar
+            resaltarClientesDia();
 
             // Vista previa en tiempo real
             function updatePreview() {

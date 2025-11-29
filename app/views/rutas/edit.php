@@ -970,6 +970,22 @@
                     <!-- Columna izquierda: Formulario -->
                     <div>
                         <form action="/RMIE/app/controllers/RouteController.php?accion=edit&id=<?= $route['id_ruta'] ?>" method="POST" id="editRouteForm">
+                            <div class="form-section">
+                                <h3 class="section-title"><i class="fas fa-calendar-day"></i> Día Planificado (Opcional)</h3>
+                                <div class="form-group">
+                                    <label for="dia_plan"><i class="fas fa-calendar-week"></i> Día sugerido</label>
+                                    <select class="form-select" id="dia_plan" name="dia_plan">
+                                        <option value="">-- Sin especificar --</option>
+                                        <?php if(isset($dias_predeterminados)): ?>
+                                            <?php foreach($dias_predeterminados as $d): ?>
+                                                <option value="<?= $d ?>" <?= (($_POST['dia_plan'] ?? '') === $d) ? 'selected' : '' ?>><?= $d ?></option>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </select>
+                                    <small class="form-text"><i class="fas fa-info-circle"></i> Selecciona un día para resaltar clientes según tu planificación guardada.</small>
+                                    <small class="form-text"><i class="fas fa-lightbulb"></i> Usa el botón inferior para cargar clientes del día.</small>
+                                </div>
+                            </div>
 
                                                         <div class="form-group">
                                                             <label for="estado">
@@ -1068,11 +1084,16 @@
                                         <?php if (isset($available_clients) && is_array($available_clients)): ?>
                                             <?php foreach ($available_clients as $client): ?>
                                                 <?php 
-                                                $id_clientes_json = !empty($route['id_clientes_json']) ? json_decode($route['id_clientes_json'], true) : [];
-                                                $is_selected = in_array($client['id_clientes'], $id_clientes_json);
+                                                    $id_clientes_json = !empty($route['id_clientes_json']) ? json_decode($route['id_clientes_json'], true) : [];
+                                                    $is_selected = in_array($client['id_clientes'], $id_clientes_json);
+                                                    $resaltado = '';
+                                                    if (!empty($planificacion_usuario) && !empty($_POST['dia_plan']) && isset($planificacion_usuario[$_POST['dia_plan']])) {
+                                                        if (in_array($client['id_clientes'], $planificacion_usuario[$_POST['dia_plan']])) {
+                                                            $resaltado = 'class="cliente-dia"';
+                                                        }
+                                                    }
                                                 ?>
-                                                <option value="<?= htmlspecialchars($client['id_clientes']) ?>" 
-                                                    <?= $is_selected ? 'selected' : '' ?>>
+                                                <option value="<?= htmlspecialchars($client['id_clientes']) ?>" <?= $is_selected ? 'selected' : '' ?> <?= $resaltado ?>>
                                                     <?= htmlspecialchars($client['nombre']) ?>
                                                 </option>
                                             <?php endforeach; ?>
@@ -1367,6 +1388,39 @@
 
                 // Referencias a elementos del formulario
                 const form = document.getElementById('editRouteForm');
+                const diaPlanField = document.getElementById('dia_plan');
+                window.PLANIFICACION = <?= json_encode($planificacion_usuario ?? []) ?>;
+                function resaltarClientesDia() {
+                    const dia = diaPlanField.value;
+                    const options = document.querySelectorAll('#id_clientes option');
+                    options.forEach(o => o.classList.remove('cliente-dia'));
+                    if (dia && window.PLANIFICACION[dia]) {
+                        window.PLANIFICACION[dia].forEach(id => {
+                            const opt = document.querySelector('#id_clientes option[value="'+id+'"]');
+                            if (opt) opt.classList.add('cliente-dia');
+                        });
+                    }
+                }
+                diaPlanField.addEventListener('change', resaltarClientesDia);
+                resaltarClientesDia();
+                const styleTag = document.createElement('style');
+                styleTag.innerHTML = '#id_clientes option.cliente-dia {background: linear-gradient(135deg,#43e97b,#38f9d7)!important;color:#fff;font-weight:600;}';
+                document.head.appendChild(styleTag);
+                const helperBtn = document.createElement('button');
+                helperBtn.type = 'button';
+                helperBtn.className = 'btn btn-sm btn-success mt-2';
+                helperBtn.innerHTML = '<i class="fas fa-magic"></i> Usar clientes del día';
+                document.getElementById('id_clientes').parentElement.appendChild(helperBtn);
+                helperBtn.addEventListener('click', function(){
+                    const dia = diaPlanField.value;
+                    if (dia && window.PLANIFICACION[dia]) {
+                        const valores = window.PLANIFICACION[dia].map(String);
+                        const options = document.querySelectorAll('#id_clientes option');
+                        options.forEach(o => { o.selected = valores.includes(o.value); });
+                    } else {
+                        alert('Selecciona un día con clientes asignados.');
+                    }
+                });
                 const direccionField = document.getElementById('direccion');
                 const estadoField = document.getElementById('estado');
                 const submitBtn = document.getElementById('submitBtn');

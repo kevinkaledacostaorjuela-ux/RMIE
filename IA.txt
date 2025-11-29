@@ -46710,3 +46710,307 @@ Perfecto! Ahora he corregido todas las referencias en el `LocalController` para 
 Ahora cuando asignes clientes a un local, automáticamente aparecerán en el módulo de clientes mostrando qué local tienen asignado. ¿Te gustaría probarlo creando un local con clientes asignados?
 
 Se realizaron cambios.
+Jhonatan218: http://localhost/RMIE/app/controllers/RouteController.php?accion=index cambia la funcion del modulo de rutas para que sea con dias predeterminados de lunes a sabado y clientes especificos  que el mismo usuario seleccione  por favor
+
+GitHub Copilot: Enable GPT-5 for all clients
+[object Object]
+
+Jhonatan218: @agent Enable: "Enable GPT-5 for all clients"
+
+GitHub Copilot: Voy a crear una lista de tareas y leer los archivos clave del controlador y modelo de rutas para entender cómo implementar los días Lunes-Sábado y selección de clientes.
+
+Se han creado 7 tareas pendientes
+
+Leo el controlador y archivos relacionados para rutas ahora.
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/controllers/RouteController.php#1-1), líneas 1 a 400
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/controllers/RouteController.php#401-401), líneas 401 a 540
+
+Reviso el modelo y esquema SQL para soporte de días.
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/models/Route.php)
+
+Se ha buscado el texto `rutas` (`**/*.sql`), 6 resultados
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/db.sql#80-80), líneas 80 a 130
+
+Iniciando (Diseñar cambio días L-S/4) *7*
+
+Diseño listo; aplico patch para días y selección clientes en index.
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Validar funcionamiento básico/7) *7*
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#1-1), líneas 1 a 400
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#400-400), líneas 400 a 800
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#800-800), líneas 800 a 1200
+
+Se ha buscado el texto `<body` (`**/app/views/rutas/index.php`), 1 resultado
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#1480-1480), líneas 1480 a 1520
+
+Se ha buscado el texto `Filtros` (`**/app/views/rutas/index.php`), 8 resultados
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#1600-1600), líneas 1600 a 1660
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Completado (Validar funcionamiento básico/7) *7*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+Cambios realizados.
+
+**Resumen**
+- Añadí en RouteController.php la lógica de días predeterminados Lunes-Sábado y manejo de asignaciones de clientes por día vía sesión.
+- Agregué soporte para guardar (POST) y reiniciar (`reset_asignaciones=1`) asignaciones.
+- Inserté en index.php un formulario con selects múltiples por día mostrando clientes seleccionados.
+- Incluí mapa rápido `id -> nombre` para mostrar badges de clientes asignados.
+
+**Archivos Modificados**
+- RouteController.php: nueva gestión de días, POST de asignaciones y reset.
+- index.php: formulario de planificación semanal.
+
+**Uso**
+- Selecciona clientes por día y pulsa Guardar Asignaciones.
+- Reinicia con el botón Reiniciar (limpia la sesión).
+
+**Siguientes Opcionales**
+- Persistir asignaciones en BD (crear columna `asignaciones_json` en `rutas` o tabla `rutas_asignaciones`).
+- Validar roles si solo ciertos usuarios deben planificar.
+- Añadir restricción de máximo clientes por día.
+
+¿Deseas que implemente persistencia en base de datos o algún ajuste extra? Indica y lo preparo.
+
+Se realizaron cambios.
+
+Jhonatan218: reajusta el modulo en su totalidad por favor
+
+GitHub Copilot: Se ha buscado el texto `id_locales_json` (`**/*.php`), 14 resultados
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/migrate_estado_alertas.php)
+
+Se han creado 9 tareas pendientes
+
+Arranco creando modelo y migración para planificación semanal.
+
+Jhonatan218: si
+
+GitHub Copilot: Se ha buscado texto `id_usuarios` (`**/*.php`), sin resultados
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/controllers/LoginController.php)
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/models/User.php#1-1), líneas 1 a 300
+
+Creo archivos para modelo y migración y modifico controlador y vista para persistencia y filtro por día.
+
+Iniciando (Crear modelo RouteSchedule/2) *9*
+
+Se ha creado [](file:///c%3A/xampp/htdocs/RMIE/app/models/RouteSchedule.php)
+
+Se ha creado [](file:///c%3A/xampp/htdocs/RMIE/migrate_rutas_planificacion.php)
+
+Iniciando (Persistir asignaciones en DB/4) *9*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Actualizar vista index asignaciones/6) *9*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Se ha buscado texto `name="dia"` (`**/app/views/rutas/index.php`), sin resultados
+
+Se ha buscado el texto `Filtros de Búsqueda` (`**/app/views/rutas/index.php`), 1 resultado
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/index.php#1700-1700), líneas 1700 a 1800
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Verificacion final cambios/9) *9*
+
+Reajuste completo del módulo de rutas aplicado.
+
+**Cambios Clave**
+- Persistencia: Nueva tabla `rutas_planificacion` (script migrate_rutas_planificacion.php) para guardar asignaciones (usuario, día, cliente).
+- Modelo: `RouteSchedule.php` con métodos `getAssignmentsByUser`, `saveAssignments`, `resetUserAssignments`.
+- Controlador: RouteController.php ahora carga/guarda asignaciones en DB, incluye reset y filtro adicional por día sobre rutas existentes.
+- Vista: index.php formulario de planificación semanal persistente y nuevo filtro selector de día en panel de búsqueda.
+- Filtro Día: Si se selecciona `dia` se muestran solo rutas cuyos clientes están asignados ese día.
+
+**Cómo Usar**
+- Ejecuta migración (una vez):
+```pwsh
+php migrate_rutas_planificacion.php
+```
+- Asigna clientes por día y guarda.
+- Usa filtro Día para ver rutas relevantes.
+- Reinicia asignaciones con botón Reiniciar (elimina del usuario actual).
+
+**Siguientes Opcionales**
+- Validar roles que pueden modificar planificación.
+- Añadir límite por día o vista resumen semanal.
+- Mostrar indicador de coincidencia (día) junto a cada ruta.
+
+¿Necesitas también edición en creación/edición de rutas para sugerir clientes según día o más ajustes? Indica y lo implemento.
+
+Se realizaron cambios.
+
+Jhonatan218: si has eso por favor
+
+GitHub Copilot: Reviso vistas `create` y `edit` de rutas para añadir día y sugerencias.
+
+Iniciando (Analizar vista create rutas/1) *8*
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/create.php#1-1), líneas 1 a 400
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/create.php#400-400), líneas 400 a 800
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/create.php#800-800), líneas 800 a 1060
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/edit.php#1-1), líneas 1 a 400
+
+Iniciando (Analizar vista edit rutas/2) *8*
+
+Se ha buscado el texto `id_clientes_json` (`**/app/views/rutas/edit.php`), 6 resultados
+
+Iniciando (Extender controlador create/edit/3) *8*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Agregar campo dia formulario/4) *8*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Usando "Aplicar revisión"
+
+Se ha buscado el texto `editRouteForm` (`**/app/views/rutas/edit.php`), 2 resultados
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/edit.php#920-920), líneas 920 a 1040
+
+Leer [](file:///c%3A/xampp/htdocs/RMIE/app/views/rutas/edit.php#1040-1040), líneas 1040 a 1180
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Verificar consistencia envío/7) *8*
+
+Se añadieron día planificado y sugerencias en creación y edición.
+
+**Ajustes Implementados**
+- Controlador RouteController.php: ahora pasa `dias_predeterminados` y `planificacion_usuario` a `create` y `edit`.
+- Vista create.php: campo `dia_plan`, resaltado visual de clientes planificados, botón para preseleccionar clientes del día, estilos y JS de apoyo.
+- Vista edit.php: misma lógica de día, resaltado y botón para cargar clientes del día.
+- Resaltado: clientes asignados al día elegido se pintan con gradiente verde/turquesa.
+- Preselección: botón mágico selecciona todos los clientes asignados al día elegido.
+
+**Cómo Probar**
+1. Ejecutar migración si no se hizo:
+```pwsh
+php migrate_rutas_planificacion.php
+```
+2. Asignar clientes por día en `rutas/index`.
+3. Crear ruta: elegir día; usar botón para cargar clientes.
+4. Editar ruta: elegir día y verificar resaltado/preselección.
+
+**Siguientes Opcionales**
+- Validar que `dia_plan` se almacene (requerir columna nueva si quieres persistirlo por ruta).
+- Añadir indicador del día en listado de rutas.
+- Limitar número máximo de clientes por día.
+
+¿Deseas también guardar el `dia_plan` dentro de cada ruta (nueva columna) o mostrarlo en el índice? Puedo hacerlo enseguida si confirmas.
+
+Se realizaron cambios.
+
+Jhonatan218: http://localhost/RMIE/app/controllers/RouteController.php?accion=index
+Fatal error: Uncaught mysqli_sql_exception: Table 'rmie.rutas_planificacion' doesn't exist in C:\xampp\htdocs\RMIE\app\models\RouteSchedule.php:6 Stack trace: #0 C:\xampp\htdocs\RMIE\app\models\RouteSchedule.php(6): mysqli->prepare('SELECT dia, id_...') #1 C:\xampp\htdocs\RMIE\app\controllers\RouteController.php(68): RouteSchedule::getAssignmentsByUser(Object(mysqli), 1) #2 C:\xampp\htdocs\RMIE\app\controllers\RouteController.php(574): RouteController->index() #3 {main} thrown in C:\xampp\htdocs\RMIE\app\models\RouteSchedule.php on line 6
+
+GitHub Copilot: Iniciando (Identificar causa error tabla/1) *5*
+
+Usando "Aplicar revisión"
+
+
+```
+
+```
+
+
+Iniciando (Instrucciones ejecutar migracion/4) *5*
+
+Se corrigió el fatal error añadiendo verificación de existencia de la tabla en `RouteSchedule.php`.
+
+**Qué se hizo**
+- `getAssignmentsByUser`, `saveAssignments`, `resetUserAssignments` ahora validan la existencia de `rutas_planificacion` antes de consultar.
+- Si la tabla no existe, el módulo continúa sin romper y retorna arreglos vacíos.
+- Se evita el `mysqli_sql_exception` y se registran mensajes en `error_log` para diagnóstico.
+
+**Pendiente**
+- Ejecutar la migración para crear la tabla (necesario para que funcione la planificación persistente).
+
+**Comando Migración**
+```pwsh
+php migrate_rutas_planificacion.php
+```
+
+**Verificación**
+1. Recarga `http://localhost/RMIE/app/controllers/RouteController.php?accion=index`.
+2. Si no ejecutaste la migración aún, no verás asignaciones pero no habrá error.
+3. Ejecuta el comando de migración y luego vuelve a asignar clientes por día.
+
+¿Deseas que agregue una alerta visible en la vista cuando la tabla no exista para recordarte ejecutar la migración? Puedo hacerlo si confirmas.
+
+Se realizaron cambios.

@@ -1619,6 +1619,47 @@ if (isset($rutas) && is_array($rutas)) {
                 <?php endif; ?>
             </div>
         </div>        <!-- Filtros modernos -->
+        <!-- Asignación de Clientes por Día (Lunes a Sábado) -->
+        <div class="filters-container" style="margin-top:15px;">
+            <h5 style="color:#fff; font-weight:600; margin-bottom:15px;">
+                <i class="fas fa-calendar-week"></i> Planificación Semanal de Clientes
+            </h5>
+            <form method="POST" action="/RMIE/app/controllers/RouteController.php?accion=index">
+                <div class="row g-3">
+                    <?php if(isset($dias_predeterminados) && is_array($dias_predeterminados)): ?>
+                        <?php foreach($dias_predeterminados as $dia): ?>
+                            <div class="col-12 col-md-4 col-lg-2">
+                                <label class="filter-label" style="display:block; color:#fff; background:rgba(255,255,255,0.15);"><?php echo $dia; ?></label>
+                                <select name="clientes_dia[<?php echo $dia; ?>][]" class="form-select" multiple size="6" style="font-size:0.75rem;">
+                                    <?php foreach($available_clients as $c): ?>
+                                        <?php $selected = (isset($asignaciones_clientes[$dia]) && in_array($c['id_clientes'], $asignaciones_clientes[$dia])) ? 'selected' : ''; ?>
+                                        <option value="<?php echo htmlspecialchars($c['id_clientes']); ?>" <?php echo $selected; ?>><?php echo htmlspecialchars($c['nombre']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <?php if(isset($asignaciones_clientes[$dia]) && !empty($asignaciones_clientes[$dia])): ?>
+                                    <div style="margin-top:6px; font-size:0.65rem; color:#cfe8ff;">
+                                        <?php foreach($asignaciones_clientes[$dia] as $idc): ?>
+                                            <span class="badge badge-secondary" style="display:inline-block; margin:2px; padding:4px 8px; font-size:0.55rem;"><?php echo htmlspecialchars($mapa_clientes[$idc] ?? $idc); ?></span>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+                <div class="mt-3 d-flex gap-2">
+                    <button type="submit" class="btn btn-success btn-sm" style="border-radius:10px;">
+                        <i class="fas fa-save"></i> Guardar Asignaciones
+                    </button>
+                    <a href="/RMIE/app/controllers/RouteController.php?accion=index&reset_asignaciones=1" class="btn btn-warning btn-sm" style="border-radius:10px;">
+                        <i class="fas fa-undo"></i> Reiniciar
+                    </a>
+                </div>
+            </form>
+            <div class="mt-4" style="font-size:0.75rem; color:#fff;">
+                <i class="fas fa-info-circle"></i> Las asignaciones se guardan por usuario y se usan para filtrar rutas por día.
+            </div>
+        </div>
         <style>
         .filters-container {
             background: rgba(255, 255, 255, 0.1);
@@ -1746,6 +1787,17 @@ if (isset($rutas) && is_array($rutas)) {
                             <?php if (isset($available_clients) && is_array($available_clients)): ?>
                                 <?php foreach ($available_clients as $cliente): ?>
                                     <option value="<?= htmlspecialchars($cliente['nombre']) ?>" <?= (($_GET['cliente'] ?? '') === $cliente['nombre']) ? 'selected' : '' ?>><?= htmlspecialchars($cliente['nombre']) ?></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="col-md-2 col-12">
+                        <label class="form-label" style="color:#333;font-weight:600;"><i class="fas fa-calendar-day"></i> Día</label>
+                        <select name="dia" class="form-select form-control-modern">
+                            <option value="">Todos</option>
+                            <?php if(isset($dias_predeterminados)): ?>
+                                <?php foreach($dias_predeterminados as $d): ?>
+                                    <option value="<?= $d ?>" <?= (($_GET['dia'] ?? '') === $d) ? 'selected' : '' ?>><?= $d ?></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
