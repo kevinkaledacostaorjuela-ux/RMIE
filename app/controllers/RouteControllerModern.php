@@ -24,6 +24,11 @@ class RouteControllerModern {
     public function index() {
         global $conn;
         
+        // Headers para prevenir cache
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        
         // Capturar mensajes de sesión
         $success_message = $_SESSION['success'] ?? '';
         $error_message = $_SESSION['error'] ?? '';
@@ -34,10 +39,10 @@ class RouteControllerModern {
         try {
             // Obtener filtros del GET
             $filtros = [
-                'cliente' => $_GET['cliente'] ?? '',
-                'local' => $_GET['local'] ?? '',
+                'nombre_cliente' => $_GET['cliente'] ?? '',
+                'nombre_local' => $_GET['local'] ?? '',
                 'estado' => $_GET['estado'] ?? '',
-                'dia' => $_GET['dia'] ?? '',
+                'dia_semana' => $_GET['dia'] ?? '',
                 'buscar' => $_GET['buscar'] ?? ''
             ];
             
@@ -58,11 +63,10 @@ class RouteControllerModern {
                 }
                 $rutas_agrupadas[$dia]['rutas'][] = $ruta;
                 
-                // Contar clientes y locales únicos por día
+                // Contar clientes únicos y total de rutas/locales por día
                 $clientes_unicos = array_unique(array_column($rutas_agrupadas[$dia]['rutas'], 'cliente_nombre'));
-                $locales_unicos = array_unique(array_column($rutas_agrupadas[$dia]['rutas'], 'local_nombre'));
                 $rutas_agrupadas[$dia]['total_clientes'] = count(array_filter($clientes_unicos));
-                $rutas_agrupadas[$dia]['total_locales'] = count(array_filter($locales_unicos));
+                $rutas_agrupadas[$dia]['total_locales'] = count($rutas_agrupadas[$dia]['rutas']); // Total de paradas/rutas
             }
             
             // Ordenar por día de la semana
@@ -103,23 +107,28 @@ class RouteControllerModern {
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
-                // Obtener datos del formulario
-                $dias_semana = $_POST['dias_semana'] ?? [];
-                $combinaciones_data = $_POST['combinaciones_data'] ?? '[]';
+                // Obtener datos del formulario en el nuevo formato por días
+                $dias_data = $_POST['dias_data'] ?? '{}';
                 $estado = 'pendiente'; // Estado por defecto
                 
-                // Decodificar las combinaciones JSON
-                $combinaciones = json_decode($combinaciones_data, true);
+                // Decodificar los datos de días JSON
+                $diasObj = json_decode($dias_data, true);
                 if (json_last_error() !== JSON_ERROR_NONE) {
-                    throw new Exception("Error al procesar las combinaciones cliente-local.");
+                    throw new Exception("Error al procesar los datos de días y combinaciones.");
                 }
                 
-                // Validaciones básicas
-                if (empty($dias_semana)) {
-                    throw new Exception("Debe seleccionar al menos un día de la semana.");
+                // Validar que hay al menos un día configurado
+                $hayDatosConfigured = false;
+                $totalRutas = 0;
+                foreach ($diasObj as $dia => $combinaciones) {
+                    if (is_array($combinaciones) && count($combinaciones) > 0) {
+                        $hayDatosConfigured = true;
+                        $totalRutas += count($combinaciones);
+                    }
                 }
-                if (empty($combinaciones)) {
-                    throw new Exception("Debe agregar al menos una combinación cliente-local.");
+                
+                if (!$hayDatosConfigured) {
+                    throw new Exception("Debe configurar al menos un día con combinaciones cliente-local.");
                 }
                 
                 // Preparar la consulta para insertar múltiples rutas
@@ -131,9 +140,13 @@ class RouteControllerModern {
                 $conn->autocommit(false); // Iniciar transacción
                 $transaction_started = true;
                 
-                // Iterar por cada día seleccionado
-                foreach ($dias_semana as $dia) {
-                    // Iterar por cada combinación cliente-local
+                // Iterar por cada día configurado
+                foreach ($diasObj as $dia => $combinaciones) {
+                    if (!is_array($combinaciones) || count($combinaciones) === 0) {
+                        continue; // Saltar días sin configuración
+                    }
+                    
+                    // Iterar por cada combinación cliente-local del día
                     foreach ($combinaciones as $combo) {
                         $clienteId = $combo['clienteId'];
                         $localId = $combo['localId'];
@@ -313,10 +326,7 @@ class RouteControllerModern {
                 $clientes_data = $_POST['clientes'] ?? [];
                 $nuevos_clientes = $_POST['nuevos_clientes'] ?? [];
                 
-                // Debug temporal - remover después
-                error_log("DEBUG POST: dia_semana=$dia_semana, estado=$estado");
-                error_log("DEBUG clientes_data: " . print_r($clientes_data, true));
-                error_log("DEBUG nuevos_clientes: " . print_r($nuevos_clientes, true));
+
                 
                 if (empty($dia_semana)) {
                     throw new Exception("El día de la semana es obligatorio.");
@@ -331,9 +341,9 @@ class RouteControllerModern {
                     $direccion = trim($datos['direccion'] ?? '');
                     
                     if (!empty($nombre_cliente) && !empty($direccion)) {
-                        $sql = "UPDATE rutas SET id_clientes=?, id_locales=?, nombre_cliente=?, nombre_local=?, direccion=?, estado=?, dia_semana=? WHERE id_ruta=?";
+                        $sql = "UPDATE rutas SET id_clientes=?, nombre_cliente=?, nombre_local=?, direccion=?, estado=?, dia_semana=? WHERE id_ruta=?";
                         $stmt = $conn->prepare($sql);
-                        $stmt->bind_param('iisssssi', $id_cliente, $id_local, $nombre_cliente, $nombre_local, $direccion, $estado, $dia_semana, $ruta_id);
+                        $stmt->bind_param('isssssi', $id_cliente, $nombre_cliente, $nombre_local, $direccion, $estado, $dia_semana, $ruta_id);
                         
                         if (!$stmt->execute()) {
                             throw new Exception("Error al actualizar la ruta ID: $ruta_id");
@@ -356,14 +366,19 @@ class RouteControllerModern {
                     }
                     
                     if ($es_nuevo && $id_cliente > 0 && $id_local > 0 && !empty($nombre_cliente)) {
-                        // Insertar nueva ruta
-                        $sql = "INSERT INTO rutas (id_clientes, id_locales, nombre_cliente, nombre_local, direccion, dia_semana, estado, fecha_creacion) 
-                                VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
+                        // Asegurar que el estado no esté vacío
+                        if (empty($estado)) {
+                            $estado = 'pendiente';
+                        }
+                        
+                        // Insertar nueva ruta usando la estructura correcta de la tabla
+                        $sql = "INSERT INTO rutas (id_clientes, nombre_cliente, nombre_local, direccion, dia_semana, estado) 
+                                VALUES (?, ?, ?, ?, ?, ?)";
                         $stmt = $conn->prepare($sql);
-                        $stmt->bind_param('iisssss', $id_cliente, $id_local, $nombre_cliente, $nombre_local, $direccion, $dia_semana, $estado);
+                        $stmt->bind_param('isssss', $id_cliente, $nombre_cliente, $nombre_local, $direccion, $dia_semana, $estado);
                         
                         if (!$stmt->execute()) {
-                            throw new Exception("Error al insertar nueva ruta para: $nombre_cliente");
+                            throw new Exception("Error al insertar nueva ruta para: $nombre_cliente - " . $stmt->error);
                         }
                     }
                 }
@@ -416,13 +431,15 @@ class RouteControllerModern {
             
             // Cargar TODAS las rutas del mismo día para mostrar todos los locales
             $sql_todas = "SELECT r.*, 
-                                l.direccion as direccion_real, 
-                                l.nombre_local as nombre_local_real,
-                                l.id_locales as id_local_real,
+                                COALESCE(l1.direccion, l2.direccion) as direccion_real, 
+                                COALESCE(l1.nombre_local, l2.nombre_local) as nombre_local_real,
+                                COALESCE(l1.id_locales, l2.id_locales) as id_local_real,
                                 c.nombre as nombre_cliente_real
                          FROM rutas r 
                          LEFT JOIN clientes c ON r.id_clientes = c.id_clientes 
-                         LEFT JOIN locales l ON c.id_locales = l.id_locales 
+                         LEFT JOIN locales l1 ON c.id_locales = l1.id_locales 
+                         LEFT JOIN clientes_locales cl ON c.id_clientes = cl.id_clientes
+                         LEFT JOIN locales l2 ON cl.id_locales = l2.id_locales
                          WHERE r.dia_semana = ? AND r.estado != 'eliminado' 
                          ORDER BY r.id_ruta";
             $stmt_todas = $conn->prepare($sql_todas);
@@ -491,7 +508,11 @@ class RouteControllerModern {
             $_SESSION['error'] = 'Error al eliminar la ruta: ' . $e->getMessage();
         }
         
-        header('Location: /RMIE/app/controllers/RouteControllerModern.php?accion=index');
+        // Headers para prevenir cache
+        header('Cache-Control: no-cache, no-store, must-revalidate');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+        header('Location: /RMIE/app/controllers/RouteControllerModern.php?accion=index&refresh=' . time());
         exit;
     }
     

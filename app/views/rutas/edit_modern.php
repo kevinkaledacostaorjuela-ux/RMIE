@@ -223,9 +223,11 @@ if (!isset($_SESSION['user'])) {
                                 </div>
                                 
                                 <div class="local-actions">
+                                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                                     <button type="button" class="btn-local-remove" onclick="eliminarLocal(<?php echo $ruta_item['id_ruta']; ?>)">
                                         <i class="fas fa-trash"></i> Eliminar Local
                                     </button>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                             <?php endforeach; ?>
@@ -285,48 +287,7 @@ if (!isset($_SESSION['user'])) {
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="id_clientes" class="form-label">
-                                <i class="fas fa-hashtag"></i> ID Cliente
-                            </label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="id_clientes" 
-                                   name="id_clientes" 
-                                   value="<?php echo htmlspecialchars($ruta['id_clientes'] ?? ''); ?>"
-                                   placeholder="ID del cliente (opcional)">
-                            <small class="form-text">ID numérico del cliente en el sistema</small>
-                        </div>
 
-                        <div class="form-group">
-                            <label for="id_reportes" class="form-label">
-                                <i class="fas fa-chart-line"></i> ID Reporte
-                            </label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="id_reportes" 
-                                   name="id_reportes" 
-                                   value="<?php echo htmlspecialchars($ruta['id_reportes'] ?? ''); ?>"
-                                   placeholder="ID del reporte (opcional)">
-                            <small class="form-text">ID del reporte asociado (si existe)</small>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="id_ventas" class="form-label">
-                                <i class="fas fa-shopping-cart"></i> ID Venta
-                            </label>
-                            <input type="number" 
-                                   class="form-control" 
-                                   id="id_ventas" 
-                                   name="id_ventas" 
-                                   value="<?php echo htmlspecialchars($ruta['id_ventas'] ?? ''); ?>"
-                                   placeholder="ID de la venta (opcional)">
-                            <small class="form-text">ID de la venta asociada (si existe)</small>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Botones de Acción -->
@@ -572,6 +533,9 @@ if (!isset($_SESSION['user'])) {
 
     <!-- Scripts -->
     <script>
+        // Variable global para verificar permisos de eliminación
+        const esAdmin = <?php echo (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') ? 'true' : 'false'; ?>;
+        
         $(document).ready(function() {
             // Inicializar Select2 para los selects básicos
             $('#dia_semana, #estado').select2({
@@ -632,9 +596,16 @@ if (!isset($_SESSION['user'])) {
                 var currentLocal = $select.data('current-local');
                 var clienteId = $select.data('cliente-id');
                 
-                // Función para inicializar Select2
-                function initializeLocalSelect2() {
+                // Verificar si hay un cliente seleccionado
+                var $clienteSelect = $select.closest('.local-card').find('.cliente-select');
+                var currentClienteId = $clienteSelect.val() || clienteId;
+                
+                if (currentClienteId) {
+                    // Guardar valor y texto actuales antes de inicializar Select2
+                    var currentValue = $select.val();
+                    var currentText = $select.find('option:selected').text();
                     
+                    // Inicializar Select2
                     $select.select2({
                         placeholder: 'Buscar local...',
                         allowClear: true,
@@ -644,16 +615,13 @@ if (!isset($_SESSION['user'])) {
                             dataType: 'json',
                             delay: 300,
                             data: function (params) {
-                                var currentClienteId = $(this).closest('.local-card').find('.cliente-select').val() || clienteId;
-
                                 return {
                                     q: params.term,
                                     id_cliente: currentClienteId,
                                     page: params.page
                                 };
-                            }.bind(this),
+                            },
                             processResults: function (data, params) {
-
                                 return {
                                     results: data.results || [],
                                     pagination: {
@@ -661,33 +629,49 @@ if (!isset($_SESSION['user'])) {
                                     }
                                 };
                             },
-                            cache: false // Deshabilitamos cache para evitar problemas
+                            cache: false
                         },
                         minimumInputLength: 0,
                         templateResult: formatLocalResult,
                         templateSelection: formatLocalSelection
                     });
                     
-                    // Mantener el valor seleccionado si existe
-                    if (localId && currentLocal) {
-
-                        // Asegurar que la opción seleccionada permanezca
-                        if ($select.find('option[value="' + localId + '"]').length === 0) {
-                            $select.append(new Option(currentLocal, localId, true, true));
-                        }
-                        $select.val(localId).trigger('change.select2');
+                    // Si había un valor seleccionado, restaurarlo después de la inicialización
+                    if (currentValue && currentText && currentText !== 'Seleccionar local...') {
+                        // Timeout para asegurar que Select2 está completamente inicializado
+                        setTimeout(function() {
+                            // Verificar si la opción ya existe en el select
+                            if ($select.find('option[value="' + currentValue + '"]').length > 0) {
+                                // La opción existe, solo activarla
+                                $select.val(currentValue).trigger('change');
+                            } else {
+                                // La opción no existe, hacer llamada AJAX para verificar
+                                $.ajax({
+                                    url: '/RMIE/app/api/get_locales_edit.php',
+                                    data: { id_cliente: currentClienteId, q: '' },
+                                    dataType: 'json',
+                                    success: function(response) {
+                                        if (response.results) {
+                                            // Verificar si el local actual está en los resultados
+                                            var localExists = response.results.find(function(local) {
+                                                return local.id == currentValue;
+                                            });
+                                            
+                                            if (localExists) {
+                                                // El local existe, agregarlo y seleccionarlo
+                                                var newOption = new Option(localExists.text || localExists.nombre_local, localExists.id, true, true);
+                                                $select.append(newOption).trigger('change');
+                                            } else if (currentValue && currentText) {
+                                                // El local no existe en la lista actual, agregarlo como opción
+                                                var newOption = new Option(currentText, currentValue, true, true);
+                                                $select.append(newOption).trigger('change');
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }, 100);
                     }
-                }
-                
-                // Verificar si hay un cliente seleccionado
-                var $clienteSelect = $select.closest('.local-card').find('.cliente-select');
-                var currentClienteId = $clienteSelect.val() || clienteId;
-                
-
-                
-                if (currentClienteId) {
-                    // Si hay cliente, inicializar directamente
-                    initializeLocalSelect2();
                 } else {
                     // Si no hay cliente, esperar a que se seleccione uno
                     $select.select2({
@@ -928,9 +912,9 @@ if (!isset($_SESSION['user'])) {
                     </div>
                     
                     <div class="local-actions">
-                        <button type="button" class="btn-local-remove" onclick="eliminarLocalNuevo('${newId}')">
+                        ${esAdmin ? `<button type="button" class="btn-local-remove" onclick="eliminarLocalNuevo('${newId}')">
                             <i class="fas fa-trash"></i> Eliminar
-                        </button>
+                        </button>` : ''}
                     </div>
                 </div>
             `;
@@ -1047,12 +1031,15 @@ if (!isset($_SESSION['user'])) {
                             var $direccion = $card.find('textarea[name*="[direccion]"]');
                             var $localNombreHidden = $card.find('.local-nombre-hidden');
                             
-                            // Buscar datos del local seleccionado
-                            var localSeleccionado = data.find(l => l.id == e.params.data.id);
-                            if (localSeleccionado) {
-                                $direccion.val(localSeleccionado.direccion);
-                                $localNombreHidden.val(localSeleccionado.nombre_local);
-                            }
+                            // Obtener datos del local seleccionado desde la opción
+                            var selectedOption = $(this).find('option:selected');
+                            var localText = selectedOption.text();
+                            var localParts = localText.split(' - ');
+                            var localNombre = localParts[0];
+                            var localDireccion = localParts[1] || '';
+                            
+                            $direccion.val(localDireccion);
+                            $localNombreHidden.val(localNombre);
                         });
                     } else {
                         $localSelect.html('<option value="">Este cliente no tiene locales</option>');

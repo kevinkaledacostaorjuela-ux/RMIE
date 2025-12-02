@@ -131,9 +131,13 @@ class RouteController {
         // Obtener rutas con filtros existentes (mantiene compatibilidad)
         $rutas = Route::getAll($conn, $filtros);
 
-        // Filtro por día seleccionado - mostrar solo clientes asignados a ese día
+        // Filtro por día seleccionado - para auxiliares y coordinadores mostrar todas las rutas
         $dia_seleccionado = $_GET['dia'] ?? $dia_hoy;
-        if (isset($asignaciones_clientes[$dia_seleccionado]) && !empty($asignaciones_clientes[$dia_seleccionado])) {
+        $rol_usuario = $_SESSION['rol'] ?? '';
+        
+        // Solo filtrar por asignaciones si el usuario tiene asignaciones específicas
+        if ($rol_usuario !== 'auxiliar' && $rol_usuario !== 'coordinador' && 
+            isset($asignaciones_clientes[$dia_seleccionado]) && !empty($asignaciones_clientes[$dia_seleccionado])) {
             $idsFiltro = $asignaciones_clientes[$dia_seleccionado];
             $rutas = array_filter($rutas, function($ruta) use ($idsFiltro) {
                 // Decodificar clientes asociados a la ruta (json) si existe
@@ -149,8 +153,9 @@ class RouteController {
                 }
                 return false;
             });
-        } elseif (isset($_GET['dia']) && $_GET['dia'] !== 'todos') {
-            // Si se selecciona un día sin asignaciones, mostrar array vacío
+        } elseif (isset($_GET['dia']) && $_GET['dia'] !== 'todos' && 
+                  $rol_usuario !== 'auxiliar' && $rol_usuario !== 'coordinador') {
+            // Si se selecciona un día sin asignaciones, mostrar array vacío (excepto auxiliar/coordinador)
             $rutas = [];
         }
 
@@ -175,6 +180,43 @@ class RouteController {
                 if (isset($mapa_clientes[$cliente_id])) {
                     $estadisticas_dia[$key]['clientes_nombres'][] = $mapa_clientes[$cliente_id];
                 }
+            }
+        }
+
+        // Agrupar rutas por día para la vista
+        $rutas_agrupadas = [];
+        if (!empty($rutas)) {
+            $rutas_por_dia = [];
+            
+            // Agrupar rutas por día
+            foreach ($rutas as $ruta) {
+                $dia = $ruta['dia'] ?? 'Sin día';
+                if (!isset($rutas_por_dia[$dia])) {
+                    $rutas_por_dia[$dia] = [];
+                }
+                $rutas_por_dia[$dia][] = $ruta;
+            }
+            
+            // Crear estructura para la vista
+            foreach ($rutas_por_dia as $dia => $rutas_dia) {
+                $clientes_unicos = [];
+                $locales_unicos = [];
+                foreach ($rutas_dia as $ruta) {
+                    if (!empty($ruta['nombre_cliente'])) {
+                        $clientes_unicos[$ruta['nombre_cliente']] = true;
+                    }
+                    if (!empty($ruta['local_nombre'])) {
+                        $locales_unicos[$ruta['local_nombre']] = true;
+                    }
+                }
+                
+                $rutas_agrupadas[] = [
+                    'dia' => $dia,
+                    'rutas' => $rutas_dia,
+                    'total_clientes' => count($clientes_unicos),
+                    'total_locales' => count($locales_unicos),
+                    'clientes_nombres' => array_keys($clientes_unicos)
+                ];
             }
         }
 
@@ -604,37 +646,6 @@ class RouteController {
         }
     }
 
-    public function complete($id) {
-        global $conn;
-        
-        // Validar ID
-        if (empty($id) || !is_numeric($id)) {
-            $_SESSION['error'] = 'ID de ruta inválido';
-            header('Location: /RMIE/rutas.php?accion=index');
-            exit;
-        }
-
-        try {
-            // Actualizar el estado de la ruta a 'completada'
-            $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $id);
-            
-            if ($stmt->execute()) {
-                $_SESSION['success'] = 'Ruta completada correctamente';
-            } else {
-                $_SESSION['error'] = 'Error al completar la ruta';
-            }
-            
-        } catch (Exception $e) {
-            error_log("Error al completar ruta: " . $e->getMessage());
-            $_SESSION['error'] = 'Error al completar la ruta: ' . $e->getMessage();
-        }
-        
-        header('Location: /RMIE/rutas.php?accion=index');
-        exit;
-    }
-
     public function completeAndDelete($id) {
         global $conn;
         
@@ -788,35 +799,6 @@ class RouteController {
         exit;
     }
     
-    public function delete($id) {
-        global $conn;
-        
-        // Verificar permisos de administrador
-        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-            $_SESSION['error'] = 'No tiene permisos para eliminar rutas.';
-            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
-            exit;
-        }
-        
-        try {
-            $sql = "DELETE FROM rutas WHERE id_ruta = ?";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param('i', $id);
-            
-            if ($stmt->execute()) {
-                $_SESSION['success'] = 'Ruta eliminada exitosamente.';
-            } else {
-                $_SESSION['error'] = 'Error al eliminar la ruta.';
-            }
-        } catch (Exception $e) {
-            error_log('Error al eliminar ruta: ' . $e->getMessage());
-            $_SESSION['error'] = 'Error al eliminar la ruta: ' . $e->getMessage();
-        }
-        
-        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
-        exit;
-    }
-    
     public function planificar() {
         global $conn;
         
@@ -858,8 +840,6 @@ class RouteController {
             exit;
         }
     }
-}
-
 }
 
 // Sistema de enrutamiento moderno para RouteController
@@ -938,14 +918,6 @@ if (basename($_SERVER['PHP_SELF']) === 'RouteController.php') {
         error_log('Error en RouteController: ' . $e->getMessage());
         $_SESSION['error'] = 'Error interno del sistema. Por favor contacte al administrador.';
         header('Location: /RMIE/app/views/dashboard.php');
-        exit;
-        header('HTTP/1.1 301 Moved Permanently');
-        header('Location: ' . $newUrl);
-        exit;
-    } else {
-        // Redirección por defecto al índice del nuevo punto de entrada
-        header('HTTP/1.1 301 Moved Permanently');
-        header('Location: /RMIE/rutas.php?accion=index');
         exit;
     }
 }

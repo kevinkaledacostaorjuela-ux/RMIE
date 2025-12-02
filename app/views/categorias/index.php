@@ -599,6 +599,59 @@ if (isset($conn)) {
             </div>
         <?php endif; ?>
 
+        <!-- Filtro de Búsqueda -->
+        <div class="mb-5" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 35px; border: 1px solid rgba(255, 255, 255, 0.2);">
+            <form method="GET" action="/RMIE/app/controllers/CategoryController.php">
+                <input type="hidden" name="accion" value="index">
+                
+                <!-- Campo de búsqueda -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <input type="text" 
+                               name="buscar" 
+                               class="form-control" 
+                               placeholder="Escriba el nombre de la categoría que desea buscar..." 
+                               value="<?php echo isset($_GET['buscar']) ? htmlspecialchars($_GET['buscar']) : ''; ?>"
+                               style="border: none; font-size: 18px; padding: 15px 25px; height: 55px; background: white; color: #333; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    </div>
+                </div>
+                
+                <!-- Botones de acción -->
+                <div class="row g-3 justify-content-center">
+                    <div class="col-auto">
+                        <button type="submit" class="btn d-flex align-items-center justify-content-center" 
+                                style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); color: white; border: none; font-weight: 600; height: 50px; font-size: 16px; border-radius: 12px; box-shadow: 0 3px 10px rgba(40, 167, 69, 0.3); min-width: 180px; padding: 0 20px;">
+                            <i class="fas fa-search me-2"></i>Buscar Categoría
+                        </button>
+                    </div>
+                    <?php if (isset($_GET['buscar']) && !empty($_GET['buscar'])): ?>
+                        <div class="col-auto">
+                            <a href="/RMIE/app/controllers/CategoryController.php?accion=index" 
+                               class="btn d-flex align-items-center justify-content-center text-decoration-none" 
+                               style="background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); color: white; border: none; font-weight: 600; height: 50px; font-size: 16px; border-radius: 12px; box-shadow: 0 3px 10px rgba(220, 53, 69, 0.3); min-width: 180px; padding: 0 20px;">
+                                <i class="fas fa-times me-2"></i>Limpiar Búsqueda
+                            </a>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </form>
+            
+            <!-- Indicador de filtro activo -->
+            <?php if (isset($_GET['buscar']) && !empty($_GET['buscar'])): ?>
+                <div class="mt-4">
+                    <div class="text-center p-3" style="background: rgba(40, 167, 69, 0.15); border-radius: 15px; border: 2px solid rgba(40, 167, 69, 0.3);">
+                        <div class="d-flex align-items-center justify-content-center flex-wrap gap-2">
+                            <i class="fas fa-search text-success fs-5"></i>
+                            <span class="text-white fw-bold fs-6">Mostrando resultados para:</span>
+                            <span class="badge fs-6 px-3 py-2" style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); border-radius: 20px;">
+                                "<?php echo htmlspecialchars($_GET['buscar']); ?>"
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <!-- Estadísticas -->
         <div class="stats-grid">
             <div class="stat-card">

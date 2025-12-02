@@ -22,6 +22,142 @@ if (!isset($_SESSION['user'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <style>
+        .day-selector {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        .day-btn {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 15px;
+            border: 2px solid #dee2e6;
+            background: #fff;
+            color: #495057;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .day-btn:hover {
+            border-color: #007bff;
+            color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,123,255,0.2);
+        }
+        
+        .day-btn.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+        }
+        
+        .day-btn.configured::after {
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #28a745;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        
+        .day-config-panel {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f8f9fa;
+        }
+        
+        .panel-header h5 {
+            margin: 0 0 20px 0;
+            color: #007bff;
+            font-weight: 600;
+        }
+        
+        .combinacion-item {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        
+        .combinacion-item:hover {
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.1);
+        }
+        
+        .combinacion-info {
+            flex: 1;
+        }
+        
+        .combinacion-info strong {
+            color: #007bff;
+            font-size: 16px;
+        }
+        
+        .combinacion-info small {
+            color: #6c757d;
+            display: block;
+            margin-top: 4px;
+        }
+        
+        .btn-remove-combinacion {
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .btn-remove-combinacion:hover {
+            background: #c82333;
+        }
+        
+        .resumen-day {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #007bff;
+        }
+        
+        .resumen-day h6 {
+            color: #007bff;
+            margin: 0 0 10px 0;
+            font-weight: 600;
+        }
+        
+        .resumen-count {
+            background: #007bff;
+            color: white;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
     <div class="rutas-container">
@@ -59,67 +195,98 @@ if (!isset($_SESSION['user'])) {
                         Información Básica de la Ruta
                     </div>
                     
-                    <!-- Nueva interfaz para agregar combinaciones cliente-local -->
-                    <div class="row">
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="cliente_select"><i class="fas fa-user"></i> Seleccionar Cliente *</label>
-                                <select id="cliente_select" class="form-control">
-                                    <option value="">-- Seleccionar Cliente --</option>
-                                </select>
-                                <div id="cliente_loading" class="mt-2 text-center" style="display:none;">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando clientes...
+                    <!-- Selector de día activo -->
+                    <div class="form-group">
+                        <label><i class="fas fa-calendar-day"></i> Seleccionar Día para Configurar *</label>
+                        <div class="day-selector">
+                            <button type="button" class="btn btn-outline-primary day-btn active" data-day="Lunes">
+                                <i class="fas fa-calendar"></i> Lunes
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Martes">
+                                <i class="fas fa-calendar"></i> Martes
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Miercoles">
+                                <i class="fas fa-calendar"></i> Miércoles
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Jueves">
+                                <i class="fas fa-calendar"></i> Jueves
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Viernes">
+                                <i class="fas fa-calendar"></i> Viernes
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Sabado">
+                                <i class="fas fa-calendar"></i> Sábado
+                            </button>
+                            <button type="button" class="btn btn-outline-primary day-btn" data-day="Domingo">
+                                <i class="fas fa-calendar"></i> Domingo
+                            </button>
+                        </div>
+                        <small class="form-text text-muted">Haz clic en cada día para configurar sus clientes y locales específicos</small>
+                    </div>
+
+                    <!-- Panel para el día activo -->
+                    <div class="day-config-panel">
+                        <div class="panel-header">
+                            <h5><i class="fas fa-cog"></i> Configurando: <span id="current-day">Lunes</span></h5>
+                        </div>
+                        
+                        <!-- Nueva interfaz para agregar combinaciones cliente-local -->
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="cliente_select"><i class="fas fa-user"></i> Seleccionar Cliente *</label>
+                                    <select id="cliente_select" class="form-control">
+                                        <option value="">-- Seleccionar Cliente --</option>
+                                    </select>
+                                    <div id="cliente_loading" class="mt-2 text-center" style="display:none;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando clientes...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-5">
+                                <div class="form-group">
+                                    <label for="local_select"><i class="fas fa-store"></i> Seleccionar Local *</label>
+                                    <select id="local_select" class="form-control" disabled>
+                                        <option value="">-- Primero selecciona un cliente --</option>
+                                    </select>
+                                    <div id="local_loading" class="mt-2 text-center" style="display:none;">
+                                        <i class="fas fa-spinner fa-spin"></i> Cargando locales...
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label>&nbsp;</label>
+                                    <button type="button" id="btn_agregar_combinacion" class="btn btn-success btn-block" disabled>
+                                        <i class="fas fa-plus"></i> Agregar
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="col-md-5">
-                            <div class="form-group">
-                                <label for="local_select"><i class="fas fa-store"></i> Seleccionar Local *</label>
-                                <select id="local_select" class="form-control" disabled>
-                                    <option value="">-- Primero selecciona un cliente --</option>
-                                </select>
-                                <div id="local_loading" class="mt-2 text-center" style="display:none;">
-                                    <i class="fas fa-spinner fa-spin"></i> Cargando locales...
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <label>&nbsp;</label>
-                                <button type="button" id="btn_agregar_combinacion" class="btn btn-success btn-block" disabled>
-                                    <i class="fas fa-plus"></i> Agregar
-                                </button>
+
+                        <!-- Lista de combinaciones agregadas para el día actual -->
+                        <div class="form-group">
+                            <label><i class="fas fa-list"></i> Combinaciones para <span class="day-label">Lunes</span></label>
+                            <div id="combinaciones_day" class="border rounded p-3" style="min-height: 100px; background-color: #f8f9fa;">
+                                <p class="text-muted text-center m-0">No hay combinaciones para este día. Selecciona un cliente y un local, luego presiona "Agregar".</p>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Lista de combinaciones agregadas -->
-                    <div class="form-group">
-                        <label><i class="fas fa-list"></i> Combinaciones Cliente-Local Agregadas</label>
-                        <div id="combinaciones_agregadas" class="border rounded p-3" style="min-height: 100px; background-color: #f8f9fa;">
-                            <p class="text-muted text-center m-0">No hay combinaciones agregadas aún. Selecciona un cliente y un local, luego presiona "Agregar".</p>
+                    <!-- Resumen de todos los días -->
+                    <div class="form-group mt-4">
+                        <label><i class="fas fa-calendar-week"></i> Resumen de Configuración</label>
+                        <div id="resumen_dias" class="border rounded p-3" style="background-color: #e3f2fd;">
+                            <div id="resumen_content">
+                                <p class="text-muted text-center m-0">Configura al menos un día para ver el resumen</p>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Días de la semana -->
-                    <div class="form-group">
-                        <label for="dias_semana"><i class="fas fa-calendar-week"></i> Días de la Semana *</label>
-                        <select name="dias_semana[]" id="dias_semana" class="form-control" multiple required>
-                            <option value="Lunes">Lunes</option>
-                            <option value="Martes">Martes</option>
-                            <option value="Miercoles">Miércoles</option>
-                            <option value="Jueves">Jueves</option>
-                            <option value="Viernes">Viernes</option>
-                            <option value="Sabado">Sábado</option>
-                            <option value="Domingo">Domingo</option>
-                        </select>
-                        <small class="form-text text-muted">Selecciona los días para las rutas. Se crearán rutas para cada combinación cliente-local en cada día seleccionado.</small>
-                    </div>
-
-                    <!-- Campos hidden para enviar las combinaciones -->
-                    <input type="hidden" name="combinaciones_data" id="combinaciones_data" value="[]">
+                    <!-- Campos hidden para enviar las combinaciones por día -->
+                    <input type="hidden" name="dias_data" id="dias_data" value="{}">
                 </div>
 
                 <!-- Botones de Acción -->
@@ -164,9 +331,15 @@ if (!isset($_SESSION['user'])) {
     <?php endif; ?>
 
     <script>
-        // Variables globales
+        // Variables globales para el sistema por días
         let clientes = [];
-        let combinaciones = [];
+        let currentDay = 'Lunes';
+        let diasData = {}; // Objeto para almacenar combinaciones por día
+
+        // Inicializar días vacíos
+        ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'].forEach(dia => {
+            diasData[dia] = [];
+        });
 
         // Cargar clientes al iniciar
         function cargarClientes() {
@@ -201,6 +374,32 @@ if (!isset($_SESSION['user'])) {
                 });
         }
 
+        // Cambiar día activo
+        function cambiarDia(dia) {
+            currentDay = dia;
+            
+            // Actualizar botones
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.day === dia) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Actualizar labels
+            document.getElementById('current-day').textContent = dia;
+            document.querySelector('.day-label').textContent = dia;
+            
+            // Actualizar lista de combinaciones del día
+            actualizarCombinacionesDia();
+            
+            // Limpiar selecciones actuales
+            $('#cliente_select').val('').trigger('change');
+            $('#local_select').val('').trigger('change');
+            document.getElementById('local_select').disabled = true;
+            document.getElementById('btn_agregar_combinacion').disabled = true;
+        }
+
         // Cargar locales por cliente
         function cargarLocalesPorCliente(clienteId) {
             const localSelect = document.getElementById('local_select');
@@ -210,7 +409,6 @@ if (!isset($_SESSION['user'])) {
                 localSelect.innerHTML = '<option value="">-- Primero selecciona un cliente --</option>';
                 localSelect.disabled = true;
                 document.getElementById('local_loading').style.display = 'none';
-                // Destruir Select2 si existe
                 if ($('#local_select').hasClass('select2-hidden-accessible')) {
                     $('#local_select').select2('destroy');
                 }
@@ -225,37 +423,7 @@ if (!isset($_SESSION['user'])) {
                     if (data.length === 0) {
                         localSelect.innerHTML = '<option value="" style="color: #dc3545; font-weight: bold;">⚠️ Este cliente no tiene locales asignados</option>';
                         localSelect.disabled = true;
-                        
-                        // Mostrar mensaje informativo
-                        const infoDiv = document.createElement('div');
-                        infoDiv.className = 'alert alert-warning mt-2';
-                        infoDiv.innerHTML = `
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Información:</strong> El cliente seleccionado no tiene locales asignados. 
-                            Para asignar locales a este cliente, ve al módulo de gestión de clientes.
-                        `;
-                        
-                        // Remover mensaje previo si existe
-                        const existingAlert = localSelect.parentNode.querySelector('.alert');
-                        if (existingAlert) {
-                            existingAlert.remove();
-                        }
-                        
-                        localSelect.parentNode.appendChild(infoDiv);
-                        
-                        setTimeout(() => {
-                            if (infoDiv.parentNode) {
-                                infoDiv.remove();
-                            }
-                        }, 5000);
-                        
                     } else {
-                        // Remover mensaje de alerta si existe
-                        const existingAlert = localSelect.parentNode.querySelector('.alert');
-                        if (existingAlert) {
-                            existingAlert.remove();
-                        }
-                        
                         data.forEach(local => {
                             const option = document.createElement('option');
                             option.value = local.id;
@@ -286,7 +454,7 @@ if (!isset($_SESSION['user'])) {
                 });
         }
 
-        // Agregar combinación cliente-local
+        // Agregar combinación al día actual
         function agregarCombinacion() {
             const clienteSelect = document.getElementById('cliente_select');
             const localSelect = document.getElementById('local_select');
@@ -305,14 +473,14 @@ if (!isset($_SESSION['user'])) {
             const localDireccion = localOption.dataset.direccion || '';
             const localTelefono = localOption.dataset.telefono || '';
             
-            // Verificar si la combinación ya existe
-            const existe = combinaciones.some(c => c.clienteId == clienteId && c.localId == localId);
+            // Verificar si la combinación ya existe en el día actual
+            const existe = diasData[currentDay].some(c => c.clienteId == clienteId && c.localId == localId);
             if (existe) {
-                alert('Esta combinación cliente-local ya fue agregada');
+                alert(`Esta combinación ya fue agregada para el día ${currentDay}`);
                 return;
             }
             
-            // Agregar la combinación
+            // Agregar la combinación al día actual
             const combinacion = {
                 clienteId: clienteId,
                 localId: localId,
@@ -322,14 +490,112 @@ if (!isset($_SESSION['user'])) {
                 localTelefono: localTelefono
             };
             
-            combinaciones.push(combinacion);
-            actualizarListaCombinaciones();
+            diasData[currentDay].push(combinacion);
+            actualizarCombinacionesDia();
+            actualizarBotonesDia();
+            actualizarResumen();
             
             // Limpiar selecciones
             $('#cliente_select').val('').trigger('change');
             $('#local_select').val('').trigger('change');
             document.getElementById('local_select').disabled = true;
             document.getElementById('btn_agregar_combinacion').disabled = true;
+        }
+
+        // Actualizar combinaciones del día actual
+        function actualizarCombinacionesDia() {
+            const container = document.getElementById('combinaciones_day');
+            const combinaciones = diasData[currentDay];
+            
+            if (combinaciones.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center m-0">No hay combinaciones para este día. Selecciona un cliente y un local, luego presiona "Agregar".</p>';
+            } else {
+                let html = '';
+                combinaciones.forEach((combo, index) => {
+                    html += `
+                        <div class="combinacion-item">
+                            <div class="combinacion-info">
+                                <strong><i class="fas fa-user"></i> ${combo.clienteNombre}</strong> → 
+                                <strong><i class="fas fa-store"></i> ${combo.localNombre}</strong>
+                                <small><i class="fas fa-map-marker-alt"></i> ${combo.localDireccion}</small>
+                            </div>
+                            <button type="button" class="btn-remove-combinacion" onclick="eliminarCombinacionDia(${index})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+                container.innerHTML = html;
+            }
+        }
+
+        // Eliminar combinación del día actual
+        function eliminarCombinacionDia(index) {
+            diasData[currentDay].splice(index, 1);
+            actualizarCombinacionesDia();
+            actualizarBotonesDia();
+            actualizarResumen();
+        }
+
+        // Actualizar indicadores visuales de los botones de día
+        function actualizarBotonesDia() {
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                const dia = btn.dataset.day;
+                const tieneCombinaciones = diasData[dia].length > 0;
+                
+                if (tieneCombinaciones) {
+                    btn.classList.add('configured');
+                } else {
+                    btn.classList.remove('configured');
+                }
+            });
+        }
+
+        // Actualizar resumen de todos los días
+        function actualizarResumen() {
+            const container = document.getElementById('resumen_content');
+            let html = '';
+            let totalDias = 0;
+            let totalCombinaciones = 0;
+            
+            Object.keys(diasData).forEach(dia => {
+                const combinaciones = diasData[dia];
+                if (combinaciones.length > 0) {
+                    totalDias++;
+                    totalCombinaciones += combinaciones.length;
+                    
+                    html += `
+                        <div class="resumen-day">
+                            <h6><i class="fas fa-calendar-day"></i> ${dia} <span class="resumen-count">${combinaciones.length}</span></h6>
+                            <div class="row">
+                    `;
+                    
+                    combinaciones.forEach(combo => {
+                        html += `
+                            <div class="col-md-6">
+                                <small><i class="fas fa-user"></i> ${combo.clienteNombre} → <i class="fas fa-store"></i> ${combo.localNombre}</small>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '</div></div>';
+                }
+            });
+            
+            if (totalDias === 0) {
+                container.innerHTML = '<p class="text-muted text-center m-0">Configura al menos un día para ver el resumen</p>';
+            } else {
+                const resumenHeader = `
+                    <div class="alert alert-info mb-3">
+                        <strong><i class="fas fa-info-circle"></i> Resumen:</strong> 
+                        ${totalDias} día(s) configurado(s) con ${totalCombinaciones} ruta(s) total.
+                    </div>
+                `;
+                container.innerHTML = resumenHeader + html;
+            }
+            
+            // Actualizar campo hidden
+            document.getElementById('dias_data').value = JSON.stringify(diasData);
         }
 
         // Actualizar la lista visual de combinaciones
@@ -387,19 +653,26 @@ if (!isset($_SESSION['user'])) {
             btnAgregar.disabled = !clienteId || !localId;
         }
 
+        // Verificar si se puede agregar la combinación
+        function verificarPuedeAgregar() {
+            const clienteId = document.getElementById('cliente_select').value;
+            const localId = document.getElementById('local_select').value;
+            const btnAgregar = document.getElementById('btn_agregar_combinacion');
+            
+            btnAgregar.disabled = !clienteId || !localId;
+        }
+
         // Document ready
         $(document).ready(function() {
             // Cargar clientes al iniciar
             cargarClientes();
             
-            // Inicializar Select2 para días
-            $('#dias_semana').select2({
-                placeholder: 'Seleccionar uno o varios días...',
-                allowClear: true,
-                width: '100%',
-                multiple: true,
-                closeOnSelect: false,
-                tags: false
+            // Configurar eventos de botones de días
+            document.querySelectorAll('.day-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const dia = this.dataset.day;
+                    cambiarDia(dia);
+                });
             });
             
             // Configurar eventos después de un pequeño delay para asegurar que Select2 esté listo
@@ -418,21 +691,29 @@ if (!isset($_SESSION['user'])) {
                 $('#btn_agregar_combinacion').on('click', function() {
                     agregarCombinacion();
                 });
-            }, 500); // Delay de 500ms para asegurar que Select2 esté listo
+            }, 500);
             
             // Validar formulario antes de enviar
             $('form').on('submit', function(e) {
-                const diasSelected = $('#dias_semana').val();
+                let hayDatosConfigured = false;
+                let totalRutas = 0;
                 
-                if (combinaciones.length === 0) {
+                Object.keys(diasData).forEach(dia => {
+                    if (diasData[dia].length > 0) {
+                        hayDatosConfigured = true;
+                        totalRutas += diasData[dia].length;
+                    }
+                });
+                
+                if (!hayDatosConfigured) {
                     e.preventDefault();
-                    alert('Por favor agrega al menos una combinación cliente-local.');
+                    alert('Por favor configura al menos un día con combinaciones cliente-local.');
                     return false;
                 }
                 
-                if (!diasSelected || diasSelected.length === 0) {
+                // Confirmar creación
+                if (!confirm(`¿Crear ${totalRutas} rutas en total?`)) {
                     e.preventDefault();
-                    alert('Por favor selecciona al menos un día de la semana.');
                     return false;
                 }
                 

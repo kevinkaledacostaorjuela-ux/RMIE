@@ -12,6 +12,7 @@ class Route {
             'direccion' => ['type' => 'text', 'options' => ['max_length' => 200]],
             'nombre_local' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'estado' => ['type' => 'text', 'options' => ['max_length' => 20]],
+            'dia_semana' => ['type' => 'text', 'options' => ['max_length' => 20]],
             'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
         ];
         
@@ -24,33 +25,41 @@ class Route {
             'venta' => ['column' => 'r.id_ventas', 'operator' => '=', 'type' => 'i'],
             'reporte' => ['column' => 'r.id_reportes', 'operator' => '=', 'type' => 'i'],
             'direccion' => ['column' => 'r.direccion', 'operator' => 'LIKE', 'type' => 's'],
-            'nombre_local' => ['column' => 'l.nombre_local', 'operator' => '=', 'type' => 's'],
+            'nombre_local' => ['column' => 'COALESCE(l1.nombre_local, l2.nombre_local, r.nombre_local)', 'operator' => 'LIKE', 'type' => 's'],
             'estado' => ['column' => 'r.estado', 'operator' => '=', 'type' => 's'],
+            'dia_semana' => ['column' => 'r.dia_semana', 'operator' => '=', 'type' => 's'],
             'buscar' => [
-                'columns' => ['r.direccion', 'l.nombre_local', 'c.nombre'],
+                'columns' => ['r.direccion', 'COALESCE(l1.nombre_local, l2.nombre_local, r.nombre_local)', 'c.nombre'],
                 'operator' => 'MULTIPLE_LIKE'
             ]
         ];
         
         // Construir consulta base con JOINs para obtener información relacionada de clientes y locales
+        // Usar GROUP BY r.id_ruta para evitar duplicados por múltiples relaciones cliente-local
         $sql = "SELECT r.*, 
                        c.nombre as cliente_nombre,
                        c.cel_cliente as cliente_celular,
                        c.correo as cliente_correo,
                        c.estado as cliente_estado,
-                       l.nombre_local as local_nombre,
-                       l.direccion as local_direccion,
-                       l.cel_local as local_celular,
-                       l.estado as local_estado,
-                       l.localidad as local_localidad,
-                       l.barrio as local_barrio,
+                       COALESCE(l1.nombre_local, l2.nombre_local, r.nombre_local) as local_nombre,
+                       COALESCE(l1.direccion, l2.direccion, r.direccion) as local_direccion,
+                       COALESCE(l1.cel_local, l2.cel_local) as local_celular,
+                       COALESCE(l1.estado, l2.estado) as local_estado,
+                       COALESCE(l1.localidad, l2.localidad) as local_localidad,
+                       COALESCE(l1.barrio, l2.barrio) as local_barrio,
                        v.nombre as venta_nombre,
                        v.cantidad as venta_cantidad,
                        v.fecha_venta as venta_fecha,
                        rep.nombre as reporte_nombre
                 FROM rutas r 
                 LEFT JOIN clientes c ON r.id_clientes = c.id_clientes
-                LEFT JOIN locales l ON r.nombre_local = l.nombre_local
+                LEFT JOIN locales l1 ON c.id_locales = l1.id_locales
+                LEFT JOIN clientes_locales cl ON c.id_clientes = cl.id_clientes AND cl.id_locales = (
+                    SELECT MIN(cl2.id_locales) 
+                    FROM clientes_locales cl2 
+                    WHERE cl2.id_clientes = c.id_clientes
+                )
+                LEFT JOIN locales l2 ON cl.id_locales = l2.id_locales
                 LEFT JOIN ventas v ON r.id_ventas = v.id_ventas
                 LEFT JOIN reportes rep ON r.id_reportes = rep.id_reportes
                 WHERE 1=1";
@@ -62,7 +71,7 @@ class Route {
             $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
         
-        $sql .= " ORDER BY r.id_ruta DESC";
+        $sql .= " GROUP BY r.id_ruta ORDER BY r.id_ruta DESC";
         
         $stmt = $conn->prepare($sql);
         if (!empty($whereData['params'])) {

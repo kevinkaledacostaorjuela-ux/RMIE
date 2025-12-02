@@ -28,6 +28,10 @@ class LocalController {
                 'barrio' => $_GET['barrio'] ?? ''
             ];
             
+            // Verificar si hay filtros activos
+            $filtros_activos = !empty($filtros['nombre']) || !empty($filtros['localidad']) || 
+                              !empty($filtros['estado']) || !empty($filtros['barrio']);
+            
             $locales = Local::getAll($conn, $filtros);
             
             include __DIR__ . '/../views/local/index.php';

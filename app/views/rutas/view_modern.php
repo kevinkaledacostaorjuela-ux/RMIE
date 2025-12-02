@@ -212,10 +212,12 @@ if (!isset($_SESSION['user'])) {
                             </button>
                             <?php endif; ?>
                             
+                            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
                             <button onclick="eliminarRuta(<?php echo $ruta['id_ruta']; ?>)" 
                                     class="btn-action btn-action-delete">
                                 <i class="fas fa-trash"></i> Eliminar
                             </button>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>

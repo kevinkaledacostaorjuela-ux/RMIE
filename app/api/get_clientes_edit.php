@@ -34,7 +34,7 @@ try {
     while ($row = $result->fetch_assoc()) {
         $clientes[] = [
             'id' => $row['id_clientes'],
-            'text' => $row['nombre'] . ($row['descripcion'] ? ' - ' . $row['descripcion'] : ''),
+            'text' => $row['nombre'],
             'nombre' => $row['nombre'],
             'descripcion' => $row['descripcion'],
             'telefono' => $row['cel_cliente'],
