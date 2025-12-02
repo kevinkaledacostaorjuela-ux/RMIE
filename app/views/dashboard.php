@@ -845,7 +845,7 @@ if ($rol === 'auxiliar') {
                                 <h5 style="margin: 0; font-weight: 600; font-size: 1.2rem;">Rutas <?php echo ($rol === 'auxiliar') ? '(Consulta)' : ''; ?></h5>
                                 <p style="margin: 5px 0 0 0; opacity: 0.8; font-size: 0.9rem;"><?php echo ($rol === 'auxiliar') ? 'Consultar rutas' : 'Gestionar rutas'; ?></p>
                             </div>
-                            <a href="<?php echo ($rol === 'auxiliar') ? '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_rutas' : '/RMIE/app/controllers/RouteController.php?accion=index'; ?>" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
+                            <a href="<?php echo ($rol === 'auxiliar') ? '/RMIE/app/controllers/AuxiliarController.php?accion=consultar_rutas' : '/RMIE/app/controllers/RouteControllerModern.php?accion=index'; ?>" class="btn btn-dark btn-sm" style="border-radius: 15px; font-weight: 600; width: fit-content;">
                                 <i class="fas fa-arrow-right me-1"></i>Acceder
                             </a>
                         </div>

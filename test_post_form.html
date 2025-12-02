@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test POST</title>
+</head>
+<body>
+    <h2>Prueba de POST al controlador</h2>
+    <form method="POST" action="/RMIE/app/controllers/RouteControllerModern.php?accion=edit&id=154">
+        <input type="hidden" name="dia_semana" value="Lunes">
+        <input type="hidden" name="estado" value="pendiente">
+        <input type="hidden" name="clientes[154][id_cliente]" value="37">
+        <input type="hidden" name="clientes[154][nombre_cliente]" value="CLIENTE1">
+        <input type="hidden" name="clientes[154][id_local]" value="57">
+        <input type="hidden" name="clientes[154][nombre_local]" value="LOCAL1">
+        <input type="hidden" name="clientes[154][direccion]" value="Avenida del Sol 1832">
+        
+        <button type="submit">Enviar POST</button>
+    </form>
+</body>
+</html>

@@ -3,14 +3,26 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+// Configuración de errores para desarrollo
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+ini_set('log_errors', 1);
+ini_set('error_log', __DIR__ . '/../../logs/route_errors.log');
 
-require_once __DIR__ . '/../models/Route.php';
-require_once __DIR__ . '/../models/RouteSchedule.php';
-require_once __DIR__ . '/../models/Report.php';
-require_once __DIR__ . '/../models/Sale.php';
-require_once __DIR__ . '/../../config/db.php';
+// Incluir modelos necesarios
+try {
+    require_once __DIR__ . '/../models/Route.php';
+    require_once __DIR__ . '/../models/RouteSchedule.php';
+    require_once __DIR__ . '/../models/Report.php';
+    require_once __DIR__ . '/../models/Sale.php';
+    require_once __DIR__ . '/../models/Client.php';
+    require_once __DIR__ . '/../models/Local.php';
+    require_once __DIR__ . '/../../config/db.php';
+} catch (Exception $e) {
+    error_log('Error cargando archivos en RouteController: ' . $e->getMessage());
+    die('Error interno del sistema. Por favor contacte al administrador.');
+}
 
 class RouteController {
     public function index() {
@@ -166,7 +178,7 @@ class RouteController {
             }
         }
 
-        include __DIR__ . '/../views/rutas/index.php';
+        include __DIR__ . '/../views/rutas/index_modern.php';
     }
     
     // Método específico para obtener rutas del día actual
@@ -203,31 +215,48 @@ class RouteController {
     public function create() {
         global $conn;
         
-        // Obtener datos para los selects
-        $available_clients = Route::getAvailableClients($conn);
-        $available_sales = Route::getAvailableSales($conn);
-        $available_locals = Route::getAvailableLocals($conn);
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            try {
+                // Obtener datos del formulario
+                $direccion = $_POST['direccion'] ?? '';
+                $nombre_local = $_POST['nombre_local'] ?? '';
+                $nombre_cliente = $_POST['nombre_cliente'] ?? '';
+                $dia_semana = $_POST['dia_semana'] ?? '';
+                $id_clientes = !empty($_POST['id_clientes']) ? intval($_POST['id_clientes']) : null;
+                $estado = $_POST['estado'] ?? 'pendiente';
+                $id_reportes = !empty($_POST['id_reportes']) ? intval($_POST['id_reportes']) : null;
+                $id_ventas = !empty($_POST['id_ventas']) ? intval($_POST['id_ventas']) : null;
+                
+                // Validaciones básicas
+                if (empty($direccion)) {
+                    throw new Exception("La dirección es obligatoria.");
+                }
+                if (empty($dia_semana)) {
+                    throw new Exception("El día de la semana es obligatorio.");
+                }
+                
+                // Insertar en la base de datos
+                $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_reportes, id_ventas, estado, dia_semana) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('sssiiiis', $direccion, $nombre_local, $nombre_cliente, $id_clientes, $id_reportes, $id_ventas, $estado, $dia_semana);
+                
+                if ($stmt->execute()) {
+                    $_SESSION['success'] = 'Ruta creada exitosamente.';
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                } else {
+                    throw new Exception("Error al guardar la ruta en la base de datos.");
+                }
+                
+            } catch (Exception $e) {
+                error_log('Error al crear ruta: ' . $e->getMessage());
+                $_SESSION['error'] = $e->getMessage();
+            }
+        }
         
-        // Planificación por días
-        require_once __DIR__ . '/../models/RouteSchedule.php';
-        $dias_predeterminados = [
-            'Lunes' => 'Lunes',
-            'Martes' => 'Martes', 
-            'Miercoles' => 'Miércoles',
-            'Jueves' => 'Jueves',
-            'Viernes' => 'Viernes',
-            'Sabado' => 'Sábado'
-        ];
-        
-        $usuarioActual = isset($_SESSION['user']) ? intval($_SESSION['user']) : null;
-        $planificacion_usuario = $usuarioActual ? RouteSchedule::getAssignmentsByUser($conn, $usuarioActual) : [];
-        
-        // Día actual y sugerido
-        $dia_actual = date('N');
-        $nombres_dias = ['', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
-        $dia_sugerido = $nombres_dias[$dia_actual] ?? 'Lunes';
-        
-        // Clientes sugeridos para el día actual
+        // Mostrar formulario de creación
+        require_once __DIR__ . '/../views/rutas/create_modern.php';
         $clientes_sugeridos = $planificacion_usuario[$dia_sugerido] ?? [];
         
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -712,18 +741,204 @@ class RouteController {
         header('Location: /RMIE/rutas.php?accion=index');
         exit;
     }
+    
+    public function view($id) {
+        global $conn;
+        
+        try {
+            $ruta = Route::getById($conn, $id);
+            if (!$ruta) {
+                $_SESSION['error'] = 'Ruta no encontrada.';
+                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                exit;
+            }
+            
+            // Cargar datos adicionales si es necesario
+            $ventas = [];
+            $reportes = [];
+            
+            require_once __DIR__ . '/../views/rutas/view.php';
+        } catch (Exception $e) {
+            error_log('Error al ver ruta: ' . $e->getMessage());
+            $_SESSION['error'] = 'Error al cargar los detalles de la ruta.';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+    }
+    
+    public function complete($id) {
+        global $conn;
+        
+        try {
+            $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Ruta completada exitosamente.';
+            } else {
+                $_SESSION['error'] = 'Error al completar la ruta.';
+            }
+        } catch (Exception $e) {
+            error_log('Error al completar ruta: ' . $e->getMessage());
+            $_SESSION['error'] = 'Error al completar la ruta: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
+    
+    public function delete($id) {
+        global $conn;
+        
+        // Verificar permisos de administrador
+        if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+            $_SESSION['error'] = 'No tiene permisos para eliminar rutas.';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+        
+        try {
+            $sql = "DELETE FROM rutas WHERE id_ruta = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('i', $id);
+            
+            if ($stmt->execute()) {
+                $_SESSION['success'] = 'Ruta eliminada exitosamente.';
+            } else {
+                $_SESSION['error'] = 'Error al eliminar la ruta.';
+            }
+        } catch (Exception $e) {
+            error_log('Error al eliminar ruta: ' . $e->getMessage());
+            $_SESSION['error'] = 'Error al eliminar la ruta: ' . $e->getMessage();
+        }
+        
+        header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+        exit;
+    }
+    
+    public function planificar() {
+        global $conn;
+        
+        try {
+            // Cargar datos necesarios para planificación
+            $clientes = [];
+            $locales = [];
+            $asignaciones = [];
+            
+            // Si existen los modelos, cargar datos
+            if (class_exists('Client')) {
+                $clientes = Client::getAll($conn);
+            }
+            if (class_exists('Local')) {
+                $locales = Local::getAll($conn);
+            }
+            
+            require_once __DIR__ . '/../views/rutas/planificar.php';
+        } catch (Exception $e) {
+            error_log('Error en planificación: ' . $e->getMessage());
+            $_SESSION['error'] = 'Error al cargar la planificación.';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+    }
+    
+    public function optimizar() {
+        global $conn;
+        
+        try {
+            // Lógica básica de optimización de rutas
+            $rutasOptimizadas = [];
+            
+            require_once __DIR__ . '/../views/rutas/optimizar.php';
+        } catch (Exception $e) {
+            error_log('Error en optimización: ' . $e->getMessage());
+            $_SESSION['error'] = 'Error al optimizar las rutas.';
+            header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+            exit;
+        }
+    }
 }
 
-// NOTA: Este controlador ha sido migrado a /RMIE/rutas.php
-// El código de compatibilidad solo se ejecuta si se accede directamente al controlador
+}
 
+// Sistema de enrutamiento moderno para RouteController
 if (basename($_SERVER['PHP_SELF']) === 'RouteController.php') {
-    // Solo ejecutar redirecciones si se accede directamente al controlador
-    if (isset($_GET['accion']) || !empty($_GET)) {
-        // Construir la nueva URL con todos los parámetros
-        $newUrl = '/RMIE/rutas.php?' . http_build_query($_GET);
+    try {
+        $controller = new RouteController();
+        $accion = $_GET['accion'] ?? 'index';
         
-        // Redireccionar permanentemente al nuevo punto de entrada
+        switch ($accion) {
+            case 'index':
+                $controller->index();
+                break;
+                
+            case 'create':
+                $controller->create();
+                break;
+                
+            case 'edit':
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->edit($id);
+                } else {
+                    $_SESSION['error'] = 'ID de ruta no especificado para editar.';
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                }
+                break;
+                
+            case 'view':
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->view($id);
+                } else {
+                    $_SESSION['error'] = 'ID de ruta no especificado para ver.';
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                }
+                break;
+                
+            case 'delete':
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->delete($id);
+                } else {
+                    $_SESSION['error'] = 'ID de ruta no especificado para eliminar.';
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                }
+                break;
+                
+            case 'complete':
+                $id = $_GET['id'] ?? null;
+                if ($id) {
+                    $controller->complete($id);
+                } else {
+                    $_SESSION['error'] = 'ID de ruta no especificado para completar.';
+                    header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                    exit;
+                }
+                break;
+                
+            case 'planificar':
+                $controller->planificar();
+                break;
+                
+            case 'optimizar':
+                $controller->optimizar();
+                break;
+                
+            default:
+                $_SESSION['error'] = 'Acción no válida: ' . htmlspecialchars($accion);
+                header('Location: /RMIE/app/controllers/RouteController.php?accion=index');
+                exit;
+        }
+    } catch (Exception $e) {
+        error_log('Error en RouteController: ' . $e->getMessage());
+        $_SESSION['error'] = 'Error interno del sistema. Por favor contacte al administrador.';
+        header('Location: /RMIE/app/views/dashboard.php');
+        exit;
         header('HTTP/1.1 301 Moved Permanently');
         header('Location: ' . $newUrl);
         exit;

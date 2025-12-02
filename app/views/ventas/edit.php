@@ -519,28 +519,62 @@
                             
                             <!-- Filtros en cascada: Categoría → Subcategoría -->
                             <div class="form-group">
-                                <label for="filtro_categoria_edit">
+                                <label for="categoria_unificado_edit">
                                     <i class="fas fa-filter"></i> Filtrar por Categoría
                                 </label>
-                                <select id="filtro_categoria_edit" class="form-select">
-                                    <option value="">Todas las categorías</option>
-                                    <?php if (isset($categorias) && is_array($categorias)): ?>
-                                        <?php foreach ($categorias as $categoria): ?>
-                                            <option value="<?= htmlspecialchars($categoria->id_categoria) ?>">
-                                                <?= htmlspecialchars($categoria->nombre) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+                                <div class="search-dropdown-container" style="position: relative;">
+                                    <input type="text" 
+                                           id="categoria_unificado_edit" 
+                                           class="form-control search-dropdown-input" 
+                                           placeholder="🔍 Buscar y seleccionar categoría..."
+                                           autocomplete="off"
+                                           style="border: 2px solid #667eea; font-size: 0.9rem; padding-right: 40px;">
+                                    <i class="fas fa-chevron-down search-dropdown-arrow" 
+                                       style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #667eea; cursor: pointer;"></i>
+                                    <div id="categoria_dropdown_edit" class="search-dropdown-menu" 
+                                         style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #667eea; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;">
+                                        <div class="dropdown-option" data-value="" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                            <i class="fas fa-list"></i> Todas las categorías
+                                        </div>
+                                        <?php if (isset($categorias) && is_array($categorias)): ?>
+                                            <?php foreach ($categorias as $categoria): ?>
+                                                <div class="dropdown-option" 
+                                                     data-value="<?= htmlspecialchars($categoria->id_categoria) ?>"
+                                                     data-nombre="<?= htmlspecialchars(strtolower($categoria->nombre)) ?>"
+                                                     style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                                    <i class="fas fa-tag"></i> <?= htmlspecialchars($categoria->nombre) ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                    <!-- Campo hidden para almacenar el valor seleccionado -->
+                                    <input type="hidden" id="filtro_categoria_edit" value="">
+                                </div>
                             </div>
                             
                             <div class="form-group">
-                                <label for="filtro_subcategoria_edit">
+                                <label for="subcategoria_unificado_edit">
                                     <i class="fas fa-filter"></i> Filtrar por Subcategoría
                                 </label>
-                                <select id="filtro_subcategoria_edit" class="form-select" disabled>
-                                    <option value="">Seleccione primero una categoría</option>
-                                </select>
+                                <div class="search-dropdown-container" style="position: relative;">
+                                    <input type="text" 
+                                           id="subcategoria_unificado_edit" 
+                                           class="form-control search-dropdown-input" 
+                                           placeholder="Seleccione primero una categoría..."
+                                           autocomplete="off"
+                                           disabled
+                                           style="border: 2px solid #667eea; font-size: 0.9rem; padding-right: 40px;">
+                                    <i class="fas fa-chevron-down search-dropdown-arrow" 
+                                       style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #667eea; cursor: pointer;"></i>
+                                    <div id="subcategoria_dropdown_edit" class="search-dropdown-menu" 
+                                         style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #667eea; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 999; display: none;">
+                                        <div class="dropdown-option" data-value="" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                            <i class="fas fa-list"></i> Todas las subcategorías
+                                        </div>
+                                    </div>
+                                    <!-- Campo hidden para almacenar el valor seleccionado -->
+                                    <input type="hidden" id="filtro_subcategoria_edit" value="">
+                                </div>
                             </div>
                             
                             <div class="form-group">
@@ -787,13 +821,105 @@
         
         // Elementos de filtros
         const buscarProducto = document.getElementById('buscar_producto_edit');
+        const categoriaUnificado = document.getElementById('categoria_unificado_edit');
+        const subcategoriaUnificado = document.getElementById('subcategoria_unificado_edit');
+        const categoriaDropdown = document.getElementById('categoria_dropdown_edit');
+        const subcategoriaDropdown = document.getElementById('subcategoria_dropdown_edit');
         const filtroCategoria = document.getElementById('filtro_categoria_edit');
         const filtroSubcategoria = document.getElementById('filtro_subcategoria_edit');
         const productosItems = document.querySelectorAll('.producto-item-edit');
         
         // FILTRADO EN CASCADA: Búsqueda → Categoría → Subcategoría → Productos
         
-        // Cuando se escribe en el buscador
+        // Función para crear dropdown unificado
+        function crearDropdownUnificado(inputElement, dropdownElement, hiddenInput, placeholder) {
+            let opcionesOriginales = [];
+            
+            // Guardar opciones originales
+            function guardarOpciones() {
+                opcionesOriginales = Array.from(dropdownElement.querySelectorAll('.dropdown-option')).map(opt => ({
+                    value: opt.getAttribute('data-value') || '',
+                    text: opt.textContent.trim(),
+                    element: opt.cloneNode(true)
+                }));
+            }
+            
+            // Filtrar opciones basado en texto de búsqueda
+            function filtrarOpciones(busqueda) {
+                dropdownElement.innerHTML = '';
+                
+                opcionesOriginales.forEach(opcion => {
+                    if (!busqueda || opcion.text.toLowerCase().includes(busqueda.toLowerCase())) {
+                        const newElement = opcion.element.cloneNode(true);
+                        newElement.addEventListener('click', () => seleccionarOpcion(opcion.value, opcion.text));
+                        dropdownElement.appendChild(newElement);
+                    }
+                });
+            }
+            
+            // Seleccionar una opción
+            function seleccionarOpcion(value, text) {
+                hiddenInput.value = value;
+                inputElement.value = value ? text.replace(/.*?\s/, '') : ''; // Quitar icono del texto
+                dropdownElement.style.display = 'none';
+                
+                // Disparar evento de cambio
+                hiddenInput.dispatchEvent(new Event('change'));
+            }
+            
+            // Event listeners
+            inputElement.addEventListener('input', function() {
+                filtrarOpciones(this.value);
+                dropdownElement.style.display = 'block';
+            });
+            
+            inputElement.addEventListener('focus', function() {
+                filtrarOpciones(this.value);
+                dropdownElement.style.display = 'block';
+            });
+            
+            inputElement.addEventListener('blur', function() {
+                setTimeout(() => {
+                    dropdownElement.style.display = 'none';
+                }, 150);
+            });
+            
+            // Click en la flecha
+            const arrow = inputElement.parentNode.querySelector('.search-dropdown-arrow');
+            if (arrow) {
+                arrow.addEventListener('click', function() {
+                    if (dropdownElement.style.display === 'none' || !dropdownElement.style.display) {
+                        filtrarOpciones('');
+                        dropdownElement.style.display = 'block';
+                        inputElement.focus();
+                    } else {
+                        dropdownElement.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Inicializar
+            guardarOpciones();
+            
+            return { guardarOpciones, filtrarOpciones, seleccionarOpcion };
+        }
+        
+        // Inicializar dropdowns unificados
+        const categoriaDropdownController = crearDropdownUnificado(
+            categoriaUnificado, 
+            categoriaDropdown, 
+            filtroCategoria, 
+            '🔍 Buscar y seleccionar categoría...'
+        );
+        
+        const subcategoriaDropdownController = crearDropdownUnificado(
+            subcategoriaUnificado, 
+            subcategoriaDropdown, 
+            filtroSubcategoria, 
+            '🔍 Buscar y seleccionar subcategoría...'
+        );
+        
+        // Cuando se escribe en el buscador de productos
         if (buscarProducto) {
             buscarProducto.addEventListener('input', function() {
                 aplicarFiltros();
@@ -805,24 +931,45 @@
             filtroCategoria.addEventListener('change', function() {
                 const categoriaId = this.value;
                 
-                // Limpiar y resetear subcategorías
-                filtroSubcategoria.innerHTML = '<option value="">Todas las subcategorías</option>';
+                // Limpiar subcategoría seleccionada
+                filtroSubcategoria.value = '';
+                subcategoriaUnificado.value = '';
                 
                 if (categoriaId) {
                     // Habilitar subcategorías y cargar las correspondientes
-                    filtroSubcategoria.disabled = false;
+                    subcategoriaUnificado.disabled = false;
+                    subcategoriaUnificado.placeholder = '🔍 Buscar y seleccionar subcategoría...';
+                    
+                    // Recrear opciones de subcategorías en el dropdown
+                    subcategoriaDropdown.innerHTML = '<div class="dropdown-option" data-value="" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;"><i class="fas fa-list"></i> Todas las subcategorías</div>';
                     
                     const subcategorias = subcategoriasPorCategoria[categoriaId] || [];
                     subcategorias.forEach(subcat => {
-                        const option = document.createElement('option');
-                        option.value = subcat.id;
-                        option.textContent = subcat.nombre;
-                        filtroSubcategoria.appendChild(option);
+                        const option = document.createElement('div');
+                        option.className = 'dropdown-option';
+                        option.setAttribute('data-value', subcat.id);
+                        option.style.cssText = 'padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;';
+                        option.innerHTML = `<i class="fas fa-tag"></i> ${subcat.nombre}`;
+                        option.addEventListener('click', () => {
+                            filtroSubcategoria.value = subcat.id;
+                            subcategoriaUnificado.value = subcat.nombre;
+                            subcategoriaDropdown.style.display = 'none';
+                            filtroSubcategoria.dispatchEvent(new Event('change'));
+                        });
+                        subcategoriaDropdown.appendChild(option);
                     });
+                    
+                    // Reinicializar las opciones del dropdown de subcategorías
+                    setTimeout(() => {
+                        if (subcategoriaDropdownController && subcategoriaDropdownController.guardarOpciones) {
+                            subcategoriaDropdownController.guardarOpciones();
+                        }
+                    }, 100);
                 } else {
                     // Si no hay categoría seleccionada, deshabilitar subcategorías
-                    filtroSubcategoria.disabled = true;
-                    filtroSubcategoria.innerHTML = '<option value="">Seleccione primero una categoría</option>';
+                    subcategoriaUnificado.disabled = true;
+                    subcategoriaUnificado.placeholder = 'Seleccione primero una categoría...';
+                    subcategoriaDropdown.innerHTML = '<div class="dropdown-option" data-value="" style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;"><i class="fas fa-list"></i> Seleccione primero una categoría</div>';
                 }
                 
                 // Aplicar filtro de productos
@@ -895,9 +1042,62 @@
             }
         }
         
-        // Estilo para checkboxes
+        // Estilos para checkboxes y campos de búsqueda
         const style = document.createElement('style');
         style.textContent = `
+            /* Estilos para dropdowns unificados */
+            .search-dropdown-input {
+                transition: all 0.3s ease;
+                border-radius: 8px !important;
+                box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            }
+            
+            .search-dropdown-input:focus {
+                border-color: #667eea !important;
+                box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+                transform: translateY(-1px);
+            }
+            
+            .search-dropdown-input:disabled {
+                background-color: #f8f9fa;
+                opacity: 0.6;
+                cursor: not-allowed;
+            }
+            
+            .search-dropdown-menu {
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                border-radius: 0 0 8px 8px !important;
+            }
+            
+            .dropdown-option {
+                transition: all 0.2s ease;
+            }
+            
+            .dropdown-option:hover {
+                background-color: #f0f4ff !important;
+                color: #667eea !important;
+                transform: translateX(5px);
+            }
+            
+            .dropdown-option:last-child {
+                border-bottom: none !important;
+            }
+            
+            .search-dropdown-arrow {
+                transition: transform 0.3s ease;
+            }
+            
+            .search-dropdown-container:hover .search-dropdown-arrow {
+                transform: translateY(-50%) scale(1.1);
+            }
+            
+            /* Mejorar apariencia de selects cuando están deshabilitados */
+            select:disabled {
+                background-color: #f8f9fa;
+                opacity: 0.7;
+                cursor: not-allowed;
+            }
+            
             .checkbox-input:checked + .checkbox-label-edit {
                 border-color: #667eea !important;
                 background: linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%) !important;
@@ -937,6 +1137,14 @@
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', actualizarContador);
         });
+        
+        // Actualizar contador inicial
+        actualizarContador();
+        
+        // Los datos se guardan automáticamente en los controladores de dropdown
+        
+        // Aplicar filtros iniciales
+        aplicarFiltros();
         
         // Validación del formulario
         form.addEventListener('submit', function(e) {

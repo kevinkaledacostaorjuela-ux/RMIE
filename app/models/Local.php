@@ -25,12 +25,25 @@ class Local {
     }
 
     public static function getAll($conn, $filtros = []) {
+        // Consulta que maneja tanto relaciones directas como tabla intermedia
         $sql = "SELECT l.*, 
-                       COUNT(lc.id_clientes) as total_clientes,
-                       GROUP_CONCAT(c.nombre SEPARATOR ', ') as nombres_clientes
+                       COALESCE(cl_count.total_clientes, CASE WHEN l.id_clientes IS NOT NULL THEN 1 ELSE 0 END) as total_clientes,
+                       COALESCE(cl_nombres.nombres_clientes, c_direct.nombre) as nombres_clientes
                 FROM locales l
-                LEFT JOIN locales_clientes lc ON l.id_locales = lc.id_locales
-                LEFT JOIN clientes c ON lc.id_clientes = c.id_clientes
+                LEFT JOIN (
+                    SELECT cl.id_locales, 
+                           COUNT(cl.id_clientes) as total_clientes
+                    FROM clientes_locales cl 
+                    GROUP BY cl.id_locales
+                ) cl_count ON l.id_locales = cl_count.id_locales
+                LEFT JOIN (
+                    SELECT cl.id_locales, 
+                           GROUP_CONCAT(c.nombre SEPARATOR ', ') as nombres_clientes
+                    FROM clientes_locales cl
+                    JOIN clientes c ON cl.id_clientes = c.id_clientes
+                    GROUP BY cl.id_locales
+                ) cl_nombres ON l.id_locales = cl_nombres.id_locales
+                LEFT JOIN clientes c_direct ON l.id_clientes = c_direct.id_clientes
                 WHERE 1=1";
         $params = [];
         $types = "";
@@ -82,8 +95,8 @@ class Local {
                 $row['localidad'],
                 $row['barrio'],
                 $row['fecha_creacion'],
-                $row['total_clientes'],
-                $row['nombres_clientes']
+                (int)$row['total_clientes'], // Asegurar que sea un entero
+                $row['nombres_clientes'] // Mantener NULL si es NULL, string si tiene valor
             );
         }
         
