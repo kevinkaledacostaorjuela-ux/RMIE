@@ -1,5 +1,9 @@
 <?php
 // index.php - Login principal
+
+// Cargar bootstrap de Composer (compatibilidad hacia atrás)
+require_once __DIR__ . '/bootstrap.php';
+
 session_start();
 if (isset($_SESSION['user'])) {
     header('Location: app/views/dashboard.php');

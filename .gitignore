@@ -1,0 +1,48 @@
+# Composer
+/vendor/
+composer.phar
+composer.lock
+
+# Logs
+/logs/*.log
+/logs/*.txt
+!/logs/.gitkeep
+
+# Temporary files
+/temp/*
+!/temp/.gitkeep
+
+# Uploads
+/uploads/*
+!/uploads/.gitkeep
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# PHP
+*.log
+.env
+.env.local
+
+# Database
+*.sql.backup
+*.db
+
+# Node modules (si usas npm)
+node_modules/
+npm-debug.log*
+
+# Cache
+cache/
+*.cache
+
+# Configuration (mantener templates)
+config/db.php
+!config/db.example.php

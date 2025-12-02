@@ -315,7 +315,7 @@ $fecha_creacion_formatted = $fecha_creacion_raw ? date('d/m/Y H:i', strtotime($f
                     }
 
                     // Confirmar cambios
-                    if (!confirm('¿Está seguro de guardar los cambios en esta categoría?')) {
+                    if (!confirm('\u00bfEst\u00e1 seguro de guardar los cambios en esta categor\u00eda?')) {
                         e.preventDefault();
                         return false;
                     }

@@ -24,6 +24,40 @@ if ($rol === 'auxiliar') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../../public/css/styles.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    
+    <script>
+        // Suprimir warnings molestos de Firefox
+        (function() {
+            if (typeof console !== 'undefined') {
+                const originalWarn = console.warn;
+                const originalError = console.error;
+                const originalLog = console.log;
+                
+                console.warn = function(...args) {
+                    const message = args.join(' ');
+                    if (message.includes('Components') || 
+                        message.includes('desaprobado') || 
+                        message.includes('deprecated') ||
+                        message.includes('Glyph bbox') ||
+                        message.includes('downloadable font') ||
+                        message.includes('Font Awesome')) {
+                        return; // Ignorar estos warnings
+                    }
+                    originalWarn.apply(console, args);
+                };
+                
+                console.error = function(...args) {
+                    const message = args.join(' ');
+                    if (message.includes('Glyph bbox') ||
+                        message.includes('downloadable font')) {
+                        return; // Ignorar estos errores de fuentes
+                    }
+                    originalError.apply(console, args);
+                };
+            }
+        })();
+    </script>
+    
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
