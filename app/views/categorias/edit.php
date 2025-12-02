@@ -31,6 +31,7 @@ $fecha_creacion_formatted = $fecha_creacion_raw ? date('d/m/Y H:i', strtotime($f
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -315,7 +316,7 @@ $fecha_creacion_formatted = $fecha_creacion_raw ? date('d/m/Y H:i', strtotime($f
                     }
 
                     // Confirmar cambios
-                    if (!confirm('\u00bfEst\u00e1 seguro de guardar los cambios en esta categor\u00eda?')) {
+                    if (!confirmSaveCategory()) {
                         e.preventDefault();
                         return false;
                     }

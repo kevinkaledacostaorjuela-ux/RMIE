@@ -44,6 +44,7 @@ if (isset($conn)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
 
     <script>
         // Suprimir warnings específicos de Firefox
@@ -775,7 +776,7 @@ if (isset($conn)) {
                                        data-id="<?= htmlspecialchars($cat->id_categoria ?? '') ?>"
                                        data-nombre="<?= htmlspecialchars($cat->nombre ?? '') ?>"
                                        title="Eliminar categoría: <?= htmlspecialchars($cat->nombre ?? '') ?>"
-                                       onclick="console.log('🗑️ Intentando eliminar categoría ID: <?= $cat->id_categoria ?>', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'? ¿Esta acción no se puede deshacer');">
+                                       onclick="console.log('🗑️ Intentando eliminar categoría ID: <?= $cat->id_categoria ?>', this.href); return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -864,7 +865,7 @@ if (isset($conn)) {
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            data-controller="CategoryController"
                                            title="Eliminar categoría"
-                                           onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'? ¿Esta acción no se puede deshacer');">
+                                           onclick="return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -909,7 +910,7 @@ if (isset($conn)) {
                                 <div class="card-actions">
                                     <a class="btn-edit" href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>&t=<?= time() ?>" data-controller="CategoryController" onclick="console.log('🔍 Editando desde móvil:', this.href); return true;">Editar</a>
                                     <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a class="btn-delete" href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>&t=<?= time() ?>" data-controller="CategoryController" onclick="console.log('🗑️ Eliminando desde móvil:', this.href); return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'? ¿Esta acción no se puede deshacer');">Eliminar</a>
+                                    <a class="btn-delete" href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? $cat['id_categoria'] ?? '') ?>&t=<?= time() ?>" data-controller="CategoryController" onclick="console.log('🗑️ Eliminando desde móvil:', this.href); return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">Eliminar</a>
                                     <?php endif; ?>
                                 </div>
                             </div>
@@ -983,7 +984,7 @@ if (isset($conn)) {
                                                class="btn btn-sm btn-modern btn-danger-modern" 
                                                data-controller="CategoryController"
                                                title="Eliminar categoría"
-                                               onclick="return confirm('¿Está seguro de eliminar la categoría \'<?= addslashes($cat->nombre ?? 'Sin nombre') ?>\'? ¿Esta acción no se puede deshacer');">
+                                               onclick="return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -1086,7 +1087,7 @@ if (isset($conn)) {
                     }
                 }
                 
-                if (confirm(`¿Está seguro de eliminar la categoría "${categoriaNombre}"? ¿Esta acción no se puede deshacer`)) {
+                if (confirmDeleteCategory(categoriaNombre)) {
                     window.location.href = this.href;
                 }
             });
