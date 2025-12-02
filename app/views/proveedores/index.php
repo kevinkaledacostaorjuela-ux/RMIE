@@ -58,6 +58,7 @@ if (isset($proveedores) && is_array($proveedores)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1062,7 +1063,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                                        data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
                                        data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
                                        title="Eliminar proveedor: <?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
-                                       onclick="console.log('🗑️ Eliminando proveedor ID: <?= $proveedor->id_proveedores ?>', this.href); return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                       onclick="console.log('🗑️ Eliminando proveedor ID: <?= $proveedor->id_proveedores ?>', this.href); return confirmAction("acción") ?>\'?\n\nEsta acción no se puede deshacer.');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1216,7 +1217,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                                                data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
                                                data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>" 
                                                title="Eliminar proveedor"
-                                               onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $proveedor->id_proveedores ?>', this.href); return confirm('¿Está seguro de eliminar el proveedor \'<?= addslashes($proveedor->nombre_distribuidor) ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                               onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $proveedor->id_proveedores ?>', this.href); return confirmAction("acción") ?>\'?\n\nEsta acción no se puede deshacer.');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -1308,7 +1309,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                     proveedorNombre = this.dataset.nombre;
                 }
                 
-                if (confirm(`¿Está seguro de eliminar el proveedor "${proveedorNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                if (confirmDeleteProvider('Proveedor')) {
                     window.location.href = this.href;
                 }
             });

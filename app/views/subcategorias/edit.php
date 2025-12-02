@@ -787,7 +787,7 @@ unset($_SESSION['error'], $_SESSION['success']);
                 }
 
                 // Confirmación
-                if (!confirm('¿Está seguro de guardar los cambios realizados?')) {
+                if (!confirmAction('guardar cambios')) {
                     e.preventDefault();
                     return;
                 }

@@ -34,6 +34,7 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1057,7 +1058,7 @@ $stats = $statsQuery->fetch_assoc();
                                     <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?= urlencode($producto->id_productos ?? '') ?>" 
                                        class="btn btn-sm btn-modern btn-danger-modern" 
                                        title="Eliminar producto"
-                                       onclick="return confirm('¿Está seguro de eliminar este producto?')">
+                                       onclick="return confirmAction('acción general')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -1174,7 +1175,7 @@ $stats = $statsQuery->fetch_assoc();
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                     <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos ?? '') ?>" 
                                        class="btn btn-modern btn-danger-modern btn-action" 
-                                       onclick="return confirm('¿Está seguro de eliminar este producto?')"
+                                       onclick="return confirmAction('acción general')"
                                        title="Eliminar producto">
                                         <i class="fas fa-trash"></i>
                                     </a>
@@ -1254,17 +1255,17 @@ $stats = $statsQuery->fetch_assoc();
             const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en PRODUCTOS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar productos con STOCK CERO\n2 - Eliminar productos INACTIVOS\n3 - Eliminar TODOS los productos\n4 - Cancelar`);
             
             if (opcion === '1') {
-                if (confirm('Se eliminarán solo los productos con stock = 0.\n\n¿Continuar?')) {
+                if (confirmAction('limpiar registros')) {
                     alert('Eliminando productos sin stock...');
                     window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_no_stock';
                 }
             } else if (opcion === '2') {
-                if (confirm('Se eliminarán los productos con estado "inactivo".\n\n¿Continuar?')) {
+                if (confirmAction('limpiar registros')) {
                     alert('Eliminando productos inactivos...');
                     window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_inactive';
                 }
             } else if (opcion === '3') {
-                if (confirm('¡ATENCIÓN! Esto eliminará TODOS los productos de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                if (confirmAction('eliminar todos')) {
                     alert('Eliminando todos los productos...');
                     window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_all';
                 }

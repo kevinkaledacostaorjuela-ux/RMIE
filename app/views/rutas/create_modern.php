@@ -712,7 +712,7 @@ if (!isset($_SESSION['user'])) {
                 }
                 
                 // Confirmar creación
-                if (!confirm(`¿Crear ${totalRutas} rutas en total?`)) {
+                if (!confirmAction("acción")) {
                     e.preventDefault();
                     return false;
                 }

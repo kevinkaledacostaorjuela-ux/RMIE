@@ -1793,7 +1793,7 @@
                 const resetBtn = document.getElementById('resetBtn');
                 if (resetBtn) {
                     resetBtn.addEventListener('click', function() {
-                        if (confirm('¿Estás seguro de que quieres restaurar todos los campos a sus valores originales?')) {
+                        if (confirmAction('acción general')) {
                             
                             // Restaurar clientes y locales
                             clientesSeleccionados.clear();

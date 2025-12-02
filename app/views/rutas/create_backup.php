@@ -1264,7 +1264,7 @@
 
         // Función para resetear planificación
         function resetearPlanificacion() {
-            if (confirm('¿Estás seguro de que deseas restablecer toda la planificación?')) {
+            if (confirmAction('acción general')) {
                 planificacionData = {};
                 renderizarPlanificacion();
             }
@@ -1277,7 +1277,7 @@
                 return;
             }
 
-            if (!confirm('¿Deseas crear rutas basadas en la planificación semanal actual?')) {
+            if (!confirmAction("acción")) {
                 return;
             }
 
@@ -2256,7 +2256,7 @@
 
         // Función para resetear planificación
         function resetearPlanificacion() {
-            if (confirm('¿Estás seguro de que deseas restablecer toda la planificación?')) {
+            if (confirmAction('acción general')) {
                 planificacionData = {};
                 renderizarPlanificacion();
             }

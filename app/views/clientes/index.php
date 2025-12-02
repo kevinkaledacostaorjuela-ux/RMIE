@@ -36,6 +36,7 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
                 .filter-label {
                     color: #2c3e50 !important;
@@ -877,7 +878,7 @@ $stats = $statsQuery->fetch_assoc();
                             <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
                                class="btn btn-sm btn-modern btn-danger-modern" 
                                title="Eliminar cliente"
-                               onclick="return confirm('¿Está seguro de eliminar el cliente \'<?= addslashes($cliente->nombre ?? '') ?>\'?\n\nEsta acción no se puede deshacer.')">
+                               onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre ?? '') ?>')"
                                 <i class="fas fa-trash"></i>
                             </a>
                             <?php endif; ?>
@@ -1016,7 +1017,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar cliente"
-                                           onclick="return confirm('¿Está seguro de eliminar el cliente \'<?= addslashes($cliente->nombre) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre) ?>')"
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -1089,7 +1090,7 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                     clienteNombre = this.dataset.nombre;
                 }
                 
-                if (confirm(`¿Está seguro de eliminar el cliente "${clienteNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                if (confirmDeleteClient(clienteNombre)) {
                     window.location.href = this.href;
                 }
             });
@@ -1148,12 +1149,12 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
             const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en CLIENTES?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar clientes INACTIVOS\n2 - Eliminar TODOS los clientes\n3 - Cancelar`);
             
             if (opcion === '1') {
-                if (confirm('Se eliminarán solo los clientes con estado "inactivo".\n\n¿Continuar?')) {
+                if (confirmAction('limpiar clientes inactivos')) {
                     alert('Eliminando clientes inactivos...');
                     window.location.href = '/RMIE/app/controllers/ClientController.php?accion=clean_inactive';
                 }
             } else if (opcion === '2') {
-                if (confirm('¡ATENCIÓN! Esto eliminará TODOS los clientes de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                if (confirmAction('eliminar todos los clientes')) {
                     alert('Eliminando todos los clientes...');
                     window.location.href = '/RMIE/app/controllers/ClientController.php?accion=clean_all';
                 }

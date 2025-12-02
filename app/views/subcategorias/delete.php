@@ -42,6 +42,7 @@ $categoria = Category::getById($conn, $subcategoria['id_categoria']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         .delete-confirmation-page {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -183,7 +184,7 @@ $categoria = Category::getById($conn, $subcategoria['id_categoria']);
                                 <div class="d-flex gap-3 justify-content-center mt-4">
                                     <a href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?php echo $id_subcategoria; ?>&force=1" 
                                        class="btn btn-danger btn-lg"
-                                       onclick="return confirm('¿Está seguro de que desea eliminar esta subcategoría y desasociar los productos? Esta acción no se puede deshacer.')">
+                                       onclick="return confirmAction('acción general')">
                                         <i class="fas fa-trash-alt"></i> Eliminar y Desasociar Productos
                                     </a>
                                     <a href="/RMIE/app/controllers/SubcategoryController.php?accion=index" class="btn btn-secondary btn-lg">
@@ -209,7 +210,7 @@ $categoria = Category::getById($conn, $subcategoria['id_categoria']);
                             <div class="d-flex gap-3 justify-content-center mt-4">
                                 <a href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?php echo $id_subcategoria; ?>" 
                                    class="btn btn-danger btn-lg"
-                                   onclick="return confirm('¿Está seguro de que desea eliminar esta subcategoría?')">
+                                   onclick="return confirmAction('acción general')">
                                     <i class="fas fa-trash-alt"></i> Confirmar Eliminación
                                 </a>
                                 <a href="/RMIE/app/controllers/SubcategoryController.php?accion=index" class="btn btn-secondary btn-lg">

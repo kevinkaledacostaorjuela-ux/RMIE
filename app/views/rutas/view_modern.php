@@ -230,13 +230,13 @@ if (!isset($_SESSION['user'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function marcarCompletada(idRuta) {
-            if (confirm('¿Marcar esta ruta como completada?')) {
+            if (confirmAction("acción")) {
                 window.location.href = `/RMIE/app/controllers/RouteControllerModern.php?accion=completar&id=${idRuta}`;
             }
         }
 
         function eliminarRuta(idRuta) {
-            if (confirm('¿Estás seguro de eliminar esta ruta?\n\nEsta acción no se puede deshacer.')) {
+            if (confirmAction('acción general')) {
                 window.location.href = `/RMIE/app/controllers/RouteControllerModern.php?accion=delete&id=${idRuta}`;
             }
         }

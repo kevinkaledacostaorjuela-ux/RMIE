@@ -57,6 +57,7 @@ if (isset($usuarios) && is_array($usuarios)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1047,7 +1048,7 @@ if (isset($usuarios) && is_array($usuarios)) {
                                     <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->num_doc) ?>" 
                                        class="btn btn-sm btn-modern btn-danger-modern" 
                                        title="Eliminar usuario"
-                                       onclick="return confirm('¿Está seguro de eliminar el usuario \'<?= addslashes($usuario->nombres ?? 'Usuario') ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                       onclick="return confirmDeleteUser('<?= addslashes($usuario->nombres ?? 'Usuario') ?>')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1187,7 +1188,7 @@ if (isset($usuarios) && is_array($usuarios)) {
                                         <a href="/RMIE/app/controllers/UserController.php?accion=delete&id=<?= urlencode($usuario->num_doc) ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar usuario"
-                                           onclick="return confirm('¿Está seguro de eliminar el usuario \'<?= addslashes($usuario->nombres ?? 'Usuario') ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirmDeleteUser('<?= addslashes($usuario->nombres ?? 'Usuario') ?>')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>

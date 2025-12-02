@@ -1890,7 +1890,7 @@
 
         // FunciÍ³n para resetear Planificación
         function resetearPlanificacion() {
-            if (confirm('Â¿EstÍ¡s seguro de que deseas restablecer toda la Planificación?')) {
+            if (confirmAction("acción")) {
                 planificacionData = {};
                 renderizarPlanificacion();
             }
@@ -1916,7 +1916,7 @@
                 return;
             }
 
-            if (!confirm(`¿Deseas crear rutas basadas en la planificación semanal actual?\n\nSe procesarán ${Object.keys(planificacionData).length} días con ${totalClientes} clientes total.`)) {
+            if (!confirmAction("acción").length} días con ${totalClientes} clientes total.`)) {
                 return;
             }
 

@@ -62,6 +62,7 @@ if (isset($ventas) && is_array($ventas)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1283,7 +1284,7 @@ if (isset($ventas) && is_array($ventas)) {
                                        class="btn btn-sm btn-modern btn-danger-modern" 
                                        title="Eliminar venta"
                                        data-id="<?= $venta->id_ventas ?>"
-                                       onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.');">
+                                       onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirmAction('eliminar venta');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1425,7 +1426,7 @@ if (isset($ventas) && is_array($ventas)) {
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar venta"
                                            data-id="<?= $venta->id_ventas ?>"
-                                           onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirm('¿Está seguro de eliminar la venta #<?= addslashes($venta->id_ventas) ?>?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirmAction('eliminar venta')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -1500,7 +1501,7 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
                     ventaId = 'ID ' + this.dataset.id;
                 }
                 
-                if (confirm(`¿Está seguro de eliminar la venta ${ventaId}?\n\nEsta acción no se puede deshacer.`)) {
+                if (confirmAction('eliminar venta')) {
                     window.location.href = this.href;
                 }
             });
@@ -1539,17 +1540,17 @@ window.addEventListener('error', function(e) { console.log('JS Error:', e.messag
             const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en VENTAS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar ventas PROCESADAS/ENTREGADAS\n2 - Eliminar ventas CANCELADAS\n3 - Eliminar TODAS las ventas\n4 - Cancelar`);
             
             if (opcion === '1') {
-                if (confirm('Se eliminarán solo las ventas con estado "procesada" o "entregada".\n\n¿Continuar?')) {
+                if (confirmAction('limpiar registros')) {
                     alert('Eliminando ventas procesadas...');
                     window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_processed';
                 }
             } else if (opcion === '2') {
-                if (confirm('Se eliminarán las ventas con estado "cancelada".\n\n¿Continuar?')) {
+                if (confirmAction('limpiar registros')) {
                     alert('Eliminando ventas canceladas...');
                     window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_cancelled';
                 }
             } else if (opcion === '3') {
-                if (confirm('¡ATENCIÓN! Esto eliminará TODAS las ventas de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                if (confirmAction('eliminar todos')) {
                     alert('Eliminando todas las ventas...');
                     window.location.href = '/RMIE/app/controllers/SaleController.php?accion=clean_all';
                 }

@@ -1253,7 +1253,7 @@ if (!isset($cliente)) {
             }
             
             // Mostrar mensaje de confirmación
-            if (!confirm('¿Está seguro de que desea actualizar la información del cliente?')) {
+            if (!confirmAction('acción general')) {
                 e.preventDefault();
                 return;
             }

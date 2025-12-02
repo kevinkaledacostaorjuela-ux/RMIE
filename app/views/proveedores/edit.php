@@ -611,7 +611,7 @@
             const estadoNuevo = this.value;
             
             if (estadoAnterior !== estadoNuevo && estadoNuevo === 'inactivo') {
-                if (!confirm('¿Está seguro de cambiar el estado a "Inactivo"?\n\nEsto puede afectar las operaciones comerciales con este proveedor.')) {
+                if (!confirmAction('acción general')) {
                     this.value = estadoAnterior;
                 }
             }
@@ -653,7 +653,7 @@
             }
             
             // Confirmación final
-            if (!confirm('¿Está seguro de actualizar la información de este proveedor?')) {
+            if (!confirmAction('acción general')) {
                 e.preventDefault();
                 return false;
             }

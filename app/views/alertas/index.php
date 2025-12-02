@@ -22,6 +22,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1194,7 +1195,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         // Función para confirmar eliminación de alertas
         function confirmarEliminacion(idAlerta, nombreProducto) {
-            if (confirm('¿Está seguro de eliminar esta alerta del producto "' + nombreProducto + '"?\n\nEsta acción no se puede deshacer.')) {
+            if (confirmAction("acción")) {
                 // Crear formulario dinámico para enviar POST
                 const form = document.createElement('form');
                 form.method = 'POST';

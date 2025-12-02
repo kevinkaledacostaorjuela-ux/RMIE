@@ -30,6 +30,7 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1031,7 +1032,7 @@ $stats = $statsQuery->fetch_assoc();
                                 <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
                                    class="btn btn-sm btn-modern btn-danger-modern" 
                                    title="Eliminar local"
-                                   onclick="return confirm('¿Estás seguro de eliminar el local \'<?php echo addslashes($local->nombre_local); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                   onclick="return confirmAction("acción"); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                                 <?php endif; ?>
@@ -1245,7 +1246,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar local"
-                                           onclick="return confirm('¿Estás seguro de eliminar el local \'<?php echo addslashes($local->nombre_local); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                           onclick="return confirmAction("acción"); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>

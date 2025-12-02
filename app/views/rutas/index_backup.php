@@ -55,6 +55,7 @@ if (isset($rutas) && is_array($rutas)) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -2125,7 +2126,7 @@ if (isset($rutas) && is_array($rutas)) {
                                 <a href="/RMIE/rutas.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                    class="routes-card-btn routes-btn-danger" 
                                    title="Eliminar ruta"
-                                   onclick="return confirm('¿Está seguro de eliminar la ruta \"<?= addslashes($ruta['local_nombre'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\"?\n\nEsta acción no se puede deshacer.')">
+                                   onclick="return confirmAction("acción")) ?>\"?\n\nEsta acción no se puede deshacer.')">
                                     <i class="fas fa-trash"></i> Eliminar
                                 </a>
                                 <?php endif; ?>
@@ -2354,7 +2355,7 @@ if (isset($rutas) && is_array($rutas)) {
                                         <a href="/RMIE/rutas.php?accion=delete&id=<?= urlencode($ruta['id_ruta'] ?? '') ?>" 
                                            class="btn btn-sm btn-modern btn-danger-modern" 
                                            title="Eliminar ruta"
-                                           onclick="return confirm('¿Está seguro de eliminar la ruta \'<?= addslashes($ruta['nombre_local'] ?? 'Ruta #' . ($ruta['id_ruta'] ?? '')) ?>\'?\n\nEsta acción no se puede deshacer.')">
+                                           onclick="return confirmAction("acción")) ?>\'?\n\nEsta acción no se puede deshacer.')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -3192,7 +3193,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             // Usar confirmaciones nativas del navegador para evitar problemas de accesibilidad
             const mensaje = `Completar la ruta: "${nombreRuta}"\n\n¿Qué deseas hacer?\n\n• Presiona ACEPTAR para completar y ELIMINAR la ruta\n• Presiona CANCELAR para solo completar (mantener en base de datos)`;
             
-            const autoEliminar = confirm(mensaje);
+            const autoEliminar = confirmAction("acción");
             
             if (autoEliminar !== null) { // Si no presionó Escape
                 const accion = autoEliminar ? 'complete_and_delete' : 'complete';
@@ -3340,7 +3341,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         // Función alternativa simple para completar ruta (sin modal)
         function completarRutaSimple(idRuta, nombreRuta) {
-            const autoEliminar = confirm(`¿Completar la ruta "${nombreRuta}"?\n\nPresiona:\n- Aceptar: Completar y ELIMINAR la ruta\n- Cancelar: Solo completar (mantener en base de datos)`);
+            const autoEliminar = confirmAction("acción")`);
             
             const accion = autoEliminar ? 'complete_and_delete' : 'complete';
             const url = `/RMIE/rutas.php?accion=${accion}&id=${idRuta}`;
@@ -3359,12 +3360,12 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
             const opcion = prompt(`¿Qué tipo de limpieza quieres hacer?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar rutas COMPLETADAS\n2 - Eliminar TODAS las rutas (completas e incompletas)\n3 - Cancelar`);
             
             if (opcion === '1') {
-                if (confirm('Se eliminarán solo las rutas con estado "completada".\n\n¿Continuar?')) {
+                if (confirmAction('limpiar registros')) {
                     alert('Eliminando rutas completadas...');
                     window.location.href = '/RMIE/rutas.php?accion=clean_completed';
                 }
             } else if (opcion === '2') {
-                if (confirm('¡ATENCIÓN! Esto eliminará TODAS las rutas de la base de datos.\n\nEsta acción NO se puede deshacer.\n\n¿Estás completamente seguro?')) {
+                if (confirmAction('eliminar todos')) {
                     alert('Eliminando todas las rutas...');
                     window.location.href = '/RMIE/rutas.php?accion=clean_all';
                 }
@@ -3384,7 +3385,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
         function limpiarCompletadasAjax() {
             console.log('limpiarCompletadasAjax() llamada');
             
-            if (confirm('¿Estás seguro de que quieres eliminar TODAS las rutas completadas?\n\nEsta acción no se puede deshacer y eliminará permanentemente todas las rutas con estado "completada".')) {
+            if (confirmAction('acción general')) {
                 
                 alert('Eliminando rutas completadas...');
                 
@@ -3945,7 +3946,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                     }
                     
                     // Confirmar selección
-                    const confirmar = confirm(`¿Agregar "${nombreCliente}" al ${dia}?\\n\\n🏪 Local asignado:\\n${infoLocal}`);
+                    const confirmar = confirmAction("acción");
                     if (confirmar) {
                         seleccionarCliente(clienteId, dia, element);
                     } else {
@@ -3960,7 +3961,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
                 
                 // Confirmar selección sin información del local
                 setTimeout(() => {
-                    const confirmar = confirm(`¿Agregar "${nombreCliente}" al ${dia}?\\n\\n⚠️ No se pudo obtener información del local asignado`);
+                    const confirmar = confirmAction("acción");
                     if (confirmar) {
                         seleccionarCliente(clienteId, dia, element);
                     } else {
@@ -4262,7 +4263,7 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 
         // Restablecer planificación
         function resetearPlanificacion() {
-            if (confirm('¿Estás seguro de que quieres limpiar toda la planificación semanal?')) {
+            if (confirmAction('acción general')) {
                 planificacionData = {};
                 diasSemana.forEach(dia => {
                     planificacionData[dia] = [];

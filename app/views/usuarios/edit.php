@@ -945,14 +945,14 @@
             const correoOriginal = '<?= addslashes($usuario->correo) ?>';
             
             if (correoActual !== correoOriginal) {
-                if (!confirm(`¿Está seguro de cambiar el correo electrónico?\n\nDe: ${correoOriginal}\nA: ${correoActual}\n\nEste cambio afectará el acceso al sistema.`)) {
+                if (!confirmAction('acción general')) {
                     e.preventDefault();
                     return;
                 }
             }
             
             // Confirmación final
-            if (!confirm('¿Está seguro de actualizar la información de este usuario?')) {
+            if (!confirmAction('acción general')) {
                 e.preventDefault();
                 return;
             }

@@ -34,6 +34,7 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
+    <script src="/RMIE/public/js/selenium-messages.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -1134,7 +1135,7 @@ $stats = $statsQuery->fetch_assoc();
                                     <a href="/RMIE/app/controllers/SubcategoryController.php?accion=delete&id=<?= urlencode($subcat->id_subcategoria ?? '') ?>" 
                                        class="btn btn-sm btn-modern btn-danger-modern" 
                                        title="Eliminar subcategoría"
-                                       onclick="return confirm('¿Está seguro de eliminar esta subcategoría?')">
+                                       onclick="return confirmDeleteSubcategory('Subcategoría')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
@@ -1442,7 +1443,7 @@ $stats = $statsQuery->fetch_assoc();
                     }
                 }
                 
-                if (confirm(`¿Está seguro de eliminar la subcategoría "${subcategoriaNombre}"?\n\nEsta acción no se puede deshacer.`)) {
+                if (confirmDeleteSubcategory('Subcategoría')) {
                     window.location.href = this.href;
                 }
             });

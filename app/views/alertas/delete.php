@@ -38,7 +38,7 @@ if (!isset($_SESSION['user'])) {
         </div>
         <form method="POST" action="/RMIE/app/controllers/AlertController.php?action=delete&id=<?= urlencode($alerta['id_alertas']) ?>">
             <input type="hidden" name="confirmar_eliminar" value="1">
-            <button type="submit" class="btn-categorias" onclick="return confirm('¿Está seguro de eliminar esta alerta?')">Eliminar Alerta</button>
+            <button type="submit" class="btn-categorias" onclick="return confirmAction('acción general')">Eliminar Alerta</button>
             <a href="/RMIE/app/controllers/AlertController.php" class="btn-categorias">Volver</a>
         </form>
     </div>

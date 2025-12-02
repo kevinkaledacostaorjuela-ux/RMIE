@@ -124,7 +124,7 @@ $dia_mostrar = $dias_esp[$dia_seleccionado] ?? $dia_seleccionado;
                                     <?php endif; ?>
                                     <a href="/RMIE/rutas.php?accion=delete&id=<?php echo $ruta['id_ruta']; ?>" 
                                        class="btn btn-outline-danger"
-                                       onclick="return confirm('¿Está seguro de eliminar esta ruta?')">
+                                       onclick="return confirmAction('acción general')">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                 </div>

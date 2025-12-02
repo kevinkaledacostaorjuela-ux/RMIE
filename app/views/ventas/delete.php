@@ -172,7 +172,7 @@
                 return;
             }
             
-            const confirmed = confirm('¿Está absolutamente seguro de que desea eliminar esta venta?\n\nEsta acción NO se puede deshacer.');
+            const confirmed = confirmAction('acción general');
             if (!confirmed) {
                 e.preventDefault();
             }
