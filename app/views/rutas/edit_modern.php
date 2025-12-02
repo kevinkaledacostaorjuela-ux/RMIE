@@ -971,7 +971,7 @@ if (!isset($_SESSION['user'])) {
                 allowClear: true,
                 width: '100%',
                 ajax: {
-                    url: '/RMIE/app/api/get_clientes.php',
+                    url: '/RMIE/app/api/get_clientes_edit.php',
                     dataType: 'json',
                     delay: 300,
                     data: function (params) {
@@ -981,15 +981,24 @@ if (!isset($_SESSION['user'])) {
                         };
                     },
                     processResults: function (data) {
-                        return {
-                            results: data.map(function(cliente) {
-                                return {
-                                    id: cliente.id_clientes || cliente.id,
-                                    text: cliente.nombre,
-                                    nombre: cliente.nombre
-                                };
-                            })
-                        };
+                        // La API devuelve {results: [...], pagination: {...}}
+                        if (data && data.results && Array.isArray(data.results)) {
+                            return {
+                                results: data.results.map(function(cliente) {
+                                    return {
+                                        id: cliente.id,
+                                        text: cliente.text,
+                                        nombre: cliente.nombre
+                                    };
+                                }),
+                                pagination: data.pagination || {more: false}
+                            };
+                        } else {
+                            return {
+                                results: [],
+                                pagination: {more: false}
+                            };
+                        }
                     },
                     cache: true
                 },
@@ -1015,12 +1024,12 @@ if (!isset($_SESSION['user'])) {
         function cargarLocalesNuevoCliente(clienteId, $localSelect) {
             $localSelect.prop('disabled', true).html('<option value="">Cargando locales...</option>');
             
-            $.get('/RMIE/app/api/get_locales_by_cliente.php?cliente_id=' + clienteId)
-                .done(function(data) {
+            $.get('/RMIE/app/api/get_locales_edit.php?id_cliente=' + clienteId)
+                .done(function(response) {
                     $localSelect.html('<option value="">Seleccionar local...</option>');
                     
-                    if (data && data.length > 0) {
-                        data.forEach(function(local) {
+                    if (response && response.results && response.results.length > 0) {
+                        response.results.forEach(function(local) {
                             $localSelect.append(new Option(local.text, local.id));
                         });
                         $localSelect.prop('disabled', false);

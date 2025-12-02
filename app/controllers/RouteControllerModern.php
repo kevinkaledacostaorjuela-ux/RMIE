@@ -313,6 +313,11 @@ class RouteControllerModern {
                 $clientes_data = $_POST['clientes'] ?? [];
                 $nuevos_clientes = $_POST['nuevos_clientes'] ?? [];
                 
+                // Debug temporal - remover después
+                error_log("DEBUG POST: dia_semana=$dia_semana, estado=$estado");
+                error_log("DEBUG clientes_data: " . print_r($clientes_data, true));
+                error_log("DEBUG nuevos_clientes: " . print_r($nuevos_clientes, true));
+                
                 if (empty($dia_semana)) {
                     throw new Exception("El día de la semana es obligatorio.");
                 }
@@ -345,7 +350,12 @@ class RouteControllerModern {
                     $direccion = trim($datos['direccion'] ?? '');
                     $es_nuevo = $datos['es_nuevo'] ?? 0;
                     
-                    if ($es_nuevo && $id_cliente > 0 && $id_local > 0 && !empty($nombre_cliente) && !empty($direccion)) {
+                    // Usar dirección por defecto si está vacía
+                    if (empty($direccion) && !empty($nombre_local)) {
+                        $direccion = 'Dirección de ' . $nombre_local;
+                    }
+                    
+                    if ($es_nuevo && $id_cliente > 0 && $id_local > 0 && !empty($nombre_cliente)) {
                         // Insertar nueva ruta
                         $sql = "INSERT INTO rutas (id_clientes, id_locales, nombre_cliente, nombre_local, direccion, dia_semana, estado, fecha_creacion) 
                                 VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
