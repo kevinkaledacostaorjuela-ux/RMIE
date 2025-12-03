@@ -135,7 +135,7 @@ class Product {
             $sql .= " AND " . implode(" AND ", $whereData['where']);
         }
         
-        $sql .= " ORDER BY p.nombre, p.fecha_entrada DESC";
+        $sql .= " ORDER BY p.id_productos DESC";
         
         $stmt = $conn->prepare($sql);
         if (!empty($whereData['params'])) {
@@ -184,10 +184,10 @@ class Product {
         return $stmt->execute();
     }
 
-    // Asignar un producto a un proveedor (actualiza solo id_proveedores)
+    // Asignar un producto a un proveedor usando tabla intermedia
     public static function assignToProvider($conn, $id_productos, $id_proveedores) {
         try {
-            $sql = "UPDATE productos SET id_proveedores = ? WHERE id_productos = ?";
+            $sql = "INSERT IGNORE INTO proveedores_productos (id_proveedor, id_producto) VALUES (?, ?)";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ii", $id_proveedores, $id_productos);
             return $stmt->execute();

@@ -858,23 +858,23 @@ $stats = $statsQuery->fetch_assoc();
                 <input type="hidden" name="accion" value="index">
                 <div class="row g-3 align-items-end">
                     <div class="col-md-4">
-                        <label class="form-label"><i class="fas fa-search"></i> Buscar</label>
-                        <input type="text" name="buscar" class="form-control-modern form-control" placeholder="Buscar por nombre del local" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>">
+                        <label for="buscar" class="form-label"><i class="fas fa-search"></i> Buscar</label>
+                        <input type="text" id="buscar" name="buscar" class="form-control-modern form-control" placeholder="Buscar por nombre del local" value="<?php echo htmlspecialchars($filtros['nombre'] ?? ''); ?>">
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label"><i class="fas fa-city"></i> Localidad</label>
-                        <input type="text" name="localidad" class="form-control-modern form-control" placeholder="Localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>">
+                        <label for="localidad" class="form-label"><i class="fas fa-city"></i> Localidad</label>
+                        <input type="text" id="localidad" name="localidad" class="form-control-modern form-control" placeholder="Localidad" value="<?php echo htmlspecialchars($filtros['localidad'] ?? ''); ?>">
                     </div>
 
                     <div class="col-md-3">
-                        <label class="form-label"><i class="fas fa-map-marked-alt"></i> Barrio</label>
-                        <input type="text" name="barrio" class="form-control-modern form-control" placeholder="Barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>">
+                        <label for="barrio" class="form-label"><i class="fas fa-map-marked-alt"></i> Barrio</label>
+                        <input type="text" id="barrio" name="barrio" class="form-control-modern form-control" placeholder="Barrio" value="<?php echo htmlspecialchars($filtros['barrio'] ?? ''); ?>">
                     </div>
 
                     <div class="col-md-2">
-                        <label class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
-                        <select name="estado" class="form-control-modern form-select">
+                        <label for="estado" class="form-label"><i class="fas fa-toggle-on"></i> Estado</label>
+                        <select id="estado" name="estado" class="form-control-modern form-select">
                             <option value="">Todos</option>
                             <option value="activo" <?php echo ($filtros['estado'] ?? '') === 'activo' ? 'selected' : ''; ?>>Activo</option>
                             <option value="inactivo" <?php echo ($filtros['estado'] ?? '') === 'inactivo' ? 'selected' : ''; ?>>Inactivo</option>
@@ -1026,15 +1026,15 @@ $stats = $statsQuery->fetch_assoc();
                         <div class="locals-card-footer">
                             <div class="locals-actions">
                                 <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?php echo $local->id_locales; ?>" 
-                                   class="btn btn-sm btn-modern btn-warning-modern" 
+                                   class="btn btn-sm btn-warning" 
                                    title="Editar local">
                                     <i class="fas fa-edit"></i>
                                 </a>
                                 <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                 <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
-                                   class="btn btn-sm btn-modern btn-danger-modern" 
+                                   class="btn btn-sm btn-danger" 
                                    title="Eliminar local"
-                                   onclick="return confirmAction("acción"); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                   onclick="return confirmAction('¿Eliminar local?')">
                                     <i class="fas fa-trash"></i>
                                 </a>
                                 <?php endif; ?>
@@ -1242,15 +1242,15 @@ $stats = $statsQuery->fetch_assoc();
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a href="/RMIE/app/controllers/LocalController.php?accion=edit&id=<?php echo $local->id_locales; ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
+                                           class="btn btn-sm btn-warning" 
                                            title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/LocalController.php?accion=delete&id=<?php echo $local->id_locales; ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
+                                           class="btn btn-sm btn-danger" 
                                            title="Eliminar local"
-                                           onclick="return confirmAction("acción"); ?>\'?\n\nSi tiene clientes, productos o ventas asociadas, no se podrá eliminar.')">
+                                           onclick="return confirmAction('¿Eliminar local?')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>

@@ -678,7 +678,6 @@ unset($_SESSION['error'], $_SESSION['success']);
             try {
                 // Verificar que el DOM está completamente cargado
                 if (document.readyState !== 'complete' && document.readyState !== 'interactive') {
-                    console.warn('DOM no está completamente listo');
                     return;
                 }
 
@@ -695,33 +694,40 @@ unset($_SESSION['error'], $_SESSION['success']);
                     const counter = document.getElementById(countId);
                     
                     if (input && counter) {
-                    function updateCount() {
-                        const count = input.value.length;
-                        counter.textContent = count;
-                        counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                        function updateCount() {
+                            const count = input.value.length;
+                            counter.textContent = count;
+                            counter.style.color = count > maxLength * 0.8 ? '#ff9800' : 'rgba(255, 255, 255, 0.7)';
+                        }
+                        
+                        input.addEventListener('input', updateCount);
+                        updateCount(); // Inicializar
                     }
-                    
-                    input.addEventListener('input', updateCount);
-                    updateCount(); // Inicializar
                 }
-            }
             
             setupCharacterCount('nombre', 'nombre-count', 45);
             setupCharacterCount('descripcion', 'descripcion-count', 45);
 
             // Vista previa y detección de cambios
             function updatePreview() {
-                const nombre = document.getElementById('nombre').value;
-                const descripcion = document.getElementById('descripcion').value;
+                const nombre = document.getElementById('nombre');
+                const descripcion = document.getElementById('descripcion');
                 const categoriaSelect = document.getElementById('id_categoria');
+                
+                if (!nombre || !descripcion || !categoriaSelect) return;
+                
+                const nombreValue = nombre.value;
+                const descripcionValue = descripcion.value;
                 const categoriaTexto = categoriaSelect.options[categoriaSelect.selectedIndex]?.text || '-';
                 
                 // Actualizar avatar
                 const avatar = document.getElementById('previewAvatar');
-                if (nombre) {
-                    avatar.textContent = nombre.charAt(0).toUpperCase();
-                } else {
-                    avatar.textContent = 'S';
+                if (avatar) {
+                    if (nombreValue) {
+                        avatar.textContent = nombreValue.charAt(0).toUpperCase();
+                    } else {
+                        avatar.textContent = 'S';
+                    }
                 }
                 
                 // Actualizar campos con detección de cambios
@@ -730,17 +736,23 @@ unset($_SESSION['error'], $_SESSION['success']);
                 const descripcionElement = document.getElementById('preview-descripcion');
                 
                 // Comparar y resaltar cambios
-                nombreElement.textContent = nombre || '-';
-                nombreElement.style.color = nombre !== originalValues.nombre ? '#ffd700' : 'white';
-                nombreElement.style.fontWeight = nombre !== originalValues.nombre ? 'bold' : '500';
+                if (nombreElement) {
+                    nombreElement.textContent = nombreValue || '-';
+                    nombreElement.style.color = nombreValue !== originalValues.nombre ? '#ffd700' : 'white';
+                    nombreElement.style.fontWeight = nombreValue !== originalValues.nombre ? 'bold' : '500';
+                }
                 
-                categoriaElement.textContent = categoriaTexto;
-                categoriaElement.style.color = categoriaSelect.value !== originalValues.categoria ? '#ffd700' : 'white';
-                categoriaElement.style.fontWeight = categoriaSelect.value !== originalValues.categoria ? 'bold' : '500';
+                if (categoriaElement) {
+                    categoriaElement.textContent = categoriaTexto;
+                    categoriaElement.style.color = categoriaSelect.value !== originalValues.categoria ? '#ffd700' : 'white';
+                    categoriaElement.style.fontWeight = categoriaSelect.value !== originalValues.categoria ? 'bold' : '500';
+                }
                 
-                descripcionElement.textContent = descripcion || '-';
-                descripcionElement.style.color = descripcion !== originalValues.descripcion ? '#ffd700' : 'white';
-                descripcionElement.style.fontWeight = descripcion !== originalValues.descripcion ? 'bold' : '500';
+                if (descripcionElement) {
+                    descripcionElement.textContent = descripcionValue || '-';
+                    descripcionElement.style.color = descripcionValue !== originalValues.descripcion ? '#ffd700' : 'white';
+                    descripcionElement.style.fontWeight = descripcionValue !== originalValues.descripcion ? 'bold' : '500';
+                }
             }
 
             // Agregar listeners para vista previa
@@ -753,10 +765,21 @@ unset($_SESSION['error'], $_SESSION['success']);
             });
 
             // Validación del formulario
-            document.getElementById('subcategoriaForm').addEventListener('submit', function(e) {
-                const nombre = document.getElementById('nombre').value.trim();
-                const descripcion = document.getElementById('descripcion').value.trim();
-                const categoria = document.getElementById('id_categoria').value;
+            const form = document.getElementById('subcategoriaForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    const nombreField = document.getElementById('nombre');
+                    const descripcionField = document.getElementById('descripcion');
+                    const categoriaField = document.getElementById('id_categoria');
+                    
+                    if (!nombreField || !descripcionField || !categoriaField) {
+                        e.preventDefault();
+                        return false;
+                    }
+                    
+                    const nombre = nombreField.value.trim();
+                    const descripcion = descripcionField.value.trim();
+                    const categoria = categoriaField.value;
 
                 const errors = [];
 
@@ -776,29 +799,32 @@ unset($_SESSION['error'], $_SESSION['success']);
                     errors.push('Debe seleccionar una categoría principal');
                 }
 
-                if (errors.length > 0) {
-                    e.preventDefault();
-                    alert('Por favor corrige los siguientes errores:\n\n' + errors.join('\n'));
-                    return;
-                }
+                    if (errors.length > 0) {
+                        e.preventDefault();
+                        alert('Por favor corrige los siguientes errores:\n\n' + errors.join('\n'));
+                        return;
+                    }
 
-                // Verificar si hay cambios
-                const hasChanges = nombre !== originalValues.nombre || 
-                                 descripcion !== originalValues.descripcion || 
-                                 categoria !== originalValues.categoria;
+                    // Verificar si hay cambios
+                    const hasChanges = nombre !== originalValues.nombre || 
+                                     descripcion !== originalValues.descripcion || 
+                                     categoria !== originalValues.categoria;
 
-                if (!hasChanges) {
-                    e.preventDefault();
-                    alert('No se han detectado cambios para guardar.');
-                    return;
-                }
+                    if (!hasChanges) {
+                        e.preventDefault();
+                        alert('No se han detectado cambios para guardar.');
+                        return;
+                    }
 
-                // Confirmación
-                if (!confirmAction('guardar cambios')) {
-                    e.preventDefault();
-                    return;
-                }
-            });
+                    // Confirmación
+                    if (typeof confirmAction === 'function') {
+                        if (!confirmAction('guardar cambios')) {
+                            e.preventDefault();
+                            return;
+                        }
+                    }
+                });
+            }
 
             // Efectos visuales con validación
             document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
@@ -819,28 +845,38 @@ unset($_SESSION['error'], $_SESSION['success']);
 
             // Manejo de labels para selects con validación de existencia
             document.querySelectorAll('.form-select-modern').forEach(select => {
+                if (!select || !select.parentElement) return;
+                
                 // Verificar que el label existe antes de manipularlo
                 const label = select.parentElement.querySelector('label');
                 if (!label) return;
                 
                 select.addEventListener('change', function() {
+                    if (!this.parentElement) return;
+                    
                     const labelElement = this.parentElement.querySelector('label');
                     if (!labelElement) return;
                     
-                    if (this.value) {
-                        labelElement.style.top = '2px';
-                        labelElement.style.fontSize = '12px';
-                        labelElement.style.color = '#9c27b0';
-                    } else {
-                        labelElement.style.top = '12px';
-                        labelElement.style.fontSize = '14px';
-                        labelElement.style.color = 'rgba(156, 39, 176, 0.8)';
+                    try {
+                        if (this.value) {
+                            labelElement.style.top = '2px';
+                            labelElement.style.fontSize = '12px';
+                            labelElement.style.color = '#9c27b0';
+                        } else {
+                            labelElement.style.top = '12px';
+                            labelElement.style.fontSize = '14px';
+                            labelElement.style.color = 'rgba(156, 39, 176, 0.8)';
+                        }
+                    } catch (e) {
+                        // Ignorar errores de manipulación de estilos
                     }
                 });
             });
 
             // Inicializar vista previa
-            updatePreview();
+            if (typeof updatePreview === 'function') {
+                updatePreview();
+            }
             
             } catch (error) {
                 console.error('Error en la inicialización del formulario de subcategorías:', error);

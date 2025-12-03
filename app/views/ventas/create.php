@@ -712,8 +712,13 @@
                             <!-- Filtros en cascada: Categoría → Subcategoría -->
                             <div class="form-group">
                                 <label for="filtro_categoria">
-                                    <i class="fas fa-filter"></i> Filtrar por Categoría
+                                    <i class="fas fa-layer-group"></i> Seleccionar Categoría
                                 </label>
+                                <input type="text" 
+                                       id="buscar_categoria" 
+                                       class="form-control" 
+                                       placeholder="Escribe para buscar o selecciona categoría..."
+                                       style="margin-bottom: 5px;">
                                 <select id="filtro_categoria" class="form-select">
                                     <option value="">Todas las categorías</option>
                                     <?php if (isset($categorias) && is_array($categorias)): ?>
@@ -728,8 +733,14 @@
                             
                             <div class="form-group">
                                 <label for="filtro_subcategoria">
-                                    <i class="fas fa-filter"></i> Filtrar por Subcategoría
+                                    <i class="fas fa-tags"></i> Seleccionar Subcategoría
                                 </label>
+                                <input type="text" 
+                                       id="buscar_subcategoria" 
+                                       class="form-control" 
+                                       placeholder="Seleccione primero una categoría..."
+                                       style="margin-bottom: 5px;"
+                                       disabled>
                                 <select id="filtro_subcategoria" class="form-select" disabled>
                                     <option value="">Seleccione primero una categoría</option>
                                 </select>
@@ -979,6 +990,8 @@
         
         // Elementos de filtros
         const buscarProducto = document.getElementById('buscar_producto');
+        const buscarCategoria = document.getElementById('buscar_categoria');
+        const buscarSubcategoria = document.getElementById('buscar_subcategoria');
         const filtroCategoria = document.getElementById('filtro_categoria');
         const filtroSubcategoria = document.getElementById('filtro_subcategoria');
         const productosItems = document.querySelectorAll('.producto-item');
@@ -1091,6 +1104,124 @@
                     mensajeNoProductos.remove();
                 }
             }
+        }
+        
+        // Función unificada para filtrar categorías
+        function filtrarCategorias() {
+            if (!buscarCategoria) return;
+            
+            const textoBusqueda = buscarCategoria.value.toLowerCase().trim();
+            const opciones = filtroCategoria.querySelectorAll('option');
+            let primeraCoincidencia = null;
+            
+            opciones.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = '';
+                    return;
+                }
+                
+                const textoOpcion = option.textContent.toLowerCase();
+                if (!textoBusqueda || textoOpcion.includes(textoBusqueda)) {
+                    option.style.display = '';
+                    if (!primeraCoincidencia && option.value !== '') {
+                        primeraCoincidencia = option;
+                    }
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+            
+            // Auto-seleccionar si hay coincidencia exacta
+            if (textoBusqueda && primeraCoincidencia && 
+                primeraCoincidencia.textContent.toLowerCase() === textoBusqueda) {
+                filtroCategoria.value = primeraCoincidencia.value;
+                filtroCategoria.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        // Función unificada para filtrar subcategorías
+        function filtrarSubcategorias() {
+            if (!buscarSubcategoria) return;
+            
+            const textoBusqueda = buscarSubcategoria.value.toLowerCase().trim();
+            const opciones = filtroSubcategoria.querySelectorAll('option');
+            let primeraCoincidencia = null;
+            
+            opciones.forEach(option => {
+                if (option.value === '') {
+                    option.style.display = '';
+                    return;
+                }
+                
+                const textoOpcion = option.textContent.toLowerCase();
+                if (!textoBusqueda || textoOpcion.includes(textoBusqueda)) {
+                    option.style.display = '';
+                    if (!primeraCoincidencia && option.value !== '') {
+                        primeraCoincidencia = option;
+                    }
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+            
+            // Auto-seleccionar si hay coincidencia exacta
+            if (textoBusqueda && primeraCoincidencia && 
+                primeraCoincidencia.textContent.toLowerCase() === textoBusqueda) {
+                filtroSubcategoria.value = primeraCoincidencia.value;
+                filtroSubcategoria.dispatchEvent(new Event('change'));
+            }
+        }
+        
+        // Event listeners unificados
+        if (buscarCategoria) {
+            buscarCategoria.addEventListener('input', filtrarCategorias);
+            
+            // Sincronizar con el selector
+            buscarCategoria.addEventListener('focus', function() {
+                filtroCategoria.style.display = 'block';
+            });
+        }
+        
+        if (buscarSubcategoria) {
+            buscarSubcategoria.addEventListener('input', filtrarSubcategorias);
+        }
+        
+        // Sincronizar selectores con campos de búsqueda
+        if (filtroCategoria) {
+            filtroCategoria.addEventListener('change', function() {
+                const categoriaId = this.value;
+                const selectedOption = this.querySelector(`option[value="${categoriaId}"]`);
+                
+                // Actualizar el campo de búsqueda con la selección
+                if (buscarCategoria && selectedOption) {
+                    buscarCategoria.value = selectedOption.textContent;
+                }
+                
+                if (categoriaId) {
+                    if (buscarSubcategoria) {
+                        buscarSubcategoria.disabled = false;
+                        buscarSubcategoria.placeholder = "Escribe para buscar o selecciona subcategoría...";
+                    }
+                } else {
+                    if (buscarSubcategoria) {
+                        buscarSubcategoria.disabled = true;
+                        buscarSubcategoria.value = '';
+                        buscarSubcategoria.placeholder = "Seleccione primero una categoría...";
+                    }
+                }
+            });
+        }
+        
+        if (filtroSubcategoria) {
+            filtroSubcategoria.addEventListener('change', function() {
+                const subcategoriaId = this.value;
+                const selectedOption = this.querySelector(`option[value="${subcategoriaId}"]`);
+                
+                // Actualizar el campo de búsqueda con la selección
+                if (buscarSubcategoria && selectedOption) {
+                    buscarSubcategoria.value = selectedOption.textContent;
+                }
+            });
         }
         
         // Estilo para checkboxes

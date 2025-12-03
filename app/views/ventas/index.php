@@ -1440,13 +1440,13 @@ if (isset($ventas) && is_array($ventas)) {
                                 </span>
                                 <div class="sales-actions">
                                     <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       class="btn btn-sm btn-warning" 
                                        title="Editar venta">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                     <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>&t=<?= time() ?>" 
-                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       class="btn btn-sm btn-danger" 
                                        title="Eliminar venta"
                                        data-id="<?= $venta->id_ventas ?>"
                                        onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirmAction('eliminar venta');">
@@ -1582,13 +1582,13 @@ if (isset($ventas) && is_array($ventas)) {
                                 <td>
                                     <div class="btn-group" role="group">
                                         <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
+                                           class="btn btn-sm btn-warning" 
                                            title="Editar venta">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                         <a href="/RMIE/app/controllers/SaleController.php?accion=delete&id=<?= urlencode($venta->id_ventas) ?>&t=<?= time() ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
+                                           class="btn btn-sm btn-danger" 
                                            title="Eliminar venta"
                                            data-id="<?= $venta->id_ventas ?>"
                                            onclick="console.log('Delete venta:', <?= $venta->id_ventas ?>); return confirmAction('eliminar venta')">

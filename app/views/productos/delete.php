@@ -78,53 +78,7 @@ $subcategoria = null;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
         
-        .btn-lg {
-            padding: 12px 30px;
-            font-size: 16px;
-            border-radius: 25px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .btn-danger {
-            background: linear-gradient(45deg, #ff416c, #ff4757);
-            border: none;
-            box-shadow: 0 4px 15px rgba(255, 65, 108, 0.4);
-        }
-        
-        .btn-danger:hover {
-            background: linear-gradient(45deg, #ff3742, #ff3838);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 65, 108, 0.6);
-        }
-        
-        .btn-secondary {
-            background: linear-gradient(45deg, #6c757d, #495057);
-            border: none;
-            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
-        }
-        
-        .btn-secondary:hover {
-            background: linear-gradient(45deg, #5a6268, #3d4043);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            border: none;
-            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.4);
-        }
-        
-        .btn-primary:hover {
-            background: linear-gradient(45deg, #0056b3, #004085);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 123, 255, 0.6);
-        }
+        /* Usar estilos estándar de Bootstrap para los botones */
         
         .product-detail {
             display: flex;
@@ -255,18 +209,17 @@ $subcategoria = null;
                     <?php else: ?>
                         <!-- Sin dependencias -->
                         <div class="alert alert-success alert-confirmation">
-                            <p><i class="fas fa-check-circle"></i> Este producto no tiene ventas asociadas y puede ser eliminado de forma segura.</p>
-                            <p><strong>Nota:</strong> Esta acción eliminará permanentemente el producto del inventario.</p>
+                            <p><i class="fas fa-check-circle"></i> Producto listo para eliminar.</p>
                         </div>
                         
                         <div class="d-flex gap-3 justify-content-center mt-4">
                             <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?php echo $id_producto; ?>" 
                                class="btn btn-danger"
-                               onclick="return confirmAction("acción"); ?>\'?\n\nEsta acción no se puede deshacer y el producto será eliminado permanentemente del inventario.')">
-                                <i class="fas fa-trash-alt"></i> Confirmar Eliminación
+                               onclick="return confirmAction('¿Eliminar producto?')">
+                                <i class="fas fa-trash-alt"></i> Eliminar
                             </a>
                             <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Cancelar
+                                <i class="fas fa-arrow-left"></i> Volver
                             </a>
                         </div>
                     <?php endif; ?>

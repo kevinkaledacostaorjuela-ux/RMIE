@@ -1028,22 +1028,22 @@ $stats = $statsQuery->fetch_assoc();
                         <div class="client-actions">
                             <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
                             <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
-                               class="btn btn-sm btn-modern btn-warning-modern" 
+                               class="btn btn-sm btn-warning" 
                                title="Editar cliente">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <?php else: ?>
                             <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
-                               class="btn btn-sm btn-modern btn-primary-modern" 
+                               class="btn btn-sm btn-primary" 
                                title="Ver detalles del cliente">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <?php endif; ?>
                             <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
                             <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes ?? '') ?>" 
-                               class="btn btn-sm btn-modern btn-danger-modern" 
+                               class="btn btn-sm btn-danger" 
                                title="Eliminar cliente"
-                               onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre ?? '') ?>')"
+                               onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre ?? '') ?>')">
                                 <i class="fas fa-trash"></i>
                             </a>
                             <?php endif; ?>
@@ -1058,7 +1058,7 @@ $stats = $statsQuery->fetch_assoc();
                         <h5 style="color: #fff;">No hay clientes disponibles</h5>
                         <p style="color: rgba(255,255,255,0.7);">No se encontraron clientes que coincidan con los filtros aplicados.</p>
                         <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
-                        <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern">
+                        <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-success">
                             <i class="fas fa-plus"></i> Crear Primer Cliente
                         </a>
                         <?php endif; ?>
@@ -1167,22 +1167,22 @@ $stats = $statsQuery->fetch_assoc();
                                     <div class="btn-group" role="group">
                                         <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes) ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
+                                           class="btn btn-sm btn-warning" 
                                            title="Editar cliente">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php else: ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=edit&id=<?= urlencode($cliente->id_clientes) ?>" 
-                                           class="btn btn-sm btn-modern btn-primary-modern" 
+                                           class="btn btn-sm btn-primary" 
                                            title="Ver detalles del cliente">
                                             <i class="fas fa-eye"></i>
                                         </a>
                                         <?php endif; ?>
                                         <?php if ($_SESSION['rol'] !== 'coordinador' && $_SESSION['rol'] !== 'auxiliar'): ?>
                                         <a href="/RMIE/app/controllers/ClientController.php?accion=delete&id=<?= urlencode($cliente->id_clientes) ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
+                                           class="btn btn-sm btn-danger" 
                                            title="Eliminar cliente"
-                                           onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre) ?>')"
+                                           onclick="return confirmDeleteClient('<?= addslashes($cliente->nombre) ?>')">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -1197,7 +1197,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <i class="fas fa-inbox fa-3x mb-3"></i>
                                         <h5>No hay clientes disponibles</h5>
                                         <p>No se encontraron clientes que coincidan con los filtros aplicados.</p>
-                                        <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                        <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-success">
                                             <i class="fas fa-plus"></i> Crear Primer Cliente
                                         </a>
                                     </div>

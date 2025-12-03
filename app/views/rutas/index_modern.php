@@ -821,7 +821,7 @@ if (isset($rutas) && is_array($rutas)) {
         
         // Función para completar todas las rutas de un día
         function completarTodoElDia(dia) {
-            if (confirmAction('acción general')) {
+            if (confirm(`¿Estás seguro de que quieres marcar como completadas todas las rutas del ${dia}?`)) {
                 // Hacer petición para completar todas las rutas del día
                 window.location.href = `/RMIE/app/controllers/RouteControllerModern.php?accion=completar_dia&dia=${dia}`;
             }
@@ -829,8 +829,8 @@ if (isset($rutas) && is_array($rutas)) {
         
         // Función para eliminar todas las rutas de un día
         function eliminarDia(dia) {
-            if (confirmAction('acción general')) {
-                if (confirmAction("acción")) {
+            if (confirm(`¿Estás seguro de que quieres eliminar TODAS las rutas del ${dia}?`)) {
+                if (confirm('Esta acción no se puede deshacer. ¿Confirmas que quieres proceder?')) {
                     window.location.href = `/RMIE/app/controllers/RouteControllerModern.php?accion=eliminar_dia&dia=${dia}`;
                 }
             }

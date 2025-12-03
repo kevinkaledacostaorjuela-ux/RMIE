@@ -792,7 +792,7 @@ if (!isset($_SESSION['user'])) {
                 
                 // Validar que al menos haya un local (solo advertencia)
                 if ($('.local-card').length === 0) {
-                    if (confirmAction("acción")) {
+                    if (confirm("¿Estás seguro de guardar la ruta sin locales asignados?")) {
                         valid = true;
                     } else {
                         valid = false;
@@ -822,7 +822,7 @@ if (!isset($_SESSION['user'])) {
         
         // Función para eliminar local individual
         function eliminarLocal(idRuta) {
-            if (confirmAction('acción general')) {
+            if (confirm('¿Estás seguro de que quieres eliminar este local de la ruta?')) {
                 // Eliminar via AJAX
                 $.post('/RMIE/app/controllers/RouteControllerModern.php?accion=delete&id=' + idRuta)
                     .done(function() {
@@ -936,7 +936,7 @@ if (!isset($_SESSION['user'])) {
         
         // Función para eliminar nuevo local
         window.eliminarLocalNuevo = function(localId) {
-            if (confirmAction('acción general')) {
+            if (confirm('¿Estás seguro de que quieres eliminar este local de la ruta?')) {
                 $(`[data-ruta-id="${localId}"]`).fadeOut(function() {
                     $(this).remove();
                     

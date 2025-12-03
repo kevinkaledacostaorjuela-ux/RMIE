@@ -930,25 +930,6 @@ if (session_status() == PHP_SESSION_NONE) {
             });
         });
 
-        // Manejo de labels para inputs de búsqueda
-        Object.keys(searchableItems).forEach(searchInputId => {
-            const searchInput = document.getElementById(searchInputId);
-            searchInput.addEventListener('input', function() {
-                const label = this.parentElement.parentElement.querySelector('label');
-                if (label) {
-                    if (this.value) {
-                        label.style.top = '2px';
-                        label.style.fontSize = '12px';
-                        label.style.color = '#667eea';
-                    } else {
-                        label.style.top = '12px';
-                        label.style.fontSize = '14px';
-                        label.style.color = 'rgba(102, 126, 234, 0.8)';
-                    }
-                }
-            });
-        });
-
         // Establecer fecha mínima para vencimiento (mañana)
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
@@ -986,11 +967,46 @@ if (session_status() == PHP_SESSION_NONE) {
             }
         };
 
+        // Filtrar solo los elementos que realmente existen en el DOM
+        const availableSearchItems = {};
+        Object.keys(searchableItems).forEach(searchInputId => {
+            const searchInput = document.getElementById(searchInputId);
+            const config = searchableItems[searchInputId];
+            const optionsDiv = document.getElementById(config.optionsDiv);
+            
+            // Solo añadir a availableSearchItems si ambos elementos existen
+            if (searchInput && optionsDiv) {
+                availableSearchItems[searchInputId] = config;
+            }
+        });
+
+        // Manejo de labels para inputs de búsqueda (solo para elementos existentes)
+        Object.keys(availableSearchItems).forEach(searchInputId => {
+            const searchInput = document.getElementById(searchInputId);
+            searchInput.addEventListener('input', function() {
+                const label = this.parentElement.parentElement.querySelector('label');
+                if (label) {
+                    if (this.value) {
+                        label.style.top = '2px';
+                        label.style.fontSize = '12px';
+                        label.style.color = '#667eea';
+                    } else {
+                        label.style.top = '12px';
+                        label.style.fontSize = '14px';
+                        label.style.color = 'rgba(102, 126, 234, 0.8)';
+                    }
+                }
+            });
+        });
+
         // Función para renderizar las opciones filtradas
         function renderOptions(searchInputId) {
-            const config = searchableItems[searchInputId];
+            const config = availableSearchItems[searchInputId];
+            if (!config) return; // Si no está en availableSearchItems, no hacer nada
+            
             const searchInput = document.getElementById(searchInputId);
             const optionsDiv = document.getElementById(config.optionsDiv);
+            
             const searchTerm = searchInput.value.toLowerCase().trim();
 
             optionsDiv.innerHTML = '';
@@ -1037,10 +1053,10 @@ if (session_status() == PHP_SESSION_NONE) {
             optionsDiv.classList.add('active');
         }
 
-        // Event listeners para cada input de búsqueda
-        Object.keys(searchableItems).forEach(searchInputId => {
+        // Event listeners para cada input de búsqueda (solo para elementos existentes)
+        Object.keys(availableSearchItems).forEach(searchInputId => {
             const searchInput = document.getElementById(searchInputId);
-            const config = searchableItems[searchInputId];
+            const config = availableSearchItems[searchInputId];
             const optionsDiv = document.getElementById(config.optionsDiv);
 
             // Input event para filtrado en tiempo real

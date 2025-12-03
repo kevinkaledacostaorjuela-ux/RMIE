@@ -1057,12 +1057,17 @@
                     <p style="color: rgba(255,255,255,0.8); margin-bottom: 25px;">Selecciona un cliente y múltiples locales para crear una ruta específica</p>
                     
                     <form action="/RMIE/rutas.php?accion=create" method="POST" id="createRouteForm">
+                        <!-- Campos ocultos para datos dinámicos -->
+                        <label for="cliente_id_hidden" style="display: none;">Cliente seleccionado</label>
+                        <input type="hidden" id="cliente_id_hidden" name="id_clientes[]" value="">
+                        <div id="locales_hidden_container"></div>
+                        
                         <!-- Selector de Día -->
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
+                            <label for="dia_plan" style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
                                 <i class="fas fa-calendar-day"></i> Día de la Semana
                             </label>
-                            <select name="dia_plan" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
+                            <select id="dia_plan" name="dia_plan" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
                                 <option value="Lunes">Lunes</option>
                                 <option value="Martes">Martes</option>
                                 <option value="Miercoles">Miércoles</option>
@@ -1074,41 +1079,41 @@
                         
                         <!-- Selector de Cliente -->
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
+                            <label for="filtro_cliente_create" style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
                                 <i class="fas fa-user"></i> Seleccionar Cliente
                             </label>
-                            <input type="text" id="filtro_cliente_create" class="form-control" placeholder="Escribe para buscar cliente..." style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px; margin-bottom: 10px;">
-                            <select id="cliente_selector_create" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
+                            <input type="text" id="filtro_cliente_create" name="filtro_cliente" class="form-control" placeholder="Escribe para buscar cliente..." style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px; margin-bottom: 10px;">
+                            <select id="cliente_selector_create" name="cliente_id" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
                                 <option value="">Selecciona un cliente...</option>
                             </select>
                         </div>
                         
                         <!-- Selector de Locales -->
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
+                            <label for="locales_container_create" style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
                                 <i class="fas fa-map-marker-alt"></i> Locales del Cliente
                             </label>
-                            <div id="locales_container_create" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 15px; min-height: 60px;">
+                            <div id="locales_container_create" name="locales_container" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 15px; min-height: 60px;">
                                 <p style="color: rgba(255,255,255,0.6); text-align: center; margin: 0;">Selecciona un cliente para ver sus locales</p>
                             </div>
                         </div>
                         
                         <!-- Resumen de Selección -->
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
+                            <label for="resumen_seleccion_create" style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
                                 <i class="fas fa-list-check"></i> Resumen de la Ruta
                             </label>
-                            <div id="resumen_seleccion_create" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 15px;">
+                            <div id="resumen_seleccion_create" name="resumen_seleccion" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 15px;">
                                 <p style="color: rgba(255,255,255,0.6); margin: 0;">No hay selecciones aún</p>
                             </div>
                         </div>
                         
                         <!-- Estado de la Ruta -->
                         <div class="form-group" style="margin-bottom: 25px;">
-                            <label style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
+                            <label for="estado_ruta" style="color: white; font-weight: 500; margin-bottom: 10px; display: block;">
                                 <i class="fas fa-toggle-on"></i> Estado
                             </label>
-                            <select name="estado" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
+                            <select id="estado_ruta" name="estado" class="form-control" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; border-radius: 10px; padding: 12px;">
                                 <option value="activa">Activa</option>
                                 <option value="pendiente">Pendiente</option>
                             </select>
@@ -1304,7 +1309,8 @@
             localesCreate.forEach(local => {
                 html += `
                     <div class="local-checkbox-item" onclick="toggleLocal(${local.id})">
-                        <input type="checkbox" id="local_${local.id}" onchange="actualizarSeleccionLocal(${local.id})">
+                        <label for="local_${local.id}" style="display: none;">Local ${local.nombre_local}</label>
+                        <input type="checkbox" id="local_${local.id}" name="locales[]" onchange="actualizarSeleccionLocal(${local.id})">
                         <div class="local-checkbox-info">
                             <div class="local-checkbox-nombre">${local.nombre_local}</div>
                             <div class="local-checkbox-direccion">${local.direccion}</div>
@@ -1384,24 +1390,33 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creando...';
             
             try {
-                const formData = new FormData();
-                const form = document.getElementById('createRouteForm');
-                
-                // Agregar datos básicos del formulario
-                const formElements = form.elements;
-                for (let element of formElements) {
-                    if (element.name && element.value && element.type !== 'submit') {
-                        formData.append(element.name, element.value);
-                    }
+                // Actualizar campos hidden antes de enviar
+                if (clienteSeleccionadoCreate) {
+                    document.getElementById('cliente_id_hidden').value = clienteSeleccionadoCreate.id;
                 }
                 
-                // Agregar cliente
-                formData.append('id_clientes[]', clienteSeleccionadoCreate.id);
+                // Limpiar y actualizar locales hidden
+                const localesContainer = document.getElementById('locales_hidden_container');
+                localesContainer.innerHTML = '';
                 
-                // Agregar locales seleccionados
-                localesSeleccionadosCreate.forEach(localId => {
-                    formData.append('id_locales[]', localId);
+                localesSeleccionadosCreate.forEach((localId, index) => {
+                    // Crear label oculto para el input hidden
+                    const hiddenLabel = document.createElement('label');
+                    hiddenLabel.setAttribute('for', `local_hidden_${index}`);
+                    hiddenLabel.style.display = 'none';
+                    hiddenLabel.textContent = `Local seleccionado ${index + 1}`;
+                    
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = 'id_locales[]';
+                    hiddenInput.id = `local_hidden_${index}`;
+                    hiddenInput.value = localId;
+                    
+                    localesContainer.appendChild(hiddenLabel);
+                    localesContainer.appendChild(hiddenInput);
                 });
+                
+                const formData = new FormData(document.getElementById('createRouteForm'));
                 
                 // Enviar formulario
                 const response = await fetch('/RMIE/rutas.php?accion=create', {
@@ -1596,7 +1611,8 @@
                     </div>
                 ` : ''}
                 
-                <input type="text" class="search-input" placeholder="Buscar cliente..." 
+                <label for="buscar_cliente_modal" style="display: none;">Buscar cliente</label>
+                <input type="text" id="buscar_cliente_modal" name="buscar_cliente" class="search-input" placeholder="Buscar cliente..." 
                        onkeyup="filtrarClientesModal(this.value)">
                 
                 <div id="clientesModalList">
@@ -1663,7 +1679,8 @@
                         <strong>Cliente:</strong> ${nombreCliente} → <strong>Día:</strong> ${dia}
                     </div>
                     
-                    <input type="text" class="search-input" placeholder="Buscar local..." 
+                    <label for="buscar_local_modal" style="display: none;">Buscar local</label>
+                    <input type="text" id="buscar_local_modal" name="buscar_local" class="search-input" placeholder="Buscar local..." 
                            onkeyup="filtrarLocalesModal(this.value)">
                     
                     <div id="localesModalList" style="max-height: 300px; overflow-y: auto;">
