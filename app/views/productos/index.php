@@ -581,6 +581,101 @@ $stats = $statsQuery->fetch_assoc();
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
 
+        /* Botones de acción organizados */
+        .btn-group-modern {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .btn-modern-action {
+            display: inline-flex;
+            align-items: center;
+            padding: 12px 20px;
+            border-radius: 30px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-modern-action i {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .btn-modern-action .btn-text {
+            font-size: 0.95rem;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-modern-action:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+            text-decoration: none;
+        }
+
+        .btn-modern-action:active {
+            transform: translateY(-1px);
+        }
+
+        .btn-modern-action::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-modern-action:hover::before {
+            left: 100%;
+        }
+
+        /* Colores específicos para cada tipo de botón */
+        .btn-success.btn-modern-action {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-warning.btn-modern-action {
+            background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+            color: #fff;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-info.btn-modern-action {
+            background: linear-gradient(135deg, #17a2b8 0%, #6f42c1 100%);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Responsive para botones */
+        @media (max-width: 768px) {
+            .btn-group-modern {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn-modern-action {
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            
+            .btn-modern-action .btn-text {
+                display: block;
+            }
+        }
+
         /* Alerts */
         .alert-modern {
             border-radius: 15px;
@@ -959,20 +1054,42 @@ $stats = $statsQuery->fetch_assoc();
                 </div>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div></div>
-                <div>
-                    <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                        <i class="fas fa-plus"></i> Nuevo Producto
-                    </a>
-                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                    <button class="btn btn-modern me-2" onclick="limpiarProductos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
-                        <i class="fas fa-broom"></i> Limpiar Stock Cero
-                    </button>
-                    <?php endif; ?>
-                    <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-info-modern">
-                        <i class="fas fa-arrow-left"></i> Volver al Dashboard
-                    </a>
+            <!-- Barra de acciones organizada -->
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px;">
+                        <div class="card-body py-3">
+                            <div class="row align-items-center">
+                                <!-- Botones principales -->
+                                <div class="col-md-6">
+                                    <div class="btn-group-modern">
+                                        <a href="/RMIE/app/controllers/ProductController.php?accion=create" 
+                                           class="btn btn-success btn-modern-action me-2">
+                                            <i class="fas fa-plus-circle"></i>
+                                            <span class="btn-text">Nuevo Producto</span>
+                                        </a>
+                                        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                                        <button class="btn btn-warning btn-modern-action me-2" 
+                                                onclick="limpiarProductos()" 
+                                                title="Eliminar productos con stock en cero">
+                                            <i class="fas fa-broom"></i>
+                                            <span class="btn-text">Limpiar Stock Cero</span>
+                                        </button>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                                
+                                <!-- Navegación -->
+                                <div class="col-md-6 text-end">
+                                    <a href="/RMIE/app/views/dashboard.php" 
+                                       class="btn btn-info btn-modern-action">
+                                        <i class="fas fa-arrow-left"></i>
+                                        <span class="btn-text">Volver al Dashboard</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
