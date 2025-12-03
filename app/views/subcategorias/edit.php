@@ -675,19 +675,26 @@ unset($_SESSION['error'], $_SESSION['success']);
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Valores originales para comparación
-            const originalValues = {
-                nombre: '<?php echo addslashes($subcategoria->nombre ?? ''); ?>',
-                descripcion: '<?php echo addslashes($subcategoria->descripcion ?? ''); ?>',
-                categoria: '<?php echo $subcategoria->id_categoria ?? ''; ?>'
-            };
+            try {
+                // Verificar que el DOM está completamente cargado
+                if (document.readyState !== 'complete' && document.readyState !== 'interactive') {
+                    console.warn('DOM no está completamente listo');
+                    return;
+                }
 
-            // Contadores de caracteres
-            function setupCharacterCount(inputId, countId, maxLength) {
-                const input = document.getElementById(inputId);
-                const counter = document.getElementById(countId);
-                
-                if (input && counter) {
+                // Valores originales para comparación
+                const originalValues = {
+                    nombre: '<?php echo addslashes($subcategoria->nombre ?? ''); ?>',
+                    descripcion: '<?php echo addslashes($subcategoria->descripcion ?? ''); ?>',
+                    categoria: '<?php echo $subcategoria->id_categoria ?? ''; ?>'
+                };
+
+                // Contadores de caracteres
+                function setupCharacterCount(inputId, countId, maxLength) {
+                    const input = document.getElementById(inputId);
+                    const counter = document.getElementById(countId);
+                    
+                    if (input && counter) {
                     function updateCount() {
                         const count = input.value.length;
                         counter.textContent = count;
@@ -793,35 +800,52 @@ unset($_SESSION['error'], $_SESSION['success']);
                 }
             });
 
-            // Efectos visuales
+            // Efectos visuales con validación
             document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
+                if (!input || !input.parentElement) return;
+                
                 input.addEventListener('focus', function() {
-                    this.parentElement.style.transform = 'scale(1.02)';
+                    if (this.parentElement) {
+                        this.parentElement.style.transform = 'scale(1.02)';
+                    }
                 });
                 
                 input.addEventListener('blur', function() {
-                    this.parentElement.style.transform = 'scale(1)';
+                    if (this.parentElement) {
+                        this.parentElement.style.transform = 'scale(1)';
+                    }
                 });
             });
 
-            // Manejo de labels para selects
+            // Manejo de labels para selects con validación de existencia
             document.querySelectorAll('.form-select-modern').forEach(select => {
+                // Verificar que el label existe antes de manipularlo
+                const label = select.parentElement.querySelector('label');
+                if (!label) return;
+                
                 select.addEventListener('change', function() {
-                    const label = this.parentElement.querySelector('label');
+                    const labelElement = this.parentElement.querySelector('label');
+                    if (!labelElement) return;
+                    
                     if (this.value) {
-                        label.style.top = '2px';
-                        label.style.fontSize = '12px';
-                        label.style.color = '#9c27b0';
+                        labelElement.style.top = '2px';
+                        labelElement.style.fontSize = '12px';
+                        labelElement.style.color = '#9c27b0';
                     } else {
-                        label.style.top = '12px';
-                        label.style.fontSize = '14px';
-                        label.style.color = 'rgba(156, 39, 176, 0.8)';
+                        labelElement.style.top = '12px';
+                        labelElement.style.fontSize = '14px';
+                        labelElement.style.color = 'rgba(156, 39, 176, 0.8)';
                     }
                 });
             });
 
             // Inicializar vista previa
             updatePreview();
+            
+            } catch (error) {
+                console.error('Error en la inicialización del formulario de subcategorías:', error);
+                // Continuar sin funcionalidades JavaScript si hay errores
+            }
         });
     </script>
 </body>
