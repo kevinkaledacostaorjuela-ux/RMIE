@@ -126,6 +126,79 @@
             color: #fff;
         }
         
+        /* Estilos para campos de búsqueda con dropdown */
+        .search-container {
+            position: relative;
+            width: 100%;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #4ecdc4;
+            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .search-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .search-dropdown.show {
+            display: block;
+        }
+        
+        .search-option {
+            padding: 12px 16px;
+            color: #333;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-option:last-child {
+            border-bottom: none;
+        }
+        
+        .search-option:hover {
+            background: rgba(78, 205, 196, 0.1);
+        }
+        
+        .search-option.selected {
+            background: rgba(78, 205, 196, 0.2);
+            font-weight: 600;
+        }
+        
+        .hidden-select {
+            display: none;
+        }
+        
         .char-count {
             font-size: 0.8rem;
             color: rgba(255, 255, 255, 0.6);
@@ -295,32 +368,71 @@
                 </div>
                 <div class="form-row two-cols">
                     <div class="form-group">
-                        <label for="id_categoria">Categoría</label>
-                        <select id="id_categoria" name="id_categoria" required>
-                            <option value="">Seleccione una categoría</option>
-                            <?php if (isset($categorias) && is_array($categorias)): ?>
-                                <?php foreach ($categorias as $cat): ?>
-                                    <option value="<?= htmlspecialchars($cat->id_categoria) ?>" 
-                                            <?= ($producto->id_categoria == $cat->id_categoria) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($cat->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
+                        <label for="categoria_search">Categoría</label>
+                        <div class="search-container">
+                            <input type="text" 
+                                   id="categoria_search" 
+                                   class="search-input" 
+                                   placeholder="Buscar categoría..." 
+                                   autocomplete="off"
+                                   value="<?php if (isset($producto->id_categoria) && $producto->id_categoria): foreach ($categorias as $cat): if ($cat->id_categoria == $producto->id_categoria): echo htmlspecialchars($cat->nombre); break; endif; endforeach; endif; ?>">
+                            <div class="search-dropdown" id="categoria_dropdown">
+                                <?php if (isset($categorias) && is_array($categorias)): ?>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <div class="search-option" 
+                                             data-value="<?= htmlspecialchars($cat->id_categoria) ?>"
+                                             <?= ($producto->id_categoria == $cat->id_categoria) ? 'data-selected="true"' : '' ?>>
+                                            <?= htmlspecialchars($cat->nombre) ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                            <select id="id_categoria" name="id_categoria" required class="hidden-select">
+                                <option value="">Seleccione una categoría</option>
+                                <?php if (isset($categorias) && is_array($categorias)): ?>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <option value="<?= htmlspecialchars($cat->id_categoria) ?>" 
+                                                <?= ($producto->id_categoria == $cat->id_categoria) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($cat->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
                     </div>
                     <div class="form-group">
-                        <label for="id_subcategoria">Subcategoría (opcional)</label>
-                        <select id="id_subcategoria" name="id_subcategoria">
-                            <option value="">Sin subcategoría</option>
-                            <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
-                                <?php foreach ($subcategorias as $sub): ?>
-                                    <option value="<?= htmlspecialchars($sub['obj']->id_subcategoria) ?>" 
-                                            <?= ($producto->id_subcategoria == $sub['obj']->id_subcategoria) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($sub['obj']->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
+                        <label for="subcategoria_search">Subcategoría (opcional)</label>
+                        <div class="search-container">
+                            <input type="text" 
+                                   id="subcategoria_search" 
+                                   class="search-input" 
+                                   placeholder="Buscar subcategoría..." 
+                                   autocomplete="off"
+                                   value="<?php if (isset($producto->id_subcategoria) && $producto->id_subcategoria): foreach ($subcategorias as $sub): if ($sub['obj']->id_subcategoria == $producto->id_subcategoria): echo htmlspecialchars($sub['obj']->nombre); break; endif; endforeach; endif; ?>">
+                            <div class="search-dropdown" id="subcategoria_dropdown">
+                                <div class="search-option" data-value="">Sin subcategoría</div>
+                                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+                                    <?php foreach ($subcategorias as $sub): ?>
+                                        <div class="search-option" 
+                                             data-value="<?= htmlspecialchars($sub['obj']->id_subcategoria) ?>"
+                                             <?= ($producto->id_subcategoria == $sub['obj']->id_subcategoria) ? 'data-selected="true"' : '' ?>>
+                                            <?= htmlspecialchars($sub['obj']->nombre) ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                            <select id="id_subcategoria" name="id_subcategoria" class="hidden-select">
+                                <option value="">Sin subcategoría</option>
+                                <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
+                                    <?php foreach ($subcategorias as $sub): ?>
+                                        <option value="<?= htmlspecialchars($sub['obj']->id_subcategoria) ?>" 
+                                                <?= ($producto->id_subcategoria == $sub['obj']->id_subcategoria) ? 'selected' : '' ?>>
+                                            <?= htmlspecialchars($sub['obj']->nombre) ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -486,12 +598,110 @@
         initCharCounter('nombre', 'nombre-count', 100);
         initCharCounter('descripcion', 'descripcion-count', 200);
 
-        // Cargar subcategorías vía AJAX
+        // Funcionalidad de búsqueda para dropdowns
+        function setupSearchDropdown(inputId, dropdownId, hiddenSelectId) {
+            const input = document.getElementById(inputId);
+            const dropdown = document.getElementById(dropdownId);
+            const hiddenSelect = document.getElementById(hiddenSelectId);
+            
+            if (!input || !dropdown || !hiddenSelect) return;
+            
+            // Función para filtrar opciones
+            function filterOptions(searchText) {
+                const options = dropdown.querySelectorAll('.search-option');
+                const searchLower = searchText.toLowerCase();
+                
+                options.forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    if (text.includes(searchLower)) {
+                        option.style.display = 'block';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Mostrar dropdown al hacer foco
+            input.addEventListener('focus', function() {
+                dropdown.classList.add('show');
+                filterOptions(this.value);
+            });
+            
+            // Filtrar mientras escribe
+            input.addEventListener('input', function() {
+                dropdown.classList.add('show');
+                filterOptions(this.value);
+            });
+            
+            // Manejar selección de opción
+            dropdown.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-option')) {
+                    const value = e.target.dataset.value;
+                    const text = e.target.textContent;
+                    
+                    input.value = text;
+                    hiddenSelect.value = value;
+                    dropdown.classList.remove('show');
+                    
+                    // Marcar opción como seleccionada
+                    dropdown.querySelectorAll('.search-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    e.target.classList.add('selected');
+                    
+                    // Si es categoría, recargar subcategorías
+                    if (inputId === 'categoria_search') {
+                        loadSubcategoriasAJAX(value);
+                    }
+                }
+            });
+            
+            // Ocultar dropdown al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+                    dropdown.classList.remove('show');
+                }
+            });
+        }
+        
+        // Cargar subcategorías vía AJAX para el sistema de búsqueda
+        function loadSubcategoriasAJAX(categoriaId) {
+            const subcategoriaDropdown = document.getElementById('subcategoria_dropdown');
+            const subcategoriaInput = document.getElementById('subcategoria_search');
+            const subcategoriaSelect = document.getElementById('id_subcategoria');
+            
+            if (!subcategoriaDropdown) return;
+            
+            if (!categoriaId) {
+                subcategoriaDropdown.innerHTML = '<div class="search-option" data-value="">Sin subcategoría</div>';
+                subcategoriaInput.value = '';
+                subcategoriaSelect.value = '';
+                return;
+            }
+
+            fetch('/RMIE/app/controllers/SubcategoryController.php?accion=getByCategory&categoria_id=' + categoriaId)
+                .then(response => response.json())
+                .then(data => {
+                    let options = '<div class="search-option" data-value="">Sin subcategoría</div>';
+                    data.forEach(subcategoria => {
+                        options += `<div class="search-option" data-value="${subcategoria.id_subcategoria}">${subcategoria.nombre}</div>`;
+                    });
+                    subcategoriaDropdown.innerHTML = options;
+                    
+                    // Limpiar selección actual
+                    subcategoriaInput.value = '';
+                    subcategoriaSelect.value = '';
+                })
+                .catch(error => {
+                    console.error('Error cargando subcategorías:', error);
+                    subcategoriaDropdown.innerHTML = '<div class="search-option" data-value="">Error cargando subcategorías</div>';
+                });
+        }
+        
+        // Cargar subcategorías vía AJAX (método tradicional para compatibilidad)
         function loadSubcategories(categoriaId, selectedId) {
             const subcategoriaSelect = document.getElementById('id_subcategoria');
             if (!subcategoriaSelect) return;
-            
-            subcategoriaSelect.innerHTML = '<option value="">Cargando...</option>';
             
             if (!categoriaId) {
                 subcategoriaSelect.innerHTML = '<option value="">Sin subcategoría</option>';
@@ -499,33 +709,31 @@
             }
 
             fetch('/RMIE/app/controllers/SubcategoryController.php?accion=getByCategory&categoria_id=' + categoriaId)
-                .then(function(response) { return response.json(); })
-                .then(function(data) {
+                .then(response => response.json())
+                .then(data => {
                     let options = '<option value="">Sin subcategoría</option>';
-                    data.forEach(function(subcategoria) {
+                    data.forEach(subcategoria => {
                         const selected = subcategoria.id_subcategoria == selectedId ? 'selected' : '';
-                        options += '<option value="' + subcategoria.id_subcategoria + '" ' + selected + '>' + subcategoria.nombre + '</option>';
+                        options += `<option value="${subcategoria.id_subcategoria}" ${selected}>${subcategoria.nombre}</option>`;
                     });
                     subcategoriaSelect.innerHTML = options;
                 })
-                .catch(function(error) {
+                .catch(error => {
                     console.error('Error cargando subcategorías:', error);
                     subcategoriaSelect.innerHTML = '<option value="">Error cargando subcategorías</option>';
                 });
         }
 
-        // Event listener para cambio de categoría
-        document.getElementById('id_categoria').addEventListener('change', function() {
-            loadSubcategories(this.value, null);
-        });
-
-        // Cargar subcategorías inicialmente
+        // Inicialización
         document.addEventListener('DOMContentLoaded', function() {
-            const categoriaActual = document.getElementById('id_categoria').value;
-            const subcategoriaActual = <?= $producto->id_subcategoria ?? 'null' ?>;
-            if (categoriaActual) {
-                loadSubcategories(categoriaActual, subcategoriaActual);
-            }
+            // Configurar campos de búsqueda
+            setupSearchDropdown('categoria_search', 'categoria_dropdown', 'id_categoria');
+            setupSearchDropdown('subcategoria_search', 'subcategoria_dropdown', 'id_subcategoria');
+            
+            // Marcar opciones pre-seleccionadas
+            document.querySelectorAll('.search-option[data-selected="true"]').forEach(option => {
+                option.classList.add('selected');
+            });
         });
 
         // Validaciones del formulario

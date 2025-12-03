@@ -912,10 +912,10 @@ if (isset($proveedores) && is_array($proveedores)) {
 
         <!-- Botones de acción -->
         <div class="mb-4 text-center">
-            <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
+            <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-success me-2">
                 <i class="fas fa-plus"></i> Nuevo Proveedor
             </a>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
+            <a href="/RMIE/app/views/dashboard.php" class="btn btn-primary">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
             </a>
         </div>
@@ -1050,20 +1050,16 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     </span>
                                 </div>
                                 <div class="provider-actions">
-                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern" 
-                                       data-controller="ProviderController"
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                       class="btn btn-sm btn-warning" 
                                        title="Editar proveedor">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
-                                       class="btn btn-sm btn-modern btn-danger-modern" 
-                                       data-controller="ProviderController"
-                                       data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
-                                       data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
-                                       title="Eliminar proveedor: <?= htmlspecialchars($proveedor->nombre_distribuidor) ?>"
-                                       onclick="console.log('🗑️ Eliminando proveedor ID: <?= $proveedor->id_proveedores ?>', this.href); return confirmAction("acción") ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                    <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                       class="btn btn-sm btn-danger" 
+                                       title="Eliminar proveedor"
+                                       onclick="return confirmAction('acción general');">
                                         <i class="fas fa-trash"></i>
                                     </a>
                                     <?php endif; ?>
@@ -1076,7 +1072,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                         <i class="fas fa-truck"></i>
                         <h3>No hay proveedores disponibles</h3>
                         <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
-                        <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
+                        <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-success">
                             <i class="fas fa-plus"></i> Crear Primer Proveedor
                         </a>
                     </div>
@@ -1204,20 +1200,16 @@ if (isset($proveedores) && is_array($proveedores)) {
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
-                                               class="btn btn-sm btn-modern btn-warning-modern"
-                                               data-controller="ProviderController" 
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=edit&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                               class="btn btn-sm btn-warning"
                                                title="Editar proveedor">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>&t=<?= time() ?>" 
-                                               class="btn btn-sm btn-modern btn-danger-modern"
-                                               data-controller="ProviderController"
-                                               data-id="<?= htmlspecialchars($proveedor->id_proveedores) ?>"
-                                               data-nombre="<?= htmlspecialchars($proveedor->nombre_distribuidor) ?>" 
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=delete&id=<?= urlencode($proveedor->id_proveedores) ?>" 
+                                               class="btn btn-sm btn-danger"
                                                title="Eliminar proveedor"
-                                               onclick="console.log('🗑️ Eliminando desde tabla ID: <?= $proveedor->id_proveedores ?>', this.href); return confirmAction("acción") ?>\'?\n\nEsta acción no se puede deshacer.');">
+                                               onclick="return confirmAction('acción general');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -1232,7 +1224,7 @@ if (isset($proveedores) && is_array($proveedores)) {
                                             <i class="fas fa-truck"></i>
                                             <h3>No hay proveedores disponibles</h3>
                                             <p>No se encontraron proveedores que coincidan con los filtros aplicados.</p>
-                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                            <a href="/RMIE/app/controllers/ProviderController.php?accion=create" class="btn btn-success">
                                                 <i class="fas fa-plus"></i> Crear Primer Proveedor
                                             </a>
                                         </div>

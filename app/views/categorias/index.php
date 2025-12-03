@@ -393,6 +393,145 @@ if (isset($conn)) {
             word-break: break-word;
         }
 
+        /* Estilos para la barra de acciones moderna */
+        .action-toolbar {
+            margin-bottom: 25px;
+        }
+
+        .toolbar-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        /* Botones modernos reorganizados */
+        .btn-modern {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 60px;
+            backdrop-filter: blur(10px);
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #00c851, #007e33);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 81, 0.4);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 200, 81, 0.6);
+            color: white;
+        }
+
+        .btn-cleanup {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-cleanup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #33b5e5, #0099cc);
+            color: white;
+            box-shadow: 0 4px 15px rgba(51, 181, 229, 0.4);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(51, 181, 229, 0.6);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .btn-content {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .btn-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .btn-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.1;
+        }
+
+        /* Responsive para toolbar */
+        @media (max-width: 768px) {
+            .toolbar-container {
+                flex-direction: column;
+                gap: 15px;
+                justify-content: center;
+            }
+            
+            .btn-modern {
+                width: 250px;
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .btn-content {
+                text-align: center;
+            }
+        }
+
         .categories-card-footer {
             display: flex;
             justify-content: space-between;
@@ -687,19 +826,45 @@ if (isset($conn)) {
             </div>
         </div>
 
-        <!-- Botones de acción -->
-        <div class="mb-4 text-center">
-            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                <i class="fas fa-plus"></i> Nueva Categoría
-            </a>
-            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-            <button class="btn btn-modern me-2" onclick="limpiarCategorias()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
-                <i class="fas fa-broom"></i> Limpiar Vacías
-            </button>
-            <?php endif; ?>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
+        <!-- Barra de acciones moderna y organizada -->
+        <div class="action-toolbar mb-4">
+            <div class="toolbar-container">
+                <a href="/RMIE/app/controllers/CategoryController.php?accion=create" 
+                   class="btn-modern btn-create">
+                    <div class="btn-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Nueva Categoría</span>
+                        <span class="btn-subtitle">Crear nueva categoría</span>
+                    </div>
+                </a>
+                
+                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                <button class="btn-modern btn-cleanup" 
+                        onclick="limpiarCategorias()" 
+                        title="Eliminar categorías vacías">
+                    <div class="btn-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Limpiar Vacías</span>
+                        <span class="btn-subtitle">Remover sin productos</span>
+                    </div>
+                </button>
+                <?php endif; ?>
+                
+                <a href="/RMIE/app/views/dashboard.php" 
+                   class="btn-modern btn-back">
+                    <div class="btn-icon">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Dashboard</span>
+                        <span class="btn-subtitle">Volver al inicio</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- Tabla de Categorías (Desktop) -->
@@ -759,26 +924,19 @@ if (isset($conn)) {
 
                             <div class="categories-card-footer">
                                 <div class="categories-actions">
-                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern btn-edit-categoria" 
-                                       data-type="categoria"
-                                       data-controller="CategoryController"
-                                       data-id="<?= htmlspecialchars($cat->id_categoria ?? '') ?>"
-                                       data-nombre="<?= htmlspecialchars($cat->nombre ?? '') ?>"
-                                       title="Editar categoría: <?= htmlspecialchars($cat->nombre ?? '') ?>"
-                                       onclick="console.log('🔍 Editando categoría ID: <?= $cat->id_categoria ?>', this.href); return true;">
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                       class="btn btn-sm btn-warning" 
+                                       title="Editar categoría">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                       class="btn btn-sm btn-modern btn-danger-modern btn-delete-categoria" 
-                                       data-type="categoria"
-                                       data-controller="CategoryController"
-                                       data-id="<?= htmlspecialchars($cat->id_categoria ?? '') ?>"
-                                       data-nombre="<?= htmlspecialchars($cat->nombre ?? '') ?>"
-                                       title="Eliminar categoría: <?= htmlspecialchars($cat->nombre ?? '') ?>"
-                                       onclick="console.log('🗑️ Intentando eliminar categoría ID: <?= $cat->id_categoria ?>', this.href); return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
+                                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
+                                    <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                       class="btn btn-sm btn-danger" 
+                                       title="Eliminar categoría"
+                                       onclick="return confirmAction('acción general');">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -788,7 +946,7 @@ if (isset($conn)) {
                         <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">
                             <i class="fas fa-inbox fa-3x mb-3"></i>
                             <p>No hay categorías registradas</p>
-                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-success">
                                 <i class="fas fa-plus"></i> Crear Primera Categoría
                             </a>
                         </div>
@@ -853,19 +1011,16 @@ if (isset($conn)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                           class="btn btn-sm btn-modern btn-warning-modern" 
-                                           data-controller="CategoryController"
-                                           title="Editar categoría"
-                                           onclick="console.log('🔍 Editando categoría desde tabla ID: <?= $cat->id_categoria ?>', this.href); return true;">
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                           class="btn btn-sm btn-warning" 
+                                           title="Editar categoría">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
-                                           data-controller="CategoryController"
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                           class="btn btn-sm btn-danger" 
                                            title="Eliminar categoría"
-                                           onclick="return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
+                                           onclick="return confirmAction('acción general');">
                                             <i class="fas fa-trash"></i>
                                         </a>
                                         <?php endif; ?>
@@ -880,7 +1035,7 @@ if (isset($conn)) {
                                         <i class="fas fa-inbox fa-3x mb-3"></i>
                                         <h5>No hay categorías disponibles</h5>
                                         <p>No se encontraron categorías registradas en el sistema.</p>
-                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                        <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-success">
                                             <i class="fas fa-plus"></i> Crear Primera Categoría
                                         </a>
                                     </div>
@@ -972,19 +1127,16 @@ if (isset($conn)) {
                                     </td>
                                     <td>
                                         <div class="btn-group" role="group">
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                               class="btn btn-sm btn-modern btn-warning-modern" 
-                                               data-controller="CategoryController"
-                                               title="Editar categoría"
-                                               onclick="console.log('🔍 Editando desde tabla móvil ID: <?= $cat->id_categoria ?>', this.href); return true;">
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=edit&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                               class="btn btn-sm btn-warning" 
+                                               title="Editar categoría">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'coordinador'): ?>
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>&t=<?= time() ?>" 
-                                               class="btn btn-sm btn-modern btn-danger-modern" 
-                                               data-controller="CategoryController"
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=delete&id=<?= urlencode($cat->id_categoria ?? '') ?>" 
+                                               class="btn btn-sm btn-danger" 
                                                title="Eliminar categoría"
-                                               onclick="return confirmDeleteCategory('<?= addslashes($cat->nombre ?? 'Sin nombre') ?>');">
+                                               onclick="return confirmAction('acción general');">
                                                 <i class="fas fa-trash"></i>
                                             </a>
                                             <?php endif; ?>
@@ -999,7 +1151,7 @@ if (isset($conn)) {
                                             <i class="fas fa-inbox fa-3x mb-3"></i>
                                             <h5>No hay categorías disponibles</h5>
                                             <p>No se encontraron categorías registradas en el sistema.</p>
-                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                            <a href="/RMIE/app/controllers/CategoryController.php?accion=create" class="btn btn-success">
                                                 <i class="fas fa-plus"></i> Crear Primera Categoría
                                             </a>
                                         </div>

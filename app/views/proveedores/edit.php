@@ -23,7 +23,7 @@
             --shadow-light: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
             --shadow-medium: 0 15px 35px 0 rgba(31, 38, 135, 0.2);
             --border-radius: 16px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition: opacity 0.2s ease;
         }
 
         * {
@@ -53,7 +53,6 @@
         }
 
         .glass-container:hover {
-            transform: translateY(-2px);
             box-shadow: var(--shadow-light);
         }
 
@@ -80,7 +79,6 @@
 
         .breadcrumb-item a:hover {
             color: #f0f0f0;
-            transform: translateX(2px);
         }
 
         .breadcrumb-item.active {
@@ -105,7 +103,6 @@
             width: 200%;
             height: 200%;
             background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: rotate 20s linear infinite;
         }
 
         .form-header h1 {
@@ -123,10 +120,7 @@
             font-size: 1.05rem;
         }
 
-        @keyframes rotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+
 
         .form-content {
             padding: 2rem;
@@ -144,7 +138,6 @@
         }
 
         .form-section:hover {
-            transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
         }
 
@@ -212,7 +205,6 @@
             background: rgba(255, 255, 255, 0.97);
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.07);
-            transform: translateY(-2px);
             outline: none;
         }
 
@@ -253,8 +245,7 @@
         .summary-value { color: var(--text-primary); font-weight:700; }
 
         .btn { border-radius: 12px; padding: 12px 28px; font-weight:700; }
-        .btn::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent); transition: var(--transition); }
-        .btn:hover::before { left:100%; }
+
         .btn-success { background: var(--success-gradient); color: white; box-shadow: 0 6px 20px rgba(79,172,254,0.15); }
         .btn-secondary { background: linear-gradient(135deg, #6c757d 0%, #495057 100%); color: white; }
 
@@ -307,7 +298,6 @@
         .producto-card:hover {
             background: rgba(255, 255, 255, 0.12);
             border-color: rgba(102, 126, 234, 0.4);
-            transform: translateY(-2px);
             box-shadow: var(--shadow-light);
         }
 
@@ -445,6 +435,17 @@
                             </div>
                             
                             <?php if (!empty($productosDisponibles)): ?>
+                                <!-- Filtro de búsqueda -->
+                                <div class="mb-3">
+                                    <div class="form-group">
+                                        <label for="filtroProductos"><i class="fas fa-search"></i> Filtrar productos por nombre:</label>
+                                        <input type="text" id="filtroProductos" class="form-control" placeholder="Escriba el nombre del producto para filtrar..." autocomplete="off">
+                                        <small class="form-text text-muted">
+                                            <i class="fas fa-info-circle"></i> Escriba parte del nombre para encontrar productos rápidamente
+                                        </small>
+                                    </div>
+                                </div>
+                                
                                 <div class="productos-selection">
                                     <div class="row">
                                         <?php 
@@ -469,7 +470,7 @@
                                             
                                             $isSelected = in_array($productoObj->id_productos, $productosProveedorIds);
                                         ?>
-                                            <div class="col-md-6 col-lg-4 mb-3">
+                                            <div class="col-md-6 col-lg-4 mb-3 producto-item" data-nombre="<?= htmlspecialchars(strtolower($productoObj->nombre)) ?>">
                                                 <div class="form-check producto-card <?= $isSelected ? 'selected' : '' ?>">
                                                     <input type="checkbox" 
                                                            class="form-check-input" 
@@ -725,17 +726,81 @@
             productosSection.insertBefore(buttonContainer, productosSection.firstChild);
 
             document.getElementById('selectAllProducts').addEventListener('click', function() {
-                productosCheckboxes.forEach(function(checkbox) {
-                    checkbox.checked = true;
-                    checkbox.dispatchEvent(new Event('change'));
+                const productosVisibles = document.querySelectorAll('.producto-item:not([style*="display: none"])');
+                productosVisibles.forEach(function(item) {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.checked = true;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
                 });
             });
 
             document.getElementById('deselectAllProducts').addEventListener('click', function() {
-                productosCheckboxes.forEach(function(checkbox) {
-                    checkbox.checked = false;
-                    checkbox.dispatchEvent(new Event('change'));
+                const productosVisibles = document.querySelectorAll('.producto-item:not([style*="display: none"])');
+                productosVisibles.forEach(function(item) {
+                    const checkbox = item.querySelector('input[type="checkbox"]');
+                    if (checkbox) {
+                        checkbox.checked = false;
+                        checkbox.dispatchEvent(new Event('change'));
+                    }
                 });
+            });
+        }
+
+        // Funcionalidad de filtrado de productos por nombre
+        const filtroProductos = document.getElementById('filtroProductos');
+        if (filtroProductos) {
+            filtroProductos.addEventListener('input', function() {
+                const filtro = this.value.toLowerCase().trim();
+                const productosItems = document.querySelectorAll('.producto-item');
+                let productosVisibles = 0;
+                
+                productosItems.forEach(function(item) {
+                    const nombreProducto = item.getAttribute('data-nombre');
+                    
+                    if (filtro === '' || nombreProducto.includes(filtro)) {
+                        item.style.display = 'block';
+                        productosVisibles++;
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+                
+                // Mostrar mensaje si no hay productos visibles
+                let mensajeSinResultados = document.getElementById('mensajeSinResultados');
+                if (productosVisibles === 0 && filtro !== '') {
+                    if (!mensajeSinResultados) {
+                        mensajeSinResultados = document.createElement('div');
+                        mensajeSinResultados.id = 'mensajeSinResultados';
+                        mensajeSinResultados.className = 'alert alert-warning text-center';
+                        mensajeSinResultados.innerHTML = '<i class="fas fa-search"></i> No se encontraron productos que coincidan con "' + this.value + '"';
+                        productosSection.querySelector('.row').appendChild(mensajeSinResultados);
+                    } else {
+                        mensajeSinResultados.innerHTML = '<i class="fas fa-search"></i> No se encontraron productos que coincidan con "' + this.value + '"';
+                        mensajeSinResultados.style.display = 'block';
+                    }
+                } else if (mensajeSinResultados) {
+                    mensajeSinResultados.style.display = 'none';
+                }
+                
+                // Actualizar botones de seleccionar todos considerando solo productos visibles
+                const selectAllBtn = document.getElementById('selectAllProducts');
+                const deselectAllBtn = document.getElementById('deselectAllProducts');
+                
+                if (selectAllBtn && deselectAllBtn) {
+                    if (productosVisibles === 0) {
+                        selectAllBtn.disabled = true;
+                        deselectAllBtn.disabled = true;
+                    } else {
+                        selectAllBtn.disabled = false;
+                        deselectAllBtn.disabled = false;
+                        
+                        // Actualizar texto de botones con contador
+                        selectAllBtn.innerHTML = '<i class="fas fa-check-square"></i> Seleccionar Todos (' + productosVisibles + ')';
+                        deselectAllBtn.innerHTML = '<i class="fas fa-square"></i> Deseleccionar Todos (' + productosVisibles + ')';
+                    }
+                }
             });
         }
     });

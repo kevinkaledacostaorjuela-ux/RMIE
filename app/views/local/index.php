@@ -931,13 +931,15 @@ $stats = $statsQuery->fetch_assoc();
                                 <p>#<?php echo $local->id_locales; ?> - Local comercial</p>
                             </div>
                             <div>
-                                <span class="badge badge-status badge-<?php echo $local->estado; ?>">
-                                    <?php if ($local->estado === 'activo'): ?>
+                                <?php if ($local->estado === 'activo'): ?>
+                                    <span class="badge bg-success">
                                         <i class="fas fa-check-circle"></i> Activo
-                                    <?php else: ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-danger">
                                         <i class="fas fa-times-circle"></i> Inactivo
-                                    <?php endif; ?>
-                                </span>
+                                    </span>
+                                <?php endif; ?>
                             </div>
                         </div>
                         
@@ -1216,13 +1218,15 @@ $stats = $statsQuery->fetch_assoc();
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="badge badge-status badge-<?php echo $local->estado; ?> d-flex align-items-center justify-content-center">
-                                        <?php if ($local->estado === 'activo'): ?>
+                                    <?php if ($local->estado === 'activo'): ?>
+                                        <span class="badge bg-success d-flex align-items-center justify-content-center">
                                             <i class="fas fa-check-circle me-1"></i> Activo
-                                        <?php else: ?>
+                                        </span>
+                                    <?php else: ?>
+                                        <span class="badge bg-danger d-flex align-items-center justify-content-center">
                                             <i class="fas fa-times-circle me-1"></i> Inactivo
-                                        <?php endif; ?>
-                                    </span>
+                                        </span>
+                                    <?php endif; ?>
                                 </td>
                                 <td>
                                     <div class="fecha-info">

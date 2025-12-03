@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor de Errores en Tiempo Real - RMIE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            overflow: hidden;
+        }
+        
+        .monitor-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            height: 100vh;
+            gap: 10px;
+            padding: 10px;
+        }
+        
+        .main-view {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .monitor-panel {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .panel-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .status-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-monitoring {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            animation: pulse 2s infinite;
+        }
+        
+        .status-error {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .btn-danger { background: linear-gradient(135deg, #dc3545, #c82333); }
+        .btn-warning { background: linear-gradient(135deg, #ffc107, #e0a800); }
+        .btn-info { background: linear-gradient(135deg, #17a2b8, #138496); }
+        
+        .log-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            overflow: hidden;
+        }
+        
+        .log-section {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .log-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .error-title {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+        
+        .warning-title {
+            background: linear-gradient(45deg, #ffc107, #e0a800);
+        }
+        
+        .info-title {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+        }
+        
+        .log-entry {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .error-entry {
+            background: rgba(220, 53, 69, 0.2);
+            border-left-color: #dc3545;
+            color: #fff;
+        }
+        
+        .warning-entry {
+            background: rgba(255, 193, 7, 0.2);
+            border-left-color: #ffc107;
+            color: #fff;
+        }
+        
+        .info-entry {
+            background: rgba(23, 162, 184, 0.2);
+            border-left-color: #17a2b8;
+            color: #fff;
+        }
+        
+        .timestamp {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.75rem;
+            margin-right: 8px;
+        }
+        
+        .counter {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+        
+        .counter-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .counter-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+        
+        .counter-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .loading-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(102, 126, 234, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            z-index: 1000;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 15px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        #pageFrame {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="monitor-container">
+        <!-- Vista principal (iframe con la página de productos) -->
+        <div class="main-view">
+            <div class="loading-overlay" id="loadingOverlay">
+                <div class="spinner"></div>
+                Cargando página de productos...
+            </div>
+            <iframe id="pageFrame" src="about:blank"></iframe>
+        </div>
+        
+        <!-- Panel de monitoreo -->
+        <div class="monitor-panel">
+            <div class="panel-header">
+                <div class="panel-title">🔍 Monitor de Errores</div>
+                <div class="status-indicator status-monitoring" id="statusIndicator">
+                    <i class="fas fa-circle"></i>
+                    <span>Monitoreando...</span>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button class="btn" onclick="reloadPage()">🔄 Recargar Página</button>
+                <button class="btn btn-warning" onclick="clearLogs()">🧹 Limpiar Logs</button>
+                <button class="btn btn-info" onclick="exportLogs()">💾 Exportar</button>
+                <button class="btn btn-danger" onclick="testError()">⚠️ Probar Error</button>
+            </div>
+            
+            <div class="counter">
+                <div class="counter-item">
+                    <span class="counter-number" id="errorCount">0</span>
+                    <span class="counter-label">Errores</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-number" id="warningCount">0</span>
+                    <span class="counter-label">Advertencias</span>
+                </div>
+                <div class="counter-item">
+                    <span class="counter-number" id="infoCount">0</span>
+                    <span class="counter-label">Info</span>
+                </div>
+            </div>
+            
+            <div class="log-container">
+                <div class="log-section">
+                    <div class="log-title error-title">🔴 Errores Críticos</div>
+                    <div id="errorLog"></div>
+                </div>
+                <div class="log-section">
+                    <div class="log-title warning-title">🟡 Advertencias</div>
+                    <div id="warningLog"></div>
+                </div>
+                <div class="log-section">
+                    <div class="log-title info-title">ℹ️ Información</div>
+                    <div id="infoLog"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let errorCount = 0;
+        let warningCount = 0;
+        let infoCount = 0;
+        let isMonitoring = false;
+        
+        // Elementos del DOM
+        const pageFrame = document.getElementById('pageFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const errorLog = document.getElementById('errorLog');
+        const warningLog = document.getElementById('warningLog');
+        const infoLog = document.getElementById('infoLog');
+        
+        // Funciones de logging
+        function addLogEntry(container, message, type, timestamp = null) {
+            if (!timestamp) timestamp = new Date().toLocaleTimeString();
+            
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}-entry`;
+            entry.innerHTML = `
+                <span class="timestamp">[${timestamp}]</span>
+                <span>${message}</span>
+            `;
+            
+            container.appendChild(entry);
+            container.scrollTop = container.scrollHeight;
+            
+            // Limitar a 50 entradas por log
+            while (container.children.length > 50) {
+                container.removeChild(container.firstChild);
+            }
+        }
+        
+        function logError(message) {
+            errorCount++;
+            document.getElementById('errorCount').textContent = errorCount;
+            addLogEntry(errorLog, message, 'error');
+            updateStatus();
+        }
+        
+        function logWarning(message) {
+            warningCount++;
+            document.getElementById('warningCount').textContent = warningCount;
+            addLogEntry(warningLog, message, 'warning');
+        }
+        
+        function logInfo(message) {
+            infoCount++;
+            document.getElementById('infoCount').textContent = infoCount;
+            addLogEntry(infoLog, message, 'info');
+        }
+        
+        function updateStatus() {
+            if (errorCount > 0) {
+                statusIndicator.className = 'status-indicator status-error';
+                statusIndicator.innerHTML = '<i class="fas fa-exclamation-triangle"></i><span>Errores detectados</span>';
+            } else {
+                statusIndicator.className = 'status-indicator status-monitoring';
+                statusIndicator.innerHTML = '<i class="fas fa-circle"></i><span>Monitoreando...</span>';
+            }
+        }
+        
+        // Interceptar errores globales
+        window.addEventListener('error', function(event) {
+            logError(`Global Error: ${event.message} at ${event.filename}:${event.lineno}`);
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            logError(`Unhandled Promise Rejection: ${event.reason}`);
+        });
+        
+        // Override console methods
+        const originalConsoleError = console.error;
+        const originalConsoleWarn = console.warn;
+        const originalConsoleLog = console.log;
+        
+        console.error = function(...args) {
+            logError(args.join(' '));
+            originalConsoleError.apply(console, args);
+        };
+        
+        console.warn = function(...args) {
+            logWarning(args.join(' '));
+            originalConsoleWarn.apply(console, args);
+        };
+        
+        console.log = function(...args) {
+            const message = args.join(' ');
+            if (message.includes('RMIE Debug:') || message.includes('Error') || message.includes('Warning')) {
+                if (message.includes('Error')) {
+                    logError(message);
+                } else if (message.includes('Warning')) {
+                    logWarning(message);
+                } else {
+                    logInfo(message);
+                }
+            }
+            originalConsoleLog.apply(console, args);
+        };
+        
+        // Funciones de control
+        function reloadPage() {
+            logInfo('Recargando página de productos...');
+            loadingOverlay.style.display = 'flex';
+            loadPage();
+        }
+        
+        function clearLogs() {
+            errorLog.innerHTML = '';
+            warningLog.innerHTML = '';
+            infoLog.innerHTML = '';
+            errorCount = warningCount = infoCount = 0;
+            document.getElementById('errorCount').textContent = '0';
+            document.getElementById('warningCount').textContent = '0';
+            document.getElementById('infoCount').textContent = '0';
+            updateStatus();
+            logInfo('Logs limpiados');
+        }
+        
+        function exportLogs() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                errors: Array.from(errorLog.children).map(entry => entry.textContent),
+                warnings: Array.from(warningLog.children).map(entry => entry.textContent),
+                info: Array.from(infoLog.children).map(entry => entry.textContent),
+                counts: { errors: errorCount, warnings: warningCount, info: infoCount }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rmie-error-log-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            logInfo('Log exportado correctamente');
+        }
+        
+        function testError() {
+            logError('Error de prueba generado manualmente');
+            logWarning('Advertencia de prueba');
+            logInfo('Información de prueba');
+        }
+        
+        function loadPage() {
+            pageFrame.onload = function() {
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    logInfo('Página cargada completamente');
+                    setupIframeMonitoring();
+                }, 1000);
+            };
+            
+            pageFrame.onerror = function() {
+                loadingOverlay.style.display = 'none';
+                logError('Error al cargar la página');
+            };
+            
+            pageFrame.src = '/RMIE/app/controllers/ProductController.php?accion=index';
+        }
+        
+        function setupIframeMonitoring() {
+            try {
+                const iframeWindow = pageFrame.contentWindow;
+                const iframeDocument = pageFrame.contentDocument;
+                
+                // Interceptar errores del iframe
+                iframeWindow.addEventListener('error', function(event) {
+                    logError(`Iframe Error: ${event.message} at ${event.filename}:${event.lineno}`);
+                });
+                
+                iframeWindow.addEventListener('unhandledrejection', function(event) {
+                    logError(`Iframe Promise Rejection: ${event.reason}`);
+                });
+                
+                // Monitorear cambios en la consola del iframe
+                const originalIframeError = iframeWindow.console.error;
+                const originalIframeWarn = iframeWindow.console.warn;
+                const originalIframeLog = iframeWindow.console.log;
+                
+                iframeWindow.console.error = function(...args) {
+                    logError(`Iframe Console Error: ${args.join(' ')}`);
+                    originalIframeError.apply(iframeWindow.console, args);
+                };
+                
+                iframeWindow.console.warn = function(...args) {
+                    logWarning(`Iframe Console Warning: ${args.join(' ')}`);
+                    originalIframeWarn.apply(iframeWindow.console, args);
+                };
+                
+                iframeWindow.console.log = function(...args) {
+                    const message = args.join(' ');
+                    if (message.includes('RMIE Debug:')) {
+                        logInfo(`Iframe: ${message}`);
+                    }
+                    originalIframeLog.apply(iframeWindow.console, args);
+                };
+                
+                logInfo('Monitoreo del iframe configurado correctamente');
+                
+            } catch (e) {
+                logWarning(`No se puede acceder al contenido del iframe: ${e.message}`);
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            logInfo('Monitor de errores iniciado');
+            setTimeout(loadPage, 500);
+        });
+    </script>
+</body>
+</html>

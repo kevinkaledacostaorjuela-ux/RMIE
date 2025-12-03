@@ -35,6 +35,7 @@ $stats = $statsQuery->fetch_assoc();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <link href="/RMIE/public/css/styles.css" rel="stylesheet">
     <script src="/RMIE/public/js/selenium-messages.js"></script>
+    <script src="/RMIE/public/js/debug-productos.js"></script>
     <style>
         <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] !== 'admin'): ?>
         /* Ocultar botones de eliminar para roles que no sean admin */
@@ -495,6 +496,152 @@ $stats = $statsQuery->fetch_assoc();
             padding: 12px 10px;
             vertical-align: middle;
             transition: all 0.3s ease;
+        }
+
+        /* Estilos para la barra de acciones moderna */
+        .action-toolbar {
+            margin-bottom: 25px;
+        }
+
+        .toolbar-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+
+
+        /* Botones modernos reorganizados */
+        .btn-modern {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 60px;
+            backdrop-filter: blur(10px);
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #00c851, #007e33);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 81, 0.4);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 200, 81, 0.6);
+            color: white;
+        }
+
+        .btn-cleanup {
+            background: linear-gradient(135deg, #ffbb33, #ff8800);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 187, 51, 0.4);
+        }
+
+        .btn-cleanup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 187, 51, 0.6);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #33b5e5, #0099cc);
+            color: white;
+            box-shadow: 0 4px 15px rgba(51, 181, 229, 0.4);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(51, 181, 229, 0.6);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .btn-content {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .btn-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .btn-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.1;
+        }
+
+        /* Responsive para toolbar */
+        @media (max-width: 768px) {
+            .toolbar-container {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .toolbar-group {
+                flex-direction: column;
+                width: 100%;
+                gap: 10px;
+            }
+            
+            .btn-modern {
+                width: 250px;
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .btn-content {
+                text-align: center;
+            }
         }
 
         .table-modern tbody tr:hover {
@@ -1054,42 +1201,44 @@ $stats = $statsQuery->fetch_assoc();
                 </div>
             </div>
 
-            <!-- Barra de acciones organizada -->
-            <div class="row mb-4">
-                <div class="col-12">
-                    <div class="card" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px;">
-                        <div class="card-body py-3">
-                            <div class="row align-items-center">
-                                <!-- Botones principales -->
-                                <div class="col-md-6">
-                                    <div class="btn-group-modern">
-                                        <a href="/RMIE/app/controllers/ProductController.php?accion=create" 
-                                           class="btn btn-success btn-modern-action me-2">
-                                            <i class="fas fa-plus-circle"></i>
-                                            <span class="btn-text">Nuevo Producto</span>
-                                        </a>
-                                        <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-                                        <button class="btn btn-warning btn-modern-action me-2" 
-                                                onclick="limpiarProductos()" 
-                                                title="Eliminar productos con stock en cero">
-                                            <i class="fas fa-broom"></i>
-                                            <span class="btn-text">Limpiar Stock Cero</span>
-                                        </button>
-                                        <?php endif; ?>
-                                    </div>
-                                </div>
-                                
-                                <!-- Navegación -->
-                                <div class="col-md-6 text-end">
-                                    <a href="/RMIE/app/views/dashboard.php" 
-                                       class="btn btn-info btn-modern-action">
-                                        <i class="fas fa-arrow-left"></i>
-                                        <span class="btn-text">Volver al Dashboard</span>
-                                    </a>
-                                </div>
-                            </div>
+            <!-- Barra de acciones moderna y organizada -->
+            <div class="action-toolbar mb-4">
+                <div class="toolbar-container">
+                    <a href="/RMIE/app/controllers/ProductController.php?accion=create" 
+                       class="btn-modern btn-create">
+                        <div class="btn-icon">
+                            <i class="fas fa-plus-circle"></i>
                         </div>
-                    </div>
+                        <div class="btn-content">
+                            <span class="btn-title">Nuevo Producto</span>
+                            <span class="btn-subtitle">Agregar al inventario</span>
+                        </div>
+                    </a>
+                    
+                    <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                    <button class="btn-modern btn-cleanup" 
+                            onclick="limpiarProductos()" 
+                            title="Eliminar productos con stock en cero">
+                        <div class="btn-icon">
+                            <i class="fas fa-broom"></i>
+                        </div>
+                        <div class="btn-content">
+                            <span class="btn-title">Limpiar Stock Cero</span>
+                            <span class="btn-subtitle">Remover productos agotados</span>
+                        </div>
+                    </button>
+                    <?php endif; ?>
+                    
+                    <a href="/RMIE/app/views/dashboard.php" 
+                       class="btn-modern btn-back">
+                        <div class="btn-icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </div>
+                        <div class="btn-content">
+                            <span class="btn-title">Dashboard</span>
+                            <span class="btn-subtitle">Volver al inicio</span>
+                        </div>
+                    </a>
                 </div>
             </div>
 
@@ -1168,16 +1317,18 @@ $stats = $statsQuery->fetch_assoc();
                             <div class="products-card-footer">
                                 <div class="products-actions">
                                     <a href="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= urlencode($producto->id_productos ?? '') ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       class="btn btn-sm btn-warning" 
                                        title="Editar producto">
                                         <i class="fas fa-edit"></i>
                                     </a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                     <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?= urlencode($producto->id_productos ?? '') ?>" 
-                                       class="btn btn-sm btn-modern btn-danger-modern" 
+                                       class="btn btn-sm btn-danger" 
                                        title="Eliminar producto"
                                        onclick="return confirmAction('acción general')">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </div>
@@ -1187,7 +1338,7 @@ $stats = $statsQuery->fetch_assoc();
                         <div style="color: rgba(255, 255, 255, 0.7); font-size: 1.2rem;">
                             <i class="fas fa-inbox fa-3x mb-3"></i>
                             <p>No hay productos registrados</p>
-                            <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern">
+                            <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-success">
                                 <i class="fas fa-plus"></i> Crear Primer Producto
                             </a>
                         </div>
@@ -1285,13 +1436,13 @@ $stats = $statsQuery->fetch_assoc();
                                 </td>
                                 <td>
                                     <a href="/RMIE/app/controllers/ProductController.php?accion=edit&id=<?= urlencode($prod->id_productos ?? '') ?>" 
-                                       class="btn btn-modern btn-warning-modern btn-action" 
+                                       class="btn btn-sm btn-warning" 
                                        title="Editar producto">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
                                     <a href="/RMIE/app/views/productos/delete.php?id=<?= urlencode($prod->id_productos ?? '') ?>" 
-                                       class="btn btn-modern btn-danger-modern btn-action" 
+                                       class="btn btn-sm btn-danger" 
                                        onclick="return confirmAction('acción general')"
                                        title="Eliminar producto">
                                         <i class="fas fa-trash"></i>
@@ -1307,7 +1458,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <i class="fas fa-inbox"></i>
                                         <h5>No hay productos disponibles</h5>
                                         <p>No se encontraron productos que coincidan con los filtros aplicados.</p>
-                                        <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-modern btn-success-modern">
+                                        <a href="/RMIE/app/controllers/ProductController.php?accion=create" class="btn btn-success">
                                             <i class="fas fa-plus"></i> Crear Primer Producto
                                         </a>
                                     </div>
@@ -1323,71 +1474,11 @@ $stats = $statsQuery->fetch_assoc();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle entre vista de tarjetas y tabla para productos
-        function toggleProductsView(view) {
-            const cardsView = document.getElementById('cardsView');
-            const tableView = document.getElementById('tableView');
-            const btnCards = document.getElementById('btnCards');
-            const btnTable = document.getElementById('btnTable');
-            
-            if (view === 'cards') {
-                cardsView.style.display = 'grid';
-                tableView.style.display = 'none';
-                btnCards.classList.add('active');
-                btnTable.classList.remove('active');
-                localStorage.setItem('productosView', 'cards');
-            } else {
-                cardsView.style.display = 'none';
-                tableView.style.display = 'block';
-                btnCards.classList.remove('active');
-                btnTable.classList.add('active');
-                localStorage.setItem('productosView', 'table');
-            }
-        }
-        
-        // Restaurar vista guardada
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedView = localStorage.getItem('productosView') || 'cards';
-            toggleProductsView(savedView);
-        });
+        // Las funciones toggleProductsView y limpiarFiltros están definidas en selenium-messages.js
+        // para evitar duplicación y conflictos
 
-        function limpiarFiltros() {
-            document.getElementById('filterForm').reset();
-            window.location.href = '/RMIE/app/controllers/ProductController.php?accion=index';
-        }
-
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            const alerts = document.querySelectorAll('.alert');
-            alerts.forEach(function(alert) {
-                alert.style.transition = 'opacity 0.5s, transform 0.5s';
-                alert.style.opacity = '0';
-                alert.style.transform = 'translateY(-20px)';
-                setTimeout(() => alert.remove(), 500);
-            });
-        }, 5000);
-
-        // Función para limpiar productos con stock cero
-        function limpiarProductos() {
-            const opcion = prompt(`¿Qué tipo de limpieza quieres hacer en PRODUCTOS?\n\nEscribe el número de tu opción:\n\n1 - Solo eliminar productos con STOCK CERO\n2 - Eliminar productos INACTIVOS\n3 - Eliminar TODOS los productos\n4 - Cancelar`);
-            
-            if (opcion === '1') {
-                if (confirmAction('limpiar registros')) {
-                    alert('Eliminando productos sin stock...');
-                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_no_stock';
-                }
-            } else if (opcion === '2') {
-                if (confirmAction('limpiar registros')) {
-                    alert('Eliminando productos inactivos...');
-                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_inactive';
-                }
-            } else if (opcion === '3') {
-                if (confirmAction('eliminar todos')) {
-                    alert('Eliminando todos los productos...');
-                    window.location.href = '/RMIE/app/controllers/ProductController.php?accion=clean_all';
-                }
-            }
-        }
+        // Todas las funciones de limpieza y toggle están definidas en selenium-messages.js
+        // para evitar duplicación de código y conflictos potenciales
     </script>
 </body>
 </html>

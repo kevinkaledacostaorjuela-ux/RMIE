@@ -360,6 +360,145 @@ $stats = $statsQuery->fetch_assoc();
             background: linear-gradient(45deg, #667eea, #764ba2);
         }
 
+        /* Estilos para la barra de acciones moderna */
+        .action-toolbar {
+            margin-bottom: 25px;
+        }
+
+        .toolbar-container {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 20px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: space-evenly;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        /* Botones modernos reorganizados */
+        .btn-modern {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-height: 60px;
+            backdrop-filter: blur(10px);
+            width: 200px;
+            flex-shrink: 0;
+        }
+
+        .btn-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-modern:hover::before {
+            left: 100%;
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, #00c851, #007e33);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 200, 81, 0.4);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 200, 81, 0.6);
+            color: white;
+        }
+
+        .btn-cleanup {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-cleanup:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+            color: white;
+        }
+
+        .btn-back {
+            background: linear-gradient(135deg, #33b5e5, #0099cc);
+            color: white;
+            box-shadow: 0 4px 15px rgba(51, 181, 229, 0.4);
+        }
+
+        .btn-back:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(51, 181, 229, 0.6);
+            color: white;
+        }
+
+        .btn-icon {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .btn-content {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .btn-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            line-height: 1.2;
+            margin-bottom: 2px;
+        }
+
+        .btn-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            line-height: 1.1;
+        }
+
+        /* Responsive para toolbar */
+        @media (max-width: 768px) {
+            .toolbar-container {
+                flex-direction: column;
+                gap: 15px;
+                justify-content: center;
+            }
+            
+            .btn-modern {
+                width: 250px;
+                justify-content: center;
+                text-align: center;
+            }
+            
+            .btn-content {
+                text-align: center;
+            }
+        }
+
         /* Diseño de Tarjetas para clientes */
         .clients-grid {
             display: grid;
@@ -747,21 +886,47 @@ $stats = $statsQuery->fetch_assoc();
             </form>
         </div>
 
-        <!-- Botones de acción -->
-        <div class="mb-4 text-center">
-            <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
-            <a href="/RMIE/app/controllers/ClientController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
-                <i class="fas fa-plus"></i> Nuevo Cliente
-            </a>
-            <?php endif; ?>
-            <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
-            <button class="btn btn-modern me-2" onclick="limpiarInactivos()" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white;">
-                <i class="fas fa-broom"></i> Limpiar Inactivos
-            </button>
-            <?php endif; ?>
-            <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
-                <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>
+        <!-- Barra de acciones moderna y organizada -->
+        <div class="action-toolbar mb-4">
+            <div class="toolbar-container">
+                <?php if ($_SESSION['rol'] !== 'auxiliar'): ?>
+                <a href="/RMIE/app/controllers/ClientController.php?accion=create" 
+                   class="btn-modern btn-create">
+                    <div class="btn-icon">
+                        <i class="fas fa-plus-circle"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Nuevo Cliente</span>
+                        <span class="btn-subtitle">Agregar nuevo cliente</span>
+                    </div>
+                </a>
+                <?php endif; ?>
+                
+                <?php if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin'): ?>
+                <button class="btn-modern btn-cleanup" 
+                        onclick="limpiarInactivos()" 
+                        title="Limpiar clientes inactivos">
+                    <div class="btn-icon">
+                        <i class="fas fa-broom"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Limpiar Inactivos</span>
+                        <span class="btn-subtitle">Remover sin actividad</span>
+                    </div>
+                </button>
+                <?php endif; ?>
+                
+                <a href="/RMIE/app/views/dashboard.php" 
+                   class="btn-modern btn-back">
+                    <div class="btn-icon">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <div class="btn-content">
+                        <span class="btn-title">Dashboard</span>
+                        <span class="btn-subtitle">Volver al inicio</span>
+                    </div>
+                </a>
+            </div>
         </div>
 
         <!-- Vista selector: Tarjetas / Tabla -->
@@ -851,11 +1016,11 @@ $stats = $statsQuery->fetch_assoc();
                     <div class="clients-card-footer">
                         <div>
                             <?php if (($cliente->estado ?? 'inactivo') === 'activo'): ?>
-                                <span class="badge badge-modern badge-success">
+                                <span class="badge bg-success">
                                     <i class="fas fa-check-circle"></i> Activo
                                 </span>
                             <?php else: ?>
-                                <span class="badge badge-modern badge-danger">
+                                <span class="badge bg-danger">
                                     <i class="fas fa-times-circle"></i> Inactivo
                                 </span>
                             <?php endif; ?>
@@ -943,7 +1108,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <i class="fas fa-envelope text-info"></i>
                                         <small><?= htmlspecialchars($cliente->correo) ?></small>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
+                                        <span class="badge bg-secondary">
                                             <i class="fas fa-minus"></i> Sin email
                                         </span>
                                     <?php endif; ?>
@@ -953,7 +1118,7 @@ $stats = $statsQuery->fetch_assoc();
                                         <i class="fas fa-phone text-success"></i>
                                         <small><?= htmlspecialchars($cliente->cel_cliente) ?></small>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
+                                        <span class="badge bg-secondary">
                                             <i class="fas fa-minus"></i> Sin teléfono
                                         </span>
                                     <?php endif; ?>
@@ -961,20 +1126,20 @@ $stats = $statsQuery->fetch_assoc();
                                 <td>
                                     <?php if (!empty($cliente->locales_asignados) && count($cliente->locales_asignados) > 0): ?>
                                         <?php if (count($cliente->locales_asignados) === 1): ?>
-                                            <span class="badge badge-modern badge-info">
+                                            <span class="badge bg-info">
                                                 <i class="fas fa-store"></i> <?= htmlspecialchars($cliente->locales_asignados[0]->nombre_local) ?>
                                             </span>
                                         <?php else: ?>
                                             <div style="display: flex; flex-wrap: wrap; gap: 4px;">
                                                 <?php foreach ($cliente->locales_asignados as $index => $local): ?>
                                                     <?php if ($index < 2): ?>
-                                                        <span class="badge badge-modern badge-info" style="font-size: 0.75rem;">
+                                                        <span class="badge bg-info" style="font-size: 0.75rem;">
                                                             <i class="fas fa-store"></i> <?= htmlspecialchars($local->nombre_local) ?>
                                                         </span>
                                                     <?php endif; ?>
                                                 <?php endforeach; ?>
                                                 <?php if (count($cliente->locales_asignados) > 2): ?>
-                                                    <span class="badge badge-modern badge-secondary" style="font-size: 0.75rem;" 
+                                                    <span class="badge bg-secondary" style="font-size: 0.75rem;" 
                                                           title="<?= implode(', ', array_map(function($l) { return htmlspecialchars($l->nombre_local); }, array_slice($cliente->locales_asignados, 2))) ?>">
                                                         +<?= count($cliente->locales_asignados) - 2 ?> más
                                                     </span>
@@ -982,18 +1147,18 @@ $stats = $statsQuery->fetch_assoc();
                                             </div>
                                         <?php endif; ?>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-secondary">
+                                        <span class="badge bg-secondary">
                                             <i class="fas fa-minus"></i> Sin locales
                                         </span>
                                     <?php endif; ?>
                                 </td>
                                 <td class="text-center">
                                     <?php if ($cliente->estado === 'activo'): ?>
-                                        <span class="badge badge-modern badge-success">
+                                        <span class="badge bg-success">
                                             <i class="fas fa-check-circle"></i> Activo
                                         </span>
                                     <?php else: ?>
-                                        <span class="badge badge-modern badge-danger">
+                                        <span class="badge bg-danger">
                                             <i class="fas fa-times-circle"></i> Inactivo
                                         </span>
                                     <?php endif; ?>

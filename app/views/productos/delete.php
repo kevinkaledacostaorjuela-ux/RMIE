@@ -247,7 +247,7 @@ $subcategoria = null;
                         <!-- No se puede eliminar -->
                         <div class="text-center mt-4">
                             <p class="text-white fs-5 mb-4"><strong>Este producto no puede ser eliminado.</strong></p>
-                            <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-primary btn-lg">
+                            <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-primary">
                                 <i class="fas fa-arrow-left"></i> Regresar al Listado
                             </a>
                         </div>
@@ -261,11 +261,11 @@ $subcategoria = null;
                         
                         <div class="d-flex gap-3 justify-content-center mt-4">
                             <a href="/RMIE/app/controllers/ProductController.php?accion=delete&id=<?php echo $id_producto; ?>" 
-                               class="btn btn-danger btn-lg"
+                               class="btn btn-danger"
                                onclick="return confirmAction("acción"); ?>\'?\n\nEsta acción no se puede deshacer y el producto será eliminado permanentemente del inventario.')">
                                 <i class="fas fa-trash-alt"></i> Confirmar Eliminación
                             </a>
-                            <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-secondary btn-lg">
+                            <a href="/RMIE/app/controllers/ProductController.php?accion=index" class="btn btn-secondary">
                                 <i class="fas fa-times"></i> Cancelar
                             </a>
                         </div>

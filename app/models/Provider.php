@@ -131,11 +131,12 @@ class Provider {
         }
     }
 
-    // Obtener productos de un proveedor específico
+    // Obtener productos de un proveedor específico usando tabla intermedia
     public static function getProductosByProveedor($conn, $id_proveedor) {
         $sql = "SELECT p.* 
                 FROM productos p 
-                WHERE p.id_proveedores = ?
+                INNER JOIN proveedores_productos pp ON p.id_productos = pp.id_producto
+                WHERE pp.id_proveedor = ? AND pp.activo = 1
                 ORDER BY p.nombre";
         
         $stmt = $conn->prepare($sql);
@@ -150,25 +151,25 @@ class Provider {
         return $productos;
     }
 
-    // Asignar producto a proveedor
+    // Asignar producto a proveedor usando tabla intermedia
     public static function assignProducto($conn, $id_proveedor, $id_producto) {
-        $sql = "UPDATE productos SET id_proveedores = ? WHERE id_productos = ?";
+        $sql = "INSERT IGNORE INTO proveedores_productos (id_proveedor, id_producto) VALUES (?, ?)";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $id_proveedor, $id_producto);
         return $stmt->execute();
     }
 
-    // Remover producto de proveedor (establecer a NULL)
+    // Remover producto de proveedor usando tabla intermedia
     public static function removeProducto($conn, $id_proveedor, $id_producto) {
-        $sql = "UPDATE productos SET id_proveedores = NULL WHERE id_proveedores = ? AND id_productos = ?";
+        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ? AND id_producto = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("ii", $id_proveedor, $id_producto);
         return $stmt->execute();
     }
 
-    // Remover todos los productos de un proveedor (establecer a NULL)
+    // Remover todos los productos de un proveedor usando tabla intermedia
     public static function removeAllProductos($conn, $id_proveedor) {
-        $sql = "UPDATE productos SET id_proveedores = NULL WHERE id_proveedores = ?";
+        $sql = "DELETE FROM proveedores_productos WHERE id_proveedor = ?";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("i", $id_proveedor);
         return $stmt->execute();

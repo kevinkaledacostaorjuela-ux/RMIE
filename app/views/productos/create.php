@@ -1,3 +1,15 @@
+<?php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Obtener mensajes de sesión
+$error_message = $_SESSION['error'] ?? '';
+$success_message = $_SESSION['success'] ?? '';
+
+// Limpiar mensajes de sesión
+unset($_SESSION['error'], $_SESSION['success']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -206,6 +218,103 @@
             text-align: right;
             margin-top: 5px;
         }
+
+        /* Estilos para alertas */
+        .alert-modern {
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .alert-success {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border-color: rgba(46, 204, 113, 0.4);
+        }
+
+        .alert-danger {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border-color: rgba(231, 76, 60, 0.4);
+        }
+
+        /* Estilos para campos de búsqueda */
+        .search-container {
+            position: relative;
+        }
+
+        .search-input {
+            cursor: pointer;
+        }
+
+        .search-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .search-dropdown.show {
+            display: block;
+        }
+
+        .search-option {
+            padding: 12px 15px;
+            cursor: pointer;
+            color: #333;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .search-option:hover {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+        }
+
+        .search-option.selected {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .search-option:last-child {
+            border-bottom: none;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .search-option:first-child {
+            border-radius: 12px 12px 0 0;
+        }
+
+        .search-option i {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .search-input:focus + .search-dropdown {
+            display: block;
+        }
+
+        .search-input.has-value {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+        }
         
         .form-section-card {
             background: rgba(255, 255, 255, 0.05);
@@ -331,10 +440,25 @@
         <!-- Header -->
         <div class="header-section">
             <h1 class="header-title">
-                <i class="fas fa-box"></i>
+                <i class="fas fa-plus-circle"></i>
                 Crear Nuevo Producto
             </h1>
-            <p class="header-subtitle">Complete todos los campos para agregar un nuevo producto al inventario</p>
+            <p class="header-subtitle">Complete todos los campos requeridos para agregar un nuevo producto al inventario</p>
+            
+            <!-- Mensajes de éxito y error -->
+            <?php if (!empty($success_message)): ?>
+                <div class="alert alert-success alert-modern" style="margin-top: 20px;">
+                    <i class="fas fa-check-circle"></i>
+                    <?= htmlspecialchars($success_message) ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if (!empty($error_message)): ?>
+                <div class="alert alert-danger alert-modern" style="margin-top: 20px;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <?= htmlspecialchars($error_message) ?>
+                </div>
+            <?php endif; ?>
         </div>
 
         <!-- Form -->
@@ -384,36 +508,54 @@
                     </div>
 
                     <div class="form-row form-row-2">
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
-                                    id="categoria_id" 
-                                    name="categoria_id" 
-                                    required>
-                                <option value="">Seleccione una categoría</option>
+                        <!-- Campo de categoría con búsqueda -->
+                        <div class="form-floating-modern search-container">
+                            <input type="text" 
+                                   class="form-control-modern search-input" 
+                                   id="categoria_search" 
+                                   placeholder=" "
+                                   autocomplete="off"
+                                   required>
+                            <input type="hidden" 
+                                   id="categoria_id" 
+                                   name="categoria_id" 
+                                   required>
+                            <label for="categoria_search">
+                                <i class="fas fa-folder"></i>
+                                Categoría *
+                            </label>
+                            <div class="search-dropdown" id="categoria_dropdown">
                                 <?php if (isset($categorias) && is_array($categorias)): ?>
                                     <?php foreach ($categorias as $cat): ?>
-                                        <option value="<?= htmlspecialchars($cat->id_categoria) ?>">
+                                        <div class="search-option" 
+                                             data-value="<?= htmlspecialchars($cat->id_categoria) ?>"
+                                             data-text="<?= htmlspecialchars($cat->nombre) ?>">
+                                            <i class="fas fa-folder"></i>
                                             <?= htmlspecialchars($cat->nombre) ?>
-                                        </option>
+                                        </div>
                                     <?php endforeach; ?>
                                 <?php endif; ?>
-                            </select>
-                            <label for="categoria_id">
-                                <i class="fas fa-folder"></i>
-                                Categoría
-                            </label>
+                            </div>
                         </div>
 
-                        <div class="form-floating-modern">
-                            <select class="form-select-modern" 
-                                    id="subcategoria_id" 
-                                    name="subcategoria_id">
-                                <option value="">Seleccione primero una categoría</option>
-                            </select>
-                            <label for="subcategoria_id">
+                        <!-- Campo de subcategoría con búsqueda -->
+                        <div class="form-floating-modern search-container">
+                            <input type="text" 
+                                   class="form-control-modern search-input" 
+                                   id="subcategoria_search" 
+                                   placeholder=" "
+                                   autocomplete="off"
+                                   disabled>
+                            <input type="hidden" 
+                                   id="subcategoria_id" 
+                                   name="subcategoria_id">
+                            <label for="subcategoria_search">
                                 <i class="fas fa-layer-group"></i>
                                 Subcategoría (Opcional)
                             </label>
+                            <div class="search-dropdown" id="subcategoria_dropdown">
+                                <!-- Se llenarán dinámicamente según la categoría -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -579,8 +721,8 @@
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
-                                    id="id_proveedores" 
-                                    name="id_proveedores">
+                                    id="proveedor_id" 
+                                    name="proveedor_id">
                                 <option value="">Seleccione un proveedor</option>
                                 <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                     <?php foreach ($proveedores as $prov): ?>
@@ -590,7 +732,7 @@
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="id_proveedores">
+                            <label for="proveedor_id">
                                 <i class="fas fa-truck"></i>
                                 Proveedor (Opcional)
                             </label>
@@ -598,8 +740,8 @@
 
                         <div class="form-floating-modern">
                             <select class="form-select-modern" 
-                                    id="num_doc" 
-                                    name="num_doc"
+                                    id="usuario_id" 
+                                    name="usuario_id"
                                     required>
                                 <option value="">Seleccione un usuario responsable</option>
                                 <?php if (isset($usuarios) && is_array($usuarios)): ?>
@@ -611,7 +753,7 @@
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="num_doc">
+                            <label for="usuario_id">
                                 <i class="fas fa-user"></i>
                                 Usuario Responsable *
                             </label>
@@ -636,6 +778,18 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Sistema de captura de errores silencioso
+        window.addEventListener('error', function(event) {
+            // Capturar errores pero no mostrarlos en consola para evitar spam
+            return true; // Previene que se muestre el error por defecto
+        });
+        
+        window.addEventListener('unhandledrejection', function(event) {
+            // Capturar promesas rechazadas silenciosamente
+            event.preventDefault();
+        });
+    </script>
+    <script>
         // Contador de caracteres
         function updateCharCounter(inputId, counterId, maxLength) {
             const input = document.getElementById(inputId);
@@ -659,35 +813,182 @@
         updateCharCounter('nombre', 'nombre-count', 100);
         updateCharCounter('descripcion', 'descripcion-count', 200);
 
-        // Cargar subcategorías basado en categoría seleccionada
-        document.getElementById('categoria_id').addEventListener('change', function() {
-            const subcategoriaSelect = document.getElementById('subcategoria_id');
-            subcategoriaSelect.innerHTML = '<option value="">Cargando subcategorías...</option>';
+        // Funcionalidad de búsqueda para categorías
+        function initializeSearchField(searchInputId, hiddenInputId, dropdownId, data) {
+            const searchInput = document.getElementById(searchInputId);
+            const hiddenInput = document.getElementById(hiddenInputId);
+            const dropdown = document.getElementById(dropdownId);
             
-            if (this.value) {
-                // Llamada AJAX para cargar subcategorías reales
-                fetch('/RMIE/app/controllers/SubcategoryController.php?accion=getByCategory&categoria_id=' + this.value)
+            // Mostrar dropdown al hacer clic en el input
+            searchInput.addEventListener('click', function() {
+                dropdown.classList.add('show');
+                filterOptions();
+            });
+
+            // Filtrar opciones mientras escribe
+            searchInput.addEventListener('input', function() {
+                filterOptions();
+                dropdown.classList.add('show');
+            });
+
+            // Ocultar dropdown al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.search-container')) {
+                    dropdown.classList.remove('show');
+                }
+            });
+
+            // Función para filtrar opciones
+            function filterOptions() {
+                const filter = searchInput.value.toLowerCase();
+                const options = dropdown.querySelectorAll('.search-option');
+                
+                options.forEach(option => {
+                    const text = option.textContent.toLowerCase();
+                    if (text.includes(filter)) {
+                        option.style.display = 'flex';
+                    } else {
+                        option.style.display = 'none';
+                    }
+                });
+            }
+
+            // Manejar selección de opción
+            dropdown.addEventListener('click', function(e) {
+                const option = e.target.closest('.search-option');
+                if (option) {
+                    const value = option.dataset.value;
+                    const text = option.dataset.text;
+                    
+                    searchInput.value = text;
+                    hiddenInput.value = value;
+                    searchInput.classList.add('has-value');
+                    dropdown.classList.remove('show');
+
+                    // Si es categoría, actualizar subcategorías
+                    if (searchInputId === 'categoria_search') {
+                        loadSubcategories(value);
+                    }
+                }
+            });
+
+            // Limpiar si se borra el texto
+            searchInput.addEventListener('keyup', function() {
+                if (this.value === '') {
+                    hiddenInput.value = '';
+                    searchInput.classList.remove('has-value');
+                    
+                    if (searchInputId === 'categoria_search') {
+                        clearSubcategories();
+                    }
+                }
+            });
+        }
+
+        // Cargar subcategorías basado en categoría seleccionada (con manejo de errores)
+        function loadSubcategories(categoriaId) {
+            try {
+                const subcategoriaSearch = document.getElementById('subcategoria_search');
+                const subcategoriaHidden = document.getElementById('subcategoria_id');
+                const subcategoriaDropdown = document.getElementById('subcategoria_dropdown');
+                
+                if (!subcategoriaSearch || !subcategoriaHidden || !subcategoriaDropdown) {
+                    return; // Elementos no encontrados, salir silenciosamente
+                }
+                
+                // Habilitar campo de subcategoría
+                subcategoriaSearch.disabled = false;
+                subcategoriaSearch.placeholder = 'Cargando subcategorías...';
+                
+                // Limpiar valores anteriores
+                subcategoriaSearch.value = '';
+                subcategoriaHidden.value = '';
+                subcategoriaSearch.classList.remove('has-value');
+            
+            if (categoriaId) {
+                // Llamada AJAX para cargar subcategorías
+                fetch('/RMIE/app/controllers/SubcategoryController.php?accion=getByCategory&categoria_id=' + categoriaId)
                     .then(response => response.json())
                     .then(data => {
-                        let options = '<option value="">Seleccione una subcategoría</option>';
+                        let optionsHtml = '';
                         if (data && data.length > 0) {
                             data.forEach(subcategoria => {
-                                options += `<option value="${subcategoria.id_subcategoria}">${subcategoria.nombre}</option>`;
+                                optionsHtml += `
+                                    <div class="search-option" 
+                                         data-value="${subcategoria.id_subcategoria}"
+                                         data-text="${subcategoria.nombre}">
+                                        <i class="fas fa-layer-group"></i>
+                                        ${subcategoria.nombre}
+                                    </div>
+                                `;
                             });
+                        } else {
+                            optionsHtml = '<div class="search-option" data-value="" data-text="">No hay subcategorías disponibles</div>';
                         }
-                        subcategoriaSelect.innerHTML = options;
+                        
+                        subcategoriaDropdown.innerHTML = optionsHtml;
+                        subcategoriaSearch.placeholder = ' ';
+                        
+                        // Reinicializar eventos para las nuevas opciones
+                        initializeSearchField('subcategoria_search', 'subcategoria_id', 'subcategoria_dropdown');
                     })
                     .catch(error => {
-                        console.error('Error cargando subcategorías:', error);
-                        subcategoriaSelect.innerHTML = '<option value="">Error cargando subcategorías</option>';
+                        // Error silencioso para evitar logs en consola
+                        if (subcategoriaDropdown) {
+                            subcategoriaDropdown.innerHTML = '<div class="search-option" data-value="" data-text="">Error cargando subcategorías</div>';
+                        }
+                        if (subcategoriaSearch) {
+                            subcategoriaSearch.placeholder = ' ';
+                        }
                     });
-            } else {
-                subcategoriaSelect.innerHTML = '<option value="">Seleccione primero una categoría</option>';
+            }
+            } catch (error) {
+                // Error silencioso
+            }
+        }
+
+        function clearSubcategories() {
+            try {
+                const subcategoriaSearch = document.getElementById('subcategoria_search');
+                const subcategoriaHidden = document.getElementById('subcategoria_id');
+                const subcategoriaDropdown = document.getElementById('subcategoria_dropdown');
+                
+                if (subcategoriaSearch) {
+                    subcategoriaSearch.disabled = true;
+                    subcategoriaSearch.placeholder = 'Seleccione primero una categoría';
+                    subcategoriaSearch.value = '';
+                    subcategoriaSearch.classList.remove('has-value');
+                }
+                
+                if (subcategoriaHidden) {
+                    subcategoriaHidden.value = '';
+                }
+                
+                if (subcategoriaDropdown) {
+                    subcategoriaDropdown.innerHTML = '';
+                }
+            } catch (error) {
+                // Error silencioso
+            }
+        }
+
+        // Inicialización segura cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                // Inicializar campos de búsqueda solo si existen
+                if (document.getElementById('categoria_search')) {
+                    initializeSearchField('categoria_search', 'categoria_id', 'categoria_dropdown');
+                }
+            } catch (error) {
+                // Error silencioso para evitar mostrar en consola
             }
         });
 
-        // Validación del formulario
-        document.getElementById('productForm').addEventListener('submit', function(e) {
+        // Validación del formulario con manejo de errores
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('productForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
             const nombre = document.getElementById('nombre').value.trim();
             const stock = document.getElementById('stock').value;
             const precioCompra = parseFloat(document.getElementById('precio_compra').value);
@@ -710,10 +1011,14 @@
                 alert('El precio de venta debe ser mayor al precio de compra');
                 return;
             }
+                });
+            }
         });
 
-        // Efectos visuales
-        document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
+        // Efectos visuales con manejo seguro
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                document.querySelectorAll('.form-control-modern, .form-select-modern').forEach(input => {
             input.addEventListener('focus', function() {
                 this.parentElement.style.transform = 'scale(1.02)';
             });
@@ -721,10 +1026,10 @@
             input.addEventListener('blur', function() {
                 this.parentElement.style.transform = 'scale(1)';
             });
-        });
+                });
 
-        // Manejo de labels para selects
-        document.querySelectorAll('.form-select-modern').forEach(select => {
+                // Manejo de labels para selects
+                document.querySelectorAll('.form-select-modern').forEach(select => {
             select.addEventListener('change', function() {
                 const label = this.parentElement.querySelector('label');
                 if (this.value) {
@@ -736,10 +1041,14 @@
                     label.style.fontSize = '14px';
                     label.style.color = 'rgba(102, 126, 234, 0.8)';
                 }
-            });
+                });
+                });
+            } catch (error) {
+                // Error silencioso para efectos visuales
+            }
         });
 
-        // Establecer fecha actual por defecto (espera DOM y comprueba existencia)
+        // Establecer fecha actual por defecto (con manejo robusto de errores)
         document.addEventListener('DOMContentLoaded', function() {
             const fecha = document.getElementById('fecha_entrada');
             if (!fecha) return;
