@@ -718,17 +718,8 @@
                                        id="buscar_categoria" 
                                        class="form-control" 
                                        placeholder="Escribe para buscar o selecciona categoría..."
-                                       style="margin-bottom: 5px;">
-                                <select id="filtro_categoria" class="form-select">
-                                    <option value="">Todas las categorías</option>
-                                    <?php if (isset($categorias) && is_array($categorias)): ?>
-                                        <?php foreach ($categorias as $categoria): ?>
-                                            <option value="<?= htmlspecialchars($categoria->id_categoria) ?>">
-                                                <?= htmlspecialchars($categoria->nombre) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+                                       autocomplete="off">
+                                <input type="hidden" id="filtro_categoria" value="">
                             </div>
                             
                             <div class="form-group">
@@ -739,11 +730,9 @@
                                        id="buscar_subcategoria" 
                                        class="form-control" 
                                        placeholder="Seleccione primero una categoría..."
-                                       style="margin-bottom: 5px;"
+                                       autocomplete="off"
                                        disabled>
-                                <select id="filtro_subcategoria" class="form-select" disabled>
-                                    <option value="">Seleccione primero una categoría</option>
-                                </select>
+                                <input type="hidden" id="filtro_subcategoria" value="" disabled>
                             </div>
                             
                             <div class="form-group">
@@ -955,7 +944,15 @@
     
     <!-- Datos para filtros en cascada -->
     <script>
-    // Preparar datos de subcategorías por categoría
+    // Preparar datos de categorías y subcategorías
+    const categoriasData = {
+        <?php if (isset($categorias) && is_array($categorias)): ?>
+            <?php foreach ($categorias as $categoria): ?>
+                '<?= $categoria->id_categoria ?>': '<?= addslashes($categoria->nombre) ?>',
+            <?php endforeach; ?>
+        <?php endif; ?>
+    };
+    
     const subcategoriasPorCategoria = {
         <?php if (isset($subcategorias) && is_array($subcategorias)): ?>
             <?php 
@@ -1004,46 +1001,262 @@
         
         // FILTRADO EN CASCADA: Búsqueda → Categoría → Subcategoría → Productos
         
-        // Cuando se escribe en el buscador
+        // Variables para dropdowns dinámicos
+        let dropdownCategorias = null;
+        let dropdownSubcategorias = null;
+        
+        // Crear dropdown de categorías
+        function crearDropdownCategorias(textoBusqueda) {
+            // Eliminar dropdown existente
+            if (dropdownCategorias) {
+                dropdownCategorias.remove();
+            }
+            
+            // Filtrar categorías
+            const categoriasFiltradas = Object.entries(categoriasData).filter(([id, nombre]) => {
+                return !textoBusqueda || nombre.toLowerCase().includes(textoBusqueda.toLowerCase());
+            });
+            
+            if (categoriasFiltradas.length === 0) return;
+            
+            // Crear nuevo dropdown
+            dropdownCategorias = document.createElement('div');
+            dropdownCategorias.className = 'dropdown-filtro';
+            dropdownCategorias.style.cssText = `
+                position: absolute;
+                z-index: 1000;
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                max-height: 200px;
+                overflow-y: auto;
+                width: ${buscarCategoria.offsetWidth}px;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                margin-top: 5px;
+            `;
+            
+            // Agregar opción "Todas las categorías"
+            const opcionTodas = document.createElement('div');
+            opcionTodas.className = 'dropdown-item';
+            opcionTodas.textContent = 'Todas las categorías';
+            opcionTodas.style.cssText = `
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+            opcionTodas.addEventListener('mouseenter', function() {
+                this.style.background = 'linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%)';
+                this.style.color = '#667eea';
+            });
+            opcionTodas.addEventListener('mouseleave', function() {
+                this.style.background = 'white';
+                this.style.color = 'inherit';
+            });
+            opcionTodas.addEventListener('click', function() {
+                buscarCategoria.value = '';
+                filtroCategoria.value = '';
+                buscarSubcategoria.value = '';
+                buscarSubcategoria.disabled = true;
+                buscarSubcategoria.placeholder = 'Seleccione primero una categoría...';
+                filtroSubcategoria.value = '';
+                if (dropdownCategorias) dropdownCategorias.remove();
+                if (dropdownSubcategorias) dropdownSubcategorias.remove();
+                aplicarFiltros();
+            });
+            dropdownCategorias.appendChild(opcionTodas);
+            
+            // Agregar categorías filtradas
+            categoriasFiltradas.forEach(([id, nombre]) => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = nombre;
+                item.dataset.id = id;
+                item.style.cssText = `
+                    padding: 10px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                item.addEventListener('mouseenter', function() {
+                    this.style.background = 'linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%)';
+                    this.style.color = '#667eea';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.background = 'white';
+                    this.style.color = 'inherit';
+                });
+                item.addEventListener('click', function() {
+                    buscarCategoria.value = nombre;
+                    filtroCategoria.value = id;
+                    if (dropdownCategorias) dropdownCategorias.remove();
+                    
+                    // Habilitar subcategorías
+                    buscarSubcategoria.disabled = false;
+                    buscarSubcategoria.placeholder = 'Escribe para buscar subcategoría...';
+                    buscarSubcategoria.value = '';
+                    filtroSubcategoria.value = '';
+                    
+                    aplicarFiltros();
+                });
+                dropdownCategorias.appendChild(item);
+            });
+            
+            // Insertar después del input
+            buscarCategoria.parentNode.insertBefore(dropdownCategorias, buscarCategoria.nextSibling);
+        }
+        
+        // Crear dropdown de subcategorías
+        function crearDropdownSubcategorias(textoBusqueda) {
+            // Eliminar dropdown existente
+            if (dropdownSubcategorias) {
+                dropdownSubcategorias.remove();
+            }
+            
+            const categoriaId = filtroCategoria.value;
+            if (!categoriaId) return;
+            
+            const subcategorias = subcategoriasPorCategoria[categoriaId] || [];
+            
+            // Filtrar subcategorías
+            const subcategoriasFiltradas = subcategorias.filter(subcat => {
+                return !textoBusqueda || subcat.nombre.toLowerCase().includes(textoBusqueda.toLowerCase());
+            });
+            
+            if (subcategoriasFiltradas.length === 0) return;
+            
+            // Crear nuevo dropdown
+            dropdownSubcategorias = document.createElement('div');
+            dropdownSubcategorias.className = 'dropdown-filtro';
+            dropdownSubcategorias.style.cssText = `
+                position: absolute;
+                z-index: 1000;
+                background: white;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                max-height: 200px;
+                overflow-y: auto;
+                width: ${buscarSubcategoria.offsetWidth}px;
+                box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+                margin-top: 5px;
+            `;
+            
+            // Agregar opción "Todas las subcategorías"
+            const opcionTodas = document.createElement('div');
+            opcionTodas.className = 'dropdown-item';
+            opcionTodas.textContent = 'Todas las subcategorías';
+            opcionTodas.style.cssText = `
+                padding: 10px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+            opcionTodas.addEventListener('mouseenter', function() {
+                this.style.background = 'linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%)';
+                this.style.color = '#667eea';
+            });
+            opcionTodas.addEventListener('mouseleave', function() {
+                this.style.background = 'white';
+                this.style.color = 'inherit';
+            });
+            opcionTodas.addEventListener('click', function() {
+                buscarSubcategoria.value = '';
+                filtroSubcategoria.value = '';
+                if (dropdownSubcategorias) dropdownSubcategorias.remove();
+                aplicarFiltros();
+            });
+            dropdownSubcategorias.appendChild(opcionTodas);
+            
+            // Agregar subcategorías filtradas
+            subcategoriasFiltradas.forEach(subcat => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.textContent = subcat.nombre;
+                item.dataset.id = subcat.id;
+                item.style.cssText = `
+                    padding: 10px;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                `;
+                item.addEventListener('mouseenter', function() {
+                    this.style.background = 'linear-gradient(135deg, #f0f4ff 0%, #e8efff 100%)';
+                    this.style.color = '#667eea';
+                });
+                item.addEventListener('mouseleave', function() {
+                    this.style.background = 'white';
+                    this.style.color = 'inherit';
+                });
+                item.addEventListener('click', function() {
+                    buscarSubcategoria.value = subcat.nombre;
+                    filtroSubcategoria.value = subcat.id;
+                    if (dropdownSubcategorias) dropdownSubcategorias.remove();
+                    aplicarFiltros();
+                });
+                dropdownSubcategorias.appendChild(item);
+            });
+            
+            // Insertar después del input
+            buscarSubcategoria.parentNode.insertBefore(dropdownSubcategorias, buscarSubcategoria.nextSibling);
+        }
+        
+        // Event listeners para categorías
+        if (buscarCategoria) {
+            buscarCategoria.addEventListener('input', function() {
+                const texto = this.value.trim();
+                if (texto) {
+                    crearDropdownCategorias(texto);
+                } else {
+                    if (dropdownCategorias) dropdownCategorias.remove();
+                    filtroCategoria.value = '';
+                    buscarSubcategoria.value = '';
+                    buscarSubcategoria.disabled = true;
+                    buscarSubcategoria.placeholder = 'Seleccione primero una categoría...';
+                    filtroSubcategoria.value = '';
+                    aplicarFiltros();
+                }
+            });
+            
+            buscarCategoria.addEventListener('focus', function() {
+                const texto = this.value.trim();
+                if (texto) {
+                    crearDropdownCategorias(texto);
+                }
+            });
+            
+            buscarCategoria.addEventListener('blur', function() {
+                setTimeout(() => {
+                    if (dropdownCategorias) dropdownCategorias.remove();
+                }, 200);
+            });
+        }
+        
+        // Event listeners para subcategorías
+        if (buscarSubcategoria) {
+            buscarSubcategoria.addEventListener('input', function() {
+                const texto = this.value.trim();
+                if (texto) {
+                    crearDropdownSubcategorias(texto);
+                } else {
+                    if (dropdownSubcategorias) dropdownSubcategorias.remove();
+                    filtroSubcategoria.value = '';
+                    aplicarFiltros();
+                }
+            });
+            
+            buscarSubcategoria.addEventListener('focus', function() {
+                if (!this.disabled) {
+                    const texto = this.value.trim();
+                    crearDropdownSubcategorias(texto);
+                }
+            });
+            
+            buscarSubcategoria.addEventListener('blur', function() {
+                setTimeout(() => {
+                    if (dropdownSubcategorias) dropdownSubcategorias.remove();
+                }, 200);
+            });
+        }
+        
+        // Cuando se escribe en el buscador de productos
         if (buscarProducto) {
             buscarProducto.addEventListener('input', function() {
-                aplicarFiltros();
-            });
-        }
-        
-        // Cuando cambia la categoría
-        if (filtroCategoria) {
-            filtroCategoria.addEventListener('change', function() {
-                const categoriaId = this.value;
-                
-                // Limpiar y resetear subcategorías
-                filtroSubcategoria.innerHTML = '<option value="">Todas las subcategorías</option>';
-                
-                if (categoriaId) {
-                    // Habilitar subcategorías y cargar las correspondientes
-                    filtroSubcategoria.disabled = false;
-                    
-                    const subcategorias = subcategoriasPorCategoria[categoriaId] || [];
-                    subcategorias.forEach(subcat => {
-                        const option = document.createElement('option');
-                        option.value = subcat.id;
-                        option.textContent = subcat.nombre;
-                        filtroSubcategoria.appendChild(option);
-                    });
-                } else {
-                    // Si no hay categoría seleccionada, deshabilitar subcategorías
-                    filtroSubcategoria.disabled = true;
-                    filtroSubcategoria.innerHTML = '<option value="">Seleccione primero una categoría</option>';
-                }
-                
-                // Aplicar filtro de productos
-                aplicarFiltros();
-            });
-        }
-        
-        // Cuando cambia la subcategoría
-        if (filtroSubcategoria) {
-            filtroSubcategoria.addEventListener('change', function() {
                 aplicarFiltros();
             });
         }
@@ -1106,125 +1319,7 @@
             }
         }
         
-        // Función unificada para filtrar categorías
-        function filtrarCategorias() {
-            if (!buscarCategoria) return;
-            
-            const textoBusqueda = buscarCategoria.value.toLowerCase().trim();
-            const opciones = filtroCategoria.querySelectorAll('option');
-            let primeraCoincidencia = null;
-            
-            opciones.forEach(option => {
-                if (option.value === '') {
-                    option.style.display = '';
-                    return;
-                }
-                
-                const textoOpcion = option.textContent.toLowerCase();
-                if (!textoBusqueda || textoOpcion.includes(textoBusqueda)) {
-                    option.style.display = '';
-                    if (!primeraCoincidencia && option.value !== '') {
-                        primeraCoincidencia = option;
-                    }
-                } else {
-                    option.style.display = 'none';
-                }
-            });
-            
-            // Auto-seleccionar si hay coincidencia exacta
-            if (textoBusqueda && primeraCoincidencia && 
-                primeraCoincidencia.textContent.toLowerCase() === textoBusqueda) {
-                filtroCategoria.value = primeraCoincidencia.value;
-                filtroCategoria.dispatchEvent(new Event('change'));
-            }
-        }
-        
-        // Función unificada para filtrar subcategorías
-        function filtrarSubcategorias() {
-            if (!buscarSubcategoria) return;
-            
-            const textoBusqueda = buscarSubcategoria.value.toLowerCase().trim();
-            const opciones = filtroSubcategoria.querySelectorAll('option');
-            let primeraCoincidencia = null;
-            
-            opciones.forEach(option => {
-                if (option.value === '') {
-                    option.style.display = '';
-                    return;
-                }
-                
-                const textoOpcion = option.textContent.toLowerCase();
-                if (!textoBusqueda || textoOpcion.includes(textoBusqueda)) {
-                    option.style.display = '';
-                    if (!primeraCoincidencia && option.value !== '') {
-                        primeraCoincidencia = option;
-                    }
-                } else {
-                    option.style.display = 'none';
-                }
-            });
-            
-            // Auto-seleccionar si hay coincidencia exacta
-            if (textoBusqueda && primeraCoincidencia && 
-                primeraCoincidencia.textContent.toLowerCase() === textoBusqueda) {
-                filtroSubcategoria.value = primeraCoincidencia.value;
-                filtroSubcategoria.dispatchEvent(new Event('change'));
-            }
-        }
-        
-        // Event listeners unificados
-        if (buscarCategoria) {
-            buscarCategoria.addEventListener('input', filtrarCategorias);
-            
-            // Sincronizar con el selector
-            buscarCategoria.addEventListener('focus', function() {
-                filtroCategoria.style.display = 'block';
-            });
-        }
-        
-        if (buscarSubcategoria) {
-            buscarSubcategoria.addEventListener('input', filtrarSubcategorias);
-        }
-        
-        // Sincronizar selectores con campos de búsqueda
-        if (filtroCategoria) {
-            filtroCategoria.addEventListener('change', function() {
-                const categoriaId = this.value;
-                const selectedOption = this.querySelector(`option[value="${categoriaId}"]`);
-                
-                // Actualizar el campo de búsqueda con la selección
-                if (buscarCategoria && selectedOption) {
-                    buscarCategoria.value = selectedOption.textContent;
-                }
-                
-                if (categoriaId) {
-                    if (buscarSubcategoria) {
-                        buscarSubcategoria.disabled = false;
-                        buscarSubcategoria.placeholder = "Escribe para buscar o selecciona subcategoría...";
-                    }
-                } else {
-                    if (buscarSubcategoria) {
-                        buscarSubcategoria.disabled = true;
-                        buscarSubcategoria.value = '';
-                        buscarSubcategoria.placeholder = "Seleccione primero una categoría...";
-                    }
-                }
-            });
-        }
-        
-        if (filtroSubcategoria) {
-            filtroSubcategoria.addEventListener('change', function() {
-                const subcategoriaId = this.value;
-                const selectedOption = this.querySelector(`option[value="${subcategoriaId}"]`);
-                
-                // Actualizar el campo de búsqueda con la selección
-                if (buscarSubcategoria && selectedOption) {
-                    buscarSubcategoria.value = selectedOption.textContent;
-                }
-            });
-        }
-        
-        // Estilo para checkboxes
+        // Estilo para checkboxes y dropdowns
         const style = document.createElement('style');
         style.textContent = `
             .checkbox-input-create:checked + .checkbox-label-create {
@@ -1251,6 +1346,19 @@
                 border-radius: 10px;
             }
             .productos-checkbox-container-create::-webkit-scrollbar-thumb {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                border-radius: 10px;
+            }
+            
+            /* Estilos para los dropdowns dinámicos */
+            .dropdown-filtro::-webkit-scrollbar {
+                width: 6px;
+            }
+            .dropdown-filtro::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+            }
+            .dropdown-filtro::-webkit-scrollbar-thumb {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 border-radius: 10px;
             }

@@ -926,64 +926,6 @@ if (!isset($cliente)) {
                                 class="form-control">
                         </div>
                         
-                        <!-- Campos adicionales -->
-                        <div class="form-group">
-                            <label for="direccion">
-                                <i class="fas fa-map-marker-alt"></i> Dirección:
-                            </label>
-                            <input type="text" 
-                                id="direccion" 
-                                name="direccion" 
-                                maxlength="200"
-                                value="<?= htmlspecialchars($cliente->direccion ?? '') ?>"
-                                placeholder="Dirección completa del cliente"
-                                class="form-control">
-                            <small class="form-text text-muted">Dirección de residencia o trabajo</small>
-                        </div>
-                        
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="ciudad">
-                                        <i class="fas fa-city"></i> Ciudad:
-                                    </label>
-                                    <input type="text" 
-                                           id="ciudad" 
-                                           name="ciudad" 
-                                           maxlength="100"
-                                           value="<?= htmlspecialchars($cliente->ciudad ?? '') ?>"
-                                           placeholder="Ciudad"
-                                           class="form-control">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fecha_nacimiento">
-                                        <i class="fas fa-birthday-cake"></i> Fecha de Nacimiento:
-                                    </label>
-                                    <input type="date" 
-                                           id="fecha_nacimiento" 
-                                           name="fecha_nacimiento" 
-                                           value="<?= htmlspecialchars($cliente->fecha_nacimiento ?? '') ?>"
-                                           max="<?= date('Y-m-d') ?>"
-                                           class="form-control">
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="preferencias">
-                                <i class="fas fa-heart"></i> Preferencias del Cliente:
-                            </label>
-                            <textarea id="preferencias" 
-                                      name="preferencias" 
-                                      rows="2"
-                                      maxlength="500"
-                                      placeholder="Preferencias de productos, observaciones especiales, etc."
-                                      class="form-control"><?= htmlspecialchars($cliente->preferencias ?? '') ?></textarea>
-                            <small class="form-text text-muted">Información sobre gustos, alergias, preferencias especiales</small>
-                        </div>
-                        
                         <!-- Estado actual -->
                         <div class="status-display">
                             <div class="current-status">

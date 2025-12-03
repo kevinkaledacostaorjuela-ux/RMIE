@@ -545,6 +545,16 @@
             gap: 8px;
         }
         
+        .preview-document {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
         .preview-local {
             color: rgba(255, 255, 255, 0.8);
             font-size: 1rem;
@@ -942,6 +952,23 @@
                                 </div>
                             </div>
 
+                            <div class="form-floating-modern">
+                                <input type="text" 
+                                       class="form-control-modern" 
+                                       id="documento_identidad" 
+                                       name="documento_identidad" 
+                                       placeholder=" "
+                                       maxlength="20"
+                                       value="<?= htmlspecialchars($_POST['documento_identidad'] ?? '') ?>">
+                                <label for="documento_identidad">
+                                    <i class="fas fa-id-card"></i>
+                                    Documento de Identidad (Opcional)
+                                </label>
+                                <div class="character-count">
+                                    <span id="documento_identidad-count">0</span>/20
+                                </div>
+                            </div>
+
                             <!-- Vista Previa -->
                             <div class="preview-section">
                                 <h6 style="color: rgba(255, 255, 255, 0.9); margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px;">
@@ -962,6 +989,11 @@
                                 <div class="preview-phone" id="previewPhone" style="display: none;">
                                     <i class="fas fa-phone"></i>
                                     <span id="previewPhoneText"></span>
+                                </div>
+                                
+                                <div class="preview-document" id="previewDocument" style="display: none;">
+                                    <i class="fas fa-id-card"></i>
+                                    <span id="previewDocumentText"></span>
                                 </div>
                                 
                                 <div class="preview-status" id="previewStatus">
@@ -1029,6 +1061,7 @@
             setupCharacterCount('descripcion', 'descripcion-count', 255);
             setupCharacterCount('correo', 'correo-count', 100);
             setupCharacterCount('cel_cliente', 'cel_cliente-count', 20);
+            setupCharacterCount('documento_identidad', 'documento_identidad-count', 20);
             
             // Filtro de búsqueda de locales
             const buscarLocalInput = document.getElementById('buscarLocal');
@@ -1098,6 +1131,17 @@
                     phoneDiv.style.display = 'none';
                 }
                 
+                // Actualizar documento de identidad
+                const documento = document.getElementById('documento_identidad').value;
+                const documentDiv = document.getElementById('previewDocument');
+                const documentText = document.getElementById('previewDocumentText');
+                if (documento) {
+                    documentText.textContent = documento;
+                    documentDiv.style.display = 'flex';
+                } else {
+                    documentDiv.style.display = 'none';
+                }
+                
                 // Actualizar estado
                 const statusDiv = document.getElementById('previewStatus');
                 if (estado === 'activo') {
@@ -1112,7 +1156,7 @@
             }
             
             // Agregar listeners para vista previa
-            ['nombre', 'correo', 'cel_cliente', 'estado', 'id_locales'].forEach(function(fieldId) {
+            ['nombre', 'correo', 'cel_cliente', 'documento_identidad', 'estado', 'id_locales'].forEach(function(fieldId) {
                 const field = document.getElementById(fieldId);
                 if (field) {
                     field.addEventListener('input', actualizarVistaPrevia);
@@ -1184,6 +1228,7 @@
                 document.getElementById('previewName').textContent = 'Nombre del Cliente';
                 document.querySelector('#previewEmail span').textContent = 'correo@ejemplo.com';
                 document.getElementById('previewPhone').style.display = 'none';
+                document.getElementById('previewDocument').style.display = 'none';
                 document.getElementById('previewStatus').innerHTML = `<span class="status-badge status-activo">
                     <i class="fas fa-check-circle"></i> Activo
                 </span>`;
@@ -1193,6 +1238,7 @@
                 document.getElementById('descripcion-count').textContent = '0';
                 document.getElementById('correo-count').textContent = '0';
                 document.getElementById('cel_cliente-count').textContent = '0';
+                document.getElementById('documento_identidad-count').textContent = '0';
             }, 10);
         }
     </script>

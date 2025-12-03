@@ -1096,10 +1096,6 @@ $stats = $statsQuery->fetch_assoc();
                                         </div>
                                         <div>
                                             <strong><?= htmlspecialchars($cliente->nombre) ?></strong>
-                                            <br>
-                                            <small class="text-muted">
-                                                <i class="fas fa-id-card"></i> <?= htmlspecialchars($cliente->documento ?? 'Sin documento') ?>
-                                            </small>
                                         </div>
                                     </div>
                                 </td>

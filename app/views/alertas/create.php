@@ -833,63 +833,50 @@ if (session_status() == PHP_SESSION_NONE) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         // Manejo de tipos de alerta
+        function setAlertType(type) {
+            // Remover selección anterior
+            document.querySelectorAll('.alert-type-card').forEach(c => c.classList.remove('selected'));
+            // Remover active solo de los formularios específicos (NO del estado)
+            document.getElementById('stock-form').classList.remove('active');
+            document.getElementById('expiration-form').classList.remove('active');
+
+            // Seleccionar nueva opción visualmente
+            var selectedCard = document.querySelector('.alert-type-card[data-type="' + type + '"]');
+            if (selectedCard) selectedCard.classList.add('selected');
+            document.getElementById('alert_type').value = type;
+
+            // Mostrar formulario correspondiente y habilitar/deshabilitar campos existentes
+            if (type === 'stock') {
+                document.getElementById('stock-form').classList.add('active');
+                // Deshabilitar campos del formulario expiration
+                var expIdsDisable = ['producto_expiration','cantidad_minima_exp','fecha_caducidad','cliente_expiration'];
+                expIdsDisable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = true; el.removeAttribute('required'); } });
+                // Habilitar campos del formulario stock
+                var stockIdsEnable = ['producto_stock','cantidad_minima','fecha_caducidad_stock','cliente_stock'];
+                stockIdsEnable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = false; el.setAttribute('required',''); } });
+            } else if (type === 'expiration') {
+                document.getElementById('expiration-form').classList.add('active');
+                // Deshabilitar campos del formulario stock
+                var stockIdsDisable = ['producto_stock','cantidad_minima','fecha_caducidad_stock','cliente_stock'];
+                stockIdsDisable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = true; el.removeAttribute('required'); } });
+                // Habilitar campos del formulario expiration
+                var expIdsEnable = ['producto_expiration','cantidad_minima_exp','fecha_caducidad','cliente_expiration'];
+                expIdsEnable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = false; el.setAttribute('required',''); } });
+            }
+        }
+
         document.querySelectorAll('.alert-type-card').forEach(card => {
             card.addEventListener('click', function() {
-                // Remover selección anterior
-                document.querySelectorAll('.alert-type-card').forEach(c => c.classList.remove('selected'));
-                // Remover active solo de los formularios específicos (NO del estado)
-                document.getElementById('stock-form').classList.remove('active');
-                document.getElementById('expiration-form').classList.remove('active');
-
-                // Seleccionar nueva opción
-                this.classList.add('selected');
                 const type = this.dataset.type;
-                document.getElementById('alert_type').value = type;
-
-                // Mostrar formulario correspondiente
-                if (type === 'stock') {
-                    document.getElementById('stock-form').classList.add('active');
-                    // Deshabilitar campos del otro formulario
-                    document.getElementById('search_producto_expiration').disabled = true;
-                    document.getElementById('producto_expiration').removeAttribute('required');
-                    document.getElementById('cantidad_minima_exp').removeAttribute('required');
-                    document.getElementById('cantidad_minima_exp').disabled = true;
-                    document.getElementById('fecha_caducidad').removeAttribute('required');
-                    document.getElementById('fecha_caducidad').disabled = true;
-                    document.getElementById('search_cliente_expiration').disabled = true;
-                    document.getElementById('cliente_expiration').removeAttribute('required');
-                    // Habilitar campos de este formulario
-                    document.getElementById('search_producto_stock').disabled = false;
-                    document.getElementById('producto_stock').setAttribute('required', '');
-                    document.getElementById('cantidad_minima').setAttribute('required', '');
-                    document.getElementById('cantidad_minima').disabled = false;
-                    document.getElementById('fecha_caducidad_stock').setAttribute('required', '');
-                    document.getElementById('fecha_caducidad_stock').disabled = false;
-                    document.getElementById('search_cliente_stock').disabled = false;
-                    document.getElementById('cliente_stock').setAttribute('required', '');
-                } else if (type === 'expiration') {
-                    document.getElementById('expiration-form').classList.add('active');
-                    // Deshabilitar campos del otro formulario
-                    document.getElementById('search_producto_stock').disabled = true;
-                    document.getElementById('producto_stock').removeAttribute('required');
-                    document.getElementById('cantidad_minima').removeAttribute('required');
-                    document.getElementById('cantidad_minima').disabled = true;
-                    document.getElementById('fecha_caducidad_stock').removeAttribute('required');
-                    document.getElementById('fecha_caducidad_stock').disabled = true;
-                    document.getElementById('search_cliente_stock').disabled = true;
-                    document.getElementById('cliente_stock').removeAttribute('required');
-                    // Habilitar campos de este formulario
-                    document.getElementById('search_producto_expiration').disabled = false;
-                    document.getElementById('producto_expiration').setAttribute('required', '');
-                    document.getElementById('cantidad_minima_exp').setAttribute('required', '');
-                    document.getElementById('cantidad_minima_exp').disabled = false;
-                    document.getElementById('fecha_caducidad').setAttribute('required', '');
-                    document.getElementById('fecha_caducidad').disabled = false;
-                    document.getElementById('search_cliente_expiration').disabled = false;
-                    document.getElementById('cliente_expiration').setAttribute('required', '');
-                }
+                setAlertType(type);
             });
         });
+
+        // Selección inicial basada en el valor por defecto desde el controlador
+        (function(){
+            var initialType = '<?php echo isset($alert_type_default) ? $alert_type_default : 'stock'; ?>';
+            setAlertType(initialType);
+        })();
 
         // Validación del formulario
         document.getElementById('alertForm').addEventListener('submit', function(e) {

@@ -311,24 +311,29 @@ unset($_SESSION['success'], $_SESSION['error']);
             padding: 6px 12px;
             border-radius: 15px;
             font-size: 0.8rem;
-            font-weight: 600;
+            font-weight: 700;
+            color: #1a1a1a; /* Mejor contraste para texto */
+            text-shadow: none;
         }
 
         .badge-success {
             background: linear-gradient(45deg, #4facfe, #00f2fe);
+            color: #0b2438; /* azul oscuro para contraste */
         }
 
         .badge-warning {
             background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            color: #3a0d0d; /* marrón oscuro para contraste */
         }
 
         .badge-danger {
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: #300000; /* rojo muy oscuro para contraste */
         }
 
         .badge-stock-bajo {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
+            color: #ffffff;
             padding: 8px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -341,7 +346,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .badge-vencimiento {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: #fff;
+            color: #ffffff;
             padding: 8px 14px;
             border-radius: 20px;
             font-size: 0.85rem;
@@ -683,7 +688,7 @@ unset($_SESSION['success'], $_SESSION['error']);
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
+    <div class="dashboard-container" id="alertasMainContent">
         <h1 class="page-title">
             <i class="fas fa-exclamation-triangle"></i> Gestión de Alertas
         </h1>
@@ -1178,6 +1183,70 @@ unset($_SESSION['success'], $_SESSION['error']);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Mostrar ventana emergente para crear alertas si hay próximas o vencidas
+        document.addEventListener('DOMContentLoaded', function() {
+            try {
+                var modalEl = document.getElementById('crearAlertasModal');
+                var showModal = <?php echo (($hay_stock_bajo ?? false) || ($hay_vencidas ?? false) || ($hay_proximas ?? false)) ? 'true' : 'false'; ?>;
+                if (modalEl && showModal) {
+                    modalEl.removeAttribute('aria-hidden');
+                    modalEl.setAttribute('role', 'dialog');
+                    modalEl.setAttribute('aria-modal', 'true');
+                    // Observador para evitar que aria-hidden vuelva a true mientras está visible
+                    var observer = new MutationObserver(function(mutations){
+                        mutations.forEach(function(m){
+                            if (m.attributeName === 'aria-hidden') {
+                                var isVisible = modalEl.classList.contains('show') || modalEl.style.display === 'block';
+                                var ah = modalEl.getAttribute('aria-hidden');
+                                if (isVisible && ah === 'true') {
+                                    modalEl.setAttribute('aria-hidden','false');
+                                }
+                            }
+                        });
+                    });
+                    observer.observe(modalEl, { attributes: true, attributeFilter: ['aria-hidden','class','style']});
+                    setTimeout(function(){
+                        var modal = new bootstrap.Modal(modalEl, {keyboard: true});
+                        // Asegurar que aria-hidden se limpie tras mostrar
+                        modalEl.addEventListener('shown.bs.modal', function(){
+                            modalEl.setAttribute('aria-hidden','false');
+                            // Aplicar inert al contenido principal para impedir foco fuera del modal
+                            try {
+                                var main = document.getElementById('alertasMainContent');
+                                if (main) { main.setAttribute('inert',''); }
+                            } catch(e) {}
+                        }, { once: true });
+                        // Antes de ocultar, mover el foco fuera del modal para evitar advertencia
+                        modalEl.addEventListener('hide.bs.modal', function(){
+                            try {
+                                if (modalEl.contains(document.activeElement)) {
+                                    document.activeElement.blur();
+                                }
+                                var focusTarget = document.querySelector('.page-title') || document.body;
+                                if (focusTarget) {
+                                    // Asegurar que sea enfocables temporalmente
+                                    if (!focusTarget.hasAttribute('tabindex')) {
+                                        focusTarget.setAttribute('tabindex', '-1');
+                                    }
+                                    focusTarget.focus({ preventScroll: true });
+                                }
+                            } catch(e) { console.warn('No se pudo reasignar el foco al cerrar el modal', e); }
+                            // Detener observador al cerrar
+                            try { observer.disconnect(); } catch(e){}
+                            // Quitar inert del contenido principal
+                            try {
+                                var main = document.getElementById('alertasMainContent');
+                                if (main) { main.removeAttribute('inert'); }
+                            } catch(e) {}
+                        });
+                        modal.show();
+                    }, 50);
+                }
+            } catch (e) {
+                console.warn('No se pudo mostrar la ventana emergente de alertas', e);
+            }
+        });
+
         function limpiarFiltros() {
             // Redirige siempre a la URL base del listado de alertas
             window.location.href = '/RMIE/app/controllers/AlertController.php?accion=index';
@@ -1289,5 +1358,56 @@ unset($_SESSION['success'], $_SESSION['error']);
             document.head.appendChild(style);
         })();
     </script>
+
+        <!-- Modal: Crear Alertas -->
+        <div class="modal fade" id="crearAlertasModal" tabindex="-1" aria-labelledby="crearAlertasModalLabel">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content" style="border-radius:16px; overflow:hidden;">
+                    <div class="modal-header" style="background: linear-gradient(45deg, #667eea, #764ba2); color:#fff;">
+                        <h5 class="modal-title" id="crearAlertasModalLabel"><i class="fas fa-bell"></i> Alertas pendientes</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" style="background: rgba(255,255,255,0.95);">
+                        <p style="color:#2c3e50;">
+                            <?php if (($hay_vencidas ?? false) && ($hay_stock_bajo ?? false) && ($hay_proximas ?? false)): ?>
+                                Se detectaron <strong>productos vencidos</strong>, <strong>próximos a vencer</strong> y <strong>stock bajo</strong>.
+                            <?php elseif (($hay_vencidas ?? false) && ($hay_stock_bajo ?? false)): ?>
+                                Se detectaron <strong>productos vencidos</strong> y <strong>stock bajo</strong>.
+                            <?php elseif (($hay_vencidas ?? false) && ($hay_proximas ?? false)): ?>
+                                Se detectaron <strong>productos vencidos</strong> y <strong>próximos a vencer</strong>.
+                            <?php elseif (($hay_stock_bajo ?? false) && ($hay_proximas ?? false)): ?>
+                                Se detectaron <strong>stock bajo</strong> y <strong>próximos a vencer</strong>.
+                            <?php elseif ($hay_vencidas ?? false): ?>
+                                Se detectaron <strong>productos vencidos</strong>.
+                            <?php elseif ($hay_proximas ?? false): ?>
+                                Se detectaron productos <strong>próximos a vencer</strong>.
+                            <?php elseif ($hay_stock_bajo ?? false): ?>
+                                Se detectó <strong>stock bajo</strong>.
+                            <?php else: ?>
+                                No hay alertas críticas actualmente.
+                            <?php endif; ?>
+                            ¿Deseas crear una alerta ahora?
+                        </p>
+                        <div class="d-flex gap-2">
+                            <a href="/RMIE/app/controllers/AlertController.php?accion=create&tipo=stock" class="btn btn-modern btn-success-modern" style="flex:1;">
+                                <i class="fas fa-boxes"></i> Stock Bajo
+                            </a>
+                            <a href="/RMIE/app/controllers/AlertController.php?accion=create&tipo=expiration" class="btn btn-modern btn-warning-modern" style="flex:1;">
+                                <i class="fas fa-calendar-times"></i> Vencimiento
+                            </a>
+                            <?php if ($hay_vencidas ?? false): ?>
+                            <a href="/RMIE/app/controllers/AlertController.php?accion=index&estado=Vencida" class="btn btn-modern btn-danger-modern" style="flex:1; min-width: 180px;">
+                                <i class="fas fa-filter"></i> Ver Vencidas
+                            </a>
+                            <?php endif; ?>
+              
+                        </div>
+                    </div>
+                    <div class="modal-footer" style="background: rgba(255,255,255,0.95);">
+                        <button type="button" class="btn btn-secondary-modern" data-bs-dismiss="modal">Ahora no</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 </body>
 </html>
