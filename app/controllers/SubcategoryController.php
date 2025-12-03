@@ -182,7 +182,18 @@ class SubcategoryController {
             }
         } else if (isset($result['success'])) {
             $successMessage = $force ? "Subcategoría eliminada exitosamente y productos desasociados." : "Subcategoría eliminada exitosamente.";
-            echo '<script>alert("' . $successMessage . '"); window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";</script>';
+            
+            // Feedback mejorado para Selenium con delay
+            echo '<script>
+                // Mostrar mensaje de éxito
+                alert("' . $successMessage . '");
+                
+                // Pequeño delay para que Selenium pueda capturar el resultado
+                setTimeout(function() {
+                    console.log("✅ Eliminación completada: ' . $successMessage . '");
+                    window.location.href = "/RMIE/app/controllers/SubcategoryController.php?accion=index";
+                }, 1000);
+            </script>';
             exit();
         }
     }
