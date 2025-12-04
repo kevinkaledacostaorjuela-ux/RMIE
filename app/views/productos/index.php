@@ -57,8 +57,7 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .dashboard-container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.12);
             border-radius: 20px;
             padding: 40px;
             margin: 20px auto;
@@ -69,12 +68,12 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .page-title {
-            color: #fff;
+            color: #2c3e50;
             text-align: center;
             margin-bottom: 30px;
             font-size: 2.5rem;
             font-weight: 700;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            text-shadow: none;
         }
 
         /* Animaciones */
@@ -100,8 +99,7 @@ $stats = $statsQuery->fetch_assoc();
 
         /* Contenedor de estadísticas */
         .main-stats-container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.15);
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 30px;
@@ -115,11 +113,11 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .stats-title {
-            color: #fff;
+            color: #2c3e50;
             font-size: 1.8rem;
             font-weight: 700;
             margin: 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: none;
         }
 
         .stats-grid-main {
@@ -130,8 +128,7 @@ $stats = $statsQuery->fetch_assoc();
         }
 
         .main-stat-card {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 16px;
             padding: 25px;
             display: flex;
@@ -185,13 +182,13 @@ $stats = $statsQuery->fetch_assoc();
         .stat-number {
             font-size: 2.5rem;
             font-weight: 800;
-            color: #fff;
+            color: #2c3e50;
             margin-bottom: 8px;
             line-height: 1;
         }
 
         .stat-label {
-            color: rgba(255, 255, 255, 0.85);
+            color: #4a5568;
             font-size: 1rem;
             font-weight: 500;
             text-transform: uppercase;

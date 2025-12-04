@@ -41,21 +41,29 @@ class SubcategoryController {
         global $conn;
         $categorias = Category::getAll($conn);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            echo '<pre>POST: ' . print_r($_POST, true) . '</pre>';
             $nombre = $_POST['nombre'] ?? null;
             $descripcion = $_POST['descripcion'] ?? null;
             $id_categoria = $_POST['id_categoria'] ?? null;
-            $result = SubcategorySimple::createSimple($conn, $nombre, $descripcion, $id_categoria);
-            if (!$result) {
-                if (isset($conn->error)) {
-                    echo '<pre>Error SQL: ' . $conn->error . '</pre>';
-                } else {
-                    echo '<pre>Error al guardar la subcategoría.</pre>';
+            // Validaciones básicas y mensajes amigables
+            if (session_status() === PHP_SESSION_NONE) { session_start(); }
+            try {
+                if (empty($nombre) || mb_strlen(trim($nombre)) < 3 || mb_strlen($nombre) > 45) {
+                    throw new Exception('El nombre debe tener entre 3 y 45 caracteres');
                 }
-            } else {
-                echo '<pre>Subcategoría guardada correctamente.</pre>';
+                if (empty($id_categoria) || !ctype_digit((string)$id_categoria)) {
+                    throw new Exception('Seleccione una categoría válida');
+                }
+
+                $result = SubcategorySimple::createSimple($conn, $nombre, $descripcion, (int)$id_categoria);
+                if (!$result) {
+                    throw new Exception('No se pudo guardar la subcategoría');
+                }
+
+                $_SESSION['success'] = 'Subcategoría creada correctamente';
                 header('Location: /RMIE/app/controllers/SubcategoryController.php?accion=index');
                 exit();
+            } catch (Exception $e) {
+                $_SESSION['error'] = $e->getMessage();
             }
         }
         include __DIR__ . '/../views/subcategorias/create.php';
@@ -69,13 +77,25 @@ class SubcategoryController {
             $nombre = $_POST['nombre'] ?? null;
             $descripcion = $_POST['descripcion'] ?? null;
             $id_categoria = $_POST['id_categoria'] ?? null;
-            $result = SubcategorySimple::updateSimple($conn, $id, $nombre, $descripcion, $id_categoria);
-            if (!$result) {
-                echo '<pre>Error al actualizar la subcategoría.</pre>';
-            } else {
-                echo '<pre>Subcategoría actualizada correctamente.</pre>';
+            if (session_status() === PHP_SESSION_NONE) { session_start(); }
+            try {
+                if (empty($nombre) || mb_strlen(trim($nombre)) < 3 || mb_strlen($nombre) > 45) {
+                    throw new Exception('El nombre debe tener entre 3 y 45 caracteres');
+                }
+                if (empty($id_categoria) || !ctype_digit((string)$id_categoria)) {
+                    throw new Exception('Seleccione una categoría válida');
+                }
+
+                $result = SubcategorySimple::updateSimple($conn, $id, $nombre, $descripcion, (int)$id_categoria);
+                if (!$result) {
+                    throw new Exception('No se pudo actualizar la subcategoría');
+                }
+
+                $_SESSION['success'] = 'Subcategoría actualizada correctamente';
                 header('Location: /RMIE/app/controllers/SubcategoryController.php?accion=index');
                 exit();
+            } catch (Exception $e) {
+                $_SESSION['error'] = $e->getMessage();
             }
         }
         include __DIR__ . '/../views/subcategorias/edit.php';

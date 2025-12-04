@@ -24,8 +24,7 @@
         .container-custom {
             max-width: 900px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(15px);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
             padding: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -47,6 +46,7 @@
             align-items: center;
             justify-content: center;
             gap: 12px;
+            color: #2c3e50;
         }
         
         .header .icon {
@@ -68,10 +68,12 @@
             font-size: 1.1rem;
             font-weight: 600;
             margin-bottom: 15px;
-            color: #4ecdc4;
+            color: #2c3e50;
             display: flex;
             align-items: center;
             gap: 8px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 8px;
         }
         
         .form-row {
@@ -95,26 +97,26 @@
         
         label {
             margin-bottom: 6px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 0.9rem;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 0.95rem;
         }
         
         input, select {
             padding: 12px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.15);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.98);
+            color: #2c3e50;
             font-size: 0.95rem;
             transition: all 0.3s ease;
         }
         
         input:focus, select:focus {
             outline: none;
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            background: #ffffff;
         }
         
         input::placeholder {
@@ -135,19 +137,19 @@
         .search-input {
             width: 100%;
             padding: 12px 14px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(0, 0, 0, 0.15);
             border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: #fff;
+            background: rgba(255, 255, 255, 0.98);
+            color: #2c3e50;
             font-size: 0.95rem;
             transition: all 0.3s ease;
         }
         
         .search-input:focus {
             outline: none;
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.1);
-            background: rgba(255, 255, 255, 0.15);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+            background: #ffffff;
         }
         
         .search-input::placeholder {
@@ -159,8 +161,7 @@
             top: 100%;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
             max-height: 200px;

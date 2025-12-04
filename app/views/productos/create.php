@@ -37,8 +37,7 @@ unset($_SESSION['error'], $_SESSION['success']);
             max-width: 1000px;
             width: 100%;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 30px;
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
@@ -58,15 +57,14 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .header-section {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.9);
             padding: 40px 30px;
             text-align: center;
             border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
         
         .header-title {
-            color: white;
+            color: #2c3e50;
             font-size: 2.2rem;
             font-weight: 700;
             margin-bottom: 10px;
@@ -82,7 +80,7 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .header-subtitle {
-            color: rgba(255, 255, 255, 0.8);
+            color: #4a5568;
             font-size: 1.1rem;
             font-weight: 400;
         }
@@ -92,12 +90,12 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .section-title {
-            color: rgba(255, 255, 255, 0.9);
+            color: #2c3e50;
             font-size: 1.3rem;
             font-weight: 600;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -149,7 +147,6 @@ unset($_SESSION['error'], $_SESSION['success']);
             font-size: 16px;
             color: #333;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
         
         .form-control-modern:focus {
@@ -209,7 +206,7 @@ unset($_SESSION['error'], $_SESSION['success']);
         .form-select-modern:not([value=""]) ~ label {
             top: 2px;
             font-size: 12px;
-            color: #667eea;
+            color: #2c3e50;
         }
         
         .char-counter {
@@ -227,7 +224,6 @@ unset($_SESSION['error'], $_SESSION['success']);
             display: flex;
             align-items: center;
             gap: 10px;
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -257,8 +253,7 @@ unset($_SESSION['error'], $_SESSION['success']);
             top: 100%;
             left: 0;
             right: 0;
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 12px;
             max-height: 200px;
@@ -317,12 +312,11 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .form-section-card {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+            background: #ffffff;
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.08);
         }
         
         .buttons-section {
@@ -346,7 +340,6 @@ unset($_SESSION['error'], $_SESSION['success']);
             align-items: center;
             gap: 10px;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(10px);
             min-width: 160px;
             justify-content: center;
         }
