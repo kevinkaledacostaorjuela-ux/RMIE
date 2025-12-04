@@ -34,6 +34,7 @@
             box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
             overflow: hidden;
             animation: fadeInUp 0.6s ease-out;
+            box-sizing: border-box;
         }
         
         @keyframes fadeInUp {
@@ -79,6 +80,8 @@
         
         .form-section {
             padding: 40px 30px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         .form-row {
@@ -86,6 +89,8 @@
             grid-template-columns: 1fr 1fr;
             gap: 20px;
             margin-bottom: 25px;
+            width: 100%;
+            box-sizing: border-box;
         }
         
         @media (max-width: 768px) {
@@ -98,18 +103,25 @@
         .form-floating-modern {
             position: relative;
             margin-bottom: 25px;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
         }
         
         .form-control-modern {
             width: 100%;
-            padding: 18px 15px 8px 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 22px 15px 8px 15px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 15px;
             font-size: 16px;
-            color: #333;
+            color: #2c3e50;
+            font-weight: 500;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
         .form-control-modern:focus {
@@ -147,16 +159,23 @@
         
         .form-floating-modern label {
             position: absolute;
-            top: 12px;
+            top: 2px;
             left: 15px;
-            color: rgba(102, 126, 234, 0.8);
+            color: #667eea;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 12px;
             transition: all 0.3s ease;
             pointer-events: none;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2px 8px;
+            border-radius: 8px;
+            z-index: 10;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         
         .form-floating-modern label i {
@@ -167,9 +186,11 @@
         .form-control-modern:not(:placeholder-shown) ~ label,
         .form-select-modern:focus ~ label,
         .form-select-modern:not([value=""]) ~ label {
-            top: 2px;
-            font-size: 12px;
+            top: -2px;
+            font-size: 11px;
             color: #667eea;
+            background: rgba(255, 255, 255, 1);
+            padding: 4px 10px;
         }
         
         .char-counter {
@@ -316,6 +337,68 @@
                 transform: translateX(0);
             }
         }
+
+        /* Estilos para el dropdown personalizado */
+        .dropdown-container-create {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+        .dropdown-menu-create {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            border: 2px solid rgba(102, 126, 234, 0.2);
+            border-radius: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.25);
+            margin-top: 5px;
+            backdrop-filter: blur(15px);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .dropdown-item-create {
+            padding: 12px 15px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.2s;
+            color: #2c3e50;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        .dropdown-item-create:hover {
+            background-color: #e3f2fd !important;
+            color: #1976d2 !important;
+        }
+
+        .dropdown-item-create:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-arrow-create {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            cursor: pointer;
+            font-size: 0.9rem;
+            z-index: 2;
+            pointer-events: auto;
+        }
     </style>
 </head>
 <body>
@@ -351,42 +434,66 @@
                     </div>
 
                     <div class="form-floating-modern">
-                        <select class="form-select-modern" 
-                                id="id_categoria" 
-                                name="id_categoria" 
-                                required>
-                            <option value="">Seleccione una categoría</option>
-                            <?php if (isset($categorias) && is_array($categorias)): ?>
-                                <?php foreach ($categorias as $cat): ?>
-                                    <option value="<?= htmlspecialchars($cat->id_categoria) ?>">
-                                        <?= htmlspecialchars($cat->nombre) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <option value="" disabled>No hay categorías disponibles</option>
-                            <?php endif; ?>
-                        </select>
-                        <label for="id_categoria">
+                        <div class="dropdown-container-create" style="position: relative;">
+                            <input type="text" 
+                                   class="form-control-modern" 
+                                   id="categoria_input" 
+                                   placeholder=" "
+                                   autocomplete="off"
+                                   onclick="toggleCategoriaDropdown()"
+                                   oninput="filterCategoriaDropdown()"
+                                   required>
+                            <input type="hidden" 
+                                   id="id_categoria" 
+                                   name="id_categoria" 
+                                   required>
+                            <i class="fas fa-chevron-down dropdown-arrow-create" 
+                               style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; cursor: pointer; font-size: 0.9rem; z-index: 2;"
+                               onclick="toggleCategoriaDropdown()"></i>
+                            <div id="categoriaDropdownCreate" class="dropdown-menu-create" 
+                                 style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 15px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-top: 5px;">
+                                <?php if (isset($categorias) && is_array($categorias) && !empty($categorias)): ?>
+                                    <?php foreach ($categorias as $cat): ?>
+                                        <div class="dropdown-item-create" 
+                                             style="padding: 12px 15px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: all 0.2s; color: #333;"
+                                             onclick="selectCategoria('<?= $cat->id_categoria ?>', '<?= htmlspecialchars($cat->nombre, ENT_QUOTES) ?>')"
+                                             onmouseover="this.style.backgroundColor='#e3f2fd'; this.style.color='#1976d2'"
+                                             onmouseout="this.style.backgroundColor='white'; this.style.color='#333'">
+                                            <i class="fas fa-folder" style="margin-right: 8px; color: #666;"></i>
+                                            <?= htmlspecialchars($cat->nombre) ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <div class="dropdown-item-create" style="padding: 12px 15px; color: #999; font-style: italic;">
+                                        No hay categorías disponibles
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <label for="categoria_input">
                             <i class="fas fa-folder"></i>
                             Categoría Principal
                         </label>
                     </div>
                 </div>
 
-                <div class="form-floating-modern">
-                    <input type="text" 
-                           class="form-control-modern" 
-                           id="descripcion" 
-                           name="descripcion" 
-                           placeholder=" "
-                           maxlength="45"
-                           required>
-                    <label for="descripcion">
-                        <i class="fas fa-align-left"></i>
-                        Descripción
-                    </label>
-                    <div class="char-counter">
-                        <span id="descripcion-count">0</span>/45 caracteres
+                <!-- Segunda fila: Campo de descripción que ocupa todo el ancho -->
+                <div class="form-row" style="grid-template-columns: 1fr;">
+                    <div class="form-floating-modern">
+                        <input type="text" 
+                               class="form-control-modern" 
+                               id="descripcion" 
+                               name="descripcion" 
+                               placeholder=" "
+                               maxlength="45"
+                               required>
+                        <label for="descripcion">
+                            <i class="fas fa-align-left"></i>
+                            Descripción
+                        </label>
+                        <div class="char-counter">
+                            <span id="descripcion-count">0</span>/45 caracteres
+                        </div>
                     </div>
                 </div>
 
@@ -468,6 +575,7 @@
             if (!categoria) {
                 e.preventDefault();
                 alert('Debe seleccionar una categoría principal');
+                document.getElementById('categoria_input').focus();
                 return;
             }
         });
@@ -483,19 +591,110 @@
             });
         });
 
-        // Actualizar label del select cuando cambie
-        document.getElementById('id_categoria').addEventListener('change', function() {
-            const label = this.parentElement.querySelector('label');
-            if (this.value) {
-                label.style.top = '2px';
-                label.style.fontSize = '12px';
-                label.style.color = '#667eea';
-            } else {
-                label.style.top = '12px';
-                label.style.fontSize = '14px';
-                label.style.color = 'rgba(102, 126, 234, 0.8)';
+        // === FUNCIONES PARA EL DROPDOWN DE CATEGORÍAS ===
+        
+        // Cerrar dropdown al hacer clic fuera
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.dropdown-container-create')) {
+                document.getElementById('categoriaDropdownCreate').style.display = 'none';
             }
         });
+
+        // Mostrar/ocultar dropdown de categorías
+        function toggleCategoriaDropdown() {
+            const dropdown = document.getElementById('categoriaDropdownCreate');
+            const isVisible = dropdown.style.display === 'block';
+            dropdown.style.display = isVisible ? 'none' : 'block';
+        }
+
+        // Filtrar categorías mientras se escribe
+        function filterCategoriaDropdown() {
+            const input = document.getElementById('categoria_input');
+            const dropdown = document.getElementById('categoriaDropdownCreate');
+            const filter = input.value.toLowerCase();
+            const items = dropdown.querySelectorAll('.dropdown-item-create');
+            
+            let hasVisibleItems = false;
+            items.forEach(function(item) {
+                const text = item.textContent.toLowerCase().trim();
+                
+                if (text.includes('no hay categorías') || text === '') {
+                    return;
+                }
+                
+                if (filter === '' || text.includes(filter)) {
+                    item.style.display = 'block';
+                    hasVisibleItems = true;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            dropdown.style.display = hasVisibleItems ? 'block' : 'none';
+        }
+
+        // Seleccionar una categoría
+        function selectCategoria(id, nombre) {
+            const input = document.getElementById('categoria_input');
+            const hiddenInput = document.getElementById('id_categoria');
+            const dropdown = document.getElementById('categoriaDropdownCreate');
+            const label = document.querySelector('label[for="categoria_input"]');
+            
+            input.value = nombre;
+            hiddenInput.value = id;
+            dropdown.style.display = 'none';
+            
+            // Actualizar label del campo
+            if (label) {
+                label.style.top = '-2px';
+                label.style.fontSize = '11px';
+                label.style.color = '#667eea';
+                label.style.background = 'rgba(255, 255, 255, 1)';
+                label.style.padding = '4px 10px';
+            }
+            
+            // Disparar evento para activar validación visual
+            input.dispatchEvent(new Event('input'));
+        }
+
+        // Actualizar efectos visuales para el nuevo input
+        document.getElementById('categoria_input').addEventListener('focus', function() {
+            this.parentElement.parentElement.style.transform = 'scale(1.02)';
+            
+            // Asegurar que el label esté en la posición correcta
+            const label = document.querySelector('label[for="categoria_input"]');
+            if (label && this.value) {
+                label.style.top = '-2px';
+                label.style.fontSize = '11px';
+                label.style.color = '#667eea';
+            }
+        });
+        
+        document.getElementById('categoria_input').addEventListener('blur', function() {
+            this.parentElement.parentElement.style.transform = 'scale(1)';
+        });
+
+        // Manejar el label cuando hay contenido
+        document.getElementById('categoria_input').addEventListener('input', function() {
+            const label = document.querySelector('label[for="categoria_input"]');
+            if (label) {
+                if (this.value.trim() !== '') {
+                    label.style.top = '-2px';
+                    label.style.fontSize = '11px';
+                    label.style.color = '#667eea';
+                    label.style.background = 'rgba(255, 255, 255, 1)';
+                    label.style.padding = '4px 10px';
+                } else {
+                    label.style.top = '2px';
+                    label.style.fontSize = '12px';
+                    label.style.color = '#667eea';
+                    label.style.background = 'rgba(255, 255, 255, 0.95)';
+                    label.style.padding = '2px 8px';
+                }
+            }
+        });
+
+
     </script>
 </body>
 </html>

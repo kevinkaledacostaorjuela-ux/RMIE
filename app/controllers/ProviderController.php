@@ -117,26 +117,126 @@ class ProviderController {
                 }
                 exit();
             }
-            // Para mostrar el formulario necesitamos la lista de productos disponibles
+            // Para mostrar el formulario necesitamos la lista de productos, categorías y subcategorías
             global $conn;
             require_once __DIR__ . '/../models/Product.php';
-            $productos = Product::getAll($conn);
+            require_once __DIR__ . '/../models/Category.php';
+            require_once __DIR__ . '/../models/Subcategory.php';
             
-            // Debug: verificar si hay productos
-            error_log("DEBUG: Productos count = " . (is_array($productos) ? count($productos) : 'no es array'));
-            if (is_array($productos) && count($productos) > 0) {
-                error_log("DEBUG: Primer producto = " . $productos[0]->nombre);
+            $productos = Product::getAll($conn) ?: [];
+            $categorias = Category::getAll($conn) ?: [];
+            $subcategorias = Subcategory::getAll($conn) ?: [];
+            
+            // Debug: verificar qué datos estamos obteniendo
+            error_log("Productos obtenidos: " . count($productos));
+            error_log("Categorías obtenidas: " . count($categorias));
+            error_log("Subcategorías obtenidas: " . count($subcategorias));
+            
+            if (!empty($subcategorias)) {
+                error_log("Primera subcategoría: " . json_encode($subcategorias[0]));
             }
+            
+            // Organizar subcategorías por categoría para el JavaScript
+            $subcategorias_por_categoria = [];
+            if (is_array($subcategorias)) {
+                foreach ($subcategorias as $subcat) {
+                    $id_categoria = null;
+                    $id_subcategoria = null;
+                    $nombre = '';
+                    
+                    // Manejar la estructura específica del modelo Subcategory
+                    if (is_array($subcat) && isset($subcat['obj'])) {
+                        // Estructura del modelo: ['obj' => objeto, 'categoria_nombre' => string]
+                        $obj = $subcat['obj'];
+                        if (is_object($obj)) {
+                            $id_categoria = $obj->id_categoria ?? null;
+                            $id_subcategoria = $obj->id_subcategoria ?? null;
+                            $nombre = $obj->nombre ?? '';
+                        }
+                    } else if (is_object($subcat)) {
+                        // Objeto directo
+                        $id_categoria = $subcat->id_categoria ?? null;
+                        $id_subcategoria = $subcat->id_subcategoria ?? null;
+                        $nombre = $subcat->nombre ?? '';
+                    } else if (is_array($subcat)) {
+                        // Array directo
+                        $id_categoria = $subcat['id_categoria'] ?? null;
+                        $id_subcategoria = $subcat['id_subcategoria'] ?? null;
+                        $nombre = $subcat['nombre'] ?? '';
+                    }
+                    
+                    // Solo procesar si tenemos los datos necesarios
+                    if ($id_categoria !== null && $id_subcategoria !== null && !empty($nombre)) {
+                        if (!isset($subcategorias_por_categoria[$id_categoria])) {
+                            $subcategorias_por_categoria[$id_categoria] = [];
+                        }
+                        $subcategorias_por_categoria[$id_categoria][] = [
+                            'id' => $id_subcategoria,
+                            'nombre' => $nombre
+                        ];
+                    }
+                }
+            }
+            
+            // Debug: verificar la estructura final
+            error_log("Subcategorías organizadas: " . json_encode($subcategorias_por_categoria));
             
             include __DIR__ . '/../views/proveedores/create.php';
         } catch (Exception $e) {
             error_log("Error en ProviderController::create: " . $e->getMessage());
             $error = $e->getMessage();
-            // Intentar pasar productos si es posible
+            // Intentar pasar productos, categorías y subcategorías si es posible
             if (!isset($productos)) {
                 global $conn;
                 require_once __DIR__ . '/../models/Product.php';
-                $productos = Product::getAll($conn);
+                require_once __DIR__ . '/../models/Category.php';
+                require_once __DIR__ . '/../models/Subcategory.php';
+                
+                $productos = Product::getAll($conn) ?: [];
+                $categorias = Category::getAll($conn) ?: [];
+                $subcategorias = Subcategory::getAll($conn) ?: [];
+                
+                // Organizar subcategorías por categoría
+                $subcategorias_por_categoria = [];
+                if (is_array($subcategorias)) {
+                    foreach ($subcategorias as $subcat) {
+                        $id_categoria = null;
+                        $id_subcategoria = null;
+                        $nombre = '';
+                        
+                        // Manejar la estructura específica del modelo Subcategory
+                        if (is_array($subcat) && isset($subcat['obj'])) {
+                            // Estructura del modelo: ['obj' => objeto, 'categoria_nombre' => string]
+                            $obj = $subcat['obj'];
+                            if (is_object($obj)) {
+                                $id_categoria = $obj->id_categoria ?? null;
+                                $id_subcategoria = $obj->id_subcategoria ?? null;
+                                $nombre = $obj->nombre ?? '';
+                            }
+                        } else if (is_object($subcat)) {
+                            // Objeto directo
+                            $id_categoria = $subcat->id_categoria ?? null;
+                            $id_subcategoria = $subcat->id_subcategoria ?? null;
+                            $nombre = $subcat->nombre ?? '';
+                        } else if (is_array($subcat)) {
+                            // Array directo
+                            $id_categoria = $subcat['id_categoria'] ?? null;
+                            $id_subcategoria = $subcat['id_subcategoria'] ?? null;
+                            $nombre = $subcat['nombre'] ?? '';
+                        }
+                        
+                        // Solo procesar si tenemos los datos necesarios
+                        if ($id_categoria !== null && $id_subcategoria !== null && !empty($nombre)) {
+                            if (!isset($subcategorias_por_categoria[$id_categoria])) {
+                                $subcategorias_por_categoria[$id_categoria] = [];
+                            }
+                            $subcategorias_por_categoria[$id_categoria][] = [
+                                'id' => $id_subcategoria,
+                                'nombre' => $nombre
+                            ];
+                        }
+                    }
+                }
             }
             include __DIR__ . '/../views/proveedores/create.php';
         }

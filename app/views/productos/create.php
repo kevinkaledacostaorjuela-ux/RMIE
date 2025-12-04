@@ -3,20 +3,136 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
+// Inicializar variables por defecto si no existen
+if (!isset($categorias)) $categorias = [];
+if (!isset($subcategorias)) $subcategorias = [];
+if (!isset($proveedores)) $proveedores = [];
+if (!isset($usuarios)) $usuarios = [];
+
 // Obtener mensajes de sesión
-$error_message = $_SESSION['error'] ?? '';
-$success_message = $_SESSION['success'] ?? '';
+$error_message = $_SESSION['error'] ?? ($error_message ?? '');
+$success_message = $_SESSION['success'] ?? ($success_message ?? '');
 
 // Limpiar mensajes de sesión
 unset($_SESSION['error'], $_SESSION['success']);
 ?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Crear Nuevo Producto - RMIE</title>
     <link rel="icon" type="image/x-icon" href="/RMIE/public/favicon.ico">
+    
+    <!-- Estilos críticos PRIMERO para evitar flash blanco -->
+    <style>
+        /* ESTILOS CRÍTICOS - CARGAN INMEDIATAMENTE */
+        html, body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+        }
+        
+        body {
+            padding: 20px !important;
+        }
+        
+        /* CONTENEDOR PRINCIPAL - CRÍTICO - SELECTORES SUPER ESPECÍFICOS */
+        body > .main-container,
+        div.main-container,
+        .main-container {
+            max-width: 1000px !important;
+            width: 100% !important;
+            margin: 0 auto !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            background-color: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 30px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
+            overflow: hidden !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            z-index: 1 !important;
+        }
+        
+        /* Prevenir flash blanco */
+        * {
+            box-sizing: border-box;
+        }
+    </style>
+    
+    <!-- Script inmediato para forzar estilos -->
+    <script>
+        // Ejecuta INMEDIATAMENTE, antes de que cargue el CSS externo
+        (function() {
+            const html = document.documentElement;
+            const body = document.body || document.getElementsByTagName('body')[0];
+            
+            if (html) {
+                html.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                html.style.minHeight = '100vh';
+            }
+            
+            if (body) {
+                body.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                body.style.minHeight = '100vh';
+                body.style.padding = '20px';
+                body.style.margin = '0';
+                body.style.fontFamily = '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif';
+            }
+            
+            // Forzar estilos del contenedor INMEDIATAMENTE
+            function forceContainerStyles() {
+                const containers = document.querySelectorAll('.main-container, div.main-container');
+                containers.forEach(function(container) {
+                    if (container) {
+                        container.style.setProperty('max-width', '1000px', 'important');
+                        container.style.setProperty('width', '100%', 'important');
+                        container.style.setProperty('margin', '0 auto', 'important');
+                        container.style.setProperty('background', 'rgba(255, 255, 255, 0.95)', 'important');
+                        container.style.setProperty('background-color', 'rgba(255, 255, 255, 0.95)', 'important');
+                        container.style.setProperty('border-radius', '30px', 'important');
+                        container.style.setProperty('border', '1px solid rgba(255, 255, 255, 0.2)', 'important');
+                        container.style.setProperty('box-shadow', '0 25px 80px rgba(0, 0, 0, 0.3)', 'important');
+                        container.style.setProperty('overflow', 'hidden', 'important');
+                        container.style.setProperty('backdrop-filter', 'blur(10px)', 'important');
+                        container.style.setProperty('position', 'relative', 'important');
+                        container.style.setProperty('z-index', '1', 'important');
+                    }
+                });
+            }
+            
+            // Ejecutar inmediatamente
+            forceContainerStyles();
+            
+            // Ejecutar después de un micro-delay
+            setTimeout(forceContainerStyles, 1);
+            setTimeout(forceContainerStyles, 10);
+            setTimeout(forceContainerStyles, 50);
+            
+            // Observer para detectar cuando se añade el contenedor
+            if (typeof MutationObserver !== 'undefined') {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'childList') {
+                            const containers = document.querySelectorAll('.main-container');
+                            if (containers.length > 0) {
+                                forceContainerStyles();
+                            }
+                        }
+                    });
+                });
+                
+                if (document.body) {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+            }
+        })();
+    </script>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -26,23 +142,11 @@ unset($_SESSION['error'], $_SESSION['success']);
             box-sizing: border-box;
         }
         
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        /* Los estilos críticos ya están en el head, estos son complementarios */
         
+        /* Animación para el contenedor */
         .main-container {
-            max-width: 1000px;
-            width: 100%;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            animation: fadeInUp 0.6s ease-out;
+            animation: fadeInUp 0.6s ease-out !important;
         }
         
         @keyframes fadeInUp {
@@ -372,8 +476,10 @@ unset($_SESSION['error'], $_SESSION['success']);
         /* Responsive */
         @media (max-width: 768px) {
             .main-container {
-                margin: 10px;
-                border-radius: 20px;
+                margin: 10px !important;
+                border-radius: 20px !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3) !important;
             }
             
             .header-section {
@@ -428,7 +534,7 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
     </style>
 </head>
-<body>
+<body style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; min-height: 100vh !important; padding: 20px !important; margin: 0 !important; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;">
     <div class="main-container">
         <!-- Header -->
         <div class="header-section">
@@ -771,9 +877,8 @@ unset($_SESSION['error'], $_SESSION['success']);
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sistema de captura de errores silencioso
+        // Sistema de captura de errores simplificado
         window.addEventListener('error', function(event) {
-            // Capturar errores pero no mostrarlos en consola para evitar spam
             return true; // Previene que se muestre el error por defecto
         });
         

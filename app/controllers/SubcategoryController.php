@@ -9,28 +9,49 @@ class SubcategoryController {
         global $conn;
         
         try {
-            require_once __DIR__ . '/../utils/FilterHelper.php';
+            // Obtener subcategorías directamente de la base de datos
+            $sql = "SELECT s.*, c.nombre AS categoria_nombre 
+                    FROM subcategorias s 
+                    LEFT JOIN categorias c ON s.id_categoria = c.id_categoria 
+                    ORDER BY s.nombre";
             
-            // Definir reglas de filtro
-            $filterRules = [
-                'nombre' => ['type' => 'text', 'options' => ['max_length' => 100]],
-                'descripcion' => ['type' => 'text', 'options' => ['max_length' => 255]],
-                'categoria' => ['type' => 'int', 'options' => ['min' => 1]],
-                'buscar' => ['type' => 'text', 'options' => ['max_length' => 100]]
-            ];
+            $result = $conn->query($sql);
+            $subcategorias = [];
             
-            // Procesar filtros del GET
-            $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            if ($result && $result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $subcategorias[] = (object)[
+                        'id_subcategoria' => $row['id_subcategoria'],
+                        'nombre' => $row['nombre'],
+                        'descripcion' => $row['descripcion'],
+                        'id_categoria' => $row['id_categoria'],
+                        'fecha_creacion' => $row['fecha_creacion'] ?? null,
+                        'categoria_nombre' => $row['categoria_nombre']
+                    ];
+                }
+            }
             
-            // Obtener subcategorías con filtros
-            $subcategorias = SubcategorySimple::getAllSimple($conn, $filtros);
+            // Si hay filtros aplicados, filtrar los resultados
+            if (!empty($_GET['nombre'])) {
+                $filtroNombre = strtolower(trim($_GET['nombre']));
+                $subcategorias = array_filter($subcategorias, function($sub) use ($filtroNombre) {
+                    return stripos($sub->nombre, $filtroNombre) !== false;
+                });
+            }
+            
+            if (!empty($_GET['categoria'])) {
+                $filtroCategoria = intval($_GET['categoria']);
+                $subcategorias = array_filter($subcategorias, function($sub) use ($filtroCategoria) {
+                    return $sub->id_categoria == $filtroCategoria;
+                });
+            }
             
             // Obtener categorías para los filtros
             $categorias = Category::getAll($conn);
             
         } catch (Exception $e) {
             error_log("Error en SubcategoryController::index: " . $e->getMessage());
-            $subcategorias = SubcategorySimple::getAllSimple($conn); // Fallback sin filtros
+            $subcategorias = [];
             $categorias = Category::getAll($conn);
         }
         
@@ -40,6 +61,7 @@ class SubcategoryController {
     public function create() {
         global $conn;
         $categorias = Category::getAll($conn);
+        
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nombre = $_POST['nombre'] ?? null;
             $descripcion = $_POST['descripcion'] ?? null;

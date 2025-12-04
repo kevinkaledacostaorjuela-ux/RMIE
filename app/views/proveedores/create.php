@@ -21,6 +21,69 @@
             padding: 20px 0;
         }
         
+        /* Estilos para dropdowns personalizados */
+        .categoria-dropdown,
+        .subcategoria-dropdown {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border-radius: 0 0 10px 10px !important;
+            z-index: 9999 !important;
+            position: absolute !important;
+        }
+        
+        .dropdown-option {
+            background-color: white;
+            transition: background-color 0.2s ease;
+        }
+        
+        .dropdown-option:hover {
+            background-color: #e3f2fd !important;
+        }
+        
+        .dropdown-option:last-child {
+            border-bottom: none !important;
+        }
+        
+        /* Asegurar que los contenedores padre tengan posición relativa */
+        .filter-container {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Asegurar que el texto sea visible en los inputs */
+        #filtro_categoria_input,
+        #filtro_subcategoria_input {
+            text-align: left !important;
+            text-indent: 0 !important;
+            padding: 10px 40px 10px 15px !important;
+            font-size: 14px;
+            line-height: 1.4;
+            margin: 0 !important;
+            border: 2px solid rgba(255, 255, 255, 0.5) !important;
+            box-sizing: border-box !important;
+            vertical-align: top !important;
+        }
+        
+        /* Estados específicos para subcategoría */
+        #filtro_subcategoria_input:not([disabled]) {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #333 !important;
+            cursor: text !important;
+        }
+        
+        #filtro_subcategoria_input[disabled] {
+            background: rgba(255, 255, 255, 0.5) !important;
+            color: #999 !important;
+            cursor: not-allowed !important;
+        }
+        
+        /* Limpiar cualquier contenido pseudo */
+        #filtro_categoria_input:before,
+        #filtro_categoria_input:after,
+        #filtro_subcategoria_input:before,
+        #filtro_subcategoria_input:after {
+            content: none !important;
+        }
+        
         .main-container {
             max-width: 1200px;
             margin: 0 auto;
@@ -778,6 +841,56 @@
                                     Productos a asociar <span class="productos-count" id="productosCount" style="font-size: 12px; color: rgba(102, 126, 234, 0.7); font-weight: 400; margin-left: 8px;">(0 seleccionados)</span>
                                 </h5>
                                 
+                                <!-- Filtros de Categoría y Subcategoría -->
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                                    <div class="filter-container" style="position: relative; z-index: 10;">
+                                        <label style="color: white; font-size: 14px; margin-bottom: 5px; display: block;">
+                                            <i class="fas fa-layer-group"></i> Filtrar por Categoría
+                                        </label>
+                                        <div style="position: relative;">
+                                            <input type="text" 
+                                                   id="filtro_categoria_input" 
+                                                   class="form-control-modern" 
+                                                   placeholder="🔍 Buscar o seleccionar categoría..."
+                                                   autocomplete="off"
+                                                   style="width: 100%; padding: 10px 40px 10px 15px; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px; color: #333; text-indent: 0; padding-left: 15px;">
+                                            <div id="dropdown_categoria" class="categoria-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid rgba(255, 255, 255, 0.5); border-top: none; border-radius: 0 0 10px 10px; max-height: 200px; overflow-y: auto; z-index: 9999;">
+                                                <div class="dropdown-option" data-value="" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;">Todas las categorías</div>
+                                                <?php if (isset($categorias) && is_array($categorias)): ?>
+                                                    <?php foreach ($categorias as $categoria): ?>
+                                                        <div class="dropdown-option" 
+                                                             data-value="<?= htmlspecialchars($categoria->id_categoria ?? $categoria['id_categoria'] ?? '') ?>"
+                                                             style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                                            <?= htmlspecialchars($categoria->nombre ?? $categoria['nombre'] ?? '') ?>
+                                                        </div>
+                                                    <?php endforeach; ?>
+                                                <?php endif; ?>
+                                            </div>
+                                            <i class="fas fa-chevron-down" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none;"></i>
+                                        </div>
+                                        <input type="hidden" id="filtro_categoria" value="">
+                                    </div>
+                                    <div class="filter-container" style="position: relative; z-index: 9;">
+                                        <label style="color: white; font-size: 14px; margin-bottom: 5px; display: block;">
+                                            <i class="fas fa-tags"></i> Filtrar por Subcategoría
+                                        </label>
+                                        <div style="position: relative;">
+                                            <input type="text" 
+                                                   id="filtro_subcategoria_input" 
+                                                   class="form-control-modern" 
+                                                   placeholder="Seleccione primero una categoría..."
+                                                   autocomplete="off"
+                                                   style="width: 100%; padding: 10px 40px 10px 15px; background: rgba(255, 255, 255, 0.9); border: 2px solid rgba(255, 255, 255, 0.5); border-radius: 10px; color: #333; text-indent: 0; padding-left: 15px;"
+                                                   disabled>
+                                            <div id="dropdown_subcategoria" class="subcategoria-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid rgba(255, 255, 255, 0.5); border-top: none; border-radius: 0 0 10px 10px; max-height: 200px; overflow-y: auto; z-index: 9999;">
+                                                <div class="dropdown-option" data-value="" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;">Seleccione primero una categoría</div>
+                                            </div>
+                                            <i class="fas fa-chevron-down" style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; pointer-events: none;"></i>
+                                        </div>
+                                        <input type="hidden" id="filtro_subcategoria" value="">
+                                    </div>
+                                </div>
+                                
                                 <div style="margin-bottom: 15px;">
                                     <input type="text" 
                                            id="buscarProducto" 
@@ -790,7 +903,10 @@
                                     <?php if (!empty($productos) && is_array($productos)): ?>
                                         <?php foreach ($productos as $prod): ?>
                                             <?php $selected = (isset($_POST['productos']) && is_array($_POST['productos']) && in_array($prod->id_productos, array_map('intval', $_POST['productos']))) ? 'checked' : ''; ?>
-                                            <div class="producto-item visible" data-nombre="<?= strtolower(htmlspecialchars($prod->nombre)) ?>">
+                                            <div class="producto-item visible" 
+                                                 data-nombre="<?= strtolower(htmlspecialchars($prod->nombre)) ?>"
+                                                 data-categoria-id="<?= htmlspecialchars($prod->id_categoria ?? '') ?>"
+                                                 data-subcategoria-id="<?= htmlspecialchars($prod->id_subcategoria ?? '') ?>">
                                                 <input type="checkbox" 
                                                        id="prod_<?= $prod->id_productos ?>" 
                                                        name="productos[]" 
@@ -963,6 +1079,422 @@
                     }
                 });
             }
+            
+            // Filtros de categoría y subcategoría
+            const filtroCategoria = document.getElementById('filtro_categoria');
+            const filtroSubcategoria = document.getElementById('filtro_subcategoria');
+            
+            // Datos de subcategorías por categoría (se cargarán dinámicamente)
+            const subcategoriasPorCategoria = <?= json_encode($subcategorias_por_categoria ?? []) ?>;
+            console.log('Subcategorías disponibles:', subcategoriasPorCategoria);
+            
+            // Referencias a los nuevos elementos unificados
+            const categoriaInput = document.getElementById('filtro_categoria_input');
+            const categoriaDropdown = document.getElementById('dropdown_categoria');
+            const categoriaHidden = document.getElementById('filtro_categoria');
+            
+            // Función para limpiar y establecer valor del input
+            function setInputValue(input, value) {
+                if (!input) return;
+                input.value = '';
+                input.blur();
+                input.focus();
+                input.value = value.trim();
+                input.blur();
+            }
+            
+            const subcategoriaInput = document.getElementById('filtro_subcategoria_input');
+            const subcategoriaDropdown = document.getElementById('dropdown_subcategoria');
+            const subcategoriaHidden = document.getElementById('filtro_subcategoria');
+            
+            // Función para manejar el dropdown de categorías
+            function setupCategoriaDropdown() {
+                if (!categoriaInput || !categoriaDropdown) return;
+                
+                const options = categoriaDropdown.querySelectorAll('.dropdown-option');
+                let filteredOptions = Array.from(options);
+                
+                // Mostrar dropdown al hacer clic o escribir
+                categoriaInput.addEventListener('focus', () => {
+                    categoriaDropdown.style.display = 'block';
+                });
+                
+                categoriaInput.addEventListener('click', () => {
+                    categoriaDropdown.style.display = 'block';
+                });
+                
+                // Filtrar opciones mientras se escribe
+                categoriaInput.addEventListener('input', () => {
+                    const busqueda = categoriaInput.value.toLowerCase().trim();
+                    let hasVisibleOptions = false;
+                    
+                    options.forEach(option => {
+                        const texto = option.textContent.toLowerCase();
+                        const coincide = busqueda === '' || texto.includes(busqueda);
+                        option.style.display = coincide ? 'block' : 'none';
+                        if (coincide) hasVisibleOptions = true;
+                    });
+                    
+                    // Solo mostrar dropdown si hay opciones visibles
+                    categoriaDropdown.style.display = hasVisibleOptions ? 'block' : 'none';
+                    
+                    // Si el texto coincide exactamente con una opción, seleccionarla
+                    if (busqueda.length > 0) {
+                        const exactMatch = Array.from(options).find(opt => 
+                            opt.textContent.toLowerCase() === busqueda
+                        );
+                        if (exactMatch && exactMatch.style.display !== 'none') {
+                            const value = exactMatch.getAttribute('data-value');
+                            categoriaHidden.value = value;
+                            cargarSubcategorias();
+                            aplicarFiltros();
+                        }
+                    } else {
+                        // Si se borra todo el texto, limpiar selección
+                        categoriaHidden.value = '';
+                        cargarSubcategorias();
+                        aplicarFiltros();
+                    }
+                });
+                
+                // Manejar selección de opciones
+                options.forEach(option => {
+                    option.addEventListener('click', () => {
+                        const value = option.getAttribute('data-value');
+                        const text = option.textContent.trim(); // Limpiar espacios
+                        
+                        // Usar función específica para limpiar y establecer valor
+                        setInputValue(categoriaInput, text);
+                        categoriaHidden.value = value;
+                        categoriaDropdown.style.display = 'none';
+                        
+                        console.log('Categoría seleccionada:', text, 'ID:', value);
+                        
+                        // Cargar subcategorías
+                        cargarSubcategorias();
+                        
+                        // Forzar habilitación del campo de subcategoría
+                        setTimeout(() => {
+                            if (subcategoriaInput) {
+                                subcategoriaInput.disabled = false;
+                                subcategoriaInput.removeAttribute('disabled');
+                                console.log('Subcategoría forzadamente habilitada');
+                            }
+                        }, 100);
+                        
+                        aplicarFiltros();
+                    });
+                    
+                    // Hover effects
+                    option.addEventListener('mouseenter', () => {
+                        option.style.backgroundColor = '#f0f0f0';
+                    });
+                    option.addEventListener('mouseleave', () => {
+                        option.style.backgroundColor = '';
+                    });
+                });
+                
+                // Manejar navegación con teclado
+                categoriaInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        categoriaDropdown.style.display = 'none';
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const visibleOptions = Array.from(options).filter(opt => 
+                            opt.style.display !== 'none'
+                        );
+                        if (visibleOptions.length > 0) {
+                            // Seleccionar la primera opción visible
+                            const firstOption = visibleOptions[0];
+                            const value = firstOption.getAttribute('data-value');
+                            const text = firstOption.textContent;
+                            
+                            setInputValue(categoriaInput, text);
+                            categoriaHidden.value = value;
+                            categoriaDropdown.style.display = 'none';
+                            
+                            cargarSubcategorias();
+                            
+                            // Forzar habilitación del campo de subcategoría
+                            setTimeout(() => {
+                                if (subcategoriaInput) {
+                                    subcategoriaInput.disabled = false;
+                                    subcategoriaInput.removeAttribute('disabled');
+                                    console.log('Subcategoría habilitada después de Enter');
+                                }
+                            }, 100);
+                            
+                            aplicarFiltros();
+                        }
+                    }
+                });
+                
+                // Cerrar dropdown al hacer clic fuera
+                document.addEventListener('click', (e) => {
+                    if (!categoriaInput.contains(e.target) && !categoriaDropdown.contains(e.target)) {
+                        categoriaDropdown.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Función para manejar el dropdown de subcategorías
+            function setupSubcategoriaDropdown() {
+                if (!subcategoriaInput || !subcategoriaDropdown) return;
+                
+                // Mostrar dropdown al hacer clic o escribir (solo si está habilitado)
+                subcategoriaInput.addEventListener('focus', (e) => {
+                    console.log('Focus en subcategoría, disabled:', subcategoriaInput.disabled);
+                    if (!subcategoriaInput.disabled && !subcategoriaInput.hasAttribute('disabled')) {
+                        subcategoriaDropdown.style.display = 'block';
+                    }
+                });
+                
+                subcategoriaInput.addEventListener('click', (e) => {
+                    console.log('Click en subcategoría, disabled:', subcategoriaInput.disabled);
+                    if (!subcategoriaInput.disabled && !subcategoriaInput.hasAttribute('disabled')) {
+                        subcategoriaDropdown.style.display = 'block';
+                    } else {
+                        console.log('Subcategoría deshabilitada, no se puede abrir dropdown');
+                    }
+                });
+                
+                // Filtrar opciones mientras se escribe
+                subcategoriaInput.addEventListener('input', () => {
+                    if (subcategoriaInput.disabled) return;
+                    
+                    const busqueda = subcategoriaInput.value.toLowerCase().trim();
+                    const options = subcategoriaDropdown.querySelectorAll('.dropdown-option');
+                    let hasVisibleOptions = false;
+                    
+                    options.forEach(option => {
+                        const texto = option.textContent.toLowerCase();
+                        const coincide = busqueda === '' || texto.includes(busqueda);
+                        option.style.display = coincide ? 'block' : 'none';
+                        if (coincide) hasVisibleOptions = true;
+                    });
+                    
+                    // Solo mostrar dropdown si hay opciones visibles
+                    subcategoriaDropdown.style.display = hasVisibleOptions ? 'block' : 'none';
+                    
+                    // Si el texto coincide exactamente con una opción, seleccionarla
+                    if (busqueda.length > 0) {
+                        const exactMatch = Array.from(options).find(opt => 
+                            opt.textContent.toLowerCase() === busqueda
+                        );
+                        if (exactMatch && exactMatch.style.display !== 'none') {
+                            const value = exactMatch.getAttribute('data-value');
+                            subcategoriaHidden.value = value;
+                            aplicarFiltros();
+                        }
+                    } else {
+                        // Si se borra todo el texto, limpiar selección
+                        subcategoriaHidden.value = '';
+                        aplicarFiltros();
+                    }
+                });
+                
+                // Manejar navegación con teclado
+                subcategoriaInput.addEventListener('keydown', (e) => {
+                    if (subcategoriaInput.disabled) return;
+                    
+                    if (e.key === 'Escape') {
+                        subcategoriaDropdown.style.display = 'none';
+                    } else if (e.key === 'Enter') {
+                        e.preventDefault();
+                        const options = subcategoriaDropdown.querySelectorAll('.dropdown-option');
+                        const visibleOptions = Array.from(options).filter(opt => 
+                            opt.style.display !== 'none'
+                        );
+                        if (visibleOptions.length > 0) {
+                            // Seleccionar la primera opción visible
+                            const firstOption = visibleOptions[0];
+                            const value = firstOption.getAttribute('data-value');
+                            const text = firstOption.textContent;
+                            
+                            setInputValue(subcategoriaInput, text);
+                            subcategoriaHidden.value = value;
+                            subcategoriaDropdown.style.display = 'none';
+                            
+                            aplicarFiltros();
+                        }
+                    }
+                });
+                
+                // Cerrar dropdown al hacer clic fuera
+                document.addEventListener('click', (e) => {
+                    if (!subcategoriaInput.contains(e.target) && !subcategoriaDropdown.contains(e.target)) {
+                        subcategoriaDropdown.style.display = 'none';
+                    }
+                });
+            }
+            
+            // Función para aplicar todos los filtros
+            function aplicarFiltros() {
+                const searchTerm = buscarProductoInput ? buscarProductoInput.value.toLowerCase().trim() : '';
+                const categoriaId = categoriaHidden ? categoriaHidden.value : '';
+                const subcategoriaId = subcategoriaHidden ? subcategoriaHidden.value : '';
+                
+                let visibleCount = 0;
+                
+                productoItems.forEach(item => {
+                    const nombreProducto = item.getAttribute('data-nombre') || '';
+                    const itemCategoriaId = item.getAttribute('data-categoria-id') || '';
+                    const itemSubcategoriaId = item.getAttribute('data-subcategoria-id') || '';
+                    
+                    let mostrar = true;
+                    
+                    // Filtrar por texto
+                    if (searchTerm && !nombreProducto.includes(searchTerm)) {
+                        mostrar = false;
+                    }
+                    
+                    // Filtrar por categoría
+                    if (categoriaId && itemCategoriaId !== categoriaId) {
+                        mostrar = false;
+                    }
+                    
+                    // Filtrar por subcategoría
+                    if (subcategoriaId && itemSubcategoriaId !== subcategoriaId) {
+                        mostrar = false;
+                    }
+                    
+                    // Mostrar u ocultar el producto
+                    if (mostrar) {
+                        item.classList.remove('hidden');
+                        item.classList.add('visible');
+                        visibleCount++;
+                    } else {
+                        item.classList.remove('visible');
+                        item.classList.add('hidden');
+                    }
+                });
+                
+                // Mostrar/ocultar mensaje de "no hay resultados"
+                if (noResultsMessage) {
+                    if (visibleCount === 0 && (searchTerm || categoriaId || subcategoriaId)) {
+                        noResultsMessage.classList.add('show');
+                    } else {
+                        noResultsMessage.classList.remove('show');
+                    }
+                }
+            }
+            
+            // Event listeners para los filtros
+            if (buscarProductoInput) {
+                buscarProductoInput.removeEventListener('input', buscarProductoInput.listener);
+                buscarProductoInput.addEventListener('input', aplicarFiltros);
+            }
+            
+            // Función para cargar subcategorías
+            function cargarSubcategorias() {
+                const categoriaId = categoriaHidden.value;
+                console.log('Cargando subcategorías para categoría ID:', categoriaId);
+                console.log('Datos disponibles para esta categoría:', subcategoriasPorCategoria[categoriaId]);
+                
+                // Limpiar subcategorías
+                subcategoriaDropdown.innerHTML = '<div class="dropdown-option" data-value="" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;">Todas las subcategorías</div>';
+                
+                if (categoriaId && categoriaId !== '') {
+                    // Habilitar subcategorías siempre que haya una categoría seleccionada
+                    subcategoriaInput.disabled = false;
+                    subcategoriaInput.removeAttribute('disabled');
+                    subcategoriaInput.placeholder = "🔍 Buscar o seleccionar subcategoría...";
+                    subcategoriaInput.style.backgroundColor = "rgba(255, 255, 255, 0.9)";
+                    subcategoriaInput.style.color = "#333";
+                    subcategoriaInput.value = "";
+                    subcategoriaHidden.value = "";
+                    
+                    console.log('Habilitando subcategorías para categoría:', categoriaId);
+                    
+                    const subcategorias = subcategoriasPorCategoria[categoriaId] || [];
+                    console.log('Subcategorías encontradas:', subcategorias);
+                    console.log('Cantidad de subcategorías:', subcategorias.length);
+                    
+                    if (subcategorias.length === 0) {
+                        console.warn('No se encontraron subcategorías para la categoría', categoriaId);
+                        // Mostrar mensaje de que no hay subcategorías
+                        subcategoriaDropdown.innerHTML = '<div class="dropdown-option" data-value="" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee; color: #999;">No hay subcategorías disponibles</div>';
+                    } else {
+                        subcategorias.forEach(subcat => {
+                        const div = document.createElement('div');
+                        div.className = 'dropdown-option';
+                        div.setAttribute('data-value', subcat.id);
+                        div.style.cssText = 'padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;';
+                        div.textContent = subcat.nombre;
+                        
+                        // Añadir event listeners a la nueva opción
+                        div.addEventListener('click', () => {
+                            console.log('Seleccionando subcategoría:', subcat.nombre);
+                            setInputValue(subcategoriaInput, subcat.nombre);
+                            subcategoriaHidden.value = subcat.id;
+                            subcategoriaDropdown.style.display = 'none';
+                            aplicarFiltros();
+                        });
+                        
+                        div.addEventListener('mouseenter', () => {
+                            div.style.backgroundColor = '#e3f2fd';
+                        });
+                        div.addEventListener('mouseleave', () => {
+                            div.style.backgroundColor = '';
+                        });
+                        
+                        subcategoriaDropdown.appendChild(div);
+                    });
+                    }
+                    
+                    // Re-añadir event listener a "Todas las subcategorías" (si existe)
+                    const todasOption = subcategoriaDropdown.querySelector('.dropdown-option[data-value=""]');
+                    if (todasOption) {
+                        todasOption.addEventListener('click', () => {
+                            console.log('Seleccionando todas las subcategorías');
+                            setInputValue(subcategoriaInput, 'Todas las subcategorías');
+                            subcategoriaHidden.value = '';
+                            subcategoriaDropdown.style.display = 'none';
+                            aplicarFiltros();
+                        });
+                        
+                        todasOption.addEventListener('mouseenter', () => {
+                            todasOption.style.backgroundColor = '#e3f2fd';
+                        });
+                        todasOption.addEventListener('mouseleave', () => {
+                            todasOption.style.backgroundColor = '';
+                        });
+                    }
+                } else {
+                    // Si no hay categoría seleccionada, deshabilitar subcategorías
+                    subcategoriaInput.disabled = true;
+                    subcategoriaInput.setAttribute('disabled', 'disabled');
+                    subcategoriaInput.placeholder = "Seleccione primero una categoría...";
+                    subcategoriaInput.style.backgroundColor = "rgba(255, 255, 255, 0.5)";
+                    subcategoriaInput.style.color = "#999";
+                    subcategoriaInput.value = "";
+                    subcategoriaHidden.value = "";
+                    subcategoriaDropdown.innerHTML = '<div class="dropdown-option" data-value="" style="padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee;">Seleccione primero una categoría</div>';
+                }
+            }
+            
+            // Función para inicializar valores por defecto
+            function inicializarFiltros() {
+                if (categoriaInput) {
+                    categoriaInput.value = '';
+                    categoriaInput.placeholder = '🔍 Buscar o seleccionar categoría...';
+                }
+                if (subcategoriaInput) {
+                    subcategoriaInput.value = '';
+                    subcategoriaInput.placeholder = 'Seleccione primero una categoría...';
+                }
+                if (categoriaHidden) {
+                    categoriaHidden.value = '';
+                }
+                if (subcategoriaHidden) {
+                    subcategoriaHidden.value = '';
+                }
+            }
+            
+            // Inicializar los dropdowns unificados
+            setupCategoriaDropdown();
+            setupSubcategoriaDropdown();
+            inicializarFiltros();
             
             // Vista previa en tiempo real
             function actualizarVistaPrevia() {

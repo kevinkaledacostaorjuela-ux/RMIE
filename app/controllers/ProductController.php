@@ -74,12 +74,25 @@ class ProductController {
 
     public function create() {
         global $conn;
-        $categorias = Category::getAll($conn);
-        $subcategorias = SubcategorySimple::getAllSimple($conn);
-        require_once __DIR__ . '/../models/Provider.php';
-        $proveedores = Provider::getAll($conn);
-        require_once __DIR__ . '/../models/User.php';
-        $usuarios = User::getAll($conn);
+        
+        // Inicializar variables con valores por defecto para evitar errores
+        $categorias = [];
+        $subcategorias = [];
+        $proveedores = [];
+        $usuarios = [];
+        $error_message = '';
+        $success_message = '';
+        
+        try {
+            $categorias = Category::getAll($conn) ?: [];
+            $subcategorias = SubcategorySimple::getAllSimple($conn) ?: [];
+            require_once __DIR__ . '/../models/Provider.php';
+            $proveedores = Provider::getAll($conn) ?: [];
+            require_once __DIR__ . '/../models/User.php';
+            $usuarios = User::getAll($conn) ?: [];
+        } catch (Exception $e) {
+            error_log("Error cargando datos para create: " . $e->getMessage());
+        }
         
         // Filtrar usuarios: excluir admins, solo dejar auxiliar y coordinador
         $usuarios_filtrados = array_filter($usuarios, function($u) {
@@ -135,6 +148,14 @@ class ProductController {
                 // Volver a cargar la vista con el error
             }
         }
+        
+        // Asegurar que todas las variables existan antes de cargar la vista
+        if (!isset($categorias)) $categorias = [];
+        if (!isset($subcategorias)) $subcategorias = [];
+        if (!isset($proveedores)) $proveedores = [];
+        if (!isset($usuarios)) $usuarios = [];
+        if (!isset($error_message)) $error_message = '';
+        if (!isset($success_message)) $success_message = '';
         
         // Cargar datos necesarios para la vista
         include __DIR__ . '/../views/productos/create.php';
