@@ -643,7 +643,6 @@
                                     required>
                                 <option value="">Seleccione el rol</option>
                                 <option value="coordinador" <?= ($_POST['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
-                                <option value="admin" <?= ($_POST['rol'] ?? '') === 'admin' ? 'selected' : '' ?>>Administrador</option>
                                 <option value="auxiliar" <?= ($_POST['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                             <label for="rol">
@@ -656,7 +655,7 @@
                             <h6><i class="fas fa-info-circle"></i> Roles Disponibles</h6>
                             <ul>
                                 <li><strong>Coordinador:</strong> Puede gestionar ventas y consultar reportes</li>
-                                <li><strong>Administrador:</strong> Acceso completo al sistema</li>
+                                <li><strong>Auxiliar:</strong> Tareas operativas y soporte</li>
                             </ul>
                         </div>
                     </div>
@@ -818,11 +817,6 @@
                 if (rol) {
                     let roleClass, roleIcon, roleText;
                     switch(rol) {
-                        case 'admin':
-                            roleClass = 'role-admin';
-                            roleIcon = 'fas fa-user-shield';
-                            roleText = 'Administrador';
-                            break;
                         case 'coordinador':
                             roleClass = 'role-coordinador';
                             roleIcon = 'fas fa-user-tie';

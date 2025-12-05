@@ -546,10 +546,44 @@ unset($_SESSION['error'], $_SESSION['success']);
                             </div>
 
                             <div class="form-floating-modern">
+                                <!-- Campo de texto con autocompletado por nombre -->
+                                <input type="text"
+                                       class="form-control-modern"
+                                       id="categoria_nombre"
+                                       name="categoria_nombre"
+                                       placeholder=" "
+                                       list="categorias_datalist"
+                                       autocomplete="off"
+                                       required
+                                       value="<?php
+                                           if (isset($subcategoria) && isset($categorias) && is_array($categorias)) {
+                                               foreach ($categorias as $cat) {
+                                                   if ($subcategoria->id_categoria == $cat->id_categoria) {
+                                                       echo htmlspecialchars($cat->nombre);
+                                                       break;
+                                                   }
+                                               }
+                                           }
+                                       ?>">
+                                <label for="categoria_nombre">
+                                    <i class="fas fa-folder"></i>
+                                    Categoría Principal <span class="required">*</span>
+                                </label>
+
+                                <datalist id="categorias_datalist">
+                                    <?php if (isset($categorias) && is_array($categorias)): ?>
+                                        <?php foreach ($categorias as $cat): ?>
+                                            <option data-id="<?php echo htmlspecialchars($cat->id_categoria); ?>" value="<?php echo htmlspecialchars($cat->nombre); ?>"></option>
+                                        <?php endforeach; ?>
+                                    <?php endif; ?>
+                                </datalist>
+
+                                <!-- Select real (oculto) que se envía al backend -->
                                 <select class="form-select-modern" 
                                         id="id_categoria" 
                                         name="id_categoria"
-                                        required>
+                                        required
+                                        style="position:absolute; left:-9999px; width:1px; height:1px;" aria-hidden="true">
                                     <option value="">Seleccione una categoría</option>
                                     <?php if (isset($categorias) && is_array($categorias)): ?>
                                         <?php foreach ($categorias as $cat): ?>
@@ -562,13 +596,10 @@ unset($_SESSION['error'], $_SESSION['success']);
                                         <option value="" disabled>No hay categorías disponibles</option>
                                     <?php endif; ?>
                                 </select>
-                                <label for="id_categoria">
-                                    <i class="fas fa-folder"></i>
-                                    Categoría Principal <span class="required">*</span>
-                                </label>
+
                                 <div class="form-help">
                                     <i class="fas fa-sitemap"></i>
-                                    Categoría a la que pertenecerá esta subcategoría
+                                    Escribe para buscar y seleccionar la categoría
                                 </div>
                             </div>
 
@@ -713,12 +744,15 @@ unset($_SESSION['error'], $_SESSION['success']);
                 const nombre = document.getElementById('nombre');
                 const descripcion = document.getElementById('descripcion');
                 const categoriaSelect = document.getElementById('id_categoria');
+                const categoriaInput = document.getElementById('categoria_nombre');
                 
                 if (!nombre || !descripcion || !categoriaSelect) return;
                 
                 const nombreValue = nombre.value;
                 const descripcionValue = descripcion.value;
-                const categoriaTexto = categoriaSelect.options[categoriaSelect.selectedIndex]?.text || '-';
+                const categoriaTexto = categoriaInput && categoriaInput.value
+                    ? categoriaInput.value
+                    : (categoriaSelect.options[categoriaSelect.selectedIndex]?.text || '-');
                 
                 // Actualizar avatar
                 const avatar = document.getElementById('previewAvatar');
@@ -763,6 +797,69 @@ unset($_SESSION['error'], $_SESSION['success']);
                     field.addEventListener('change', updatePreview);
                 }
             });
+
+            // Sincronización entre input con datalist y select oculto
+            (function syncCategoriaInputSelect() {
+                const input = document.getElementById('categoria_nombre');
+                const select = document.getElementById('id_categoria');
+                const datalist = document.getElementById('categorias_datalist');
+
+                if (!input || !select || !datalist) return;
+
+                function setSelectByName(name) {
+                    const options = Array.from(select.options);
+                    const match = options.find(opt => opt.text.trim().toLowerCase() === String(name || '').trim().toLowerCase());
+                    if (match) {
+                        select.value = match.value;
+                        return true;
+                    }
+                    return false;
+                }
+
+                function setSelectById(id) {
+                    const options = Array.from(select.options);
+                    const match = options.find(opt => opt.value === String(id));
+                    if (match) {
+                        select.value = match.value;
+                        input.value = match.text;
+                        return true;
+                    }
+                    return false;
+                }
+
+                // Inicializar input con el nombre actual del select
+                if (select.value) {
+                    const opt = Array.from(select.options).find(o => o.value === select.value);
+                    if (opt) input.value = opt.text;
+                }
+
+                input.addEventListener('change', function() {
+                    // Intentar casar por nombre exacto
+                    if (setSelectByName(input.value)) {
+                        updatePreview();
+                        return;
+                    }
+                    // Intentar casar usando el datalist
+                    const chosen = Array.from(datalist.options).find(o => o.value === input.value);
+                    if (chosen) {
+                        const id = chosen.getAttribute('data-id');
+                        if (setSelectById(id)) {
+                            updatePreview();
+                            return;
+                        }
+                    }
+                    // Si no coincide, limpiar selección
+                    select.value = '';
+                    updatePreview();
+                });
+
+                // Si alguien cambia el select, reflejar en el input
+                select.addEventListener('change', function() {
+                    const opt = Array.from(select.options).find(o => o.value === select.value);
+                    input.value = opt ? opt.text : '';
+                    updatePreview();
+                });
+            })();
 
             // Validación del formulario
             const form = document.getElementById('subcategoriaForm');

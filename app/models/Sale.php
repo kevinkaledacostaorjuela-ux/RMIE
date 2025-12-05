@@ -157,7 +157,8 @@ class Sale {
             'producto' => ['type' => 'int', 'options' => ['min' => 1]],
             'cliente' => ['type' => 'int', 'options' => ['min' => 1]],
             'usuario' => ['type' => 'text'],
-            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'en_proceso']]],
+            // Aceptar más estados usados en la app
+            'estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'procesando', 'procesada', 'entregada', 'en_proceso']]],
             'precio_min' => ['type' => 'float', 'options' => ['min' => 0]],
             'precio_max' => ['type' => 'float', 'options' => ['min' => 0]],
             'cantidad_min' => ['type' => 'int', 'options' => ['min' => 1]],

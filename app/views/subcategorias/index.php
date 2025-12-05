@@ -1174,48 +1174,15 @@ $stats = $statsQuery->fetch_assoc();
                     
                     <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        console.log('DOM cargado, inicializando dropdowns...');
-                        
                         // Cerrar dropdowns al hacer clic fuera
                         document.addEventListener('click', function(e) {
                             if (!e.target.closest('.dropdown-container')) {
                                 hideAllDropdowns();
                             }
                         });
-                        
-                        // Debug inicial
-                        checkDropdownContent();
                     });
 
-                    function checkDropdownContent() {
-                        const subcategoriaDropdown = document.getElementById('subcategoriaDropdown');
-                        if (subcategoriaDropdown) {
-                            const items = subcategoriaDropdown.querySelectorAll('.dropdown-item-custom');
-                            console.log('=== DEBUG DROPDOWN ===');
-                            console.log('Dropdown encontrado:', !!subcategoriaDropdown);
-                            console.log('Elementos encontrados:', items.length);
-                            console.log('HTML del dropdown:', subcategoriaDropdown.innerHTML);
-                            
-                            items.forEach((item, index) => {
-                                const text = item.textContent.trim();
-                                console.log('Item ' + index + ':', text);
-                                if (text.includes('Debug:')) {
-                                    const debugMatch = text.match(/Debug: (.+)/);
-                                    if (debugMatch) {
-                                        try {
-                                            const debugData = JSON.parse(debugMatch[1]);
-                                            console.log('Información de debug PHP:', debugData);
-                                        } catch (e) {
-                                            console.log('Debug raw:', debugMatch[1]);
-                                        }
-                                    }
-                                }
-                            });
-                            console.log('=====================');
-                        } else {
-                            console.error('No se encontró el dropdown de subcategorías');
-                        }
-                    }
+
 
                     function hideAllDropdowns() {
                         document.querySelectorAll('.dropdown-menu-custom').forEach(function(dropdown) {
@@ -1224,22 +1191,16 @@ $stats = $statsQuery->fetch_assoc();
                     }
 
                     function showDropdown(dropdownId) {
-                        console.log('Mostrando dropdown:', dropdownId);
                         hideAllDropdowns();
                         const dropdown = document.getElementById(dropdownId);
                         if (dropdown) {
                             dropdown.style.display = 'block';
-                            console.log('Dropdown mostrado');
-                        } else {
-                            console.error('Dropdown no encontrado:', dropdownId);
                         }
                     }
 
                     function toggleDropdown(dropdownId) {
-                        console.log('Toggle dropdown:', dropdownId);
                         const dropdown = document.getElementById(dropdownId);
                         if (!dropdown) {
-                            console.error('Dropdown no encontrado:', dropdownId);
                             return;
                         }
                         
@@ -1248,7 +1209,6 @@ $stats = $statsQuery->fetch_assoc();
                         
                         if (!isVisible) {
                             dropdown.style.display = 'block';
-                            console.log('Dropdown abierto');
                         }
                     }
 

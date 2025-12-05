@@ -495,20 +495,36 @@
                             </div>
                             
                             <div class="form-group">
-                                <label for="id_clientes">
+                                <label for="cliente_unificado_edit">
                                     <i class="fas fa-users"></i> Cliente
                                 </label>
-                                <select class="form-select" id="id_clientes" name="id_clientes" required>
-                                    <option value="">Seleccione un cliente</option>
-                                    <?php if (isset($clientes) && is_array($clientes)): ?>
-                                        <?php foreach ($clientes as $cliente): ?>
-                                            <option value="<?= htmlspecialchars($cliente->id_clientes) ?>" 
-                                                    <?= $venta->id_clientes == $cliente->id_clientes ? 'selected' : '' ?>>
-                                                <?= htmlspecialchars($cliente->nombre) ?>
-                                            </option>
-                                        <?php endforeach; ?>
-                                    <?php endif; ?>
-                                </select>
+                                <div class="search-dropdown-container" style="position: relative;">
+                                    <input type="text" 
+                                           id="cliente_unificado_edit" 
+                                           class="form-control search-dropdown-input" 
+                                           placeholder="🔍 Buscar y seleccionar cliente..."
+                                           autocomplete="off"
+                                           required
+                                           style="border: 2px solid #667eea; font-size: 0.9rem; padding-right: 40px;">
+                                    <i class="fas fa-chevron-down search-dropdown-arrow" 
+                                       style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #667eea; cursor: pointer;"></i>
+                                    <div id="cliente_dropdown_edit" class="search-dropdown-menu" 
+                                         style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 2px solid #667eea; border-top: none; border-radius: 0 0 8px 8px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none;">
+                                        <?php if (isset($clientes) && is_array($clientes)): ?>
+                                            <?php foreach ($clientes as $cliente): ?>
+                                                <div class="dropdown-option" 
+                                                     data-value="<?= htmlspecialchars($cliente->id_clientes) ?>"
+                                                     data-nombre="<?= htmlspecialchars(strtolower($cliente->nombre)) ?>"
+                                                     data-selected="<?= $venta->id_clientes == $cliente->id_clientes ? 'true' : 'false' ?>"
+                                                     style="padding: 10px; cursor: pointer; border-bottom: 1px solid #eee;">
+                                                    <i class="fas fa-user"></i> <?= htmlspecialchars($cliente->nombre) ?>
+                                                </div>
+                                            <?php endforeach; ?>
+                                        <?php endif; ?>
+                                    </div>
+                                    <!-- Campo hidden para almacenar el valor seleccionado -->
+                                    <input type="hidden" id="id_clientes" name="id_clientes" value="<?= htmlspecialchars($venta->id_clientes) ?>" required>
+                                </div>
                             </div>
                             
                             <!-- Sección Producto -->
@@ -918,6 +934,27 @@
             filtroSubcategoria, 
             '🔍 Buscar y seleccionar subcategoría...'
         );
+        
+        // Inicializar dropdown de clientes
+        const clienteUnificado = document.getElementById('cliente_unificado_edit');
+        const clienteDropdown = document.getElementById('cliente_dropdown_edit');
+        const clienteHidden = document.getElementById('id_clientes');
+        
+        if (clienteUnificado && clienteDropdown && clienteHidden) {
+            const clienteDropdownController = crearDropdownUnificado(
+                clienteUnificado, 
+                clienteDropdown, 
+                clienteHidden, 
+                '🔍 Buscar y seleccionar cliente...'
+            );
+            
+            // Establecer el valor inicial si hay un cliente seleccionado
+            const selectedOption = clienteDropdown.querySelector('.dropdown-option[data-selected="true"]');
+            if (selectedOption) {
+                const clienteNombre = selectedOption.textContent.trim().replace(/.*?\s/, ''); // Quitar icono
+                clienteUnificado.value = clienteNombre;
+            }
+        }
         
         // Cuando se escribe en el buscador de productos
         if (buscarProducto) {

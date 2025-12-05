@@ -649,7 +649,6 @@
                             <select id="rol" name="rol" required class="form-select">
                                 <option value="">Seleccione el rol</option>
                                 <option value="coordinador" <?= $usuario->rol === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
-                                <option value="admin" <?= $usuario->rol === 'admin' ? 'selected' : '' ?>>Administrador</option>
                                 <option value="auxiliar" <?= $usuario->rol === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                         </div>
@@ -659,10 +658,12 @@
                             <div class="current-status">
                                 <span class="label">Rol actual:</span>
                                 <span class="role-badge role-<?= strtolower($usuario->rol) ?>">
-                                    <?php if ($usuario->rol === 'admin'): ?>
-                                        <i class="fas fa-user-shield"></i> Administrador
-                                    <?php else: ?>
+                                    <?php if ($usuario->rol === 'coordinador'): ?>
                                         <i class="fas fa-user-tie"></i> Coordinador
+                                    <?php elseif ($usuario->rol === 'auxiliar'): ?>
+                                        <i class="fas fa-user"></i> Auxiliar
+                                    <?php else: ?>
+                                        <i class="fas fa-user-shield"></i> Administrador
                                     <?php endif; ?>
                                 </span>
                             </div>
@@ -674,7 +675,7 @@
                             <strong>Roles disponibles:</strong>
                             <ul class="mb-0 mt-2">
                                 <li><strong>Coordinador:</strong> Puede gestionar ventas y consultar reportes</li>
-                                <li><strong>Administrador:</strong> Acceso completo al sistema</li>
+                                <li><strong>Auxiliar:</strong> Funciones operativas y de apoyo</li>
                             </ul>
                         </div>
                     </div>
@@ -819,9 +820,9 @@
             // Actualizar rol
             const roleElement = document.getElementById('previewRole');
             if (rol) {
-                const roleClass = rol === 'admin' ? 'role-admin' : 'role-coordinador';
-                const roleIcon = rol === 'admin' ? 'fas fa-user-shield' : 'fas fa-user-tie';
-                const roleText = rol === 'admin' ? 'Administrador' : 'Coordinador';
+                const roleClass = rol === 'coordinador' ? 'role-coordinador' : (rol === 'auxiliar' ? 'role-auxiliar' : 'role-admin');
+                const roleIcon = rol === 'coordinador' ? 'fas fa-user-tie' : (rol === 'auxiliar' ? 'fas fa-user' : 'fas fa-user-shield');
+                const roleText = rol === 'coordinador' ? 'Coordinador' : (rol === 'auxiliar' ? 'Auxiliar' : 'Administrador');
                 
                 roleElement.innerHTML = `<span class="role-badge ${roleClass}">
                     <i class="${roleIcon}"></i> ${roleText}

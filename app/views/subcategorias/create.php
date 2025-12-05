@@ -106,6 +106,11 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            z-index: 1;
+        }
+        
+        .form-floating-modern:focus-within {
+            z-index: 50;
         }
         
         .form-control-modern {
@@ -172,7 +177,7 @@
             background: rgba(255, 255, 255, 0.95);
             padding: 2px 8px;
             border-radius: 8px;
-            z-index: 10;
+            z-index: 150;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-rendering: optimizeLegibility;
@@ -344,6 +349,7 @@
             width: 100%;
             max-width: 100%;
             box-sizing: border-box;
+            z-index: 100;
         }
 
         .dropdown-menu-create {
@@ -356,7 +362,7 @@
             border-radius: 15px;
             max-height: 200px;
             overflow-y: auto;
-            z-index: 1000;
+            z-index: 2000;
             display: none;
             box-shadow: 0 8px 25px rgba(0,0,0,0.25);
             margin-top: 5px;
@@ -451,7 +457,7 @@
                                style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: #666; cursor: pointer; font-size: 0.9rem; z-index: 2;"
                                onclick="toggleCategoriaDropdown()"></i>
                             <div id="categoriaDropdownCreate" class="dropdown-menu-create" 
-                                 style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 15px; max-height: 200px; overflow-y: auto; z-index: 1000; display: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-top: 5px;">
+                                 style="position: absolute; top: 100%; left: 0; right: 0; background: white; border: 1px solid #ddd; border-radius: 15px; max-height: 200px; overflow-y: auto; z-index: 2000; display: none; box-shadow: 0 8px 25px rgba(0,0,0,0.15); margin-top: 5px;">
                                 <?php if (isset($categorias) && is_array($categorias) && !empty($categorias)): ?>
                                     <?php foreach ($categorias as $cat): ?>
                                         <div class="dropdown-item-create" 

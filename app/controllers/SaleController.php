@@ -16,26 +16,63 @@ class SaleController {
             
             // Definir reglas de filtro (coincidir con los nombres del formulario de la vista)
             $filterRules = [
-                'filtro_producto' => ['type' => 'text'],
-                'filtro_cliente' => ['type' => 'text'],
-                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'procesando']]],
+                // Texto libre para buscar por producto/cliente
+                'filtro_producto' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                'filtro_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
+                // Estado según valores que usamos en la app
+                'filtro_estado' => ['type' => 'select', 'options' => ['allowed_values' => ['pendiente', 'completada', 'cancelada', 'procesando', 'procesada', 'entregada']]],
+                // Fecha única (usada como desde)
                 'filtro_fecha' => ['type' => 'date'],
+                // Rangos de montos
                 'monto_min' => ['type' => 'float', 'options' => ['min' => 0]],
                 'monto_max' => ['type' => 'float', 'options' => ['min' => 0]]
             ];
 
             // Procesar filtros del GET
             $filtros = FilterHelper::processFilters($_GET, $filterRules);
+            // Capturar producto_id (si se eligió desde datalist)
+            $productoId = isset($_GET['producto_id']) ? FilterHelper::sanitize($_GET['producto_id'], 'int', ['min' => 1]) : null;
+            // Capturar cliente_id (si se eligió desde datalist)
+            $clienteId = isset($_GET['cliente_id']) ? FilterHelper::sanitize($_GET['cliente_id'], 'int', ['min' => 1]) : null;
 
             // Mapear filtros para el modelo (coincidir con los nombres usados en Sale::getFiltered)
+            // Adaptar a la API del modelo: usar 'buscar' para texto y IDs solo si corresponde
+            $buscarTexto = '';
+            if (!empty($filtros['filtro_producto'])) $buscarTexto .= ($buscarTexto ? ' ' : '') . $filtros['filtro_producto'];
+            if (!empty($filtros['filtro_cliente'])) $buscarTexto .= ($buscarTexto ? ' ' : '') . $filtros['filtro_cliente'];
+
             $filtrosModelo = [
-                'producto' => $filtros['filtro_producto'] ?? '',
-                'cliente' => $filtros['filtro_cliente'] ?? '',
+                // No enviamos IDs porque el formulario usa texto
+                // 'producto' y 'cliente' se manejan mediante 'buscar' en múltiples columnas
+                'buscar' => $buscarTexto,
                 'estado' => $filtros['filtro_estado'] ?? '',
                 'fecha_desde' => $filtros['filtro_fecha'] ?? '',
                 'precio_min' => $filtros['monto_min'] ?? '',
                 'precio_max' => $filtros['monto_max'] ?? ''
             ];
+
+            // Si se seleccionó un producto específico por ID, priorizar ese filtro exacto
+            // Solo aplicar producto_id si hay texto o selección válida
+            if ($productoId) {
+                // Si el usuario borró el campo de texto, no aplicar filtro por ID
+                $textoProducto = trim($_GET['filtro_producto'] ?? '');
+                if ($textoProducto !== '') {
+                    $filtrosModelo['producto'] = $productoId;
+                }
+            } else {
+                // Asegurar que no quede un filtro fantasma
+                unset($filtrosModelo['producto']);
+            }
+
+            if ($clienteId) {
+                // Si el usuario borró el campo de texto, no aplicar filtro por ID
+                $textoCliente = trim($_GET['filtro_cliente'] ?? '');
+                if ($textoCliente !== '') {
+                    $filtrosModelo['cliente'] = $clienteId;
+                }
+            } else {
+                unset($filtrosModelo['cliente']);
+            }
             
             // Validar rangos de monto
             if (!empty($filtrosModelo['precio_min']) && !empty($filtrosModelo['precio_max']) && $filtrosModelo['precio_min'] > $filtrosModelo['precio_max']) {

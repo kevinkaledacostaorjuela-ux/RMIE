@@ -1201,24 +1201,41 @@ if (isset($ventas) && is_array($ventas)) {
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-box"></i> Producto</span>
                         <input type="text"
+                               id="filtro_producto"
                                name="filtro_producto"
                                class="filter-input"
+                               list="productos_datalist"
                                placeholder="Buscar producto..."
+                               autocomplete="off"
                                value="<?= htmlspecialchars($_GET['filtro_producto'] ?? '') ?>">
+                        <datalist id="productos_datalist">
+                            <?php if (isset($productos) && is_array($productos)): ?>
+                                <?php foreach ($productos as $p): ?>
+                                    <option data-id="<?= htmlspecialchars($p->id_productos) ?>" value="<?= htmlspecialchars($p->nombre) ?>"></option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </datalist>
+                        <input type="hidden" id="producto_id" name="producto_id" value="<?= isset($_GET['producto_id']) ? htmlspecialchars($_GET['producto_id']) : '' ?>">
                     </div>
 
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-user"></i> Cliente</span>
-                        <select name="filtro_cliente" class="filter-select">
-                            <option value="">Todos los clientes</option>
+                        <input type="text"
+                               id="filtro_cliente"
+                               name="filtro_cliente"
+                               class="filter-input"
+                               list="clientes_datalist"
+                               placeholder="Buscar cliente..."
+                               autocomplete="off"
+                               value="<?= htmlspecialchars($_GET['filtro_cliente'] ?? '') ?>">
+                        <datalist id="clientes_datalist">
                             <?php if (isset($clientes) && is_array($clientes)): ?>
-                                <?php foreach ($clientes as $cliente): ?>
-                                    <option value="<?= htmlspecialchars($cliente->nombre) ?>" <?= (isset($_GET['filtro_cliente']) && $_GET['filtro_cliente'] == $cliente->nombre) ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($cliente->nombre) ?>
-                                    </option>
+                                <?php foreach ($clientes as $c): ?>
+                                    <option data-id="<?= htmlspecialchars($c->id_clientes) ?>" value="<?= htmlspecialchars($c->nombre) ?>"></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
-                        </select>
+                        </datalist>
+                        <input type="hidden" id="cliente_id" name="cliente_id" value="<?= isset($_GET['cliente_id']) ? htmlspecialchars($_GET['cliente_id']) : '' ?>">
                     </div>
 
                     <div class="filter-item">
@@ -1230,14 +1247,16 @@ if (isset($ventas) && is_array($ventas)) {
                             <option value="completada" <?= ($_GET['filtro_estado'] ?? '') === 'completada' ? 'selected' : '' ?>>Completada</option>
                             <option value="cancelada" <?= ($_GET['filtro_estado'] ?? '') === 'cancelada' ? 'selected' : '' ?>>Cancelada</option>
                         </select>
-                    </div>                    <div class="filter-item">
-                        <span class="filter-label"><i class="fas fa-cogs"></i> Acciones</span>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                    </div>                    <div class="filter-item" style="flex: 1 1 100%; display: flex; justify-content: center; align-items: center; margin-top: 10px;">
+                        <div style="display: flex; gap: 12px;">
+                            <button type="submit" class="btn-modern-filter" style="background: #4A90E2; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s ease;">
                                 <i class="fas fa-search"></i> FILTRAR
                             </button>
-                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; width: 100%; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #FF8FA3; color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; transition: all 0.3s ease;">
                                 <i class="fas fa-times"></i> LIMPIAR
+                            </button>
+                        </div>
+                    </div>
                             </button>
                         </div>
                     </div>
@@ -1634,9 +1653,84 @@ window.addEventListener('unhandledrejection', function(e) { console.log('Promise
 window.addEventListener('error', function(e) { console.log('JS Error:', e.message, 'at', e.filename + ':' + e.lineno); });
 
         function limpiarFiltros() {
-            document.getElementById('filterForm').reset();
+            const form = document.getElementById('filterForm');
+            if (form) {
+                form.reset();
+                // Asegurar que el id oculto se limpie para no mantener filtros fantasma
+                const prodId = document.getElementById('producto_id');
+                if (prodId) prodId.value = '';
+                const cliId = document.getElementById('cliente_id');
+                if (cliId) cliId.value = '';
+            }
+            // Navegar sin parámetros para ver el listado completo
             window.location.href = '/RMIE/app/controllers/SaleController.php?accion=index';
         }
+
+        // Sincronización producto: cuando se elige nombre del datalist, guardar su ID
+        (function() {
+            const input = document.getElementById('filtro_producto');
+            const hiddenId = document.getElementById('producto_id');
+            const datalist = document.getElementById('productos_datalist');
+            if (!input || !hiddenId || !datalist) return;
+
+            function findIdByName(name) {
+                const opt = Array.from(datalist.options).find(o => o.value.trim().toLowerCase() === String(name||'').trim().toLowerCase());
+                return opt ? opt.getAttribute('data-id') : '';
+            }
+
+            input.addEventListener('change', function() {
+                const id = findIdByName(input.value);
+                hiddenId.value = id || '';
+                // Si el usuario borra el texto, limpiar el id para evitar filtros vacíos
+                if (!input.value.trim()) {
+                    hiddenId.value = '';
+                    // Restaurar listado completo si se borra el filtro
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('filtro_producto');
+                    url.searchParams.delete('producto_id');
+                    url.searchParams.set('accion', 'index');
+                    window.location.href = url.pathname + '?' + url.searchParams.toString();
+                }
+            });
+
+            // Si ya viene el nombre cargado, intentar precargar el id
+            if (input.value && !hiddenId.value) {
+                const id = findIdByName(input.value);
+                hiddenId.value = id || '';
+            }
+        })();
+
+        // Sincronización cliente: nombre -> id_clientes
+        (function() {
+            const input = document.getElementById('filtro_cliente');
+            const hiddenId = document.getElementById('cliente_id');
+            const datalist = document.getElementById('clientes_datalist');
+            if (!input || !hiddenId || !datalist) return;
+
+            function findIdByName(name) {
+                const opt = Array.from(datalist.options).find(o => o.value.trim().toLowerCase() === String(name||'').trim().toLowerCase());
+                return opt ? opt.getAttribute('data-id') : '';
+            }
+
+            input.addEventListener('change', function() {
+                const id = findIdByName(input.value);
+                hiddenId.value = id || '';
+                if (!input.value.trim()) {
+                    hiddenId.value = '';
+                    // Restaurar listado completo si se borra el filtro
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete('filtro_cliente');
+                    url.searchParams.delete('cliente_id');
+                    url.searchParams.set('accion', 'index');
+                    window.location.href = url.pathname + '?' + url.searchParams.toString();
+                }
+            });
+
+            if (input.value && !hiddenId.value) {
+                const id = findIdByName(input.value);
+                hiddenId.value = id || '';
+            }
+        })();
 
         // Auto-hide alerts after 5 seconds
         setTimeout(function() {
