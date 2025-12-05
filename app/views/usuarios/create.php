@@ -642,7 +642,6 @@
                                     name="rol" 
                                     required>
                                 <option value="">Seleccione el rol</option>
-                                <option value="coordinador" <?= ($_POST['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="auxiliar" <?= ($_POST['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                             <label for="rol">
@@ -652,9 +651,8 @@
                         </div>
 
                         <div class="info-panel">
-                            <h6><i class="fas fa-info-circle"></i> Roles Disponibles</h6>
+                            <h6><i class="fas fa-info-circle"></i> Rol Disponible</h6>
                             <ul>
-                                <li><strong>Coordinador:</strong> Puede gestionar ventas y consultar reportes</li>
                                 <li><strong>Auxiliar:</strong> Tareas operativas y soporte</li>
                             </ul>
                         </div>
@@ -722,8 +720,8 @@
                                 <div class="preview-doc" id="previewDoc">Documento</div>
                                 <div class="preview-email" id="previewEmail">correo@ejemplo.com</div>
                                 <div class="preview-role" id="previewRole">
-                                    <span class="role-badge role-coordinador">
-                                        <i class="fas fa-user-tie"></i> Rol
+                                    <span class="role-badge role-auxiliar">
+                                        <i class="fas fa-user"></i> Rol
                                     </span>
                                 </div>
                             </div>
@@ -815,24 +813,9 @@
                 // Actualizar rol
                 const roleElement = document.getElementById('previewRole');
                 if (rol) {
-                    let roleClass, roleIcon, roleText;
-                    switch(rol) {
-                        case 'coordinador':
-                            roleClass = 'role-coordinador';
-                            roleIcon = 'fas fa-user-tie';
-                            roleText = 'Coordinador';
-                            break;
-                        case 'auxiliar':
-                            roleClass = 'role-auxiliar';
-                            roleIcon = 'fas fa-user';
-                            roleText = 'Auxiliar';
-                            break;
-                        default:
-                            roleClass = 'role-coordinador';
-                            roleIcon = 'fas fa-user';
-                            roleText = 'Usuario';
-                    }
-                    
+                    const roleClass = 'role-auxiliar';
+                    const roleIcon = 'fas fa-user';
+                    const roleText = 'Auxiliar';
                     roleElement.innerHTML = `<span class="role-badge ${roleClass}">
                         <i class="${roleIcon}"></i> ${roleText}
                     </span>`;

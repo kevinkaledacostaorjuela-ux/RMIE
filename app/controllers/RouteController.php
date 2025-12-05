@@ -58,6 +58,10 @@ class RouteController {
         if (!empty($filtros['local'])) {
             $filtros['nombre_local'] = $filtros['local'];
         }
+        // Mapear filtro de día a columna real
+        if (!empty($filtros['dia'])) {
+            $filtros['dia_semana'] = $filtros['dia'];
+        }
         
         // Obtener datos para selectores
         $ventas = Sale::getFiltered($conn);
@@ -190,7 +194,7 @@ class RouteController {
             
             // Agrupar rutas por día
             foreach ($rutas as $ruta) {
-                $dia = $ruta['dia'] ?? 'Sin día';
+                $dia = $ruta['dia_semana'] ?? 'Sin día';
                 if (!isset($rutas_por_dia[$dia])) {
                     $rutas_por_dia[$dia] = [];
                 }

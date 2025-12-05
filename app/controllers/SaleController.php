@@ -8,6 +8,24 @@ require_once __DIR__ . '/../../config/db.php';
 class SaleController {
     private $baseUrl = '/RMIE/app/controllers/SaleController.php';
     
+    public function show($id = null) {
+        try {
+            if ($id === null) { $id = $_GET['id'] ?? null; }
+            if (!$id) { throw new Exception("ID de venta no especificado"); }
+            global $conn;
+            $venta = Sale::getById($conn, $id);
+            if (!$venta) { throw new Exception("Venta no encontrada"); }
+            $venta->productos_asignados = Sale::getProductos($conn, $id);
+            $cliente = Client::getById($conn, $venta->id_clientes);
+            $usuario = User::getById($conn, $venta->num_doc);
+            include __DIR__ . '/../views/ventas/show.php';
+        } catch (Exception $e) {
+            error_log("Error en SaleController::show: " . $e->getMessage());
+            header('Location: ' . $this->baseUrl . '?accion=index&error=' . urlencode($e->getMessage()));
+            exit();
+        }
+    }
+    
     public function index() {
         try {
             global $conn;
@@ -115,6 +133,8 @@ class SaleController {
                 $estado = trim($_POST['estado'] ?? 'pendiente');
                 $num_doc = trim($_POST['num_doc'] ?? '');
                 $productos_ids = $_POST['id_productos'] ?? [];
+                $cantidades = $_POST['cantidades'] ?? [];
+                $cantidades = $_POST['cantidades'] ?? [];
                 
                 if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");
@@ -146,7 +166,13 @@ class SaleController {
                         // Obtener datos del producto
                         $producto = Product::getById($conn, $id_producto);
                         if ($producto) {
-                            $cantidad = 1; // Por defecto 1, puedes ajustar esto
+                            // Usar cantidad proporcionada, validando contra stock
+                            $cantidad = isset($cantidades[$id_producto]) ? intval($cantidades[$id_producto]) : 1;
+                            if ($cantidad < 1) { $cantidad = 1; }
+                            $stockDisp = intval($producto->stock ?? 0);
+                            if ($stockDisp > 0) {
+                                $cantidad = min($cantidad, $stockDisp);
+                            }
                             $precio = floatval($producto->precio_unitario ?? 0);
                             $subtotal = $cantidad * $precio;
                             $total_venta += $subtotal;
@@ -162,7 +188,9 @@ class SaleController {
                     
                     // Crear UNA sola venta (mantener compatibilidad con estructura antigua)
                     $primer_producto = !empty($productos_ids) ? $productos_ids[0] : null;
-                    $cantidad_total = count($productos_ids);
+                    // Sumar cantidades totales
+                    $cantidad_total = 0;
+                    foreach ($productos_data as $pd) { $cantidad_total += intval($pd['cantidad']); }
                     $precio_promedio = $total_venta / max($cantidad_total, 1);
                     
                     $resultado = Sale::create($conn, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
@@ -285,7 +313,7 @@ class SaleController {
                 $conn->begin_transaction();
                 
                 try {
-                    // Calcular total de la venta
+                    // Calcular total de la venta y preparar datos de productos con cantidades
                     $total_venta = 0;
                     $productos_data = [];
                     
@@ -293,7 +321,14 @@ class SaleController {
                         // Obtener datos del producto
                         $producto = Product::getById($conn, $id_producto);
                         if ($producto) {
-                            $cantidad = 1; // Por defecto 1, puedes ajustar esto
+                            // Cantidad enviada en el formulario; por defecto 1
+                            $cantidad = isset($cantidades[$id_producto]) ? intval($cantidades[$id_producto]) : 1;
+                            if ($cantidad < 1) { $cantidad = 1; }
+                            // Validar contra stock disponible si existe
+                            $stockDisp = intval($producto->stock ?? 0);
+                            if ($stockDisp > 0) {
+                                $cantidad = min($cantidad, $stockDisp);
+                            }
                             $precio = floatval($producto->precio_unitario ?? 0);
                             $subtotal = $cantidad * $precio;
                             $total_venta += $subtotal;
@@ -309,7 +344,9 @@ class SaleController {
                     
                     // Actualizar venta principal (mantener compatibilidad)
                     $primer_producto = !empty($productos_ids) ? $productos_ids[0] : null;
-                    $cantidad_total = count($productos_ids);
+                    // Sumatoria de cantidades seleccionadas
+                    $cantidad_total = 0;
+                    foreach ($productos_data as $pd) { $cantidad_total += intval($pd['cantidad']); }
                     $precio_promedio = $total_venta / max($cantidad_total, 1);
                     
                     $resultado = Sale::update($conn, $id, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
@@ -562,6 +599,10 @@ if (isset($_GET['accion'])) {
         case 'edit':
             $id = $_GET['id'] ?? null;
             $controller->edit($id);
+            break;
+        case 'show':
+            $id = $_GET['id'] ?? null;
+            $controller->show($id);
             break;
         case 'delete':
             $id = $_GET['id'] ?? null;

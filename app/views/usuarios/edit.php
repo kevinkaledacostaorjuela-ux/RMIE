@@ -648,7 +648,6 @@
                             </label>
                             <select id="rol" name="rol" required class="form-select">
                                 <option value="">Seleccione el rol</option>
-                                <option value="coordinador" <?= $usuario->rol === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="auxiliar" <?= $usuario->rol === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                         </div>
@@ -658,12 +657,10 @@
                             <div class="current-status">
                                 <span class="label">Rol actual:</span>
                                 <span class="role-badge role-<?= strtolower($usuario->rol) ?>">
-                                    <?php if ($usuario->rol === 'coordinador'): ?>
-                                        <i class="fas fa-user-tie"></i> Coordinador
-                                    <?php elseif ($usuario->rol === 'auxiliar'): ?>
+                                    <?php if ($usuario->rol === 'auxiliar'): ?>
                                         <i class="fas fa-user"></i> Auxiliar
                                     <?php else: ?>
-                                        <i class="fas fa-user-shield"></i> Administrador
+                                        <i class="fas fa-user-tie"></i> Coordinador
                                     <?php endif; ?>
                                 </span>
                             </div>
@@ -674,7 +671,6 @@
                             <i class="fas fa-info-circle"></i>
                             <strong>Roles disponibles:</strong>
                             <ul class="mb-0 mt-2">
-                                <li><strong>Coordinador:</strong> Puede gestionar ventas y consultar reportes</li>
                                 <li><strong>Auxiliar:</strong> Funciones operativas y de apoyo</li>
                             </ul>
                         </div>
@@ -820,9 +816,9 @@
             // Actualizar rol
             const roleElement = document.getElementById('previewRole');
             if (rol) {
-                const roleClass = rol === 'coordinador' ? 'role-coordinador' : (rol === 'auxiliar' ? 'role-auxiliar' : 'role-admin');
-                const roleIcon = rol === 'coordinador' ? 'fas fa-user-tie' : (rol === 'auxiliar' ? 'fas fa-user' : 'fas fa-user-shield');
-                const roleText = rol === 'coordinador' ? 'Coordinador' : (rol === 'auxiliar' ? 'Auxiliar' : 'Administrador');
+                const roleClass = rol === 'auxiliar' ? 'role-auxiliar' : 'role-coordinador';
+                const roleIcon = rol === 'auxiliar' ? 'fas fa-user' : 'fas fa-user-tie';
+                const roleText = rol === 'auxiliar' ? 'Auxiliar' : 'Coordinador';
                 
                 roleElement.innerHTML = `<span class="role-badge ${roleClass}">
                     <i class="${roleIcon}"></i> ${roleText}

@@ -1600,6 +1600,11 @@ if (isset($ventas) && is_array($ventas)) {
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
+                                                     <a href="/RMIE/app/controllers/SaleController.php?accion=show&id=<?= urlencode($venta->id_ventas) ?>" 
+                                                         class="btn btn-sm btn-info" 
+                                                         title="Ver detalle">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
                                         <a href="/RMIE/app/controllers/SaleController.php?accion=edit&id=<?= urlencode($venta->id_ventas) ?>" 
                                            class="btn btn-sm btn-warning" 
                                            title="Editar venta">

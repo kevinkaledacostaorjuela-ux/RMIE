@@ -116,17 +116,19 @@ class Product {
         ];
         
         // Construir consulta base
-        $sql = "SELECT p.*, 
-                   COALESCE(s.nombre, '') AS subcategoria_nombre, 
-                   c.nombre AS categoria_nombre, 
-                   pr.nombre_distribuidor AS proveedor_nombre, 
-                   u.nombres AS usuario_nombre 
-            FROM productos p 
-            LEFT JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
-            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria 
-            LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores 
-            LEFT JOIN usuarios u ON p.num_doc = u.num_doc 
-            WHERE 1=1";
+         $sql = "SELECT p.*, 
+                 COALESCE(s.nombre, '') AS subcategoria_nombre, 
+                 c.nombre AS categoria_nombre, 
+                 COALESCE(pr.nombre_distribuidor, pr2.nombre_distribuidor) AS proveedor_nombre, 
+                 u.nombres AS usuario_nombre 
+             FROM productos p 
+             LEFT JOIN subcategorias s ON p.id_subcategoria = s.id_subcategoria 
+             LEFT JOIN categorias c ON p.id_categoria = c.id_categoria 
+             LEFT JOIN proveedores pr ON p.id_proveedores = pr.id_proveedores 
+             LEFT JOIN proveedores_productos pp ON pp.id_producto = p.id_productos 
+             LEFT JOIN proveedores pr2 ON pp.id_proveedor = pr2.id_proveedores 
+             LEFT JOIN usuarios u ON p.num_doc = u.num_doc 
+             WHERE 1=1";
         
         // Construir WHERE con filtros
         $whereData = FilterHelper::buildWhereClause($filtrosProcesados, $mapping);

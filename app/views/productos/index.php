@@ -1163,11 +1163,11 @@ $stats = $statsQuery->fetch_assoc();
                     </div>
                     <div class="filter-item">
                         <span class="filter-label"><i class="fas fa-truck"></i> Proveedor</span>
-                        <select name="id_proveedores" class="filter-select">
+                        <select name="proveedor" class="filter-select">
                             <option value="">Proveedor</option>
                             <?php if (isset($proveedores) && is_array($proveedores)): ?>
                                 <?php foreach ($proveedores as $prov): ?>
-                                    <option value="<?= $prov->id_proveedores ?>" <?= isset($_GET['id_proveedores']) && $_GET['id_proveedores'] == $prov->id_proveedores ? 'selected' : '' ?>><?= htmlspecialchars($prov->nombre_distribuidor) ?></option>
+                                    <option value="<?= $prov->id_proveedores ?>" <?= isset($_GET['proveedor']) && $_GET['proveedor'] == $prov->id_proveedores ? 'selected' : '' ?>><?= htmlspecialchars($prov->nombre_distribuidor) ?></option>
                                 <?php endforeach; ?>
                             <?php endif; ?>
                         </select>

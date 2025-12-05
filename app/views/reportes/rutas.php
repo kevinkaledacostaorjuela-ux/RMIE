@@ -266,8 +266,7 @@ $rutasInactivas = 0;
                             <th>ID</th>
                             <th>Nombre</th>
                             <th>Descripción</th>
-                            <th>Origen</th>
-                            <th>Destino</th>
+                            <th>Dirección</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -278,7 +277,6 @@ $rutasInactivas = 0;
                             <td><?= htmlspecialchars($ruta['nombre_local'] ?? 'N/A') ?></td>
                             <td><?= htmlspecialchars($ruta['nombre_cliente'] ?? 'N/A') ?></td>
                             <td><?= htmlspecialchars($ruta['direccion'] ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($ruta['id_ventas'] ?? 'N/A') ?></td>
                             <td>
                                 <span class="badge badge-activo">
                                     Activo
@@ -325,7 +323,6 @@ $rutasInactivas = 0;
                 {wch: 35}, // Nombre Local
                 {wch: 35}, // Cliente
                 {wch: 45}, // Dirección
-                {wch: 15}, // ID Venta
                 {wch: 18}  // Estado
             ];
             

@@ -627,21 +627,46 @@
                                                        data-nombre="<?= htmlspecialchars($producto->nombre) ?>"
                                                        <?= in_array($producto->id_productos, $productos_asignados_ids ?? []) ? 'checked' : '' ?>
                                                        style="display: none;">
-                                                <label for="producto_<?= $producto->id_productos ?>" 
-                                                       class="checkbox-label-edit"
-                                                       style="display: flex; align-items: center; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: white;">
+                                                      <label for="producto_<?= $producto->id_productos ?>" 
+                                                          class="checkbox-label-edit"
+                                                          style="display: flex; align-items: center; padding: 0.8rem; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; background: white; gap: 12px;">
                                                     <span class="checkbox-custom-edit" 
                                                           style="width: 24px; height: 24px; border: 2px solid #667eea; border-radius: 4px; margin-right: 12px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; flex-shrink: 0;">
                                                         <i class="fas fa-check" style="color: white; font-size: 14px; display: none;"></i>
                                                     </span>
-                                                    <span style="flex-grow: 1; font-weight: 500; color: #333;">
+                                                     <span style="flex-grow: 1; font-weight: 500; color: #333;">
                                                         <?= htmlspecialchars($producto->nombre) ?>
                                                         <small style="display: block; color: #666; font-size: 0.85em;">
                                                             Stock: <?= htmlspecialchars($producto->stock) ?> | 
                                                             Precio: $<?= number_format($producto->precio_unitario, 2) ?>
                                                         </small>
                                                     </span>
+                                                    <?php
+                                                        // cantidad inicial desde productos asignados
+                                                        $cantidad_inicial = 1;
+                                                        if (!empty($venta->productos_asignados)) {
+                                                            foreach ($venta->productos_asignados as $pa) {
+                                                                $pa_arr = (array)$pa;
+                                                                if (($pa_arr['id_productos'] ?? null) == $producto->id_productos) {
+                                                                    $cantidad_inicial = intval($pa_arr['cantidad'] ?? 1);
+                                                                    break;
+                                                                }
+                                                            }
+                                                        }
+                                                    ?>
+                                                    <div class="cantidad-input-wrapper" style="margin-left: auto; display: inline-flex; align-items: center; gap: 8px;">
+                                                        <label for="cantidad_<?= $producto->id_productos ?>" style="font-size: 0.85rem; color: #555; margin: 0;">Cantidad</label>
+                                                        <input type="number"
+                                                               id="cantidad_<?= $producto->id_productos ?>"
+                                                               name="cantidades[<?= $producto->id_productos ?>]"
+                                                               class="form-control cantidad-input"
+                                                               style="width: 90px; padding: 6px 8px;"
+                                                               min="1"
+                                                               <?= intval($producto->stock) > 0 ? 'max="'.intval($producto->stock).'"' : '' ?>
+                                                               value="<?= $cantidad_inicial ?>">
+                                                    </div>
                                                 </label>
+                                                
                                             </div>
                                         <?php endforeach; ?>
                                     <?php endif; ?>
@@ -1174,6 +1199,91 @@
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', actualizarContador);
         });
+
+        // Evitar que al interactuar con cantidad se active el toggle del checkbox
+        document.querySelectorAll('.cantidad-input').forEach(inp => {
+            inp.addEventListener('click', e => e.stopPropagation());
+            inp.addEventListener('mousedown', e => e.stopPropagation());
+            inp.addEventListener('touchstart', e => e.stopPropagation());
+            // Validación de stock y recálculo de total
+            const clampCantidad = (input) => {
+                const min = parseInt(input.min || '1', 10);
+                const max = parseInt(input.max || '0', 10);
+                let val = parseInt(input.value || '1', 10);
+                if (isNaN(val) || val < min) val = min;
+                if (max > 0 && val > max) val = max;
+                input.value = val;
+                // Feedback visual cuando se alcanza el máximo
+                if (max > 0 && val === max) {
+                    input.style.borderColor = '#dc3545';
+                    input.style.boxShadow = '0 0 0 4px rgba(220, 53, 69, 0.15)';
+                    input.title = 'Cantidad limitada por stock disponible';
+                } else {
+                    input.style.borderColor = '';
+                    input.style.boxShadow = '';
+                    input.title = '';
+                }
+            };
+            const recomputeTotal = () => {
+                const totalField = document.getElementById('total');
+                if (!totalField) return;
+                let total = 0;
+                document.querySelectorAll('.checkbox-input').forEach(cb => {
+                    if (cb.checked) {
+                        const pid = cb.value;
+                        const qtyInput = document.getElementById(`cantidad_${pid}`);
+                        const qty = qtyInput ? parseInt(qtyInput.value || '1', 10) : 1;
+                        const price = parseFloat(cb.dataset.precio || '0');
+                        total += (qty * price);
+                    }
+                });
+                totalField.value = total.toFixed(2);
+            };
+
+            ['input','change','blur','keyup'].forEach(evt => {
+                inp.addEventListener(evt, () => { clampCantidad(inp); recomputeTotal(); });
+            });
+        });
+
+        // Recalcular total al cambiar selección de productos
+        document.querySelectorAll('.checkbox-input').forEach(cb => {
+            cb.addEventListener('change', () => {
+                const pid = cb.value;
+                const qtyInput = document.getElementById(`cantidad_${pid}`);
+                if (cb.checked && qtyInput) {
+                    // Asegurar mínimo 1 al seleccionar
+                    if (!qtyInput.value || parseInt(qtyInput.value, 10) < 1) qtyInput.value = 1;
+                }
+                // Recalcular total
+                let total = 0;
+                document.querySelectorAll('.checkbox-input').forEach(c => {
+                    if (c.checked) {
+                        const p = c.dataset.precio ? parseFloat(c.dataset.precio) : 0;
+                        const qEl = document.getElementById(`cantidad_${c.value}`);
+                        const q = qEl ? parseInt(qEl.value || '1', 10) : 1;
+                        total += (q * p);
+                    }
+                });
+                const totalField = document.getElementById('total');
+                if (totalField) totalField.value = total.toFixed(2);
+                actualizarContador();
+            });
+        });
+
+        // Recalcular total inicial
+        (function initTotal(){
+            let total = 0;
+            document.querySelectorAll('.checkbox-input').forEach(c => {
+                if (c.checked) {
+                    const p = c.dataset.precio ? parseFloat(c.dataset.precio) : 0;
+                    const qEl = document.getElementById(`cantidad_${c.value}`);
+                    const q = qEl ? parseInt(qEl.value || '1', 10) : 1;
+                    total += (q * p);
+                }
+            });
+            const totalField = document.getElementById('total');
+            if (totalField) totalField.value = total.toFixed(2);
+        })();
         
         // Actualizar contador inicial
         actualizarContador();

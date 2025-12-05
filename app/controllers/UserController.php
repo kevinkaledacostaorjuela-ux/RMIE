@@ -89,7 +89,7 @@ class UserController {
                 
                 if (empty($_POST['rol'])) {
                     $errores[] = "El rol es requerido";
-                } elseif (!in_array($_POST['rol'], ['admin', 'coordinador', 'auxiliar'])) {
+                } elseif (!in_array($_POST['rol'], ['auxiliar'])) {
                     $errores[] = "El rol seleccionado no es válido";
                 }
                 
@@ -169,6 +169,8 @@ class UserController {
                 
                 if (empty($_POST['rol'])) {
                     $errores[] = "El rol es requerido";
+                } elseif (!in_array($_POST['rol'], ['auxiliar'])) {
+                    $errores[] = "El rol seleccionado no es válido";
                 }
                 
                 // Verificar si el correo ya existe en otro usuario
