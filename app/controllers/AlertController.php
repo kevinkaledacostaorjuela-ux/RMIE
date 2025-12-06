@@ -55,16 +55,79 @@ class AlertController {
             }
         }
         
-        // Obtener alertas filtradas
-        $alertas = Alert::getFiltered($conn, $filtros);
+        // Obtener alertas filtradas (registradas en BD)
+        $alertas_db = Alert::getFiltered($conn, $filtros);
 
-        // Post-filtro por estado calculado si no hay resultados o para asegurar coincidencias
+        // Generar alertas automáticas a partir de los productos (stock y caducidad)
+        $alertas_auto = [];
+        $umbral_stock_default = 5; // umbral configurable para considerar stock bajo
+        $fecha_actual = date('Y-m-d');
+
+        foreach ($productos as $p) {
+            // Productos retornados por Product::getAll son objetos Product
+            $stock = isset($p->stock) ? (int)$p->stock : 0;
+            $fc = $p->fecha_caducidad ?? null;
+            $nombre_producto = $p->nombre_producto ?? $p->nombre ?? '';
+            $id_producto = $p->id_productos ?? null;
+
+            // Alerta automática por stock bajo
+            if ($stock <= $umbral_stock_default) {
+                $prioridad_stock = ($stock <= 2) ? 'Alta' : (($stock <= $umbral_stock_default) ? 'Media' : 'Baja');
+                $estado_stock = ($stock <= 0) ? 'Vencida' : 'Activo';
+                $alertas_auto[] = [
+                    'id_alertas' => null,
+                    'id_productos' => $id_producto,
+                    'producto_nombre' => $nombre_producto,
+                    'tipo_alerta' => 'stock_bajo',
+                    'cantidad_minima' => $umbral_stock_default,
+                    'fecha_caducidad' => $fc,
+                    'prioridad' => $prioridad_stock,
+                    'estado' => $estado_stock
+                ];
+            }
+
+            // Alerta automática por caducidad
+            if (!empty($fc) && $fc !== '0000-00-00') {
+                $dias = (strtotime($fc) - strtotime($fecha_actual)) / (60*60*24);
+                if ($dias < 0) {
+                    $estado = 'Vencida';
+                    $prioridad = 'Alta';
+                } elseif ($dias <= 7) {
+                    $estado = 'Crítica';
+                    $prioridad = 'Alta';
+                } elseif ($dias <= 30) {
+                    $estado = 'Próxima';
+                    $prioridad = 'Media';
+                } else {
+                    $estado = 'Normal';
+                    $prioridad = 'Baja';
+                }
+                $alertas_auto[] = [
+                    'id_alertas' => null,
+                    'id_productos' => $id_producto,
+                    'producto_nombre' => $nombre_producto,
+                    'tipo_alerta' => 'expiration',
+                    'cantidad_minima' => null,
+                    'fecha_caducidad' => $fc,
+                    'prioridad' => $prioridad,
+                    'estado' => $estado
+                ];
+            }
+        }
+
+        // Unir alertas registradas en BD con las automáticas
+        $alertas = array_values(array_merge(is_array($alertas_db) ? $alertas_db : [], $alertas_auto));
+
+        // Si se solicitó filtrar por estado, aplicar el filtro sobre el conjunto combinado
         if (!empty($filtros['estado']) && is_array($alertas)) {
             $estadoFiltro = $filtros['estado'];
             $fecha_actual_calc = date('Y-m-d');
             $alertas = array_filter($alertas, function($a) use ($estadoFiltro, $fecha_actual_calc){
                 $fc = $a['fecha_caducidad'] ?? null;
-                if (!$fc) return false;
+                if (!$fc) {
+                    // Si no tiene fecha, dejar pasar sólo si se filtra por 'Activo' o no hay filtro estricto
+                    return $estadoFiltro === 'Activo' || $estadoFiltro === '';
+                }
                 $dias = (strtotime($fc) - strtotime($fecha_actual_calc)) / (60*60*24);
                 if ($estadoFiltro === 'Vencida') return ($dias < 0);
                 if ($estadoFiltro === 'Crítica') return ($dias >= 0 && $dias <= 7);
@@ -76,21 +139,23 @@ class AlertController {
             // Reindexar array
             $alertas = array_values($alertas);
         }
-        
-        // Calcular estadísticas
+
+        // Calcular estadísticas sobre el conjunto combinado (BD + automáticas)
         $total_alertas = count($alertas);
         $alertas_proximas = 0;
         $alertas_vencidas = 0;
         $fecha_actual = date('Y-m-d');
-        
+
         foreach ($alertas as $alerta) {
-            if ($alerta['fecha_caducidad'] < $fecha_actual) {
+            $fc = $alerta['fecha_caducidad'] ?? null;
+            if (!$fc) continue;
+            if ($fc < $fecha_actual) {
                 $alertas_vencidas++;
-            } elseif ($alerta['fecha_caducidad'] <= date('Y-m-d', strtotime('+30 days'))) {
+            } elseif ($fc <= date('Y-m-d', strtotime('+30 days'))) {
                 $alertas_proximas++;
             }
         }
-        
+
         $estadisticas = [
             'total' => $total_alertas,
             'proximas' => $alertas_proximas,

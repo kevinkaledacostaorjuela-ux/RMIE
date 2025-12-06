@@ -190,14 +190,17 @@ if (isset($rutas) && is_array($rutas)) {
                 <input type="hidden" name="accion" value="index">
                 
                 <div class="filter-row">
+
                     <div class="form-group">
                         <label for="cliente"><i class="fas fa-user"></i> Cliente</label>
                         <select name="cliente" id="cliente" class="form-control cliente-filter-select">
                             <option value="">Buscar cliente por nombre...</option>
-                            <?php if (isset($_GET['cliente']) && !empty($_GET['cliente'])): ?>
-                                <option value="<?php echo htmlspecialchars($_GET['cliente']); ?>" selected>
-                                    <?php echo htmlspecialchars($_GET['cliente']); ?>
-                                </option>
+                            <?php if (isset($available_clients) && is_array($available_clients)): ?>
+                                <?php foreach ($available_clients as $cliente): ?>
+                                    <option value="<?php echo htmlspecialchars($cliente['id_clientes']); ?>" <?php echo (isset($_GET['cliente']) && $_GET['cliente'] == $cliente['id_clientes']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($cliente['nombre']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
                     </div>
@@ -206,10 +209,12 @@ if (isset($rutas) && is_array($rutas)) {
                         <label for="local"><i class="fas fa-store"></i> Local</label>
                         <select name="local" id="local" class="form-control local-filter-select">
                             <option value="">Buscar local por nombre...</option>
-                            <?php if (isset($_GET['local']) && !empty($_GET['local'])): ?>
-                                <option value="<?php echo htmlspecialchars($_GET['local']); ?>" selected>
-                                    <?php echo htmlspecialchars($_GET['local']); ?>
-                                </option>
+                            <?php if (isset($available_locals) && is_array($available_locals)): ?>
+                                <?php foreach ($available_locals as $local): ?>
+                                    <option value="<?php echo htmlspecialchars($local['id_locales']); ?>" <?php echo (isset($_GET['local']) && $_GET['local'] == $local['id_locales']) ? 'selected' : ''; ?>>
+                                        <?php echo htmlspecialchars($local['nombre_local']); ?>
+                                    </option>
+                                <?php endforeach; ?>
                             <?php endif; ?>
                         </select>
                     </div>

@@ -94,9 +94,11 @@ CREATE TABLE rutas (
     nombre_local VARCHAR(45),
     nombre_cliente VARCHAR(45),
     id_clientes INT NOT NULL,
+    id_locales INT NOT NULL,
     id_reportes INT,
     id_ventas INT,
     FOREIGN KEY (id_clientes) REFERENCES clientes(id_clientes),
+    FOREIGN KEY (id_locales) REFERENCES locales(id_locales),
     FOREIGN KEY (id_reportes) REFERENCES reportes(id_reportes),
     FOREIGN KEY (id_ventas) REFERENCES ventas(id_ventas)
 );

@@ -37,15 +37,14 @@ class RouteControllerModern {
         unset($_SESSION['success'], $_SESSION['error']);
         
         try {
-            // Obtener filtros del GET
+            // Obtener filtros del GET (usar id_clientes y id_locales para filtrar correctamente)
             $filtros = [
-                'nombre_cliente' => $_GET['cliente'] ?? '',
-                'nombre_local' => $_GET['local'] ?? '',
+                'id_clientes' => $_GET['cliente'] ?? '',
+                'id_locales' => $_GET['local'] ?? '',
                 'estado' => $_GET['estado'] ?? '',
                 'dia_semana' => $_GET['dia'] ?? '',
                 'buscar' => $_GET['buscar'] ?? ''
             ];
-            
             // Obtener rutas con filtros
             $rutas_raw = Route::getAll($conn, $filtros);
             
@@ -131,15 +130,16 @@ class RouteControllerModern {
                     throw new Exception("Debe configurar al menos un día con combinaciones cliente-local.");
                 }
                 
-                // Preparar la consulta para insertar múltiples rutas
-                $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, estado, dia_semana) 
-                        VALUES (?, ?, ?, ?, ?, ?)";
+
+                // Preparar la consulta para insertar múltiples rutas (ahora incluye id_locales)
+                $sql = "INSERT INTO rutas (direccion, nombre_local, nombre_cliente, id_clientes, id_locales, estado, dia_semana) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
-                
+
                 $rutas_creadas = 0;
                 $conn->autocommit(false); // Iniciar transacción
                 $transaction_started = true;
-                
+
                 // Iterar por cada día configurado
                 foreach ($diasObj as $dia => $combinaciones) {
                     if (!is_array($combinaciones) || count($combinaciones) === 0) {
@@ -154,15 +154,16 @@ class RouteControllerModern {
                         $localNombre = $combo['localNombre'];
                         $localDireccion = $combo['localDireccion'] ?: 'Dirección del ' . $localNombre;
                         
-                        $stmt->bind_param('sssiis', 
+                        $stmt->bind_param('sssiiss', 
                             $localDireccion, 
                             $localNombre, 
                             $clienteNombre, 
                             $clienteId, 
+                            $localId,
                             $estado, 
                             $dia
                         );
-                        
+
                         if ($stmt->execute()) {
                             $rutas_creadas++;
                         } else {

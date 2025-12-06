@@ -706,21 +706,135 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
         <?php endif; ?>
 
-        <!-- Estadísticas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number"><?php echo $estadisticas['total']; ?></div>
-                <div class="stat-label">Total Alertas</div>
+        <!-- Estadísticas compactas mejoradas y correcciones visuales -->
+        <?php
+            $alertas_list = is_array($alertas) ? $alertas : [];
+            $tipo_counts = ['stock_bajo' => 0, 'expiration' => 0, 'other' => 0];
+            $prioridad_counts = ['Alta' => 0, 'Media' => 0, 'Baja' => 0];
+            foreach ($alertas_list as $a) {
+                $t = strtolower($a['tipo_alerta'] ?? '');
+                if (strpos($t, 'stock') !== false) {
+                    $tipo_counts['stock_bajo']++;
+                } elseif (strpos($t, 'exp') !== false || strpos($t, 'venc') !== false) {
+                    $tipo_counts['expiration']++;
+                } else {
+                    $tipo_counts['other']++;
+                }
+
+                $p = $a['prioridad'] ?? null;
+                if ($p && isset($prioridad_counts[$p])) {
+                    $prioridad_counts[$p]++;
+                }
+            }
+            $total_tipos = array_sum($tipo_counts);
+            $total_prioridades = array_sum($prioridad_counts);
+        ?>
+
+        <style>
+            /* Compact stats tweaks */
+            .stat-card.compact { background: rgba(255,255,255,0.06); padding:12px 14px; border-radius:10px; box-shadow:none; border:1px solid rgba(255,255,255,0.04); }
+            .stat-number.compact { font-size:1.5rem; font-weight:700; color:#fff }
+            .stat-label.compact { font-size:0.78rem; color:rgba(255,255,255,0.8); text-transform:uppercase; letter-spacing:0.6px }
+            .chart-wrapper { width:140px; height:140px; display:flex; align-items:center; justify-content:center; }
+            .chart-legend-compact { font-size:0.82rem; color:rgba(255,255,255,0.9); display:flex; gap:10px; margin-top:8px; flex-wrap:wrap; justify-content:center }
+            .chart-legend-compact span { display:inline-flex; gap:6px; align-items:center }
+            @media (max-width:720px) {
+                .stats-grid > div { flex-direction:column; gap:10px }
+                .chart-wrapper { margin: 0 auto; }
+            }
+        </style>
+
+        <div class="stats-grid" style="align-items:center;margin-bottom:14px;">
+            <div style="display:flex;gap:14px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+                <div style="display:flex;gap:10px;align-items:center;flex:1 1 420px;min-width:220px;">
+                    <div class="stat-card compact" style="min-width:110px;flex:0 0 auto;">
+                        <div class="stat-number compact"><?php echo (int)($estadisticas['total'] ?? 0); ?></div>
+                        <div class="stat-label compact">Total</div>
+                    </div>
+                    <div class="stat-card compact" style="min-width:110px;flex:0 0 auto;">
+                        <div class="stat-number compact"><?php echo (int)($estadisticas['vencidas'] ?? 0); ?></div>
+                        <div class="stat-label compact">Vencidas</div>
+                    </div>
+                    <div class="stat-card compact" style="min-width:110px;flex:0 0 auto;">
+                        <div class="stat-number compact"><?php echo (int)($estadisticas['proximas'] ?? 0); ?></div>
+                        <div class="stat-label compact">Próximas (30d)</div>
+                    </div>
+                </div>
+
+                <div style="flex:0 0 180px;min-width:160px;display:flex;flex-direction:column;align-items:center;">
+                    <div class="stat-card compact" style="padding:8px;width:160px;height:160px;display:flex;align-items:center;justify-content:center;">
+                        <div class="chart-wrapper"><canvas id="alertsChart" width="140" height="140" aria-label="Distribución de tipos de alertas" style="display:block;max-width:140px;max-height:140px"></canvas></div>
+                    </div>
+
+                    <div class="chart-legend-compact">
+                        <span><span style="width:10px;height:10px;background:#667eea;display:inline-block;border-radius:3px"></span> Stock (<?php echo $tipo_counts['stock_bajo']; ?>)</span>
+                        <span><span style="width:10px;height:10px;background:#f093fb;display:inline-block;border-radius:3px"></span> Venc. (<?php echo $tipo_counts['expiration']; ?>)</span>
+                        <?php if ($tipo_counts['other'] > 0): ?>
+                            <span><span style="width:10px;height:10px;background:#9ad3bc;display:inline-block;border-radius:3px"></span> Otros (<?php echo $tipo_counts['other']; ?>)</span>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
+                <div style="flex-basis:100%;height:1px"></div>
+
+                <div style="width:100%;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-start;margin-top:6px;">
+                    <?php foreach ($prioridad_counts as $label => $count):
+                        $percent = $total_prioridades ? round(($count / $total_prioridades) * 100) : 0;
+                    ?>
+                        <div style="min-width:120px;flex:0 0 auto;">
+                            <div style="color:rgba(255,255,255,0.85);font-weight:700;font-size:0.82rem;margin-bottom:6px"><?= htmlspecialchars($label) ?></div>
+                            <div style="background:rgba(255,255,255,0.06);height:8px;border-radius:6px;overflow:hidden;">
+                                <div style="width:<?= $percent ?>%;height:100%;background:linear-gradient(90deg,#ff9a9e,#fecfef)"></div>
+                            </div>
+                            <div style="font-size:0.78rem;color:rgba(255,255,255,0.85);margin-top:6px"><?= $count ?> (<?= $percent ?>%)</div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
-            <div class="stat-card">
-                <div class="stat-number"><?php echo $estadisticas['vencidas']; ?></div>
-                <div class="stat-label">Vencidas</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number"><?php echo $estadisticas['proximas']; ?></div>
-                <div class="stat-label">Próximas (30 días)</div>
-            </div>
-        </div>        <!-- Filtros -->
+        </div>
+
+        <script>
+            (function(){
+                var chartUrl = 'https://cdn.jsdelivr.net/npm/chart.js';
+                var s = document.createElement('script');
+                s.src = chartUrl;
+                s.onload = function(){
+                    try {
+                        var canvas = document.getElementById('alertsChart');
+                        if (!canvas) return;
+                        var ctx = canvas.getContext('2d');
+                        var data = <?php echo json_encode(array_values($tipo_counts)); ?>;
+                        var labels = ['Stock Bajo','Vencimiento','Otros'];
+                        var colors = ['#667eea','#f093fb','#9ad3bc'];
+
+                        // Ocultar segmentos vacíos para visual más limpio
+                        var filteredData = [];
+                        var filteredLabels = [];
+                        var filteredColors = [];
+                        for (var i=0;i<data.length;i++){
+                            if (data[i] && data[i] > 0) {
+                                filteredData.push(data[i]);
+                                filteredLabels.push(labels[i]);
+                                filteredColors.push(colors[i]);
+                            }
+                        }
+                        if (filteredData.length === 0) {
+                            filteredData = [1]; filteredLabels = ['Sin datos']; filteredColors = ['#cccccc'];
+                        }
+
+                        new Chart(ctx, {
+                            type: 'doughnut',
+                            data: { labels: filteredLabels, datasets: [{ data: filteredData, backgroundColor: filteredColors, hoverOffset: 6, borderWidth: 0 }] },
+                            options: { responsive: true, maintainAspectRatio: false, cutout: '70%', plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(ctx){ return ctx.label + ': ' + ctx.formattedValue; } } } } }
+                        });
+                    } catch (e) { console.warn('Error inicializando gráfico compacto', e); }
+                };
+                s.onerror = function(){ console.warn('No se pudo cargar Chart.js'); };
+                document.head.appendChild(s);
+            })();
+        </script>
+
+        <!-- Filtros -->
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm" 

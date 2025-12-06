@@ -6,6 +6,8 @@ class Route {
         
         // Definir reglas de validación para filtros
         $filterRules = [
+            'id_clientes' => ['type' => 'int', 'options' => ['min' => 1]],
+            'id_locales' => ['type' => 'int', 'options' => ['min' => 1]],
             'nombre_cliente' => ['type' => 'text', 'options' => ['max_length' => 100]],
             'venta' => ['type' => 'int', 'options' => ['min' => 1]],
             'reporte' => ['type' => 'int', 'options' => ['min' => 1]],
@@ -21,6 +23,9 @@ class Route {
         
         // Mapeo de campos a columnas SQL
         $mapping = [
+            'id_clientes' => ['column' => 'r.id_clientes', 'operator' => '=', 'type' => 'i'],
+            // Filtrar por id_locales en la tabla rutas directamente (más confiable)
+            'id_locales' => ['column' => 'r.id_locales', 'operator' => '=', 'type' => 'i'],
             'nombre_cliente' => ['column' => 'c.nombre', 'operator' => '=', 'type' => 's'],
             'venta' => ['column' => 'r.id_ventas', 'operator' => '=', 'type' => 'i'],
             'reporte' => ['column' => 'r.id_reportes', 'operator' => '=', 'type' => 'i'],
