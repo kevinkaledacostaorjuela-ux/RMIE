@@ -930,9 +930,16 @@ unset($_SESSION['success'], $_SESSION['error']);
             <a href="/RMIE/app/controllers/AlertController.php?accion=create" class="btn btn-modern btn-success-modern me-2">
                 <i class="fas fa-plus"></i> Nueva Alerta
             </a>
+            <a href="/RMIE/app/controllers/AlertController.php?accion=notifications" class="btn btn-modern btn-warning-modern me-2">
+                <i class="fas fa-bell"></i> Notificaciones
+            </a>
+            <a href="/RMIE/app/controllers/AlertController.php?accion=trash" class="btn btn-modern btn-danger-modern me-2">
+                <i class="fas fa-trash"></i> Papelera
+            </a>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard
-            </a>        </div>
+            </a>
+        </div>
 
         <!-- Gráfico Estadístico de Alertas -->
         <div class="chart-stats-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
@@ -942,6 +949,117 @@ unset($_SESSION['success'], $_SESSION['error']);
             <div style="position: relative; height: 400px; max-width: 900px; margin: 0 auto;">
                 <canvas id="alertasEstadisticasChart"></canvas>
             </div>
+        </div>
+
+        <!-- Vista Rápida de Todas las Alertas (Tabla) -->
+        <div class="alerts-table-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
+            <h3 style="color: #fff; text-align: center; margin-bottom: 25px; font-size: 1.8rem; font-weight: 600;">
+                <i class="fas fa-table"></i> Resumen de Alertas
+            </h3>
+            
+            <?php if (!empty($alertas) && is_array($alertas)): ?>
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; color: #fff; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: rgba(0, 0, 0, 0.3); border-bottom: 2px solid rgba(255, 255, 255, 0.2);">
+                            <th style="padding: 15px; text-align: left; font-weight: 600;">ID</th>
+                            <th style="padding: 15px; text-align: left; font-weight: 600;">Producto</th>
+                            <th style="padding: 15px; text-align: left; font-weight: 600;">Tipo</th>
+                            <th style="padding: 15px; text-align: left; font-weight: 600;">Proveedor</th>
+                            <th style="padding: 15px; text-align: left; font-weight: 600;">Estado</th>
+                            <th style="padding: 15px; text-align: center; font-weight: 600;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($alertas as $alerta): 
+                            $fecha_actual = date('Y-m-d');
+                            $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
+                            $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
+                            $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
+                            
+                            // Determinar estado
+                            if (!empty($alerta['estado'])) {
+                                $estado = $alerta['estado'];
+                                switch ($estado) {
+                                    case 'Vencida': $badge_class = 'badge-danger'; break;
+                                    case 'Crítica': $badge_class = 'badge-danger'; break;
+                                    case 'Próxima': $badge_class = 'badge-warning'; break;
+                                    case 'Normal': $badge_class = 'badge-success'; break;
+                                    case 'Activo': $badge_class = 'badge-info'; break;
+                                    default: $badge_class = 'badge-secondary';
+                                }
+                            } elseif ($dias_restantes !== null) {
+                                if ($dias_restantes < 0) {
+                                    $estado = 'Vencida'; $badge_class = 'badge-danger';
+                                } elseif ($dias_restantes <= 7) {
+                                    $estado = 'Crítica'; $badge_class = 'badge-danger';
+                                } elseif ($dias_restantes <= 30) {
+                                    $estado = 'Próxima'; $badge_class = 'badge-warning';
+                                } else {
+                                    $estado = 'Normal'; $badge_class = 'badge-success';
+                                }
+                            } else {
+                                $estado = 'Activo'; $badge_class = 'badge-info';
+                            }
+                        ?>
+                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.3s;">
+                            <td style="padding: 15px;">#<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></td>
+                            <td style="padding: 15px;">
+                                <i class="fas fa-box" style="margin-right: 8px;"></i>
+                                <?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>
+                            </td>
+                            <td style="padding: 15px;">
+                                <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
+                                    <span style="background: rgba(102, 126, 234, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;">
+                                        <i class="fas fa-boxes"></i> Stock
+                                    </span>
+                                <?php else: ?>
+                                    <span style="background: rgba(240, 147, 251, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;">
+                                        <i class="fas fa-calendar-times"></i> Vencimiento
+                                    </span>
+                                <?php endif; ?>
+                            </td>
+                            <td style="padding: 15px;">
+                                <i class="fas fa-truck" style="margin-right: 8px;"></i>
+                                <?= htmlspecialchars($alerta['proveedor_nombre'] ?? ($alerta['id_proveedores'] ? 'Proveedor #' . $alerta['id_proveedores'] : 'Sin proveedor')) ?>
+                            </td>
+                            <td style="padding: 15px;">
+                                <span class="badge badge-modern <?= $badge_class ?>" style="padding: 6px 12px; font-size: 0.85rem;">
+                                    <?= $estado ?>
+                                </span>
+                            </td>
+                            <td style="padding: 15px; text-align: center;">
+                                <?php if (!empty($alerta['id_alertas'])): ?>
+                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas']) ?>" 
+                                       class="btn btn-sm btn-modern btn-warning-modern" 
+                                       style="padding: 6px 12px; margin-right: 5px; display: inline-block;"
+                                       title="Editar alerta">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
+                                    <button type="button" 
+                                           class="btn btn-sm btn-modern btn-danger-modern" 
+                                           style="padding: 6px 12px; display: inline-block;"
+                                           title="Eliminar alerta"
+                                           onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas']) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <span style="font-size: 0.85rem; opacity: 0.7;">Automática</span>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+            <?php else: ?>
+            <div style="text-align: center; padding: 40px; color: #fff;">
+                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.6;"></i>
+                <p>No hay alertas disponibles</p>
+            </div>
+            <?php endif; ?>
         </div>
 
         <!-- Visualización de Alertas Individuales -->
@@ -1040,7 +1158,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                             <i class="fas fa-truck"></i> Proveedor
                                         </div>
                                         <div class="alerts-card-field-value">
-                                            <?= htmlspecialchars($alerta['proveedor_nombre'] ?? 'Proveedor #' . $alerta['id_proveedores']) ?>
+                                            <?= htmlspecialchars($alerta['proveedor_nombre'] ?? ($alerta['id_proveedores'] ? 'Proveedor #' . $alerta['id_proveedores'] : 'Sin proveedor')) ?>
                                         </div>
                                     </div>
                                     
@@ -1100,7 +1218,8 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 </div>
                                 
                                 <div class="alerts-card-actions">
-                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas'] ?? '') ?>" 
+                                    <?php if (!empty($alerta['id_alertas'])): ?>
+                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas']) ?>" 
                                        class="btn btn-modern btn-warning-modern" 
                                        title="Editar alerta">
                                         <i class="fas fa-edit"></i>
@@ -1109,10 +1228,16 @@ unset($_SESSION['success'], $_SESSION['error']);
                                     <button type="button" 
                                            class="btn btn-modern btn-danger-modern" 
                                            title="Eliminar alerta"
-                                           onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas'] ?? 0) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
+                                           onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas']) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                     <?php endif; ?>
+                                    <?php else: ?>
+                                    <span class="badge badge-secondary" title="Alerta automática (no editable)">
+                                        <i class="fas fa-lock"></i> Automática
+                                    </span>
+                                    <?php endif; ?>
+                                </div>
                                 </div>
                             </div>
                         </div>
@@ -1476,9 +1601,9 @@ unset($_SESSION['success'], $_SESSION['error']);
                 alert.style.transform = 'translateY(-20px)';
                 setTimeout(() => alert.remove(), 500);
             });
-        }, 5000);        // Función para confirmar eliminación de alertas (ya no se usa pero se mantiene por compatibilidad)
+        }, 5000);        // Función para confirmar eliminación de alertas
         function confirmarEliminacion(idAlerta, nombreProducto) {
-            if (confirmAction("acción")) {
+            if (confirm('¿Estás seguro de que deseas eliminar la alerta de "' + nombreProducto + '"?')) {
                 // Crear formulario dinámico para enviar POST
                 const form = document.createElement('form');
                 form.method = 'POST';

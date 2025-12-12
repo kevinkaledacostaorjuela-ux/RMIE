@@ -6,7 +6,62 @@ require_once __DIR__ . '/../../config/db.php';
 
 class AlertController {
     public function index() {
+        // Iniciar sesión si es necesario
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
         global $conn;
+        
+        // LIMPIAR AUTOMÁTICAMENTE ALERTAS VENCIDAS (cuya fecha de caducidad ya pasó)
+        $fecha_hoy = date('Y-m-d');
+        
+        // Obtener alertas a vencer en 3 días para notificación previa
+        $fecha_limite = date('Y-m-d', strtotime('+3 days'));
+        $sql_proximas = "SELECT id_alertas, id_productos, fecha_caducidad FROM alertas 
+                        WHERE fecha_caducidad IS NOT NULL 
+                        AND DATE(fecha_caducidad) <= DATE(?) 
+                        AND DATE(fecha_caducidad) > DATE(?)
+                        AND fecha_caducidad != '0000-00-00'";
+        
+        $stmt = $conn->prepare($sql_proximas);
+        if ($stmt) {
+            $stmt->bind_param('ss', $fecha_limite, $fecha_hoy);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            // Crear notificaciones para alertas próximas a vencer
+            while ($row = $result->fetch_assoc()) {
+                $dias_restantes = (strtotime($row['fecha_caducidad']) - strtotime($fecha_hoy)) / (60 * 60 * 24);
+                $mensaje = "La alerta vence en " . ceil($dias_restantes) . " días";
+                Alert::createNotification($conn, $row['id_alertas'], 'vencimiento_proximo', $mensaje);
+            }
+            $stmt->close();
+        }
+        
+        // Mover alertas vencidas a papelera en lugar de eliminarlas
+        $sql_vencidas = "SELECT id_alertas FROM alertas 
+                        WHERE fecha_caducidad IS NOT NULL 
+                        AND fecha_caducidad != '0000-00-00' 
+                        AND DATE(fecha_caducidad) < DATE(?)";
+        
+        $stmt = $conn->prepare($sql_vencidas);
+        if ($stmt) {
+            $stmt->bind_param('s', $fecha_hoy);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            
+            // Mover a papelera
+            while ($row = $result->fetch_assoc()) {
+                Alert::moveToTrash($conn, $row['id_alertas'], 'Fecha de caducidad vencida - Eliminación automática');
+            }
+            $stmt->close();
+        }
+        
+        // Limpiar errores previos cuando se accede a index
+        if (isset($_SESSION['error']) && strpos($_SESSION['error'], 'ID de alerta inválido') !== false) {
+            unset($_SESSION['error']);
+        }
         
         // Obtener productos para el filtro
         $productos = Product::getAll($conn);
@@ -82,7 +137,9 @@ class AlertController {
                     'cantidad_minima' => $umbral_stock_default,
                     'fecha_caducidad' => $fc,
                     'prioridad' => $prioridad_stock,
-                    'estado' => $estado_stock
+                    'estado' => $estado_stock,
+                    'id_proveedores' => $p->id_proveedores ?? null,
+                    'proveedor_nombre' => $p->proveedor_nombre ?? null
                 ];
             }
 
@@ -110,7 +167,9 @@ class AlertController {
                     'cantidad_minima' => null,
                     'fecha_caducidad' => $fc,
                     'prioridad' => $prioridad,
-                    'estado' => $estado
+                    'estado' => $estado,
+                    'id_proveedores' => $p->id_proveedores ?? null,
+                    'proveedor_nombre' => $p->proveedor_nombre ?? null
                 ];
             }
         }
@@ -223,7 +282,20 @@ class AlertController {
             $tipo_alerta = $_POST['alert_type'] ?? 'stock'; // 'stock' o 'expiration'
             $estado_alerta = $_POST['estado_alerta'] ?? 'Activo'; // Nuevo campo de estado
 
-            if ($id_producto && $cantidad_minima && $fecha_caducidad && $id_proveedor) {
+            // Validación diferenciada según tipo de alerta
+            $campos_validos = false;
+            
+            if ($tipo_alerta === 'stock') {
+                // Para Stock Bajo: producto, cantidad_minima y proveedor son obligatorios
+                // fecha_caducidad NO es obligatoria
+                $campos_validos = ($id_producto && $cantidad_minima && $id_proveedor);
+            } else {
+                // Para Vencimiento: producto, fecha_caducidad y proveedor son obligatorios
+                // cantidad_minima NO es obligatoria
+                $campos_validos = ($id_producto && $fecha_caducidad && $id_proveedor);
+            }
+
+            if ($campos_validos) {
                 // Validar existencia en BD
                 $prod = Product::getById($conn, $id_producto);
                 $prov = Provider::getById($conn, $id_proveedor);
@@ -246,7 +318,7 @@ class AlertController {
                     }
                 }
             } else {
-                $_SESSION['error'] = 'Por favor, completa todos los campos.';
+                $_SESSION['error'] = 'Por favor, completa todos los campos obligatorios.';
             }
         }
         // Pasar variable de preselección a la vista
@@ -339,25 +411,104 @@ class AlertController {
         }
         
         global $conn;
-        $id = $_GET['id'] ?? 0;
-        $errors = [];
-        $success = '';
-        $alerta = Alert::getById($conn, $id);
-        if (!$alerta) {
-            header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
-            exit();
+        $id = $_GET['id'] ?? null;
+        
+        // Si no hay POST, mostrar página de confirmación
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            // Validar que el id sea un número válido
+            if (!is_numeric($id) || $id <= 0) {
+                $_SESSION['error'] = 'ID de alerta inválido';
+                header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                exit();
+            }
+            
+            // Verificar que la alerta existe
+            $alerta = Alert::getById($conn, $id);
+            if (!$alerta) {
+                $_SESSION['error'] = 'La alerta no existe';
+                header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                exit();
+            }
+            
+            // Mostrar página de confirmación
+            $errors = [];
+            $success = '';
+            include __DIR__ . '/../views/alertas/delete.php';
+            return;
         }
-        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirmar_eliminar'])) {
-            $result = Alert::delete($conn, $id);
+        
+        // Procesar la eliminación si viene por POST
+        if (isset($_POST['confirmar_eliminar'])) {
+            // Validar ID nuevamente
+            if (!is_numeric($id) || $id <= 0) {
+                $_SESSION['error'] = 'ID de alerta inválido';
+                header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                exit();
+            }
+            
+            $result = Alert::moveToTrash($conn, $id, 'Usuario eliminó manualmente');
             if ($result) {
-                $_SESSION['success'] = 'Alerta eliminada exitosamente';
+                $_SESSION['success'] = 'Alerta eliminada exitosamente y movida a papelera';
                 header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
                 exit();
             } else {
-                $errors[] = 'Error al eliminar la alerta';
+                $_SESSION['error'] = 'Error al eliminar la alerta: ' . $conn->error;
+                header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+                exit();
             }
         }
-        include __DIR__ . '/../views/alertas/delete.php';
+        
+        // Si llega aquí, redirigir a index
+        header('Location: /RMIE/app/controllers/AlertController.php?accion=index');
+        exit();
+    }
+
+    public function trash() {
+        // Iniciar sesión si es necesario
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        global $conn;
+        
+        // Obtener alertas en papelera
+        $alertas_papelera = Alert::getTrash($conn);
+        
+        // Si se solicita restaurar
+        if (isset($_GET['restaurar'])) {
+            $id_papelera = (int)$_GET['restaurar'];
+            if (Alert::restoreFromTrash($conn, $id_papelera)) {
+                $_SESSION['success'] = 'Alerta restaurada exitosamente';
+            } else {
+                $_SESSION['error'] = 'Error al restaurar la alerta';
+            }
+            header('Location: /RMIE/app/controllers/AlertController.php?accion=trash');
+            exit();
+        }
+        
+        include __DIR__ . '/../views/alertas/trash.php';
+    }
+
+    public function notifications() {
+        // Iniciar sesión si es necesario
+        if (session_status() == PHP_SESSION_NONE) {
+            session_start();
+        }
+        
+        global $conn;
+        
+        // Obtener notificaciones no leídas
+        $notificaciones = Alert::getUnreadNotifications($conn);
+        
+        // Marcar como leídas si se solicita
+        if (isset($_GET['marcar_leida'])) {
+            $id_notificacion = (int)$_GET['marcar_leida'];
+            Alert::markNotificationAsRead($conn, $id_notificacion);
+            header('Location: /RMIE/app/controllers/AlertController.php?accion=notifications');
+            exit();
+        }
+        
+        include __DIR__ . '/../views/alertas/notifications.php';
     }
 
     public function handleRequest() {
@@ -371,6 +522,12 @@ class AlertController {
                 break;
             case 'delete':
                 $this->delete();
+                break;
+            case 'trash':
+                $this->trash();
+                break;
+            case 'notifications':
+                $this->notifications();
                 break;
             default:
                 $this->index();

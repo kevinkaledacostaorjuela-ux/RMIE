@@ -239,11 +239,23 @@ if (session_status() == PHP_SESSION_NONE) {
             padding: 25px;
             margin-bottom: 25px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            display: none;
+            visibility: hidden;
+            height: 0;
+            overflow: hidden;
+            padding: 0;
+            margin: 0;
+            opacity: 0;
+            transition: all 0.3s ease;
         }
         
-        .form-section-card.active {
-            display: block;
+        div#stock-form.active,
+        div#expiration-form.active {
+            visibility: visible;
+            height: auto;
+            overflow: visible;
+            padding: 25px;
+            margin-bottom: 25px;
+            opacity: 1;
             animation: slideIn 0.5s ease-out;
         }
         
@@ -598,33 +610,61 @@ if (session_status() == PHP_SESSION_NONE) {
         <div class="form-section">
             <form action="/RMIE/app/controllers/AlertController.php?accion=create" method="POST" id="alertForm">
                 
-                <!-- Tipos de Alerta -->
+                <!-- Descripción del Sistema de Alertas -->
+                <div style="background: rgba(255, 255, 255, 0.08); border-radius: 15px; padding: 25px; margin-bottom: 30px; border: 1px solid rgba(255, 255, 255, 0.15);">
+                    <h4 style="color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-info-circle"></i> Tipos de Alertas del Sistema
+                    </h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px;">
+                        <div style="background: rgba(102, 126, 234, 0.2); border-left: 4px solid #667eea; padding: 15px; border-radius: 8px;">
+                            <h5 style="color: #fff; margin-bottom: 8px;">
+                                <i class="fas fa-boxes"></i> Alerta de Stock Bajo
+                            </h5>
+                            <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin: 0;">
+                                Se activa cuando el inventario está por debajo del mínimo establecido. Configura la cantidad mínima que consideras crítica.
+                            </p>
+                        </div>
+                        <div style="background: rgba(240, 147, 251, 0.2); border-left: 4px solid #f093fb; padding: 15px; border-radius: 8px;">
+                            <h5 style="color: #fff; margin-bottom: 8px;">
+                                <i class="fas fa-calendar-times"></i> Alerta de Vencimiento
+                            </h5>
+                            <p style="color: rgba(255, 255, 255, 0.8); font-size: 0.9rem; margin: 0;">
+                                Se activa cuando los productos están próximos a vencer. El sistema te notificará con anticipación.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tipos de Alerta (Selector) -->
                 <div class="alert-types">
                     <div class="alert-type-card" data-type="stock">
                         <div class="alert-type-icon">
                             <i class="fas fa-boxes"></i>
                         </div>
-                        <div class="alert-type-title">Alerta de Stock Bajo</div>
-                        <div class="alert-type-desc">Se activa cuando el inventario está por debajo del mínimo establecido</div>
+                        <div class="alert-type-title">Stock Bajo</div>
+                        <div class="alert-type-desc">Monitorear inventario bajo</div>
                     </div>
                     
                     <div class="alert-type-card" data-type="expiration">
                         <div class="alert-type-icon">
                             <i class="fas fa-calendar-times"></i>
                         </div>
-                        <div class="alert-type-title">Alerta de Vencimiento</div>
-                        <div class="alert-type-desc">Se activa cuando los productos están próximos a vencer</div>
+                        <div class="alert-type-title">Vencimiento</div>
+                        <div class="alert-type-desc">Monitorear fechas de caducidad</div>
                     </div>
                 </div>
 
                 <input type="hidden" id="alert_type" name="alert_type" required>
 
                 <!-- Formulario para Stock Bajo -->
-                <div class="form-section-card" id="stock-form">
+                <div class="form-section-card active" id="stock-form">
                     <div class="section-title">
-                        <i class="fas fa-chart-line"></i>
-                        Configuración de Alerta de Stock
+                        <i class="fas fa-boxes"></i>
+                        Alerta de Stock Bajo
                     </div>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 20px;">
+                        Configure una alerta para cuando el inventario caiga por debajo de un nivel mínimo
+                    </p>
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
@@ -642,20 +682,20 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="producto_stock">
-                                <i class="fas fa-list"></i>
-                                Producto a Monitorear
+                                <i class="fas fa-box"></i>
+                                Producto
                             </label>
                         </div>
 
                         <div class="form-floating-modern">
                             <input type="number" 
                                    class="form-control-modern" 
-                                   id="cantidad_minima" 
+                                   id="cantidad_minima_stock" 
                                    name="cantidad_minima" 
                                    placeholder=" "
                                    min="1"
                                    required>
-                            <label for="cantidad_minima">
+                            <label for="cantidad_minima_stock">
                                 <i class="fas fa-sort-numeric-down"></i>
                                 Cantidad Mínima
                             </label>
@@ -664,21 +704,8 @@ if (session_status() == PHP_SESSION_NONE) {
 
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
-                            <input type="date" 
-                                   class="form-control-modern" 
-                                   id="fecha_caducidad_stock" 
-                                   name="fecha_caducidad" 
-                                   placeholder=" "
-                                   required>
-                            <label for="fecha_caducidad_stock">
-                                <i class="fas fa-calendar-times"></i>
-                                Fecha de Caducidad
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
                             <select class="form-select-modern select2-search" 
-                                    id="cliente_stock" 
+                                    id="proveedor_stock" 
                                     name="id_proveedores" 
                                     required>
                                 <option value="">Seleccione un proveedor</option>
@@ -690,25 +717,29 @@ if (session_status() == PHP_SESSION_NONE) {
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="cliente_stock">
-                                <i class="fas fa-list"></i>
-                                Proveedor Responsable
+                            <label for="proveedor_stock">
+                                <i class="fas fa-truck"></i>
+                                Proveedor
                             </label>
                         </div>
                     </div>
 
-                    <div class="info-panel">
-                        <h6><i class="fas fa-info-circle"></i> Información</h6>
-                        <p>Esta alerta se activará automáticamente cuando el stock del producto seleccionado sea igual o menor a la cantidad mínima especificada, o cuando se acerque la fecha de caducidad. El proveedor responsable recibirá notificaciones.</p>
+                    <div style="background: rgba(102, 126, 234, 0.15); border-left: 4px solid #667eea; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <p style="color: rgba(255, 255, 255, 0.9); margin: 0; font-size: 0.9rem;">
+                            <i class="fas fa-lightbulb"></i> <strong>Consejo:</strong> Cuando el stock sea menor o igual a la cantidad mínima, recibirás una alerta automática.
+                        </p>
                     </div>
                 </div>
 
                 <!-- Formulario para Vencimiento -->
                 <div class="form-section-card" id="expiration-form">
                     <div class="section-title">
-                        <i class="fas fa-calendar-alt"></i>
-                        Configuración de Alerta de Vencimiento
+                        <i class="fas fa-calendar-times"></i>
+                        Alerta de Vencimiento
                     </div>
+                    <p style="color: rgba(255, 255, 255, 0.8); margin-bottom: 20px;">
+                        Configure una alerta para monitorear las fechas de caducidad de productos
+                    </p>
                     
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
@@ -726,44 +757,29 @@ if (session_status() == PHP_SESSION_NONE) {
                                 <?php endif; ?>
                             </select>
                             <label for="producto_expiration">
-                                <i class="fas fa-list"></i>
-                                Producto a Monitorear
+                                <i class="fas fa-box"></i>
+                                Producto
                             </label>
                         </div>
 
                         <div class="form-floating-modern">
-                            <input type="number" 
+                            <input type="date" 
                                    class="form-control-modern" 
-                                   id="cantidad_minima_exp" 
-                                   name="cantidad_minima" 
+                                   id="fecha_caducidad_exp" 
+                                   name="fecha_caducidad" 
                                    placeholder=" "
-                                   min="1"
-                                   value="1"
                                    required>
-                            <label for="cantidad_minima_exp">
-                                <i class="fas fa-sort-numeric-down"></i>
-                                Cantidad Mínima
+                            <label for="fecha_caducidad_exp">
+                                <i class="fas fa-calendar-times"></i>
+                                Fecha de Caducidad
                             </label>
                         </div>
                     </div>
 
                     <div class="form-row form-row-2">
                         <div class="form-floating-modern">
-                            <input type="date" 
-                                   class="form-control-modern" 
-                                   id="fecha_caducidad" 
-                                   name="fecha_caducidad" 
-                                   placeholder=" "
-                                   required>
-                            <label for="fecha_caducidad">
-                                <i class="fas fa-calendar-times"></i>
-                                Fecha de Caducidad
-                            </label>
-                        </div>
-
-                        <div class="form-floating-modern">
                             <select class="form-select-modern select2-search" 
-                                    id="cliente_expiration" 
+                                    id="proveedor_expiration" 
                                     name="id_proveedores" 
                                     required>
                                 <option value="">Seleccione un proveedor</option>
@@ -775,21 +791,22 @@ if (session_status() == PHP_SESSION_NONE) {
                                     <?php endforeach; ?>
                                 <?php endif; ?>
                             </select>
-                            <label for="cliente_expiration">
-                                <i class="fas fa-list"></i>
-                                Proveedor Responsable
+                            <label for="proveedor_expiration">
+                                <i class="fas fa-truck"></i>
+                                Proveedor
                             </label>
                         </div>
                     </div>
 
-                    <div class="info-panel">
-                        <h6><i class="fas fa-info-circle"></i> Información</h6>
-                        <p>Esta alerta se activará antes de la fecha de caducidad especificada. El sistema notificará al proveedor responsable con suficiente antelación para tomar las medidas necesarias.</p>
+                    <div style="background: rgba(240, 147, 251, 0.15); border-left: 4px solid #f093fb; padding: 15px; border-radius: 8px; margin-top: 20px;">
+                        <p style="color: rgba(255, 255, 255, 0.9); margin: 0; font-size: 0.9rem;">
+                            <i class="fas fa-lightbulb"></i> <strong>Consejo:</strong> Serás notificado antes de que el producto venza, dándote tiempo para actuar.
+                        </p>
                     </div>
                 </div>
 
-                <!-- Estado de la Alerta (campo común) -->
-                <div class="form-section-card active" style="margin-top: 20px; border-top: 2px solid rgba(255, 255, 255, 0.2); padding-top: 30px;">
+                <!-- Estado de la Alerta (campo común - SIEMPRE VISIBLE) -->
+                <div style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border-radius: 20px; padding: 25px; margin-bottom: 25px; border: 1px solid rgba(255, 255, 255, 0.1); margin-top: 20px; border-top: 2px solid rgba(255, 255, 255, 0.2); padding-top: 30px;">
                     <div class="section-title">
                         <i class="fas fa-toggle-on"></i>
                         Estado de la Alerta
@@ -832,55 +849,82 @@ if (session_status() == PHP_SESSION_NONE) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Manejo de tipos de alerta
+        // Manejo de tipos de alerta - Versión mejorada
         function setAlertType(type) {
-            // Remover selección anterior
-            document.querySelectorAll('.alert-type-card').forEach(c => c.classList.remove('selected'));
-            // Remover active solo de los formularios específicos (NO del estado)
-            document.getElementById('stock-form').classList.remove('active');
-            document.getElementById('expiration-form').classList.remove('active');
-
-            // Seleccionar nueva opción visualmente
-            var selectedCard = document.querySelector('.alert-type-card[data-type="' + type + '"]');
-            if (selectedCard) selectedCard.classList.add('selected');
+            // Remover selección anterior de las tarjetas
+            document.querySelectorAll('.alert-type-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Desabilitar/Habilitar campos según el tipo
+            const stockForm = document.getElementById('stock-form');
+            const expirationForm = document.getElementById('expiration-form');
+            
+            // Remover clases active de ambos
+            if (stockForm) {
+                stockForm.classList.remove('active');
+                // Deshabilitar todos los inputs del formulario stock
+                stockForm.querySelectorAll('input, select').forEach(field => {
+                    field.disabled = true;
+                });
+            }
+            if (expirationForm) {
+                expirationForm.classList.remove('active');
+                // Deshabilitar todos los inputs del formulario expiration
+                expirationForm.querySelectorAll('input, select').forEach(field => {
+                    field.disabled = true;
+                });
+            }
+            
+            // Establecer valor del tipo de alerta
             document.getElementById('alert_type').value = type;
-
-            // Mostrar formulario correspondiente y habilitar/deshabilitar campos existentes
-            if (type === 'stock') {
-                document.getElementById('stock-form').classList.add('active');
-                // Deshabilitar campos del formulario expiration
-                var expIdsDisable = ['producto_expiration','cantidad_minima_exp','fecha_caducidad','cliente_expiration'];
-                expIdsDisable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = true; el.removeAttribute('required'); } });
+            
+            // Seleccionar la tarjeta correspondiente
+            const selectedCard = document.querySelector('.alert-type-card[data-type="' + type + '"]');
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+            
+            // Habilitar solo el formulario correspondiente
+            if (type === 'stock' && stockForm) {
+                stockForm.classList.add('active');
                 // Habilitar campos del formulario stock
-                var stockIdsEnable = ['producto_stock','cantidad_minima','fecha_caducidad_stock','cliente_stock'];
-                stockIdsEnable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = false; el.setAttribute('required',''); } });
-            } else if (type === 'expiration') {
-                document.getElementById('expiration-form').classList.add('active');
-                // Deshabilitar campos del formulario stock
-                var stockIdsDisable = ['producto_stock','cantidad_minima','fecha_caducidad_stock','cliente_stock'];
-                stockIdsDisable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = true; el.removeAttribute('required'); } });
+                stockForm.querySelectorAll('input, select').forEach(field => {
+                    field.disabled = false;
+                });
+            } else if (type === 'expiration' && expirationForm) {
+                expirationForm.classList.add('active');
                 // Habilitar campos del formulario expiration
-                var expIdsEnable = ['producto_expiration','cantidad_minima_exp','fecha_caducidad','cliente_expiration'];
-                expIdsEnable.forEach(function(id){ var el = document.getElementById(id); if (el){ el.disabled = false; el.setAttribute('required',''); } });
+                expirationForm.querySelectorAll('input, select').forEach(field => {
+                    field.disabled = false;
+                });
             }
         }
 
-        document.querySelectorAll('.alert-type-card').forEach(card => {
-            card.addEventListener('click', function() {
-                const type = this.dataset.type;
-                setAlertType(type);
+        // Inicializar cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.alert-type-card');
+            
+            cards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const type = this.getAttribute('data-type');
+                    setAlertType(type);
+                });
             });
-        });
-
-        // Selección inicial basada en el valor por defecto desde el controlador
-        (function(){
-            var initialType = '<?php echo isset($alert_type_default) ? $alert_type_default : 'stock'; ?>';
+            
+            // Inicializar con Stock por defecto
+            const initialType = '<?php echo isset($alert_type_default) ? $alert_type_default : 'stock'; ?>';
             setAlertType(initialType);
-        })();
+        });
 
         // Validación del formulario
         document.getElementById('alertForm').addEventListener('submit', function(e) {
             const alertType = document.getElementById('alert_type').value;
+            const producto = document.getElementById('producto_stock')?.value || document.getElementById('producto_expiration')?.value;
+            const proveedor = document.getElementById('proveedor_stock')?.value || document.getElementById('proveedor_expiration')?.value;
             
             if (!alertType) {
                 e.preventDefault();
@@ -888,17 +932,36 @@ if (session_status() == PHP_SESSION_NONE) {
                 return;
             }
             
+            if (!producto) {
+                e.preventDefault();
+                alert('Por favor, seleccione un producto');
+                return;
+            }
+            
+            if (!proveedor) {
+                e.preventDefault();
+                alert('Por favor, seleccione un proveedor');
+                return;
+            }
+            
             if (alertType === 'stock') {
-                const cantidadMinima = document.getElementById('cantidad_minima').value;
+                const cantidadMinima = document.getElementById('cantidad_minima_stock')?.value;
                 if (!cantidadMinima || cantidadMinima < 1) {
                     e.preventDefault();
                     alert('La cantidad mínima debe ser mayor a 0');
                     return;
                 }
             } else if (alertType === 'expiration') {
-                const fechaCaducidad = new Date(document.getElementById('fecha_caducidad').value);
+                const fechaCaducidad = document.getElementById('fecha_caducidad_exp')?.value;
+                if (!fechaCaducidad) {
+                    e.preventDefault();
+                    alert('Por favor, seleccione una fecha de caducidad');
+                    return;
+                }
+                const fechaObj = new Date(fechaCaducidad);
                 const hoy = new Date();
-                if (fechaCaducidad <= hoy) {
+                hoy.setHours(0, 0, 0, 0);
+                if (fechaObj <= hoy) {
                     e.preventDefault();
                     alert('La fecha de caducidad debe ser futura');
                     return;
@@ -920,7 +983,18 @@ if (session_status() == PHP_SESSION_NONE) {
         // Establecer fecha mínima para vencimiento (mañana)
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
-        document.getElementById('fecha_caducidad').min = tomorrow.toISOString().split('T')[0];
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+        
+        // Aplicar a ambos campos de fecha si existen
+        const fechaCaducidadExp = document.getElementById('fecha_caducidad_exp');
+        if (fechaCaducidadExp) {
+            fechaCaducidadExp.min = tomorrowStr;
+        }
+        
+        const fechaCaducidadStock = document.getElementById('fecha_caducidad_stock');
+        if (fechaCaducidadStock) {
+            fechaCaducidadStock.min = tomorrowStr;
+        }
 
         // Sistema de búsqueda y filtro para productos y proveedores
         const searchableItems = {

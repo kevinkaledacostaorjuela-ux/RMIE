@@ -67,6 +67,7 @@ class Alert {
 
     public static function getAll($conn) {
         $sql = "SELECT a.*, p.nombre AS producto_nombre, 
+                       prov.nombre_distribuidor AS proveedor_nombre,
                        CASE 
                            WHEN a.cantidad_minima <= 5 THEN 'Alta'
                            WHEN a.cantidad_minima BETWEEN 6 AND 10 THEN 'Media'
@@ -74,7 +75,8 @@ class Alert {
                        END AS prioridad,
                        CONCAT('Alerta de ', p.nombre) AS titulo
                 FROM alertas a 
-                JOIN productos p ON a.id_productos = p.id_productos";
+                JOIN productos p ON a.id_productos = p.id_productos
+                LEFT JOIN proveedores prov ON a.id_proveedores = prov.id_proveedores";
         $result = $conn->query($sql);
         $alertas = [];
         while ($row = $result->fetch_assoc()) {
@@ -217,6 +219,163 @@ class Alert {
             $alertas[] = $row;
         }
         return $alertas;
+    }
+
+    /**
+     * Mueve una alerta a la papelera en lugar de eliminarla permanentemente
+     */
+    public static function moveToTrash($conn, $id_alerta, $motivo = 'Usuario eliminó manualmente') {
+        // Obtener datos de la alerta
+        $sql = "SELECT a.*, p.nombre as producto_nombre, pr.nombre_distribuidor as proveedor_nombre 
+                FROM alertas a 
+                LEFT JOIN productos p ON a.id_productos = p.id_productos 
+                LEFT JOIN proveedores pr ON a.id_proveedores = pr.id_proveedores 
+                WHERE a.id_alertas = ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_alerta);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $alerta = $result->fetch_assoc();
+        $stmt->close();
+        
+        if (!$alerta) {
+            return false;
+        }
+        
+        // Insertar en papelera
+        $sql_trash = "INSERT INTO alertas_papelera (id_alertas, id_productos, producto_nombre, tipo_alerta, cantidad_minima, fecha_caducidad, id_proveedores, proveedor_nombre, estado, prioridad, motivo_eliminacion) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt_trash = $conn->prepare($sql_trash);
+        $tipo = $alerta['tipo_alerta'] ?? null;
+        $estado = $alerta['estado'] ?? 'Activo';
+        $prioridad = $alerta['prioridad'] ?? 'Media';
+        
+        $stmt_trash->bind_param('iissisississs', 
+            $id_alerta,
+            $alerta['id_productos'],
+            $alerta['producto_nombre'],
+            $tipo,
+            $alerta['cantidad_minima'],
+            $alerta['fecha_caducidad'],
+            $alerta['id_proveedores'],
+            $alerta['proveedor_nombre'],
+            $estado,
+            $prioridad,
+            $motivo
+        );
+        
+        if ($stmt_trash->execute()) {
+            // Eliminar de alertas
+            $sql_delete = "DELETE FROM alertas WHERE id_alertas = ?";
+            $stmt_delete = $conn->prepare($sql_delete);
+            $stmt_delete->bind_param('i', $id_alerta);
+            $result = $stmt_delete->execute();
+            $stmt_delete->close();
+            return $result;
+        }
+        
+        $stmt_trash->close();
+        return false;
+    }
+
+    /**
+     * Obtiene todas las alertas en papelera
+     */
+    public static function getTrash($conn) {
+        $sql = "SELECT * FROM alertas_papelera ORDER BY fecha_eliminacion DESC";
+        $result = $conn->query($sql);
+        
+        $alertas = [];
+        while ($row = $result->fetch_assoc()) {
+            $alertas[] = $row;
+        }
+        return $alertas;
+    }
+
+    /**
+     * Restaura una alerta desde papelera
+     */
+    public static function restoreFromTrash($conn, $id_papelera) {
+        // Obtener datos de papelera
+        $sql = "SELECT * FROM alertas_papelera WHERE id_papelera = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_papelera);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $alerta = $result->fetch_assoc();
+        $stmt->close();
+        
+        if (!$alerta) {
+            return false;
+        }
+        
+        // Reinsert en alertas
+        $sql_restore = "INSERT INTO alertas (id_productos, cantidad_minima, fecha_caducidad, id_proveedores, tipo_alerta, estado, prioridad) 
+                        VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt_restore = $conn->prepare($sql_restore);
+        $stmt_restore->bind_param('isissis',
+            $alerta['id_productos'],
+            $alerta['cantidad_minima'],
+            $alerta['fecha_caducidad'],
+            $alerta['id_proveedores'],
+            $alerta['tipo_alerta'],
+            $alerta['estado'],
+            $alerta['prioridad']
+        );
+        
+        if ($stmt_restore->execute()) {
+            // Eliminar de papelera
+            $sql_delete = "DELETE FROM alertas_papelera WHERE id_papelera = ?";
+            $stmt_delete = $conn->prepare($sql_delete);
+            $stmt_delete->bind_param('i', $id_papelera);
+            $result = $stmt_delete->execute();
+            $stmt_delete->close();
+            return $result;
+        }
+        
+        $stmt_restore->close();
+        return false;
+    }
+
+    /**
+     * Crea una notificación para una alerta
+     */
+    public static function createNotification($conn, $id_alerta, $tipo, $mensaje) {
+        $sql = "INSERT INTO notificaciones_alertas (id_alertas, tipo_notificacion, mensaje) VALUES (?, ?, ?)";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('iss', $id_alerta, $tipo, $mensaje);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
+    }
+
+    /**
+     * Obtiene notificaciones no leídas
+     */
+    public static function getUnreadNotifications($conn) {
+        $sql = "SELECT * FROM notificaciones_alertas WHERE leida = FALSE ORDER BY fecha_creacion DESC";
+        $result = $conn->query($sql);
+        
+        $notificaciones = [];
+        while ($row = $result->fetch_assoc()) {
+            $notificaciones[] = $row;
+        }
+        return $notificaciones;
+    }
+
+    /**
+     * Marca una notificación como leída
+     */
+    public static function markNotificationAsRead($conn, $id_notificacion) {
+        $sql = "UPDATE notificaciones_alertas SET leida = TRUE, fecha_lectura = NOW() WHERE id_notificacion = ?";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param('i', $id_notificacion);
+        $result = $stmt->execute();
+        $stmt->close();
+        return $result;
     }
 }
 ?>
