@@ -15,7 +15,16 @@ class SaleController {
             global $conn;
             $venta = Sale::getById($conn, $id);
             if (!$venta) { throw new Exception("Venta no encontrada"); }
+            
+            // Cargar productos asignados
             $venta->productos_asignados = Sale::getProductos($conn, $id);
+            
+            // Debug temporal
+            error_log("Venta ID: $id - Total productos: " . count($venta->productos_asignados));
+            foreach ($venta->productos_asignados as $idx => $prod) {
+                error_log("Producto $idx: " . ($prod->nombre ?? 'SIN NOMBRE') . " - Cant: " . ($prod->cantidad ?? 'N/A'));
+            }
+            
             $cliente = Client::getById($conn, $venta->id_clientes);
             $usuario = User::getById($conn, $venta->num_doc);
             include __DIR__ . '/../views/ventas/show.php';
@@ -292,6 +301,7 @@ class SaleController {
                 $estado = trim($_POST['estado'] ?? '');
                 $num_doc = trim($_POST['num_doc'] ?? '');
                 $productos_ids = $_POST['id_productos'] ?? [];
+                $cantidades = $_POST['cantidades'] ?? []; // Array de cantidades por producto
                 
                 if (empty($id_clientes)) {
                     throw new Exception("Debe seleccionar un cliente");

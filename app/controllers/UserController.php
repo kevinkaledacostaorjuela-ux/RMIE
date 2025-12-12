@@ -89,8 +89,8 @@ class UserController {
                 
                 if (empty($_POST['rol'])) {
                     $errores[] = "El rol es requerido";
-                } elseif (!in_array($_POST['rol'], ['auxiliar'])) {
-                    $errores[] = "El rol seleccionado no es válido";
+                } elseif (!in_array($_POST['rol'], ['coordinador', 'auxiliar'])) {
+                    $errores[] = "El rol seleccionado no es válido. Solo se permiten Coordinador o Auxiliar";
                 }
                 
                 // Verificar si ya existe un usuario con ese documento
@@ -169,8 +169,13 @@ class UserController {
                 
                 if (empty($_POST['rol'])) {
                     $errores[] = "El rol es requerido";
-                } elseif (!in_array($_POST['rol'], ['auxiliar'])) {
-                    $errores[] = "El rol seleccionado no es válido";
+                } else {
+                    // Si el usuario actual es admin, puede mantener su rol
+                    if ($usuario->rol === 'admin' && $_POST['rol'] === 'admin') {
+                        // Permitido: el admin puede mantener su rol
+                    } elseif (!in_array($_POST['rol'], ['coordinador', 'auxiliar'])) {
+                        $errores[] = "El rol seleccionado no es válido. Solo se permiten Coordinador o Auxiliar";
+                    }
                 }
                 
                 // Verificar si el correo ya existe en otro usuario

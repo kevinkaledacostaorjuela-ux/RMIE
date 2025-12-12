@@ -13,7 +13,7 @@ try {
         throw new Exception("Día no especificado");
     }
     
-    // Consulta simplificada para obtener rutas del día sin duplicados
+    // Consulta simplificada para obtener solo rutas PENDIENTES del día (excluir completadas y eliminadas)
     // Priorizar datos de la tabla rutas que ya contiene la información correcta
     $sql = "SELECT r.*, 
                    c.nombre as cliente_nombre_real,
@@ -24,7 +24,7 @@ try {
                    '' as barrio
             FROM rutas r 
             LEFT JOIN clientes c ON r.id_clientes = c.id_clientes 
-            WHERE r.dia_semana = ? AND r.estado != 'eliminado'
+            WHERE r.dia_semana = ? AND r.estado != 'eliminado' AND r.estado != 'completada'
             ORDER BY r.id_ruta ASC";
     
     $stmt = $conn->prepare($sql);

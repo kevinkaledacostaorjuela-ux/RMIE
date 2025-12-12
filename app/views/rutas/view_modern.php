@@ -230,8 +230,60 @@ if (!isset($_SESSION['user'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         function marcarCompletada(idRuta) {
-            if (confirm("¿Estás seguro de que quieres realizar esta acción?")) {
-                window.location.href = `/RMIE/app/controllers/RouteControllerModern.php?accion=completar&id=${idRuta}`;
+            if (confirm("¿Estás seguro de que quieres marcar esta ruta como completada?")) {
+                // Enviar petición AJAX
+                fetch(`/RMIE/app/controllers/RouteControllerModern.php?accion=completar&id=${idRuta}`, {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Encontrar la tarjeta de ruta y ocultarla con animación
+                        const routeCard = document.querySelector(`[data-route-id="${idRuta}"]`);
+                        if (routeCard) {
+                            routeCard.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+                            routeCard.style.opacity = '0';
+                            routeCard.style.transform = 'scale(0.9)';
+                            
+                            setTimeout(() => {
+                                routeCard.remove();
+                                
+                                // Verificar si quedan rutas pendientes
+                                const rutasRestantes = document.querySelectorAll('.route-card').length;
+                                if (rutasRestantes === 0) {
+                                    // Mostrar mensaje de que no hay rutas pendientes
+                                    const routesList = document.querySelector('.routes-list');
+                                    if (routesList) {
+                                        routesList.innerHTML = `
+                                            <div class="empty-state">
+                                                <div class="empty-icon">
+                                                    <i class="fas fa-check-circle"></i>
+                                                </div>
+                                                <h3>¡Todas las rutas completadas!</h3>
+                                                <p>No hay rutas pendientes para este día</p>
+                                                <a href="/RMIE/app/controllers/RouteControllerModern.php?accion=index" class="btn-rutas btn-rutas-primary">
+                                                    <i class="fas fa-arrow-left"></i> Volver al Panel
+                                                </a>
+                                            </div>
+                                        `;
+                                    }
+                                }
+                            }, 300);
+                        }
+                        
+                        // Mostrar mensaje de éxito
+                        alert(data.message || 'Ruta completada exitosamente');
+                    } else {
+                        alert(data.error || 'Error al completar la ruta');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error al completar la ruta');
+                });
             }
         }
 

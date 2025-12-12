@@ -257,6 +257,88 @@ if (isset($rutas) && is_array($rutas)) {
             </form>
         </div>
 
+        <!-- Planificación Semanal Drag & Drop -->
+        <div class="weekly-planner" style="background: white; border-radius: 12px; padding: 20px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h3 style="margin-bottom: 20px; color: #2c3e50;">
+                <i class="fas fa-calendar-week"></i> Planificación Semanal - Arrastrar Clientes
+            </h3>
+            <p style="color: #7f8c8d; margin-bottom: 20px;">
+                <i class="fas fa-info-circle"></i> Arrastra los clientes entre los días para reorganizar las rutas
+            </p>
+            
+            <div class="days-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <?php 
+                $dias_semana = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+                foreach ($dias_semana as $dia): 
+                    $clientes_dia = $asignaciones_clientes[$dia] ?? [];
+                ?>
+                    <div class="day-column" 
+                         data-dia="<?= $dia ?>"
+                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                                border-radius: 10px; 
+                                padding: 15px; 
+                                min-height: 200px;
+                                box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        
+                        <h4 style="color: white; margin-bottom: 15px; text-align: center; font-weight: 600;">
+                            <i class="fas fa-calendar-day"></i> <?= $dia ?>
+                            <span class="client-count" style="display: block; font-size: 0.8rem; opacity: 0.9; margin-top: 5px;">
+                                <?= count($clientes_dia) ?> cliente(s)
+                            </span>
+                        </h4>
+                        
+                        <div class="clients-dropzone" 
+                             style="min-height: 150px; 
+                                    background: rgba(255,255,255,0.1); 
+                                    border-radius: 8px; 
+                                    padding: 10px;
+                                    border: 2px dashed rgba(255,255,255,0.3);">
+                            
+                            <?php foreach ($clientes_dia as $asignacion): ?>
+                                <div class="client-card" 
+                                     draggable="true"
+                                     data-asignacion-id="<?= htmlspecialchars($asignacion['id'] ?? '') ?>"
+                                     data-cliente-id="<?= htmlspecialchars($asignacion['cliente_id'] ?? '') ?>"
+                                     data-dia-actual="<?= htmlspecialchars($dia) ?>"
+                                     style="background: white; 
+                                            border-radius: 6px; 
+                                            padding: 12px; 
+                                            margin-bottom: 8px; 
+                                            cursor: move;
+                                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                                            transition: all 0.3s ease;">
+                                    
+                                    <div style="display: flex; align-items: center; gap: 10px;">
+                                        <i class="fas fa-grip-vertical" style="color: #95a5a6;"></i>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; color: #2c3e50; margin-bottom: 4px;">
+                                                <?= htmlspecialchars($asignacion['cliente_nombre'] ?? 'Sin nombre') ?>
+                                            </div>
+                                            <?php if (!empty($asignacion['cel_cliente'])): ?>
+                                                <div style="font-size: 0.85rem; color: #7f8c8d;">
+                                                    <i class="fas fa-phone"></i> <?= htmlspecialchars($asignacion['cel_cliente']) ?>
+                                                </div>
+                                            <?php endif; ?>
+                                        </div>
+                                        <div style="text-align: center; font-size: 1.2rem; color: #667eea;">
+                                            #<?= htmlspecialchars($asignacion['orden'] ?? '0') ?>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                            
+                            <?php if (empty($clientes_dia)): ?>
+                                <div class="empty-day" style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 10px;">
+                                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>
+                                    Sin clientes asignados
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+
         <!-- Tabla de Rutas -->
         <div class="rutas-table-container">
             <table class="rutas-table">
@@ -435,26 +517,14 @@ if (isset($rutas) && is_array($rutas)) {
                             <h4><?php echo $dia; ?></h4>
                             <div class="clientes-dia">
                                 <?php if (!empty($clientesDia)): ?>
-                                    <?php foreach ($clientesDia as $clienteId): ?>
-                                        <?php 
-                                        // Buscar el cliente en la lista de disponibles
-                                        $clienteInfo = null;
-                                        if (isset($available_clients)) {
-                                            foreach ($available_clients as $cliente) {
-                                                if ($cliente['id_clientes'] == $clienteId) {
-                                                    $clienteInfo = $cliente;
-                                                    break;
-                                                }
-                                            }
-                                        }
-                                        ?>
+                                    <?php foreach ($clientesDia as $asignacion): ?>
                                         <div class="cliente-asignado">
                                             <span>
                                                 <i class="fas fa-user"></i>
-                                                <?php echo $clienteInfo ? htmlspecialchars($clienteInfo['nombre']) : "Cliente #$clienteId"; ?>
+                                                <?php echo htmlspecialchars($asignacion['cliente_nombre'] ?? "Cliente #" . ($asignacion['cliente_id'] ?? '')); ?>
                                             </span>
                                             <small class="text-muted">
-                                                <?php echo $clienteInfo && !empty($clienteInfo['cel_cliente']) ? htmlspecialchars($clienteInfo['cel_cliente']) : ''; ?>
+                                                <?php echo !empty($asignacion['cel_cliente']) ? htmlspecialchars($asignacion['cel_cliente']) : ''; ?>
                                             </small>
                                         </div>
                                     <?php endforeach; ?>
@@ -1093,6 +1163,220 @@ if (isset($rutas) && is_array($rutas)) {
         function cerrarMapaModal() {
             document.getElementById('mapaModal').style.display = 'none';
         }
+
+        // ========== DRAG AND DROP FUNCTIONALITY ==========
+        let draggedElement = null;
+        let sourceDay = null;
+
+        // Agregar event listeners cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', function() {
+            initDragAndDrop();
+        });
+
+        function initDragAndDrop() {
+            const clientCards = document.querySelectorAll('.client-card');
+            const dropzones = document.querySelectorAll('.clients-dropzone');
+
+            // Configurar tarjetas de clientes
+            clientCards.forEach(card => {
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Configurar zonas de drop
+            dropzones.forEach(zone => {
+                zone.addEventListener('dragover', handleDragOver);
+                zone.addEventListener('drop', handleDrop);
+                zone.addEventListener('dragleave', handleDragLeave);
+                zone.addEventListener('dragenter', handleDragEnter);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = this;
+            sourceDay = this.getAttribute('data-dia-actual');
+            
+            this.style.opacity = '0.5';
+            e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', this.innerHTML);
+        }
+
+        function handleDragEnd(e) {
+            this.style.opacity = '1';
+            
+            // Remover highlight de todas las zonas
+            document.querySelectorAll('.clients-dropzone').forEach(zone => {
+                zone.style.background = 'rgba(255,255,255,0.1)';
+                zone.style.borderColor = 'rgba(255,255,255,0.3)';
+            });
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            
+            e.dataTransfer.dropEffect = 'move';
+            return false;
+        }
+
+        function handleDragEnter(e) {
+            this.style.background = 'rgba(255,255,255,0.3)';
+            this.style.borderColor = 'rgba(255,255,255,0.6)';
+        }
+
+        function handleDragLeave(e) {
+            if (e.target.classList.contains('clients-dropzone')) {
+                this.style.background = 'rgba(255,255,255,0.1)';
+                this.style.borderColor = 'rgba(255,255,255,0.3)';
+            }
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            
+            e.preventDefault();
+            
+            // Obtener el día destino
+            const targetColumn = this.closest('.day-column');
+            const targetDay = targetColumn.getAttribute('data-dia');
+            
+            // Solo proceder si cambió de día
+            if (sourceDay !== targetDay) {
+                const asignacionId = draggedElement.getAttribute('data-asignacion-id');
+                const clienteNombre = draggedElement.querySelector('div > div').textContent.trim();
+                
+                if (confirm(`¿Mover "${clienteNombre}" de ${sourceDay} a ${targetDay}?`)) {
+                    moveClientToDay(asignacionId, targetDay, draggedElement, this);
+                }
+            } else {
+                // Mismo día, solo reordenar
+                this.appendChild(draggedElement);
+            }
+            
+            // Resetear estilos
+            this.style.background = 'rgba(255,255,255,0.1)';
+            this.style.borderColor = 'rgba(255,255,255,0.3)';
+            
+            return false;
+        }
+
+        function moveClientToDay(asignacionId, nuevoDia, element, dropzone) {
+            // Mostrar indicador de carga
+            element.style.opacity = '0.5';
+            element.innerHTML += '<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);"><i class="fas fa-spinner fa-spin"></i></div>';
+            
+            // Hacer petición AJAX
+            fetch('/RMIE/app/controllers/RouteControllerModern.php?accion=moveClient', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    asignacion_id: asignacionId,
+                    nuevo_dia: nuevoDia
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Mover el elemento visualmente
+                    dropzone.appendChild(element);
+                    element.setAttribute('data-dia-actual', nuevoDia);
+                    element.style.opacity = '1';
+                    
+                    // Actualizar contadores
+                    updateDayCounters();
+                    
+                    // Mostrar mensaje de éxito
+                    showToast('success', data.message || 'Cliente movido exitosamente');
+                    
+                    // Recargar página después de 1 segundo
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                } else {
+                    element.style.opacity = '1';
+                    showToast('error', data.error || 'Error al mover el cliente');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                element.style.opacity = '1';
+                showToast('error', 'Error de conexión al mover el cliente');
+            });
+        }
+
+        function updateDayCounters() {
+            document.querySelectorAll('.day-column').forEach(column => {
+                const clientCount = column.querySelectorAll('.client-card').length;
+                const counter = column.querySelector('.client-count');
+                if (counter) {
+                    counter.textContent = `${clientCount} cliente(s)`;
+                }
+                
+                // Mostrar/ocultar mensaje de día vacío
+                const dropzone = column.querySelector('.clients-dropzone');
+                const emptyMessage = dropzone.querySelector('.empty-day');
+                
+                if (clientCount === 0 && !emptyMessage) {
+                    dropzone.innerHTML = '<div class="empty-day" style="text-align: center; color: rgba(255,255,255,0.6); padding: 40px 10px;"><i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 10px; display: block;"></i>Sin clientes asignados</div>';
+                } else if (clientCount > 0 && emptyMessage) {
+                    emptyMessage.remove();
+                }
+            });
+        }
+
+        function showToast(type, message) {
+            const toast = document.createElement('div');
+            toast.className = `alert alert-${type === 'success' ? 'success' : 'danger'}`;
+            toast.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; animation: slideIn 0.3s ease-out; max-width: 350px; padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2);';
+            
+            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+            toast.innerHTML = `<i class="fas fa-${icon}"></i> ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Agregar estilos de animación
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100%);
+                    opacity: 0;
+                }
+            }
+            .client-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px rgba(0,0,0,0.15) !important;
+            }
+            .client-card:active {
+                cursor: grabbing !important;
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>

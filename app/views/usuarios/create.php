@@ -642,6 +642,7 @@
                                     name="rol" 
                                     required>
                                 <option value="">Seleccione el rol</option>
+                                <option value="coordinador" <?= ($_POST['rol'] ?? '') === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="auxiliar" <?= ($_POST['rol'] ?? '') === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
                             <label for="rol">
@@ -651,10 +652,12 @@
                         </div>
 
                         <div class="info-panel">
-                            <h6><i class="fas fa-info-circle"></i> Rol Disponible</h6>
+                            <h6><i class="fas fa-info-circle"></i> Roles Disponibles</h6>
                             <ul>
+                                <li><strong>Coordinador:</strong> Gestión de equipos y asignación de tareas</li>
                                 <li><strong>Auxiliar:</strong> Tareas operativas y soporte</li>
                             </ul>
+                            <p class="mt-2 mb-0"><small><i class="fas fa-lock"></i> El rol de Administrador está reservado y no se puede asignar.</small></p>
                         </div>
                     </div>
 

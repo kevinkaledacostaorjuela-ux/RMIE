@@ -268,26 +268,69 @@ class Sale {
 
     // Actualizar productos de una venta
     public static function updateProductos($conn, $id_ventas, $productos_data) {
-        // Eliminar productos actuales
-        $sql = "DELETE FROM ventas_productos WHERE id_ventas = ?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("i", $id_ventas);
-        $stmt->execute();
+        // Obtener productos actuales de la venta
+        $sql_actual = "SELECT id_productos, cantidad, precio_unitario, subtotal FROM ventas_productos WHERE id_ventas = ?";
+        $stmt_actual = $conn->prepare($sql_actual);
+        $stmt_actual->bind_param("i", $id_ventas);
+        $stmt_actual->execute();
+        $result_actual = $stmt_actual->get_result();
         
-        // Insertar nuevos productos
-        if (!empty($productos_data)) {
-            $sql = "INSERT INTO ventas_productos (id_ventas, id_productos, cantidad, precio_unitario, subtotal) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
+        $productos_actuales = [];
+        while ($row = $result_actual->fetch_assoc()) {
+            $productos_actuales[$row['id_productos']] = $row;
+        }
+        
+        // Crear array de IDs de productos nuevos/a mantener
+        $productos_nuevos_ids = [];
+        foreach ($productos_data as $producto) {
+            $productos_nuevos_ids[] = $producto['id_productos'];
+        }
+        
+        // Eliminar solo los productos que ya no están en la selección
+        foreach ($productos_actuales as $id_prod => $datos) {
+            if (!in_array($id_prod, $productos_nuevos_ids)) {
+                $sql_delete = "DELETE FROM ventas_productos WHERE id_ventas = ? AND id_productos = ?";
+                $stmt_delete = $conn->prepare($sql_delete);
+                $stmt_delete->bind_param("ii", $id_ventas, $id_prod);
+                $stmt_delete->execute();
+            }
+        }
+        
+        // Insertar o actualizar productos
+        foreach ($productos_data as $producto) {
+            $id_prod = $producto['id_productos'];
             
-            foreach ($productos_data as $producto) {
-                $stmt->bind_param("iiidd", 
+            if (isset($productos_actuales[$id_prod])) {
+                // Actualizar producto existente solo si cambió la cantidad o precio
+                if ($productos_actuales[$id_prod]['cantidad'] != $producto['cantidad'] || 
+                    $productos_actuales[$id_prod]['precio_unitario'] != $producto['precio_unitario']) {
+                    
+                    $sql_update = "UPDATE ventas_productos 
+                                  SET cantidad = ?, precio_unitario = ?, subtotal = ? 
+                                  WHERE id_ventas = ? AND id_productos = ?";
+                    $stmt_update = $conn->prepare($sql_update);
+                    $stmt_update->bind_param("iddii", 
+                        $producto['cantidad'], 
+                        $producto['precio_unitario'], 
+                        $producto['subtotal'],
+                        $id_ventas,
+                        $id_prod
+                    );
+                    $stmt_update->execute();
+                }
+            } else {
+                // Insertar producto nuevo
+                $sql_insert = "INSERT INTO ventas_productos (id_ventas, id_productos, cantidad, precio_unitario, subtotal) 
+                              VALUES (?, ?, ?, ?, ?)";
+                $stmt_insert = $conn->prepare($sql_insert);
+                $stmt_insert->bind_param("iiidd", 
                     $id_ventas, 
                     $producto['id_productos'], 
                     $producto['cantidad'], 
                     $producto['precio_unitario'], 
                     $producto['subtotal']
                 );
-                $stmt->execute();
+                $stmt_insert->execute();
             }
         }
         

@@ -21,6 +21,105 @@ try {
 
 class RouteControllerModern {
     
+    // Método para mover un cliente a otro día
+    public function moveClient() {
+        global $conn;
+        
+        header('Content-Type: application/json');
+        
+        try {
+            // Validar que sea POST
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                throw new Exception('Método no permitido');
+            }
+            
+            // Obtener datos del POST o JSON
+            $input = file_get_contents('php://input');
+            $data = json_decode($input, true);
+            
+            if (!$data) {
+                $data = $_POST;
+            }
+            
+            $asignacion_id = $data['asignacion_id'] ?? null;
+            $nuevo_dia = $data['nuevo_dia'] ?? null;
+            
+            if (!$asignacion_id || !$nuevo_dia) {
+                throw new Exception('Faltan parámetros requeridos');
+            }
+            
+            // Validar día de la semana
+            $dias_validos = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'];
+            if (!in_array($nuevo_dia, $dias_validos)) {
+                throw new Exception('Día de la semana no válido');
+            }
+            
+            // Primero obtener el cliente_id y día anterior de la asignación
+            $sqlInfo = "SELECT cliente_id, dia_semana FROM ruta_clientes_semanales WHERE id = ?";
+            $stmtInfo = $conn->prepare($sqlInfo);
+            $stmtInfo->bind_param('i', $asignacion_id);
+            $stmtInfo->execute();
+            $result = $stmtInfo->get_result();
+            $asignacionInfo = $result->fetch_assoc();
+            
+            if (!$asignacionInfo) {
+                throw new Exception('No se encontró la asignación');
+            }
+            
+            $cliente_id = $asignacionInfo['cliente_id'];
+            $dia_anterior = $asignacionInfo['dia_semana'];
+            
+            // Iniciar transacción
+            $conn->autocommit(false);
+            
+            try {
+                // Actualizar el día del cliente en la planificación semanal
+                $sql = "UPDATE ruta_clientes_semanales SET dia_semana = ? WHERE id = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('si', $nuevo_dia, $asignacion_id);
+                
+                if (!$stmt->execute()) {
+                    throw new Exception('Error al actualizar la asignación');
+                }
+                
+                // Actualizar todas las rutas de este cliente del día anterior al nuevo día
+                $sqlRutas = "UPDATE rutas SET dia_semana = ? WHERE id_clientes = ? AND dia_semana = ?";
+                $stmtRutas = $conn->prepare($sqlRutas);
+                $stmtRutas->bind_param('sis', $nuevo_dia, $cliente_id, $dia_anterior);
+                
+                if (!$stmtRutas->execute()) {
+                    throw new Exception('Error al actualizar las rutas');
+                }
+                
+                $rutas_actualizadas = $stmtRutas->affected_rows;
+                
+                // Confirmar transacción
+                $conn->commit();
+                $conn->autocommit(true);
+                
+                echo json_encode([
+                    'success' => true,
+                    'message' => "Cliente movido exitosamente a $nuevo_dia",
+                    'rutas_actualizadas' => $rutas_actualizadas
+                ]);
+                
+            } catch (Exception $e) {
+                // Revertir transacción en caso de error
+                $conn->rollback();
+                $conn->autocommit(true);
+                throw $e;
+            }
+            
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'error' => $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+    
     public function index() {
         global $conn;
         
@@ -84,7 +183,25 @@ class RouteControllerModern {
             // Datos adicionales para la vista
             $available_clients = Route::getAvailableClients($conn);
             $available_locals = Route::getAvailableLocals($conn);
+            
+            // Obtener asignaciones de clientes por día para drag and drop
+            $sql_asignaciones = "SELECT rcs.id, rcs.dia_semana, rcs.cliente_id, rcs.orden, 
+                                       c.nombre as cliente_nombre, c.cel_cliente, c.correo
+                                FROM ruta_clientes_semanales rcs
+                                LEFT JOIN clientes c ON rcs.cliente_id = c.id_clientes
+                                ORDER BY rcs.dia_semana, rcs.orden";
+            $result_asignaciones = $conn->query($sql_asignaciones);
+            
             $asignaciones_clientes = [];
+            if ($result_asignaciones) {
+                while ($row = $result_asignaciones->fetch_assoc()) {
+                    $dia = $row['dia_semana'];
+                    if (!isset($asignaciones_clientes[$dia])) {
+                        $asignaciones_clientes[$dia] = [];
+                    }
+                    $asignaciones_clientes[$dia][] = $row;
+                }
+            }
             
             // Día actual
             $dia_actual = date('N');
@@ -97,6 +214,11 @@ class RouteControllerModern {
             error_log('Error en index de rutas: ' . $e->getMessage());
             $_SESSION['error'] = 'Error al cargar las rutas.';
             $rutas = [];
+            $rutas_agrupadas = [];
+            $asignaciones_clientes = [];
+            $available_clients = [];
+            $available_locals = [];
+            $dia_hoy = date('l');
             require_once __DIR__ . '/../views/rutas/index_modern.php';
         }
     }
@@ -140,6 +262,18 @@ class RouteControllerModern {
                 $conn->autocommit(false); // Iniciar transacción
                 $transaction_started = true;
 
+                // Preparar consulta para insertar en planificación semanal
+                $sqlPlanificacion = "INSERT INTO ruta_clientes_semanales (usuario_id, dia_semana, cliente_id, orden) 
+                                     VALUES (?, ?, ?, ?)
+                                     ON DUPLICATE KEY UPDATE orden = VALUES(orden)";
+                $stmtPlanificacion = $conn->prepare($sqlPlanificacion);
+                
+                // Obtener el ID del usuario actual
+                $usuario_id = $_SESSION['user_id'] ?? 0;
+                
+                // Array para rastrear clientes únicos por día
+                $clientesPorDia = [];
+
                 // Iterar por cada día configurado
                 foreach ($diasObj as $dia => $combinaciones) {
                     if (!is_array($combinaciones) || count($combinaciones) === 0) {
@@ -166,6 +300,25 @@ class RouteControllerModern {
 
                         if ($stmt->execute()) {
                             $rutas_creadas++;
+                            
+                            // Agregar cliente a planificación semanal (solo una vez por día)
+                            if (!isset($clientesPorDia[$dia][$clienteId])) {
+                                $clientesPorDia[$dia][$clienteId] = true;
+                                
+                                // Calcular el orden basado en cuántos clientes ya tiene este día
+                                $orden = count($clientesPorDia[$dia]);
+                                
+                                $stmtPlanificacion->bind_param('isii', 
+                                    $usuario_id, 
+                                    $dia, 
+                                    $clienteId, 
+                                    $orden
+                                );
+                                
+                                if (!$stmtPlanificacion->execute()) {
+                                    error_log("Advertencia: No se pudo agregar cliente {$clienteId} a planificación del {$dia}");
+                                }
+                            }
                         } else {
                             throw new Exception("Error al crear ruta para {$localNombre} - {$clienteNombre} - {$dia}");
                         }
@@ -281,7 +434,7 @@ class RouteControllerModern {
                 exit;
             }
             
-            // Obtener TODAS las rutas del mismo día con direcciones reales
+            // Obtener solo las rutas PENDIENTES del mismo día con direcciones reales
             $sql = "SELECT r.*, 
                            l.direccion as direccion_real,
                            l.nombre_local as nombre_local_real,
@@ -290,7 +443,7 @@ class RouteControllerModern {
                     FROM rutas r
                     LEFT JOIN clientes c ON r.id_clientes = c.id_clientes
                     LEFT JOIN locales l ON c.id_locales = l.id_locales
-                    WHERE r.dia_semana = ? AND r.estado != 'eliminado'
+                    WHERE r.dia_semana = ? AND r.estado != 'eliminado' AND r.estado != 'completada'
                     ORDER BY r.id_ruta";
                     
             $stmt = $conn->prepare($sql);
@@ -465,7 +618,47 @@ class RouteControllerModern {
     public function complete($id) {
         global $conn;
         
+        // Si es una petición AJAX, responder con JSON
+        if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+            header('Content-Type: application/json');
+            
+            try {
+                $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param('i', $id);
+                
+                if ($stmt->execute()) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Ruta completada exitosamente.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'error' => 'Error al completar la ruta.'
+                    ]);
+                }
+            } catch (Exception $e) {
+                error_log('Error al completar ruta: ' . $e->getMessage());
+                echo json_encode([
+                    'success' => false,
+                    'error' => 'Error al completar la ruta: ' . $e->getMessage()
+                ]);
+            }
+            exit;
+        }
+        
+        // Petición normal (no AJAX)
         try {
+            // Obtener el día de la ruta para redirigir correctamente
+            $sqlDia = "SELECT dia_semana FROM rutas WHERE id_ruta = ?";
+            $stmtDia = $conn->prepare($sqlDia);
+            $stmtDia->bind_param('i', $id);
+            $stmtDia->execute();
+            $resultDia = $stmtDia->get_result();
+            $rutaDia = $resultDia->fetch_assoc();
+            $dia = $rutaDia['dia_semana'] ?? null;
+            
             $sql = "UPDATE rutas SET estado = 'completada' WHERE id_ruta = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param('i', $id);
@@ -480,7 +673,12 @@ class RouteControllerModern {
             $_SESSION['error'] = 'Error al completar la ruta: ' . $e->getMessage();
         }
         
-        header('Location: /RMIE/app/controllers/RouteControllerModern.php?accion=index');
+        // Redirigir de vuelta a la vista del día si existe, sino al index
+        if ($dia) {
+            header("Location: /RMIE/app/controllers/RouteControllerModern.php?accion=view&id=$id");
+        } else {
+            header('Location: /RMIE/app/controllers/RouteControllerModern.php?accion=index');
+        }
         exit;
     }
     
@@ -495,11 +693,39 @@ class RouteControllerModern {
         }
         
         try {
+            // Primero obtener información de la ruta antes de eliminarla
+            $sqlInfo = "SELECT id_clientes, dia_semana FROM rutas WHERE id_ruta = ?";
+            $stmtInfo = $conn->prepare($sqlInfo);
+            $stmtInfo->bind_param('i', $id);
+            $stmtInfo->execute();
+            $result = $stmtInfo->get_result();
+            $rutaInfo = $result->fetch_assoc();
+            
+            // Eliminar la ruta
             $sql = "DELETE FROM rutas WHERE id_ruta = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param('i', $id);
             
             if ($stmt->execute()) {
+                // Verificar si este cliente tiene más rutas en este día
+                if ($rutaInfo) {
+                    $sqlCheck = "SELECT COUNT(*) as count FROM rutas WHERE id_clientes = ? AND dia_semana = ?";
+                    $stmtCheck = $conn->prepare($sqlCheck);
+                    $stmtCheck->bind_param('is', $rutaInfo['id_clientes'], $rutaInfo['dia_semana']);
+                    $stmtCheck->execute();
+                    $checkResult = $stmtCheck->get_result();
+                    $checkData = $checkResult->fetch_assoc();
+                    
+                    // Si ya no tiene más rutas en este día, eliminar de planificación semanal
+                    if ($checkData['count'] == 0) {
+                        $usuario_id = $_SESSION['user_id'] ?? 0;
+                        $sqlPlan = "DELETE FROM ruta_clientes_semanales WHERE usuario_id = ? AND dia_semana = ? AND cliente_id = ?";
+                        $stmtPlan = $conn->prepare($sqlPlan);
+                        $stmtPlan->bind_param('isi', $usuario_id, $rutaInfo['dia_semana'], $rutaInfo['id_clientes']);
+                        $stmtPlan->execute();
+                    }
+                }
+                
                 $_SESSION['success'] = 'Ruta eliminada exitosamente.';
             } else {
                 $_SESSION['error'] = 'Error al eliminar la ruta.';
@@ -551,6 +777,14 @@ class RouteControllerModern {
         }
         
         try {
+            // Primero eliminar todos los clientes de este día en la planificación semanal
+            $usuario_id = $_SESSION['user_id'] ?? 0;
+            $sqlPlan = "DELETE FROM ruta_clientes_semanales WHERE usuario_id = ? AND dia_semana = ?";
+            $stmtPlan = $conn->prepare($sqlPlan);
+            $stmtPlan->bind_param('is', $usuario_id, $dia);
+            $stmtPlan->execute();
+            
+            // Luego eliminar las rutas
             $sql = "DELETE FROM rutas WHERE dia_semana = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param('s', $dia);
@@ -580,6 +814,11 @@ if (basename($_SERVER['PHP_SELF']) === 'RouteControllerModern.php') {
         switch ($accion) {
             case 'index':
                 $controller->index();
+                break;
+            
+            case 'moveClient':
+            case 'move_client':
+                $controller->moveClient();
                 break;
                 
             case 'create':

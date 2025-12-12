@@ -648,8 +648,17 @@
                             </label>
                             <select id="rol" name="rol" required class="form-select">
                                 <option value="">Seleccione el rol</option>
+                                <?php if ($usuario->rol === 'admin'): ?>
+                                    <option value="admin" selected>Administrador</option>
+                                <?php endif; ?>
+                                <option value="coordinador" <?= $usuario->rol === 'coordinador' ? 'selected' : '' ?>>Coordinador</option>
                                 <option value="auxiliar" <?= $usuario->rol === 'auxiliar' ? 'selected' : '' ?>>Auxiliar</option>
                             </select>
+                            <?php if ($usuario->rol !== 'admin'): ?>
+                                <small class="text-muted mt-1 d-block">
+                                    <i class="fas fa-info-circle"></i> El rol de Administrador está reservado.
+                                </small>
+                            <?php endif; ?>
                         </div>
                         
                         <!-- Estado actual -->
@@ -657,10 +666,12 @@
                             <div class="current-status">
                                 <span class="label">Rol actual:</span>
                                 <span class="role-badge role-<?= strtolower($usuario->rol) ?>">
-                                    <?php if ($usuario->rol === 'auxiliar'): ?>
-                                        <i class="fas fa-user"></i> Auxiliar
-                                    <?php else: ?>
+                                    <?php if ($usuario->rol === 'admin'): ?>
+                                        <i class="fas fa-user-shield"></i> Administrador
+                                    <?php elseif ($usuario->rol === 'coordinador'): ?>
                                         <i class="fas fa-user-tie"></i> Coordinador
+                                    <?php else: ?>
+                                        <i class="fas fa-user"></i> Auxiliar
                                     <?php endif; ?>
                                 </span>
                             </div>
@@ -671,6 +682,10 @@
                             <i class="fas fa-info-circle"></i>
                             <strong>Roles disponibles:</strong>
                             <ul class="mb-0 mt-2">
+                                <?php if ($usuario->rol === 'admin'): ?>
+                                    <li><strong>Administrador:</strong> Acceso total al sistema y configuración</li>
+                                <?php endif; ?>
+                                <li><strong>Coordinador:</strong> Gestión de equipos y asignación de tareas</li>
                                 <li><strong>Auxiliar:</strong> Funciones operativas y de apoyo</li>
                             </ul>
                         </div>

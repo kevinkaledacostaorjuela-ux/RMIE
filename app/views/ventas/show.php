@@ -76,9 +76,12 @@ body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height
         </thead>
         <tbody>
           <?php if (!empty($venta->productos_asignados)): ?>
+            <!-- DEBUG: Total de productos -->
+            <!-- <?php echo "Total productos: " . count($venta->productos_asignados); ?> -->
             <?php foreach ($venta->productos_asignados as $p): ?>
+              <!-- DEBUG: <?php var_dump($p); ?> -->
               <tr>
-                <td><?= htmlspecialchars($p->nombre ?? '') ?></td>
+                <td><?= htmlspecialchars($p->nombre ?? 'NOMBRE VACÍO') ?></td>
                 <td class="text-end"><?= htmlspecialchars($p->cantidad ?? 1) ?></td>
                 <td class="text-end">$<?= number_format(floatval($p->precio_unitario ?? $p->precio_producto ?? 0), 2) ?></td>
                 <td class="text-end">$<?= number_format(floatval($p->subtotal ?? ($p->cantidad * ($p->precio_unitario ?? $p->precio_producto ?? 0))), 2) ?></td>
