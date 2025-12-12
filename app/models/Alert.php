@@ -248,26 +248,43 @@ class Alert {
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         $stmt_trash = $conn->prepare($sql_trash);
-        $tipo = $alerta['tipo_alerta'] ?? null;
+        
+        $id_alertas = $alerta['id_alertas'] ?? null;
+        $id_productos = $alerta['id_productos'] ?? null;
+        $producto_nombre = $alerta['producto_nombre'] ?? null;
+        $tipo_alerta = $alerta['tipo_alerta'] ?? null;
+        $cantidad_minima = $alerta['cantidad_minima'] ?? null;
+        $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
+        $id_proveedores = $alerta['id_proveedores'] ?? null;
+        $proveedor_nombre = $alerta['proveedor_nombre'] ?? null;
         $estado = $alerta['estado'] ?? 'Activo';
         $prioridad = $alerta['prioridad'] ?? 'Media';
         
-        $stmt_trash->bind_param('iissisississs', 
-            $id_alerta,
-            $alerta['id_productos'],
-            $alerta['producto_nombre'],
-            $tipo,
-            $alerta['cantidad_minima'],
-            $alerta['fecha_caducidad'],
-            $alerta['id_proveedores'],
-            $alerta['proveedor_nombre'],
+        // Tipos: i=integer, s=string, d=double
+        // 11 parámetros: i, i, s, s, i, s, i, s, s, s, s
+        $stmt_trash->bind_param('iisisisssss', 
+            $id_alertas,
+            $id_productos,
+            $producto_nombre,
+            $tipo_alerta,
+            $cantidad_minima,
+            $fecha_caducidad,
+            $id_proveedores,
+            $proveedor_nombre,
             $estado,
             $prioridad,
             $motivo
         );
         
         if ($stmt_trash->execute()) {
-            // Eliminar de alertas
+            // Eliminar notificaciones asociadas primero (para evitar conflictos de FK)
+            $sql_notif = "DELETE FROM notificaciones_alertas WHERE id_alertas = ?";
+            $stmt_notif = $conn->prepare($sql_notif);
+            $stmt_notif->bind_param('i', $id_alerta);
+            $stmt_notif->execute();
+            $stmt_notif->close();
+            
+            // Luego eliminar la alerta
             $sql_delete = "DELETE FROM alertas WHERE id_alertas = ?";
             $stmt_delete = $conn->prepare($sql_delete);
             $stmt_delete->bind_param('i', $id_alerta);
@@ -316,14 +333,24 @@ class Alert {
                         VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         $stmt_restore = $conn->prepare($sql_restore);
-        $stmt_restore->bind_param('isissis',
-            $alerta['id_productos'],
-            $alerta['cantidad_minima'],
-            $alerta['fecha_caducidad'],
-            $alerta['id_proveedores'],
-            $alerta['tipo_alerta'],
-            $alerta['estado'],
-            $alerta['prioridad']
+        
+        $id_productos = $alerta['id_productos'];
+        $cantidad_minima = $alerta['cantidad_minima'];
+        $fecha_caducidad = $alerta['fecha_caducidad'];
+        $id_proveedores = $alerta['id_proveedores'];
+        $tipo_alerta = $alerta['tipo_alerta'];
+        $estado = $alerta['estado'];
+        $prioridad = $alerta['prioridad'];
+        
+        // Tipos: i=int, s=string
+        $stmt_restore->bind_param('isisiiss',
+            $id_productos,
+            $cantidad_minima,
+            $fecha_caducidad,
+            $id_proveedores,
+            $tipo_alerta,
+            $estado,
+            $prioridad
         );
         
         if ($stmt_restore->execute()) {

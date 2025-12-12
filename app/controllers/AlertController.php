@@ -175,6 +175,16 @@ class AlertController {
         }
 
         // Unir alertas registradas en BD con las automáticas
+        // Asignar IDs temporales a alertas automáticas (negativas para diferenciarlas)
+        $contador_auto = 1;
+        foreach ($alertas_auto as &$alerta) {
+            if ($alerta['id_alertas'] === null) {
+                $alerta['id_alertas'] = -$contador_auto; // IDs negativos para alertas automáticas
+                $contador_auto++;
+            }
+        }
+        unset($alerta);
+        
         $alertas = array_values(array_merge(is_array($alertas_db) ? $alertas_db : [], $alertas_auto));
 
         // Si se solicitó filtrar por estado, aplicar el filtro sobre el conjunto combinado

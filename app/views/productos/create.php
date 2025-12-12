@@ -194,20 +194,25 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .section-title {
-            color: #2c3e50;
+            color: #667eea;
             font-size: 1.3rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 12px;
+            border-bottom: 3px solid rgba(102, 126, 234, 0.4);
             display: flex;
             align-items: center;
             gap: 10px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+            padding: 15px 15px 12px 15px;
+            margin: -25px -25px 20px -25px;
+            padding-left: 15px;
+            border-radius: 20px 20px 0 0;
         }
         
         .section-title i {
             font-size: 1.4rem;
-            opacity: 0.8;
+            color: #667eea;
         }
         
         .form-row {
@@ -245,44 +250,47 @@ unset($_SESSION['error'], $_SESSION['success']);
         .form-control-modern {
             width: 100%;
             padding: 18px 15px 8px 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             font-size: 16px;
-            color: #333;
+            color: #2c3e50;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
         }
         
         .form-control-modern:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
             transform: translateY(-2px);
         }
         
         .form-select-modern {
             width: 100%;
             padding: 18px 15px 8px 15px;
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid rgba(102, 126, 234, 0.3);
             border-radius: 15px;
             font-size: 16px;
-            color: #333;
+            color: #2c3e50;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
             appearance: none;
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.1);
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23667eea' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
             background-position: right 12px center;
             background-repeat: no-repeat;
             background-size: 16px;
+            padding-right: 40px;
         }
         
         .form-select-modern:focus {
             outline: none;
-            border-color: rgba(255, 255, 255, 0.8);
-            background: rgba(255, 255, 255, 0.95);
-            box-shadow: 0 5px 20px rgba(255, 255, 255, 0.3);
+            border-color: rgba(102, 126, 234, 0.8);
+            background: rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.25);
             transform: translateY(-2px);
         }
         
@@ -416,11 +424,18 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .form-section-card {
-            background: #ffffff;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(240, 245, 255, 0.98) 100%);
             border-radius: 20px;
             padding: 25px;
             margin-bottom: 25px;
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            border: 2px solid rgba(102, 126, 234, 0.15);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .form-section-card:hover {
+            border-color: rgba(102, 126, 234, 0.25);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.12);
         }
         
         .buttons-section {

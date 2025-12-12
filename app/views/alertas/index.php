@@ -45,7 +45,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .dashboard-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(8px);
             border-radius: 20px;
             padding: 40px;
             margin: 20px auto;
@@ -68,7 +68,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .filters-inner {
             background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(8px);
             border-radius: 20px;
             padding: 35px;
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -99,7 +99,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .filters-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(6px);
             border-radius: 15px;
             padding: 25px;
             margin-bottom: 25px;
@@ -244,7 +244,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .stat-card {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(6px);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
@@ -271,7 +271,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .table-container {
             background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(6px);
             border-radius: 15px;
             padding: 20px;
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -367,7 +367,7 @@ unset($_SESSION['success'], $_SESSION['error']);
 
         .alerts-card {
             background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(6px);
             border-radius: 16px;
             padding: 24px;
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -532,7 +532,7 @@ unset($_SESSION['success'], $_SESSION['error']);
             background: rgba(255, 255, 255, 0.1);
             border-radius: 25px;
             padding: 4px;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
@@ -561,7 +561,7 @@ unset($_SESSION['success'], $_SESSION['error']);
         .alert-modern {
             border-radius: 15px;
             border: none;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(6px);
             margin-bottom: 20px;
             padding: 15px 20px;
             font-weight: 500;
@@ -904,7 +904,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
                                 <i class="fas fa-search"></i> FILTRAR
                             </button>
-                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltros()" style="background: #ff5c7a; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
+                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltrosClient()" style="background: #ff5c7a; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
                                 <i class="fas fa-times"></i> LIMPIAR
                             </button>
                         </div>
@@ -942,7 +942,7 @@ unset($_SESSION['success'], $_SESSION['error']);
         </div>
 
         <!-- Gráfico Estadístico de Alertas -->
-        <div class="chart-stats-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
+        <div class="chart-stats-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(6px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
             <h3 style="color: #fff; text-align: center; margin-bottom: 25px; font-size: 1.8rem; font-weight: 600;">
                 <i class="fas fa-chart-bar"></i> Distribución de Alertas por Estado
             </h3>
@@ -951,119 +951,8 @@ unset($_SESSION['success'], $_SESSION['error']);
             </div>
         </div>
 
-        <!-- Vista Rápida de Todas las Alertas (Tabla) -->
-        <div class="alerts-table-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
-            <h3 style="color: #fff; text-align: center; margin-bottom: 25px; font-size: 1.8rem; font-weight: 600;">
-                <i class="fas fa-table"></i> Resumen de Alertas
-            </h3>
-            
-            <?php if (!empty($alertas) && is_array($alertas)): ?>
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; color: #fff; border-collapse: collapse;">
-                    <thead>
-                        <tr style="background: rgba(0, 0, 0, 0.3); border-bottom: 2px solid rgba(255, 255, 255, 0.2);">
-                            <th style="padding: 15px; text-align: left; font-weight: 600;">ID</th>
-                            <th style="padding: 15px; text-align: left; font-weight: 600;">Producto</th>
-                            <th style="padding: 15px; text-align: left; font-weight: 600;">Tipo</th>
-                            <th style="padding: 15px; text-align: left; font-weight: 600;">Proveedor</th>
-                            <th style="padding: 15px; text-align: left; font-weight: 600;">Estado</th>
-                            <th style="padding: 15px; text-align: center; font-weight: 600;">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($alertas as $alerta): 
-                            $fecha_actual = date('Y-m-d');
-                            $fecha_caducidad = $alerta['fecha_caducidad'] ?? null;
-                            $dias_restantes = $fecha_caducidad ? (strtotime($fecha_caducidad) - strtotime($fecha_actual)) / (60 * 60 * 24) : null;
-                            $tipo = $alerta['tipo_alerta'] ?? 'stock_bajo';
-                            
-                            // Determinar estado
-                            if (!empty($alerta['estado'])) {
-                                $estado = $alerta['estado'];
-                                switch ($estado) {
-                                    case 'Vencida': $badge_class = 'badge-danger'; break;
-                                    case 'Crítica': $badge_class = 'badge-danger'; break;
-                                    case 'Próxima': $badge_class = 'badge-warning'; break;
-                                    case 'Normal': $badge_class = 'badge-success'; break;
-                                    case 'Activo': $badge_class = 'badge-info'; break;
-                                    default: $badge_class = 'badge-secondary';
-                                }
-                            } elseif ($dias_restantes !== null) {
-                                if ($dias_restantes < 0) {
-                                    $estado = 'Vencida'; $badge_class = 'badge-danger';
-                                } elseif ($dias_restantes <= 7) {
-                                    $estado = 'Crítica'; $badge_class = 'badge-danger';
-                                } elseif ($dias_restantes <= 30) {
-                                    $estado = 'Próxima'; $badge_class = 'badge-warning';
-                                } else {
-                                    $estado = 'Normal'; $badge_class = 'badge-success';
-                                }
-                            } else {
-                                $estado = 'Activo'; $badge_class = 'badge-info';
-                            }
-                        ?>
-                        <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.3s;">
-                            <td style="padding: 15px;">#<?= htmlspecialchars($alerta['id_alertas'] ?? '') ?></td>
-                            <td style="padding: 15px;">
-                                <i class="fas fa-box" style="margin-right: 8px;"></i>
-                                <?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto #' . $alerta['id_productos']) ?>
-                            </td>
-                            <td style="padding: 15px;">
-                                <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
-                                    <span style="background: rgba(102, 126, 234, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;">
-                                        <i class="fas fa-boxes"></i> Stock
-                                    </span>
-                                <?php else: ?>
-                                    <span style="background: rgba(240, 147, 251, 0.5); padding: 5px 12px; border-radius: 20px; font-size: 0.85rem;">
-                                        <i class="fas fa-calendar-times"></i> Vencimiento
-                                    </span>
-                                <?php endif; ?>
-                            </td>
-                            <td style="padding: 15px;">
-                                <i class="fas fa-truck" style="margin-right: 8px;"></i>
-                                <?= htmlspecialchars($alerta['proveedor_nombre'] ?? ($alerta['id_proveedores'] ? 'Proveedor #' . $alerta['id_proveedores'] : 'Sin proveedor')) ?>
-                            </td>
-                            <td style="padding: 15px;">
-                                <span class="badge badge-modern <?= $badge_class ?>" style="padding: 6px 12px; font-size: 0.85rem;">
-                                    <?= $estado ?>
-                                </span>
-                            </td>
-                            <td style="padding: 15px; text-align: center;">
-                                <?php if (!empty($alerta['id_alertas'])): ?>
-                                    <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas']) ?>" 
-                                       class="btn btn-sm btn-modern btn-warning-modern" 
-                                       style="padding: 6px 12px; margin-right: 5px; display: inline-block;"
-                                       title="Editar alerta">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <?php if ($_SESSION['rol'] !== 'coordinador'): ?>
-                                    <button type="button" 
-                                           class="btn btn-sm btn-modern btn-danger-modern" 
-                                           style="padding: 6px 12px; display: inline-block;"
-                                           title="Eliminar alerta"
-                                           onclick="confirmarEliminacion(<?= htmlspecialchars($alerta['id_alertas']) ?>, '<?= htmlspecialchars($alerta['producto_nombre'] ?? 'Producto', ENT_QUOTES) ?>')">
-                                        <i class="fas fa-trash"></i>
-                                    </button>
-                                    <?php endif; ?>
-                                <?php else: ?>
-                                    <span style="font-size: 0.85rem; opacity: 0.7;">Automática</span>
-                                <?php endif; ?>
-                            </td>
-                        </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
-            </div>
-            <?php else: ?>
-            <div style="text-align: center; padding: 40px; color: #fff;">
-                <i class="fas fa-inbox" style="font-size: 3rem; margin-bottom: 15px; opacity: 0.6;"></i>
-                <p>No hay alertas disponibles</p>
-            </div>
-            <?php endif; ?>
-        </div>
-
         <!-- Visualización de Alertas Individuales -->
-        <div class="alerts-viewer-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
+        <div class="alerts-viewer-container" style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(6px); border-radius: 15px; padding: 30px; border: 1px solid rgba(255, 255, 255, 0.2); margin-bottom: 30px;">
             <h3 style="color: #fff; text-align: center; margin-bottom: 25px; font-size: 1.8rem; font-weight: 600;">
                 <i class="fas fa-list-alt"></i> Alertas Detalladas
             </h3>
@@ -1179,6 +1068,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                         </div>
                                     </div>
                                     
+                                    <?php if ($tipo === 'stock' || $tipo === 'stock_bajo'): ?>
                                     <div class="alerts-card-field">
                                         <div class="alerts-card-field-label">
                                             <i class="fas fa-sort-numeric-up"></i> Cantidad Mín.
@@ -1189,9 +1079,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                                             </span>
                                         </div>
                                     </div>
+                                    <?php endif; ?>
                                 </div>
                                 
-                                <?php if ($fecha_caducidad): ?>
+                                <?php if ($fecha_caducidad && ($tipo !== 'stock' && $tipo !== 'stock_bajo')): ?>
                                 <div class="alerts-card-date">
                                     <div class="alerts-card-date-main">
                                         <i class="fas fa-calendar-alt"></i>
@@ -1218,7 +1109,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 </div>
                                 
                                 <div class="alerts-card-actions">
-                                    <?php if (!empty($alerta['id_alertas'])): ?>
+                                    <?php if (!empty($alerta['id_alertas']) && ($tipo === 'stock' || $tipo === 'stock_bajo')): ?>
                                     <a href="/RMIE/app/controllers/AlertController.php?accion=edit&id=<?= urlencode($alerta['id_alertas']) ?>" 
                                        class="btn btn-modern btn-warning-modern" 
                                        title="Editar alerta">
@@ -1234,7 +1125,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                     <?php endif; ?>
                                     <?php else: ?>
                                     <span class="badge badge-secondary" title="Alerta automática (no editable)">
-                                        <i class="fas fa-lock"></i> Automática
+                                        <i class="fas fa-lock"></i> Automático
                                     </span>
                                     <?php endif; ?>
                                 </div>
@@ -1256,22 +1147,61 @@ unset($_SESSION['success'], $_SESSION['error']);
                     // Sistema de navegación entre alertas
                     (function() {
                         let currentIndex = 0;
-                        const totalAlerts = <?= count($alertas) ?>;
-                        const cards = document.querySelectorAll('.alert-card-item');
+                        let totalAlerts = <?= count($alertas) ?>;
+                        let allCards = document.querySelectorAll('.alert-card-item');
+                        let visibleCards = Array.from(allCards);
                         const prevBtn = document.getElementById('prevAlert');
                         const nextBtn = document.getElementById('nextAlert');
-                        const currentIndexDisplay = document.getElementById('currentAlertIndex');                        function showCard(index) {
-                            cards.forEach((card, i) => {
-                                card.style.display = i === index ? 'block' : 'none';
+                        const currentIndexDisplay = document.getElementById('currentAlertIndex');
+                        const totalDisplay = document.getElementById('totalAlerts');
+                        
+                        // Almacenar datos de alertas para filtrado
+                        const alertasData = [
+                            <?php foreach ($alertas as $index => $alerta): ?>
+                            {
+                                index: <?= $index ?>,
+                                tipo: '<?= htmlspecialchars($alerta['tipo_alerta'] ?? '') ?>',
+                                prioridad: '<?= htmlspecialchars($alerta['prioridad'] ?? '') ?>',
+                                estado: '<?= htmlspecialchars($alerta['estado'] ?? '') ?>'
+                            }<?= $index < count($alertas) - 1 ? ',' : '' ?>
+                            <?php endforeach; ?>
+                        ];
+                        
+                        window.filtrarAlertas = function(tipo, prioridad, estado) {
+                            visibleCards = Array.from(allCards).filter(card => {
+                                const idx = parseInt(card.getAttribute('data-index'));
+                                const alerta = alertasData[idx];
+                                
+                                if (!alerta) return false;
+                                
+                                const coincidetipo = !tipo || alerta.tipo === tipo;
+                                const coincideprioridad = !prioridad || alerta.prioridad === prioridad;
+                                const coincideestado = !estado || alerta.estado === estado;
+                                
+                                return coincidetipo && coincideprioridad && coincideestado;
                             });
+                            
+                            if (visibleCards.length === 0) {
+                                totalDisplay.textContent = '0';
+                                return;
+                            }
+                            
+                            totalDisplay.textContent = visibleCards.length;
+                            currentIndex = 0;
+                            showCard(0);
+                        };
+                        
+                        function showCard(index) {
+                            if (index < 0 || index >= visibleCards.length) return;
+                            
+                            allCards.forEach(card => card.style.display = 'none');
+                            visibleCards[index].style.display = 'block';
                             currentIndex = index;
                             currentIndexDisplay.textContent = index + 1;
                             
-                            // Actualizar estado de botones
                             prevBtn.disabled = index === 0;
-                            nextBtn.disabled = index === totalAlerts - 1;
+                            nextBtn.disabled = index === visibleCards.length - 1;
                             
-                            // Aplicar estilos de deshabilitado
                             if (index === 0) {
                                 prevBtn.style.opacity = '0.5';
                                 prevBtn.style.cursor = 'not-allowed';
@@ -1280,7 +1210,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 prevBtn.style.cursor = 'pointer';
                             }
                             
-                            if (index === totalAlerts - 1) {
+                            if (index === visibleCards.length - 1) {
                                 nextBtn.style.opacity = '0.5';
                                 nextBtn.style.cursor = 'not-allowed';
                             } else {
@@ -1288,9 +1218,9 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 nextBtn.style.cursor = 'pointer';
                             }
                             
-                            // Actualizar el gráfico con los datos del producto actual
                             if (typeof window.updateProductChart === 'function') {
-                                window.updateProductChart(index);
+                                const cardIdx = parseInt(visibleCards[index].getAttribute('data-index'));
+                                window.updateProductChart(cardIdx);
                             }
                         }
 
@@ -1301,7 +1231,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                         });
 
                         nextBtn.addEventListener('click', function() {
-                            if (currentIndex < totalAlerts - 1) {
+                            if (currentIndex < visibleCards.length - 1) {
                                 showCard(currentIndex + 1);
                             }
                         });
@@ -1588,8 +1518,10 @@ unset($_SESSION['success'], $_SESSION['error']);
             }
         });
 
-        function limpiarFiltros() {
-            // Redirige siempre a la URL base del listado de alertas
+        function limpiarFiltrosClient() {
+            // Limpiar todos los campos del formulario
+            document.getElementById('filterForm').reset();
+            // Redirige a la URL base del listado de alertas
             window.location.href = '/RMIE/app/controllers/AlertController.php?accion=index';
         }
 
@@ -1657,11 +1589,6 @@ unset($_SESSION['success'], $_SESSION['error']);
                             <a href="/RMIE/app/controllers/AlertController.php?accion=create&tipo=expiration" class="btn btn-modern btn-warning-modern" style="flex:1;">
                                 <i class="fas fa-calendar-times"></i> Vencimiento
                             </a>
-                            <?php if ($hay_vencidas ?? false): ?>
-                            <a href="/RMIE/app/controllers/AlertController.php?accion=index&estado=Vencida" class="btn btn-modern btn-danger-modern" style="flex:1; min-width: 180px;">
-                                <i class="fas fa-filter"></i> Ver Vencidas
-                            </a>
-                            <?php endif; ?>
               
                         </div>
                     </div>
