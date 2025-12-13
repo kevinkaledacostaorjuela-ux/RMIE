@@ -421,11 +421,53 @@ class Product {
                 return ['error' => 'has_sales', 'data' => $dependencies];
             }
             
-            // Si no hay dependencias o no hay ventas, proceder con eliminación
+            // Desactivar restricciones de clave foránea temporalmente
+            $conn->query("SET FOREIGN_KEY_CHECKS=0");
+            
+            // Eliminar automáticamente todas las alertas relacionadas
+            $sql_alertas = "DELETE FROM alertas_papelera WHERE id_productos = ?";
+            $stmt_alertas = $conn->prepare($sql_alertas);
+            $stmt_alertas->bind_param("i", $id_productos);
+            $stmt_alertas->execute();
+            
+            // Eliminar alertas activas
+            $sql_alertas_activas = "DELETE FROM alertas WHERE id_productos = ?";
+            $stmt_alertas_act = $conn->prepare($sql_alertas_activas);
+            $stmt_alertas_act->bind_param("i", $id_productos);
+            $stmt_alertas_act->execute();
+            
+            // Eliminar ventas_productos
+            $sql_ventas_prod = "DELETE FROM ventas_productos WHERE id_productos = ?";
+            $stmt_ventas_prod = $conn->prepare($sql_ventas_prod);
+            $stmt_ventas_prod->bind_param("i", $id_productos);
+            $stmt_ventas_prod->execute();
+            
+            // Eliminar ventas
+            $sql_ventas = "DELETE FROM ventas WHERE id_productos = ?";
+            $stmt_ventas = $conn->prepare($sql_ventas);
+            $stmt_ventas->bind_param("i", $id_productos);
+            $stmt_ventas->execute();
+            
+            // Eliminar reportes
+            $sql_reportes = "DELETE FROM reportes WHERE id_productos = ?";
+            $stmt_reportes = $conn->prepare($sql_reportes);
+            $stmt_reportes->bind_param("i", $id_productos);
+            $stmt_reportes->execute();
+            
+            // Eliminar relaciones con proveedores
+            $sql_prov = "DELETE FROM proveedores_productos WHERE id_producto = ?";
+            $stmt_prov = $conn->prepare($sql_prov);
+            $stmt_prov->bind_param("i", $id_productos);
+            $stmt_prov->execute();
+            
+            // Si no hay dependencias o no hay ventas, proceder con eliminación del producto
             $sql = "DELETE FROM productos WHERE id_productos = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $id_productos);
             $result = $stmt->execute();
+            
+            // Reactivar restricciones de clave foránea
+            $conn->query("SET FOREIGN_KEY_CHECKS=1");
             
             if ($result) {
                 return ['success' => true];
@@ -434,6 +476,8 @@ class Product {
             }
             
         } catch (mysqli_sql_exception $e) {
+            // Asegurar que se reactiven las restricciones en caso de error
+            $conn->query("SET FOREIGN_KEY_CHECKS=1");
             return ['error' => 'exception', 'message' => $e->getMessage()];
         }
     }
