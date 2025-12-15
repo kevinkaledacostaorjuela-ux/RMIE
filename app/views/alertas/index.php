@@ -838,16 +838,16 @@ unset($_SESSION['success'], $_SESSION['error']);
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm" 
-                      style="background: white; padding: 2.5rem 3.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 1100px; margin: 0 auto;">
+                      style="background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%); padding: 1.2rem 1.8rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); max-width: 100%; margin: 0 auto 1.5rem; border: 1px solid rgba(0,0,0,0.05);">
                     <input type="hidden" name="accion" value="index">
                     
-                    <div class="filtros-alertas-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                    <div class="filtros-alertas-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
                         <!-- Filtro por Tipo de Alerta -->
-                        <div class="filtro-alerta-item">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-bell"></i> Tipo
+                        <div class="filtro-alerta-item" style="background: rgba(255,255,255,0.9); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                                <i class="fas fa-bell" style="color: #007bff; font-size: 0.9rem;"></i> Tipo
                             </label>
-                            <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
+                            <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 8px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; width: 100%; transition: all 0.3s ease;">
                                 <option value="">Todos</option>
                                 <option value="stock_bajo" <?= ($_GET['tipo'] ?? '') === 'stock_bajo' ? 'selected' : '' ?>>Stock Bajo</option>
                                 <option value="expiration" <?= ($_GET['tipo'] ?? '') === 'expiration' ? 'selected' : '' ?>>Vencimiento</option>
@@ -855,12 +855,12 @@ unset($_SESSION['success'], $_SESSION['error']);
                         </div>
 
                         <!-- Filtro por Prioridad -->
-                        <div class="filtro-alerta-item">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-exclamation-triangle"></i> Prioridad
+                        <div class="filtro-alerta-item" style="background: rgba(255,255,255,0.9); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                                <i class="fas fa-exclamation-triangle" style="color: #ffc107; font-size: 0.9rem;"></i> Prioridad
                             </label>
-                            <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
-                                <option value="">Todas las prioridades</option>
+                            <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 8px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; width: 100%; transition: all 0.3s ease;">
+                                <option value="">Todas</option>
                                 <option value="Alta" <?= ($_GET['prioridad'] ?? '') === 'Alta' ? 'selected' : '' ?>>Alta</option>
                                 <option value="Media" <?= ($_GET['prioridad'] ?? '') === 'Media' ? 'selected' : '' ?>>Media</option>
                                 <option value="Baja" <?= ($_GET['prioridad'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
@@ -868,41 +868,68 @@ unset($_SESSION['success'], $_SESSION['error']);
                         </div>
 
                         <!-- Filtro por Estado -->
-                        <div class="filtro-alerta-item">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
-                                <i class="fas fa-toggle-on"></i> Estado
+                        <div class="filtro-alerta-item" style="background: rgba(255,255,255,0.9); padding: 0.8rem; border-radius: 10px; border: 1px solid rgba(0,0,0,0.08); transition: all 0.3s ease;">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; margin-bottom: 6px;">
+                                <i class="fas fa-toggle-on" style="color: #28a745; font-size: 0.9rem;"></i> Estado
                             </label>
-                            <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
-                                <option value="">Todos los estados</option>
-                                <option value="Activo" <?= ($_GET['estado'] ?? '') === 'Activo' ? 'selected' : '' ?>>✓ Activo (Sin problemas)</option>
-                                <option value="Normal" <?= ($_GET['estado'] ?? '') === 'Normal' ? 'selected' : '' ?>>◑ Normal (Vence en +30 días)</option>
-                                <option value="Próxima" <?= ($_GET['estado'] ?? '') === 'Próxima' ? 'selected' : '' ?>>⚠ Próxima (Vence en 8-30 días)</option>
-                                <option value="Crítica" <?= ($_GET['estado'] ?? '') === 'Crítica' ? 'selected' : '' ?>>⛔ Crítica (Vence en 0-7 días)</option>
-                                <option value="Vencida" <?= ($_GET['estado'] ?? '') === 'Vencida' ? 'selected' : '' ?>>✕ Vencida (Stock agotado)</option>
+                            <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 8px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 500; width: 100%; transition: all 0.3s ease;">
+                                <option value="">Todos</option>
+                                <option value="Activo" <?= ($_GET['estado'] ?? '') === 'Activo' ? 'selected' : '' ?>>Activo</option>
+                                <option value="Normal" <?= ($_GET['estado'] ?? '') === 'Normal' ? 'selected' : '' ?>>Normal</option>
+                                <option value="Próxima" <?= ($_GET['estado'] ?? '') === 'Próxima' ? 'selected' : '' ?>>Próxima</option>
+                                <option value="Crítica" <?= ($_GET['estado'] ?? '') === 'Crítica' ? 'selected' : '' ?>>Crítica</option>
+                                <option value="Vencida" <?= ($_GET['estado'] ?? '') === 'Vencida' ? 'selected' : '' ?>>Vencida</option>
                             </select>
                         </div>
                     </div>
 
-                    <div class="filtros-acciones" style="display: flex; gap: 12px; justify-content: center;">
-                        <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 11px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: all 0.2s; cursor: pointer;">
+                    <div class="filtros-acciones" style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                        <button type="submit" class="btn-modern-filter" style="background: linear-gradient(135deg, #007bff 0%, #0056b3 100%); color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(0,123,255,0.25); transition: all 0.2s ease; cursor: pointer;">
                             <i class="fas fa-search"></i> FILTRAR
                         </button>
-                        <button type="button" class="btn-modern-clear" onclick="limpiarFiltrosClient()" style="background: #ff5c7a; color: white; border: none; padding: 11px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: all 0.2s; cursor: pointer;">
+                        <button type="button" class="btn-modern-clear" onclick="limpiarFiltrosClient()" style="background: linear-gradient(135deg, #dc3545 0%, #c82333 100%); color: white; border: none; padding: 10px 25px; border-radius: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px rgba(220,53,69,0.25); transition: all 0.2s ease; cursor: pointer;">
                             <i class="fas fa-times"></i> LIMPIAR
                         </button>
                     </div>
 
                     <style>
+                        .filtro-alerta-item:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+                        }
+                        
+                        .form-select:focus {
+                            border-color: #007bff;
+                            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+                            outline: none;
+                        }
+                        
+                        .btn-modern-filter:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(0,123,255,0.4);
+                        }
+                        
+                        .btn-modern-clear:hover {
+                            transform: translateY(-2px);
+                            box-shadow: 0 6px 20px rgba(220,53,69,0.4);
+                        }
+                        
                         @media (max-width: 768px) {
                             .filtros-alertas-grid {
                                 grid-template-columns: 1fr !important;
+                                gap: 1.5rem !important;
                             }
                             .filtros-acciones {
                                 flex-direction: column !important;
+                                align-items: center !important;
                             }
                             .btn-modern-filter,
                             .btn-modern-clear {
                                 width: 100%;
+                                max-width: 300px;
+                            }
+                            #filterForm {
+                                padding: 2rem 1.5rem !important;
                             }
                         }
                     </style>
@@ -918,9 +945,6 @@ unset($_SESSION['success'], $_SESSION['error']);
             </a>
             <a href="/RMIE/app/controllers/AlertController.php?accion=notifications" class="btn btn-modern btn-warning-modern me-2">
                 <i class="fas fa-bell"></i> Notificaciones
-            </a>
-            <a href="/RMIE/app/controllers/AlertController.php?accion=trash" class="btn btn-modern btn-danger-modern me-2">
-                <i class="fas fa-trash"></i> Papelera
             </a>
             <a href="/RMIE/app/views/dashboard.php" class="btn btn-modern btn-primary-modern">
                 <i class="fas fa-arrow-left"></i> Volver al Dashboard

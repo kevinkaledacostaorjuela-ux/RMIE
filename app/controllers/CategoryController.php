@@ -160,6 +160,134 @@ class CategoryController {
 			exit();
 		}
 	}
+
+	public function cleanEmpty() {
+		global $conn;
+		
+		// Verificar sesión activa
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+		
+		// Verificar si el usuario está logueado
+		if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
+			echo '<script>alert("Debe iniciar sesión para realizar esta acción."); window.location.href = "/RMIE/index.php";</script>';
+			exit();
+		}
+		
+		// Verificar si el rol es admin
+		if ($_SESSION['rol'] !== 'admin') {
+			echo '<script>alert("Solo administradores pueden realizar esta acción."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		}
+		
+		try {
+			// Obtener categorías sin productos
+			$query = "SELECT c.id_categoria FROM categorias c 
+					  LEFT JOIN productos p ON c.id_categoria = p.id_categoria 
+					  WHERE p.id_productos IS NULL 
+					  GROUP BY c.id_categoria";
+			
+			$result = $conn->query($query);
+			$emptyCategories = [];
+			
+			if ($result && $result->num_rows > 0) {
+				while ($row = $result->fetch_assoc()) {
+					$emptyCategories[] = $row['id_categoria'];
+				}
+			}
+			
+			if (empty($emptyCategories)) {
+				echo '<script>alert("No hay categorías vacías para eliminar."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+				exit();
+			}
+			
+			// Inicia transacción para mantener consistencia
+			$conn->begin_transaction();
+			
+			try {
+				$ids = implode(',', $emptyCategories);
+				
+				// 1. Primero, eliminar todas las subcategorías asociadas a estas categorías
+				$deleteSubcategories = "DELETE FROM subcategorias WHERE id_categoria IN ($ids)";
+				if (!$conn->query($deleteSubcategories)) {
+					throw new Exception("Error al eliminar subcategorías: " . $conn->error);
+				}
+				
+				// 2. Luego, eliminar las categorías vacías
+				$deleteCategories = "DELETE FROM categorias WHERE id_categoria IN ($ids)";
+				if (!$conn->query($deleteCategories)) {
+					throw new Exception("Error al eliminar categorías: " . $conn->error);
+				}
+				
+				// Confirma la transacción
+				$conn->commit();
+				
+				$count = count($emptyCategories);
+				echo '<script>alert("Se eliminaron ' . $count . ' categoría(s) vacía(s) correctamente."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+				exit();
+				
+			} catch (Exception $e) {
+				// Revierte los cambios si algo falla
+				$conn->rollback();
+				throw $e;
+			}
+			
+		} catch (Exception $e) {
+			echo '<script>alert("Error: ' . addslashes($e->getMessage()) . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		}
+	}
+
+	public function cleanAll() {
+		global $conn;
+		
+		// Verificar sesión activa
+		if (session_status() == PHP_SESSION_NONE) {
+			session_start();
+		}
+		
+		// Verificar si el usuario está logueado
+		if (!isset($_SESSION['user']) || !isset($_SESSION['rol'])) {
+			echo '<script>alert("Debe iniciar sesión para realizar esta acción."); window.location.href = "/RMIE/index.php";</script>';
+			exit();
+		}
+		
+		// Verificar si el rol es admin
+		if ($_SESSION['rol'] !== 'admin') {
+			echo '<script>alert("Solo administradores pueden realizar esta acción."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		}
+		
+		try {
+			// Confirmar eliminación de todas las categorías
+			if (!isset($_GET['confirm']) || $_GET['confirm'] != '1') {
+				echo '<script>
+					if (confirm("¿ESTÁS SEGURO DE QUE DESEAS ELIMINAR TODAS LAS CATEGORÍAS? Esta acción no se puede deshacer.")) {
+						window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=clean_all&confirm=1";
+					} else {
+						window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";
+					}
+				</script>';
+				exit();
+			}
+			
+			// Eliminar todas las categorías
+			$deleteQuery = "DELETE FROM categorias";
+			
+			if ($conn->query($deleteQuery)) {
+				echo '<script>alert("Se eliminaron todas las categorías correctamente."); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+				exit();
+			} else {
+				echo '<script>alert("Error al eliminar categorías: ' . addslashes($conn->error) . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+				exit();
+			}
+			
+		} catch (Exception $e) {
+			echo '<script>alert("Error: ' . addslashes($e->getMessage()) . '"); window.location.href = "/RMIE/app/controllers/CategoryController.php?accion=index";</script>';
+			exit();
+		}
+	}
 }
 
 // Manejo de acciones por parámetro GET
@@ -178,6 +306,12 @@ if (isset($_GET['accion'])) {
             if (isset($_GET['id'])) {
                 $controller->delete($_GET['id']);
             }
+            break;
+        case 'clean_empty':
+            $controller->cleanEmpty();
+            break;
+        case 'clean_all':
+            $controller->cleanAll();
             break;
         default:
             $controller->index();
