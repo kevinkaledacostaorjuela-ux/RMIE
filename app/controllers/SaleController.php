@@ -201,22 +201,27 @@ class SaleController {
                     $cantidad_total = 0;
                     foreach ($productos_data as $pd) { $cantidad_total += intval($pd['cantidad']); }
                     $precio_promedio = $total_venta / max($cantidad_total, 1);
-                    
+
                     $resultado = Sale::create($conn, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
-                    
+
                     if (!$resultado) {
                         throw new Exception("Error al crear la venta");
                     }
-                    
+
                     // Obtener el ID de la venta recién creada
                     $id_venta = $conn->insert_id;
-                    
+
                     // Insertar productos en ventas_productos
                     Sale::updateProductos($conn, $id_venta, $productos_data);
-                    
+
+                    // Descontar stock de cada producto vendido
+                    foreach ($productos_data as $pd) {
+                        Product::decrementStock($conn, $pd['id_productos'], $pd['cantidad']);
+                    }
+
                     // Confirmar transacción
                     $conn->commit();
-                    
+
                     $_SESSION['success'] = "Venta creada exitosamente con " . count($productos_ids) . " producto(s)";
                     header('Location: ' . $this->baseUrl . '?accion=index');
                     exit();
@@ -360,16 +365,28 @@ class SaleController {
                     $precio_promedio = $total_venta / max($cantidad_total, 1);
                     
                     $resultado = Sale::update($conn, $id, $primer_producto, $id_clientes, $fecha_venta, $cantidad_total, $precio_promedio, $total_venta, $estado, $num_doc);
-                    
+
                     if (!$resultado) {
                         throw new Exception("Error al actualizar la venta");
                     }
-                    
+
+                    // Obtener productos anteriores para ajustar stock
+                    $productos_anteriores = Sale::getProductos($conn, $id);
+                    // Devolver stock de productos anteriores
+                    foreach ($productos_anteriores as $prod_ant) {
+                        Product::incrementStock($conn, $prod_ant->id_productos, $prod_ant->cantidad);
+                    }
+
                     // Actualizar productos en ventas_productos
                     Sale::updateProductos($conn, $id, $productos_data);
-                    
+
+                    // Descontar stock de los nuevos productos
+                    foreach ($productos_data as $pd) {
+                        Product::decrementStock($conn, $pd['id_productos'], $pd['cantidad']);
+                    }
+
                     $conn->commit();
-                    
+
                     header('Location: ' . $this->baseUrl . '?accion=index&success=updated');
                     exit();
                     

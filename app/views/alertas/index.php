@@ -838,87 +838,73 @@ unset($_SESSION['success'], $_SESSION['error']);
         <div class="filters-container">
             <div class="filters-inner">
                 <form method="GET" action="/RMIE/app/controllers/AlertController.php" id="filterForm" 
-                      style="background: white; padding: 2.5rem 3.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 900px; margin: 0 auto;">
+                      style="background: white; padding: 2.5rem 3.5rem; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 1100px; margin: 0 auto;">
                     <input type="hidden" name="accion" value="index">
                     
-                    <div class="filtros-alertas-flex" style="display: flex; flex-wrap: wrap; gap: 1.5rem 2.5rem; justify-content: center; align-items: end;">
-                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+                    <div class="filtros-alertas-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <!-- Filtro por Tipo de Alerta -->
+                        <div class="filtro-alerta-item">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-bell"></i> Tipo
                             </label>
-                            <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                            <select name="tipo" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
                                 <option value="">Todos</option>
-                                <?php if (isset($tipos_disponibles) && is_array($tipos_disponibles) && count($tipos_disponibles) > 0): ?>
-                                    <?php foreach ($tipos_disponibles as $tipo): ?>
-                                        <option value="<?= htmlspecialchars($tipo) ?>" <?= (isset($_GET['tipo']) && $_GET['tipo'] == $tipo) ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($tipo) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <option value="stock" <?= (isset($_GET['tipo']) && $_GET['tipo'] == 'stock') ? 'selected' : '' ?>>Stock Bajo</option>
-                                    <option value="expiration" <?= (isset($_GET['tipo']) && $_GET['tipo'] == 'expiration') ? 'selected' : '' ?>>Vencimiento</option>
-                                <?php endif; ?>
+                                <option value="stock_bajo" <?= ($_GET['tipo'] ?? '') === 'stock_bajo' ? 'selected' : '' ?>>Stock Bajo</option>
+                                <option value="expiration" <?= ($_GET['tipo'] ?? '') === 'expiration' ? 'selected' : '' ?>>Vencimiento</option>
                             </select>
                         </div>
-                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+
+                        <!-- Filtro por Prioridad -->
+                        <div class="filtro-alerta-item">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-exclamation-triangle"></i> Prioridad
                             </label>
-                            <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                            <select name="prioridad" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
                                 <option value="">Todas las prioridades</option>
-                                <?php if (isset($prioridades_disponibles) && is_array($prioridades_disponibles) && count($prioridades_disponibles) > 0): ?>
-                                    <?php foreach ($prioridades_disponibles as $prioridad): ?>
-                                        <option value="<?= htmlspecialchars($prioridad) ?>" <?= ($_GET['prioridad'] ?? '') === $prioridad ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($prioridad) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <option value="alta" <?= ($_GET['prioridad'] ?? '') === 'alta' ? 'selected' : '' ?>>Alta</option>
-                                    <option value="media" <?= ($_GET['prioridad'] ?? '') === 'media' ? 'selected' : '' ?>>Media</option>
-                                    <option value="baja" <?= ($_GET['prioridad'] ?? '') === 'baja' ? 'selected' : '' ?>>Baja</option>
-                                <?php endif; ?>
+                                <option value="Alta" <?= ($_GET['prioridad'] ?? '') === 'Alta' ? 'selected' : '' ?>>Alta</option>
+                                <option value="Media" <?= ($_GET['prioridad'] ?? '') === 'Media' ? 'selected' : '' ?>>Media</option>
+                                <option value="Baja" <?= ($_GET['prioridad'] ?? '') === 'Baja' ? 'selected' : '' ?>>Baja</option>
                             </select>
                         </div>
-                        <div class="filtro-alerta-item" style="min-width: 210px; max-width: 260px; flex: 1 1 210px;">
-                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.95rem; display: block; margin-bottom: 8px;">
+
+                        <!-- Filtro por Estado -->
+                        <div class="filtro-alerta-item">
+                            <label class="form-label" style="color: #2c3e50; font-weight: 600; font-size: 0.9rem; display: block; margin-bottom: 8px;">
                                 <i class="fas fa-toggle-on"></i> Estado
                             </label>
-                            <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 12px 15px; border-radius: 8px; font-size: 0.95rem;">
+                            <select name="estado" class="form-select" style="background: #fff; color: #2c3e50; border: 1px solid #ddd; padding: 11px 14px; border-radius: 8px; font-size: 0.9rem;">
                                 <option value="">Todos los estados</option>
-                                <?php if (isset($estados_disponibles) && is_array($estados_disponibles) && count($estados_disponibles) > 0): ?>
-                                    <?php foreach ($estados_disponibles as $estado): ?>
-                                        <option value="<?= htmlspecialchars($estado) ?>" <?= ($_GET['estado'] ?? '') === $estado ? 'selected' : '' ?>>
-                                            <?= htmlspecialchars($estado) ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                <?php else: ?>
-                                    <option value="Activo" <?= ($_GET['estado'] ?? '') === 'Activo' ? 'selected' : '' ?>>Activo</option>
-                                    <option value="Vencida" <?= ($_GET['estado'] ?? '') === 'Vencida' ? 'selected' : '' ?>>Vencida</option>
-                                    <option value="Crítica" <?= ($_GET['estado'] ?? '') === 'Crítica' ? 'selected' : '' ?>>Crítica</option>
-                                    <option value="Próxima" <?= ($_GET['estado'] ?? '') === 'Próxima' ? 'selected' : '' ?>>Próxima</option>
-                                    <option value="Normal" <?= ($_GET['estado'] ?? '') === 'Normal' ? 'selected' : '' ?>>Normal</option>
-                                <?php endif; ?>
+                                <option value="Activo" <?= ($_GET['estado'] ?? '') === 'Activo' ? 'selected' : '' ?>>✓ Activo (Sin problemas)</option>
+                                <option value="Normal" <?= ($_GET['estado'] ?? '') === 'Normal' ? 'selected' : '' ?>>◑ Normal (Vence en +30 días)</option>
+                                <option value="Próxima" <?= ($_GET['estado'] ?? '') === 'Próxima' ? 'selected' : '' ?>>⚠ Próxima (Vence en 8-30 días)</option>
+                                <option value="Crítica" <?= ($_GET['estado'] ?? '') === 'Crítica' ? 'selected' : '' ?>>⛔ Crítica (Vence en 0-7 días)</option>
+                                <option value="Vencida" <?= ($_GET['estado'] ?? '') === 'Vencida' ? 'selected' : '' ?>>✕ Vencida (Stock agotado)</option>
                             </select>
                         </div>
-                        <div style="display: flex; gap: 12px; align-items: end;">
-                            <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
-                                <i class="fas fa-search"></i> FILTRAR
-                            </button>
-                            <button type="button" class="btn-modern-clear" onclick="limpiarFiltrosClient()" style="background: #ff5c7a; color: white; border: none; padding: 12px 32px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 1rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: background 0.2s;">
-                                <i class="fas fa-times"></i> LIMPIAR
-                            </button>
-                        </div>
                     </div>
+
+                    <div class="filtros-acciones" style="display: flex; gap: 12px; justify-content: center;">
+                        <button type="submit" class="btn-modern-filter" style="background: #007bff; color: white; border: none; padding: 11px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: all 0.2s; cursor: pointer;">
+                            <i class="fas fa-search"></i> FILTRAR
+                        </button>
+                        <button type="button" class="btn-modern-clear" onclick="limpiarFiltrosClient()" style="background: #ff5c7a; color: white; border: none; padding: 11px 28px; border-radius: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); transition: all 0.2s; cursor: pointer;">
+                            <i class="fas fa-times"></i> LIMPIAR
+                        </button>
+                    </div>
+
                     <style>
-                    @media (max-width: 900px) {
-                        .filtros-alertas-flex {
-                            flex-direction: column !important;
-                            align-items: stretch !important;
+                        @media (max-width: 768px) {
+                            .filtros-alertas-grid {
+                                grid-template-columns: 1fr !important;
+                            }
+                            .filtros-acciones {
+                                flex-direction: column !important;
+                            }
+                            .btn-modern-filter,
+                            .btn-modern-clear {
+                                width: 100%;
+                            }
                         }
-                        .filtro-alerta-item {
-                            max-width: 100% !important;
-                        }
-                    }
                     </style>
                 </form>
             </div>
@@ -1460,6 +1446,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                 var modalEl = document.getElementById('crearAlertasModal');
                 var showModal = <?php echo (($hay_stock_bajo ?? false) || ($hay_vencidas ?? false) || ($hay_proximas ?? false)) ? 'true' : 'false'; ?>;
                 if (modalEl && showModal) {
+                    // Eliminar aria-hidden para evitar advertencias
                     modalEl.removeAttribute('aria-hidden');
                     modalEl.setAttribute('role', 'dialog');
                     modalEl.setAttribute('aria-modal', 'true');
@@ -1486,7 +1473,7 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 var main = document.getElementById('alertasMainContent');
                                 if (main) { main.setAttribute('inert',''); }
                             } catch(e) {}
-                        }, { once: true });
+                        });
                         // Antes de ocultar, mover el foco fuera del modal para evitar advertencia
                         modalEl.addEventListener('hide.bs.modal', function(){
                             try {
@@ -1509,6 +1496,10 @@ unset($_SESSION['success'], $_SESSION['error']);
                                 var main = document.getElementById('alertasMainContent');
                                 if (main) { main.removeAttribute('inert'); }
                             } catch(e) {}
+                        });
+                        // Cuando el modal se oculta, limpiar aria-hidden
+                        modalEl.addEventListener('hidden.bs.modal', function(){
+                            modalEl.setAttribute('aria-hidden','true');
                         });
                         modal.show();
                     }, 50);

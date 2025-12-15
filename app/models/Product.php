@@ -1,5 +1,20 @@
 <?php
 class Product {
+        // Disminuir stock de un producto
+        public static function decrementStock($conn, $id_productos, $cantidad) {
+            $sql = "UPDATE productos SET stock = stock - ? WHERE id_productos = ? AND stock >= ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("iii", $cantidad, $id_productos, $cantidad);
+            return $stmt->execute();
+        }
+
+        // Aumentar stock de un producto
+        public static function incrementStock($conn, $id_productos, $cantidad) {
+            $sql = "UPDATE productos SET stock = stock + ? WHERE id_productos = ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $cantidad, $id_productos);
+            return $stmt->execute();
+        }
     public static function getAll($conn) {
         $sql = "SELECT p.*, 
                        COALESCE(s.nombre, '') AS subcategoria_nombre, 
@@ -415,52 +430,74 @@ class Product {
             return ['error' => 'dependencies', 'data' => $dependencies];
         }
         
+        // Si hay ventas y se intenta forzar, no permitir
+        if (isset($dependencies['ventas']) && $force) {
+            return ['error' => 'has_sales', 'data' => $dependencies];
+        }
+        
         try {
-            // Si hay ventas y se intenta forzar, no permitir
-            if (isset($dependencies['ventas']) && $force) {
-                return ['error' => 'has_sales', 'data' => $dependencies];
-            }
-            
-            // Desactivar restricciones de clave foránea temporalmente
+            // Desactivar restricciones de clave foránea temporalmente para permitir eliminación en cascada
             $conn->query("SET FOREIGN_KEY_CHECKS=0");
             
             // Eliminar automáticamente todas las alertas relacionadas
             $sql_alertas = "DELETE FROM alertas_papelera WHERE id_productos = ?";
             $stmt_alertas = $conn->prepare($sql_alertas);
-            $stmt_alertas->bind_param("i", $id_productos);
-            $stmt_alertas->execute();
+            if ($stmt_alertas) {
+                $stmt_alertas->bind_param("i", $id_productos);
+                $stmt_alertas->execute();
+            }
             
             // Eliminar alertas activas
             $sql_alertas_activas = "DELETE FROM alertas WHERE id_productos = ?";
             $stmt_alertas_act = $conn->prepare($sql_alertas_activas);
-            $stmt_alertas_act->bind_param("i", $id_productos);
-            $stmt_alertas_act->execute();
+            if ($stmt_alertas_act) {
+                $stmt_alertas_act->bind_param("i", $id_productos);
+                $stmt_alertas_act->execute();
+            }
             
-            // Eliminar ventas_productos
+            // Eliminar registros en ventas_productos que hace referencia al producto
             $sql_ventas_prod = "DELETE FROM ventas_productos WHERE id_productos = ?";
             $stmt_ventas_prod = $conn->prepare($sql_ventas_prod);
-            $stmt_ventas_prod->bind_param("i", $id_productos);
-            $stmt_ventas_prod->execute();
+            if ($stmt_ventas_prod) {
+                $stmt_ventas_prod->bind_param("i", $id_productos);
+                $stmt_ventas_prod->execute();
+            }
             
             // Eliminar ventas
             $sql_ventas = "DELETE FROM ventas WHERE id_productos = ?";
             $stmt_ventas = $conn->prepare($sql_ventas);
-            $stmt_ventas->bind_param("i", $id_productos);
-            $stmt_ventas->execute();
+            if ($stmt_ventas) {
+                $stmt_ventas->bind_param("i", $id_productos);
+                $stmt_ventas->execute();
+            }
             
-            // Eliminar reportes
-            $sql_reportes = "DELETE FROM reportes WHERE id_productos = ?";
-            $stmt_reportes = $conn->prepare($sql_reportes);
-            $stmt_reportes->bind_param("i", $id_productos);
-            $stmt_reportes->execute();
+            // Eliminar reportes a través de las ventas del producto
+            // Primero obtener todas las ventas del producto, luego eliminar reportes
+            $sql_ventas_ids = "SELECT id_ventas FROM ventas WHERE id_productos = ?";
+            $stmt_vent_ids = $conn->prepare($sql_ventas_ids);
+            if ($stmt_vent_ids) {
+                $stmt_vent_ids->bind_param("i", $id_productos);
+                $stmt_vent_ids->execute();
+                $result_vent_ids = $stmt_vent_ids->get_result();
+                while ($row = $result_vent_ids->fetch_assoc()) {
+                    $sql_rep = "DELETE FROM reportes WHERE id_ventas = ?";
+                    $stmt_rep = $conn->prepare($sql_rep);
+                    if ($stmt_rep) {
+                        $stmt_rep->bind_param("i", $row['id_ventas']);
+                        $stmt_rep->execute();
+                    }
+                }
+            }
             
             // Eliminar relaciones con proveedores
             $sql_prov = "DELETE FROM proveedores_productos WHERE id_producto = ?";
             $stmt_prov = $conn->prepare($sql_prov);
-            $stmt_prov->bind_param("i", $id_productos);
-            $stmt_prov->execute();
+            if ($stmt_prov) {
+                $stmt_prov->bind_param("i", $id_productos);
+                $stmt_prov->execute();
+            }
             
-            // Si no hay dependencias o no hay ventas, proceder con eliminación del producto
+            // Finalmente eliminar el producto
             $sql = "DELETE FROM productos WHERE id_productos = ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("i", $id_productos);
