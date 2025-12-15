@@ -476,16 +476,20 @@ unset($_SESSION['error'], $_SESSION['success']);
         }
         
         .btn-cancel {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.1) 100%);
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
             color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid #ff6b6b;
+            font-weight: 700;
+            box-shadow: 0 8px 15px rgba(255, 107, 107, 0.3);
         }
         
         .btn-cancel:hover {
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(255, 255, 255, 0.2);
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.2) 100%);
+            box-shadow: 0 15px 35px rgba(255, 107, 107, 0.4);
+            background: linear-gradient(135deg, #ff5252 0%, #ff4757 100%);
+            border-color: #ff5252;
             color: white;
+            text-decoration: none;
         }
         
         /* Responsive */
